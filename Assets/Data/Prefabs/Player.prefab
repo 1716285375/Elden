@@ -61,7 +61,16 @@ PrefabInstance:
       addedObject: {fileID: 6896408444743424835}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 134998405183404939}
+      addedObject: {fileID: 6761123248226064816}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5615974725816350661}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6368077256085200356}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1203088054556932684}
   m_SourcePrefab: {fileID: 100100000, guid: f31d312421127094ba51cefa824ee751, type: 3}
 --- !u!1 &6444903284586261052 stripped
 GameObject:
@@ -81,20 +90,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
   GlobalObjectIdHash: 2850873980
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 2850873980
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   <InScenePlaced>k__BackingField: 0
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &134998405183404939
+--- !u!143 &6761123248226064816
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.35
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &5615974725816350661
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,6 +137,51 @@ MonoBehaviour:
   m_GameObject: {fileID: 6444903284586261052}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f857c5665df2fd145a69df4f06e770f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 74c2d627bfa7305479e63bc9f754e87d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterManager
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerLocomotionManager
+  characterController: {fileID: 0}
+  walkingSpeed: 2
+  runningSpeed: 5
+  rotationSpeed: 15
+  gravity: -20
+--- !u!114 &6368077256085200356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d95ab9ff52cc92b479e35531497aed62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerManager
+  ShowTopMostFoldoutHeaderGroup: 1
+  characterController: {fileID: 0}
+  characterNetworkManager: {fileID: 0}
+--- !u!114 &1203088054556932684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b1d2be262d90645806f7667a77cd0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerNetworkManager
+  ShowTopMostFoldoutHeaderGroup: 1
+  networkPosition:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: {x: 0, y: 0, z: 0}
+  networkRotation:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: {x: 0, y: 0, z: 0, w: 1}
+  networkPositionSmoothTime: 0.1
+  networkRotationSmoothTime: 0.1
