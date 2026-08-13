@@ -109,3 +109,9 @@ InitTestScene*.unity*
 
 # Thirdparty assets
 /[Aa]ssets/Thirdparty/
+/[Aa]ssets/Thirdparty*
+/[Aa]ssets/Screenshots/
+/[Aa]ssets/Screenshots*
+
+.claude
+
