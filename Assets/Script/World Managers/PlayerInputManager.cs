@@ -14,6 +14,9 @@ namespace ZZ
         public float VerticalInput { get; private set; }
         public float HorizontalInput { get; private set; }
         public float MoveAmount { get; private set; }
+        public Vector2 CameraInput { get; private set; }
+        public float CameraVerticalInput { get; private set; }
+        public float CameraHorizontalInput { get; private set; }
         public bool IsMovementInputEnabled { get; private set; }
 
         private PlayerControls playerControls;
@@ -40,6 +43,8 @@ namespace ZZ
             playerControls ??= new PlayerControls();
             playerControls.PlayerMovement.Movement.performed += OnMovementChanged;
             playerControls.PlayerMovement.Movement.canceled += OnMovementChanged;
+            playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
+            playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             RefreshMovementInput(SceneManager.GetActiveScene());
         }
@@ -53,6 +58,8 @@ namespace ZZ
 
             playerControls.PlayerMovement.Movement.performed -= OnMovementChanged;
             playerControls.PlayerMovement.Movement.canceled -= OnMovementChanged;
+            playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
+            playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             DisableMovementInput();
         }
@@ -62,7 +69,14 @@ namespace ZZ
             if (IsMovementInputEnabled)
             {
                 HandleMovementInput();
+                HandleCameraInput();
             }
+        }
+
+        private void HandleCameraInput()
+        {
+            CameraVerticalInput = CameraInput.y;
+            CameraHorizontalInput = CameraInput.x;
         }
 
         private void HandleMovementInput()
@@ -102,6 +116,11 @@ namespace ZZ
             MovementInput = context.ReadValue<Vector2>();
         }
 
+        private void OnCameraMovementChanged(InputAction.CallbackContext context)
+        {
+            CameraInput = context.ReadValue<Vector2>();
+        }
+
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
         {
             RefreshMovementInput(activeScene);
@@ -134,6 +153,9 @@ namespace ZZ
             VerticalInput = 0f;
             HorizontalInput = 0f;
             MoveAmount = 0f;
+            CameraInput = Vector2.zero;
+            CameraVerticalInput = 0f;
+            CameraHorizontalInput = 0f;
             IsMovementInputEnabled = false;
             playerControls?.Disable();
         }
