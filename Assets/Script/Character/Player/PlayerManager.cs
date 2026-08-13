@@ -17,20 +17,24 @@ namespace ZZ
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            BindLocalCamera();
+        }
 
-            if (IsOwner && PlayerCamera.Instance != null)
-            {
-                PlayerCamera.Instance.BindPlayer(this);
-            }
+        public override void OnGainedOwnership()
+        {
+            base.OnGainedOwnership();
+            BindLocalCamera();
+        }
+
+        public override void OnLostOwnership()
+        {
+            PlayerCamera.Instance?.ClearPlayer(this);
+            base.OnLostOwnership();
         }
 
         public override void OnNetworkDespawn()
         {
-            if (IsOwner && PlayerCamera.Instance != null)
-            {
-                PlayerCamera.Instance.ClearPlayer(this);
-            }
-
+            PlayerCamera.Instance?.ClearPlayer(this);
             base.OnNetworkDespawn();
         }
 
@@ -55,7 +59,18 @@ namespace ZZ
                 return;
             }
 
+            BindLocalCamera();
             PlayerCamera.Instance?.HandleAllCameraActions();
+        }
+
+        private void BindLocalCamera()
+        {
+            if (!IsOwner)
+            {
+                return;
+            }
+
+            PlayerCamera.Instance?.BindPlayer(this);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace ZZ.Editor
         private const string PlayerInputManagerPrefabPath = "Assets/Data/Prefabs/Word Managers/Player Input Manager.prefab";
         private const string MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
         private const string WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
+
         [MenuItem("Tools/Elden/Generate Player Controls Class")]
         public static void GeneratePlayerControlsClass()
         {
@@ -45,6 +46,15 @@ namespace ZZ.Editor
             ConfigureWorldCameraScene();
             AssetDatabase.SaveAssets();
             Debug.Log("Configured player input and locomotion successfully.");
+        }
+
+        [MenuItem("Tools/Elden/Configure Camera System")]
+        public static void ConfigureCameraSystem()
+        {
+            ConfigureCameraRig(MainMenuScenePath);
+            ConfigureCameraRig(WorldScenePath);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[CameraSystemSetup] Configured Player Camera rigs in Main Menu and World scenes.");
         }
 
         private static void ConfigurePlayerPrefab()
@@ -139,41 +149,81 @@ namespace ZZ.Editor
 
         private static void ConfigureWorldCameraScene()
         {
-            Scene scene = SceneManager.GetSceneByPath(WorldScenePath);
+            ConfigureCameraRig(WorldScenePath);
+        }
+
+        private static void ConfigureCameraRig(string scenePath)
+        {
+            Scene scene = SceneManager.GetSceneByPath(scenePath);
             bool sceneWasLoaded = scene.IsValid() && scene.isLoaded;
 
             if (!sceneWasLoaded)
             {
-                scene = EditorSceneManager.OpenScene(WorldScenePath, OpenSceneMode.Additive);
+                scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
             }
 
             try
             {
                 PlayerCamera playerCamera = null;
+                Camera mainCamera = null;
+
                 foreach (GameObject rootObject in scene.GetRootGameObjects())
                 {
-                    playerCamera = rootObject.GetComponentInChildren<PlayerCamera>(true);
-                    if (playerCamera != null)
+                    playerCamera ??= rootObject.GetComponentInChildren<PlayerCamera>(true);
+
+                    Camera candidate = rootObject.GetComponentInChildren<Camera>(true);
+                    if (candidate != null && (mainCamera == null || candidate.CompareTag("MainCamera")))
                     {
-                        break;
+                        mainCamera = candidate;
                     }
                 }
 
+                if (mainCamera == null)
+                {
+                    Debug.LogError($"[CameraSystemSetup] Could not find a Camera in {scenePath}.");
+                    return;
+                }
+
+                GameObject cameraRoot;
                 if (playerCamera == null)
                 {
-                    Debug.LogError($"Could not find PlayerCamera in {WorldScenePath}.");
-                    return;
+                    cameraRoot = new GameObject("Player Camera");
+                    SceneManager.MoveGameObjectToScene(cameraRoot, scene);
+                    playerCamera = cameraRoot.AddComponent<PlayerCamera>();
                 }
-
-                Camera cameraObject = playerCamera.GetComponentInChildren<Camera>(true);
-                if (cameraObject == null)
+                else
                 {
-                    Debug.LogError($"Could not find a child Camera under PlayerCamera in {WorldScenePath}.");
-                    return;
+                    cameraRoot = playerCamera.gameObject;
+                    cameraRoot.name = "Player Camera";
                 }
 
-                playerCamera.SetCameraObject(cameraObject);
+                Transform cameraPivot = cameraRoot.transform.Find("Camera Pivot");
+                if (cameraPivot == null)
+                {
+                    GameObject pivotObject = new GameObject("Camera Pivot");
+                    cameraPivot = pivotObject.transform;
+                }
+
+                cameraRoot.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+                cameraRoot.transform.localScale = Vector3.one;
+
+                cameraPivot.SetParent(cameraRoot.transform, false);
+                cameraPivot.localPosition = new Vector3(0f, 1.65f, 0f);
+                cameraPivot.localRotation = Quaternion.identity;
+                cameraPivot.localScale = Vector3.one;
+
+                mainCamera.gameObject.name = "Main Camera";
+                mainCamera.tag = "MainCamera";
+                mainCamera.transform.SetParent(cameraPivot, false);
+                mainCamera.transform.localPosition = new Vector3(0f, 0f, -2.5f);
+                mainCamera.transform.localRotation = Quaternion.identity;
+                mainCamera.transform.localScale = Vector3.one;
+
+                playerCamera.ConfigureRig(cameraPivot, mainCamera);
                 EditorUtility.SetDirty(playerCamera);
+                EditorUtility.SetDirty(cameraRoot);
+                EditorUtility.SetDirty(cameraPivot);
+                EditorUtility.SetDirty(mainCamera);
                 EditorSceneManager.MarkSceneDirty(scene);
                 EditorSceneManager.SaveScene(scene);
             }

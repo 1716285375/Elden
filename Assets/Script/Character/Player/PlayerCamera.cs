@@ -25,7 +25,7 @@ namespace ZZ
         [SerializeField, Min(0f)] private float cameraCollisionSmoothSpeed = 10f;
         [SerializeField] private LayerMask collideWithLayers = 1;
 
-        private PlayerManager player;
+        [SerializeField] private PlayerManager player;
         private PlayerInputManager playerInputManager;
         private Vector3 cameraVelocity;
         private Vector3 cameraObjectPosition;
@@ -39,9 +39,10 @@ namespace ZZ
         public Vector3 CameraRight => cameraObject != null ? cameraObject.transform.right : transform.right;
 
 #if UNITY_EDITOR
-        public void SetCameraObject(Camera value)
+        public void ConfigureRig(Transform pivot, Camera mainCamera)
         {
-            cameraObject = value;
+            cameraPivotTransform = pivot;
+            cameraObject = mainCamera;
         }
 #endif
 
@@ -49,6 +50,7 @@ namespace ZZ
         {
             if (instance != null && instance != this)
             {
+                gameObject.SetActive(false);
                 Destroy(gameObject);
                 return;
             }
@@ -75,7 +77,14 @@ namespace ZZ
 
         public void BindPlayer(PlayerManager localPlayer)
         {
+            if (localPlayer == null || player == localPlayer)
+            {
+                return;
+            }
+
             player = localPlayer;
+            cameraVelocity = Vector3.zero;
+            transform.position = localPlayer.transform.position;
         }
 
         public void ClearPlayer(PlayerManager localPlayer)
