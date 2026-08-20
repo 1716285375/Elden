@@ -75,6 +75,32 @@ namespace ZZ
             }
         }
 
+        /// <summary>
+        /// Validates a dodge request and selects a roll or backstep from the current movement input.
+        /// </summary>
+        public void AttemptToPerformDodge()
+        {
+            if (m_player == null || !m_player.IsOwner || m_player.IsPerformingAction)
+            {
+                return;
+            }
+
+            m_playerInputManager ??= PlayerInputManager.Instance;
+            m_playerCamera ??= PlayerCamera.Instance;
+            if (m_playerInputManager == null)
+            {
+                return;
+            }
+
+            if (m_playerInputManager.MoveAmount > 0f)
+            {
+                PerformRoll();
+                return;
+            }
+
+            PerformBackstep();
+        }
+
         private void HandleOwnerMovement()
         {
             m_playerInputManager ??= PlayerInputManager.Instance;
@@ -127,6 +153,11 @@ namespace ZZ
 
         private void HandleGroundedMovement()
         {
+            if (!m_player.CanMove)
+            {
+                return;
+            }
+
             if (m_playerInputManager == null || m_playerCamera == null || m_playerCamera.CameraObject == null)
             {
                 return;
@@ -151,6 +182,11 @@ namespace ZZ
 
         private void HandleRotation()
         {
+            if (!m_player.CanRotate)
+            {
+                return;
+            }
+
             if (m_playerInputManager == null || m_playerCamera == null || m_playerCamera.CameraObject == null)
             {
                 return;
@@ -182,6 +218,51 @@ namespace ZZ
             right.Normalize();
 
             return forward * m_playerInputManager.VerticalInput + right * m_playerInputManager.HorizontalInput;
+        }
+
+        private void PerformRoll()
+        {
+            if (m_playerCamera == null || m_playerCamera.CameraObject == null)
+            {
+                return;
+            }
+
+            Vector3 rollDirection = GetCameraRelativeDirection();
+            rollDirection.y = 0f;
+            rollDirection.Normalize();
+            if (rollDirection == Vector3.zero)
+            {
+                rollDirection = transform.forward;
+            }
+
+            transform.rotation = Quaternion.LookRotation(rollDirection);
+            PlayDodgeAction(CharacterActionAnimation.RollForward);
+        }
+
+        private void PerformBackstep()
+        {
+            PlayDodgeAction(CharacterActionAnimation.BackStep);
+        }
+
+        private void PlayDodgeAction(CharacterActionAnimation targetAnimation)
+        {
+            const bool k_IsPerformingAction = true;
+            const bool k_ApplyRootMotion = true;
+            const bool k_CanRotate = false;
+            const bool k_CanMove = false;
+
+            m_player.PlayerAnimatorManager?.PlayTargetActionAnimation(
+                targetAnimation,
+                k_IsPerformingAction,
+                k_ApplyRootMotion,
+                k_CanRotate,
+                k_CanMove);
+            m_player.CharacterNetworkManager?.NotifyServerOfActionAnimationServerRpc(
+                targetAnimation,
+                k_IsPerformingAction,
+                k_ApplyRootMotion,
+                k_CanRotate,
+                k_CanMove);
         }
     }
 }

@@ -5,7 +5,6 @@ namespace ZZ
 {
     [RequireComponent(typeof(PlayerLocomotionManager))]
     [RequireComponent(typeof(PlayerNetworkManager))]
-    [RequireComponent(typeof(PlayerAnimatorManager))]
     public class PlayerManager : CharacterManager
     {
         private const string k_GameplaySceneName = "Scene_World_01";
@@ -31,7 +30,7 @@ namespace ZZ
         protected override void Awake()
         {
             base.Awake();
-            m_playerAnimatorManager = GetComponent<PlayerAnimatorManager>();
+            m_playerAnimatorManager = GetComponentInChildren<PlayerAnimatorManager>(true);
             LocomotionManager = GetComponent<PlayerLocomotionManager>();
         }
 
@@ -39,24 +38,26 @@ namespace ZZ
         {
             base.OnNetworkSpawn();
             TryPlaceAtSpawnPoint(SceneManager.GetActiveScene());
-            BindLocalCamera();
+            BindLocalPlayerSystems();
         }
 
         public override void OnGainedOwnership()
         {
             base.OnGainedOwnership();
-            BindLocalCamera();
+            BindLocalPlayerSystems();
         }
 
         public override void OnLostOwnership()
         {
             PlayerCamera.Instance?.ClearPlayer(this);
+            PlayerInputManager.Instance?.ClearPlayer(this);
             base.OnLostOwnership();
         }
 
         public override void OnNetworkDespawn()
         {
             PlayerCamera.Instance?.ClearPlayer(this);
+            PlayerInputManager.Instance?.ClearPlayer(this);
             base.OnNetworkDespawn();
         }
 
@@ -67,11 +68,11 @@ namespace ZZ
                 return;
             }
 
-            BindLocalCamera();
+            BindLocalPlayerSystems();
             PlayerCamera.Instance?.HandleAllCameraActions();
         }
 
-        private void BindLocalCamera()
+        private void BindLocalPlayerSystems()
         {
             if (!IsOwner)
             {
@@ -79,6 +80,7 @@ namespace ZZ
             }
 
             PlayerCamera.Instance?.BindPlayer(this);
+            PlayerInputManager.Instance?.BindPlayer(this);
         }
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode loadMode)

@@ -37,7 +37,13 @@ namespace ZZ
         [FormerlySerializedAs("networkRotationSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkRotationSmoothTime = 0.1f;
 
+        private CharacterAnimatorManager m_characterAnimatorManager;
         private Vector3 m_networkPositionVelocity;
+
+        private void Awake()
+        {
+            m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -76,6 +82,57 @@ namespace ZZ
                     NetworkRotation.Value,
                     rotationInterpolation);
             }
+        }
+
+        /// <summary>
+        /// Sends an owner-predicted action animation to the server for replication to remote clients.
+        /// </summary>
+        [ServerRpc]
+        public void NotifyServerOfActionAnimationServerRpc(
+            CharacterActionAnimation targetAnimation,
+            bool isPerformingAction,
+            bool shouldApplyRootMotion,
+            bool canRotate,
+            bool canMove,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (!CharacterAnimatorManager.IsSupportedActionAnimation(targetAnimation))
+            {
+                Debug.LogWarning($"Rejected unsupported character action {targetAnimation}.", this);
+                return;
+            }
+
+            PlayActionAnimationForAllClientsClientRpc(
+                targetAnimation,
+                isPerformingAction,
+                shouldApplyRootMotion,
+                canRotate,
+                canMove,
+                serverRpcParams.Receive.SenderClientId);
+        }
+
+        [ClientRpc]
+        private void PlayActionAnimationForAllClientsClientRpc(
+            CharacterActionAnimation targetAnimation,
+            bool isPerformingAction,
+            bool shouldApplyRootMotion,
+            bool canRotate,
+            bool canMove,
+            ulong senderClientId)
+        {
+            if (NetworkManager.Singleton != null &&
+                senderClientId == NetworkManager.Singleton.LocalClientId)
+            {
+                return;
+            }
+
+            m_characterAnimatorManager ??= GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterAnimatorManager?.PlayTargetActionAnimation(
+                targetAnimation,
+                isPerformingAction,
+                shouldApplyRootMotion,
+                canRotate,
+                canMove);
         }
     }
 }
