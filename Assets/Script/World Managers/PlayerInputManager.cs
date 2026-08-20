@@ -20,6 +20,8 @@ namespace ZZ
         public bool IsMovementInputEnabled { get; private set; }
 
         private PlayerControls m_playerControls;
+        private PlayerManager m_player;
+        private bool m_hasDodgeInput;
 
         private void Awake()
         {
@@ -43,6 +45,7 @@ namespace ZZ
             m_playerControls ??= new PlayerControls();
             m_playerControls.PlayerMovement.Movement.performed += OnMovementChanged;
             m_playerControls.PlayerMovement.Movement.canceled += OnMovementChanged;
+            m_playerControls.PlayerMovement.Dodge.performed += OnDodgePerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
@@ -58,6 +61,7 @@ namespace ZZ
 
             m_playerControls.PlayerMovement.Movement.performed -= OnMovementChanged;
             m_playerControls.PlayerMovement.Movement.canceled -= OnMovementChanged;
+            m_playerControls.PlayerMovement.Dodge.performed -= OnDodgePerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
@@ -68,30 +72,7 @@ namespace ZZ
         {
             if (IsMovementInputEnabled)
             {
-                HandleMovementInput();
-                HandleCameraInput();
-            }
-        }
-
-        private void HandleCameraInput()
-        {
-            CameraVerticalInput = CameraInput.y;
-            CameraHorizontalInput = CameraInput.x;
-        }
-
-        private void HandleMovementInput()
-        {
-            VerticalInput = MovementInput.y;
-            HorizontalInput = MovementInput.x;
-
-            MoveAmount = Mathf.Clamp01(Mathf.Abs(VerticalInput) + Mathf.Abs(HorizontalInput));
-            if (MoveAmount > 0f && MoveAmount <= 0.5f)
-            {
-                MoveAmount = 0.5f;
-            }
-            else if (MoveAmount > 0.5f)
-            {
-                MoveAmount = 1f;
+                HandleAllInputs();
             }
         }
 
@@ -111,6 +92,101 @@ namespace ZZ
             RefreshMovementInput(SceneManager.GetActiveScene());
         }
 
+        private void OnDestroy()
+        {
+            if (s_instance != this)
+            {
+                return;
+            }
+
+            s_instance = null;
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            m_playerControls?.Dispose();
+        }
+
+        /// <summary>
+        /// Associates input intentions with the locally owned player.
+        /// </summary>
+        public void BindPlayer(PlayerManager localPlayer)
+        {
+            if (localPlayer == null || !localPlayer.IsOwner)
+            {
+                return;
+            }
+
+            m_player = localPlayer;
+        }
+
+        /// <summary>
+        /// Clears the locally owned player without disturbing a newer ownership binding.
+        /// </summary>
+        public void ClearPlayer(PlayerManager localPlayer)
+        {
+            if (m_player == localPlayer)
+            {
+                m_player = null;
+            }
+        }
+
+        public void EnablePlayerControls()
+        {
+            m_playerControls?.Enable();
+        }
+
+        public void DisablePlayerControls()
+        {
+            MovementInput = Vector2.zero;
+            VerticalInput = 0f;
+            HorizontalInput = 0f;
+            MoveAmount = 0f;
+            CameraInput = Vector2.zero;
+            CameraVerticalInput = 0f;
+            CameraHorizontalInput = 0f;
+            m_hasDodgeInput = false;
+            IsMovementInputEnabled = false;
+            m_playerControls?.Disable();
+        }
+
+        private void HandleAllInputs()
+        {
+            HandleCameraMovementInput();
+            HandlePlayerMovementInput();
+            HandleDodgeInput();
+        }
+
+        private void HandleCameraMovementInput()
+        {
+            CameraVerticalInput = CameraInput.y;
+            CameraHorizontalInput = CameraInput.x;
+        }
+
+        private void HandlePlayerMovementInput()
+        {
+            VerticalInput = MovementInput.y;
+            HorizontalInput = MovementInput.x;
+
+            MoveAmount = Mathf.Clamp01(Mathf.Abs(VerticalInput) + Mathf.Abs(HorizontalInput));
+            if (MoveAmount > 0f && MoveAmount <= 0.5f)
+            {
+                MoveAmount = 0.5f;
+            }
+            else if (MoveAmount > 0.5f)
+            {
+                MoveAmount = 1f;
+            }
+        }
+
+        private void HandleDodgeInput()
+        {
+            if (!m_hasDodgeInput)
+            {
+                return;
+            }
+
+            m_hasDodgeInput = false;
+            m_player?.LocomotionManager?.AttemptToPerformDodge();
+        }
+
         private void OnMovementChanged(InputAction.CallbackContext context)
         {
             MovementInput = context.ReadValue<Vector2>();
@@ -119,6 +195,11 @@ namespace ZZ
         private void OnCameraMovementChanged(InputAction.CallbackContext context)
         {
             CameraInput = context.ReadValue<Vector2>();
+        }
+
+        private void OnDodgePerformed(InputAction.CallbackContext context)
+        {
+            m_hasDodgeInput = true;
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
@@ -140,36 +221,6 @@ namespace ZZ
             }
 
             DisablePlayerControls();
-        }
-
-        public void EnablePlayerControls()
-        {
-            m_playerControls?.Enable();
-        }
-
-        public void DisablePlayerControls()
-        {
-            MovementInput = Vector2.zero;
-            VerticalInput = 0f;
-            HorizontalInput = 0f;
-            MoveAmount = 0f;
-            CameraInput = Vector2.zero;
-            CameraVerticalInput = 0f;
-            CameraHorizontalInput = 0f;
-            IsMovementInputEnabled = false;
-            m_playerControls?.Disable();
-        }
-
-        private void OnDestroy()
-        {
-            if (s_instance != this)
-            {
-                return;
-            }
-
-            s_instance = null;
-            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-            m_playerControls?.Dispose();
         }
     }
 }

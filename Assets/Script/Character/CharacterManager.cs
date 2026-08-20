@@ -11,7 +11,17 @@ namespace ZZ
         [SerializeField] private CharacterAnimatorManager m_characterAnimatorManager;
         [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
 
+        private bool m_isPerformingAction;
+        private bool m_canMove = true;
+        private bool m_canRotate = true;
+        private bool m_shouldApplyRootMotion;
+
+        public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
+        public bool IsPerformingAction => m_isPerformingAction;
+        public bool CanMove => m_canMove;
+        public bool CanRotate => m_canRotate;
+        public bool ShouldApplyRootMotion => m_shouldApplyRootMotion;
 
         protected virtual void Awake()
         {
@@ -21,9 +31,35 @@ namespace ZZ
                 m_animator = GetComponentInChildren<Animator>(true);
             }
 
-            m_characterAnimatorManager = GetComponent<CharacterAnimatorManager>();
+            m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
             m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
             m_characterAnimatorManager?.Initialize(m_animator);
+        }
+
+        /// <summary>
+        /// Applies the movement restrictions and root-motion policy for the current character action.
+        /// </summary>
+        public void SetActionState(
+            bool isPerformingAction,
+            bool shouldApplyRootMotion,
+            bool canRotate,
+            bool canMove)
+        {
+            m_isPerformingAction = isPerformingAction;
+            m_shouldApplyRootMotion = shouldApplyRootMotion;
+            m_canRotate = canRotate;
+            m_canMove = canMove;
+        }
+
+        /// <summary>
+        /// Restores the default action state after an action animation returns to Empty.
+        /// </summary>
+        public void ResetActionFlags()
+        {
+            m_isPerformingAction = false;
+            m_canMove = true;
+            m_canRotate = true;
+            m_shouldApplyRootMotion = false;
         }
     }
 }

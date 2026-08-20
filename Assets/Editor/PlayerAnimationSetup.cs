@@ -269,8 +269,6 @@ namespace ZZ.Editor
 
             try
             {
-                GetOrAddComponent<PlayerAnimatorManager>(playerRoot);
-
                 Animator animator = playerRoot.GetComponentInChildren<Animator>(true);
                 if (animator == null)
                 {
@@ -303,6 +301,18 @@ namespace ZZ.Editor
                 animator.avatar = playerAvatar;
                 animator.runtimeAnimatorController = controller;
                 animator.applyRootMotion = false;
+                RemoveComponentsOnGameObject<PlayerAnimatorManager>(playerRoot);
+                PlayerAnimatorManager animatorManager =
+                    GetOrAddComponent<PlayerAnimatorManager>(animator.gameObject);
+                PlayerManager playerManager = playerRoot.GetComponent<PlayerManager>();
+                if (playerManager != null)
+                {
+                    SerializedObject serializedPlayerManager = new SerializedObject(playerManager);
+                    SerializedProperty animatorManagerProperty =
+                        serializedPlayerManager.FindProperty("m_playerAnimatorManager");
+                    animatorManagerProperty.objectReferenceValue = animatorManager;
+                    serializedPlayerManager.ApplyModifiedPropertiesWithoutUndo();
+                }
                 DisableLegacyRenderers(playerRoot);
                 EditorUtility.SetDirty(animator);
 
@@ -395,12 +405,6 @@ namespace ZZ.Editor
 
             try
             {
-                if (playerRoot.GetComponent<PlayerAnimatorManager>() == null)
-                {
-                    throw new InvalidOperationException(
-                        "The Player prefab is missing PlayerAnimatorManager.");
-                }
-
                 PlayerNetworkManager networkManager =
                     playerRoot.GetComponent<PlayerNetworkManager>();
                 if (networkManager == null)
@@ -419,6 +423,14 @@ namespace ZZ.Editor
                 {
                     throw new InvalidOperationException(
                         "The Player prefab needs an Animator with a valid Humanoid Avatar.");
+                }
+
+                PlayerAnimatorManager animatorManager =
+                    animator.GetComponent<PlayerAnimatorManager>();
+                if (animatorManager == null)
+                {
+                    throw new InvalidOperationException(
+                        "The Player Animator is missing PlayerAnimatorManager.");
                 }
 
                 Animator[] animators = playerRoot.GetComponentsInChildren<Animator>(true);
@@ -596,6 +608,14 @@ namespace ZZ.Editor
         {
             T component = gameObject.GetComponent<T>();
             return component != null ? component : gameObject.AddComponent<T>();
+        }
+
+        private static void RemoveComponentsOnGameObject<T>(GameObject gameObject) where T : Component
+        {
+            foreach (T component in gameObject.GetComponents<T>())
+            {
+                UnityEngine.Object.DestroyImmediate(component, true);
+            }
         }
     }
 }
