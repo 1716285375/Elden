@@ -1,108 +1,148 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ZZ
 {
     public class PlayerCamera : MonoBehaviour
     {
-        public static PlayerCamera instance;
-        public static PlayerCamera Instance => instance;
+        private static PlayerCamera s_instance;
+        public static PlayerCamera Instance => s_instance;
 
         [Header("References")]
-        [SerializeField] private Transform cameraPivotTransform;
-        [SerializeField] private Camera cameraObject;
+        [FormerlySerializedAs("cameraPivotTransform")]
+        [SerializeField] private Transform m_cameraPivotTransform;
+        [FormerlySerializedAs("cameraObject")]
+        [SerializeField] private Camera m_cameraObject;
 
         [Header("Follow Settings")]
-        [SerializeField, Min(0.001f)] private float cameraSmoothTime = 0.1f;
+        [FormerlySerializedAs("cameraSmoothTime")]
+        [SerializeField, Min(0.001f)] private float m_cameraSmoothTime = 0.1f;
 
         [Header("Rotation Settings")]
-        [SerializeField, Min(0f)] private float leftAndRightRotationSpeed = 220f;
-        [SerializeField, Min(0f)] private float upAndDownRotationSpeed = 220f;
-        [SerializeField] private float minimumPivot = -30f;
-        [SerializeField] private float maximumPivot = 60f;
+        [FormerlySerializedAs("leftAndRightRotationSpeed")]
+        [SerializeField, Min(0f)] private float m_leftAndRightRotationSpeed = 220f;
+        [FormerlySerializedAs("upAndDownRotationSpeed")]
+        [SerializeField, Min(0f)] private float m_upAndDownRotationSpeed = 220f;
+        [FormerlySerializedAs("minimumPivot")]
+        [SerializeField] private float m_minimumPivot = -30f;
+        [FormerlySerializedAs("maximumPivot")]
+        [SerializeField] private float m_maximumPivot = 60f;
 
         [Header("Collision Settings")]
-        [SerializeField, Min(0.01f)] private float cameraCollisionRadius = 0.2f;
-        [SerializeField, Min(0f)] private float cameraCollisionSmoothSpeed = 10f;
-        [SerializeField] private LayerMask collideWithLayers = 1;
+        [FormerlySerializedAs("cameraCollisionRadius")]
+        [SerializeField, Min(0.01f)] private float m_cameraCollisionRadius = 0.2f;
+        [FormerlySerializedAs("cameraCollisionSmoothSpeed")]
+        [SerializeField, Min(0f)] private float m_cameraCollisionSmoothSpeed = 10f;
+        [FormerlySerializedAs("collideWithLayers")]
+        [SerializeField] private LayerMask m_collideWithLayers = 1;
 
-        [SerializeField] private PlayerManager player;
-        private PlayerInputManager playerInputManager;
-        private Vector3 cameraVelocity;
-        private Vector3 cameraObjectPosition;
-        private float leftAndRightLookAngle;
-        private float upAndDownLookAngle;
-        private float cameraZPosition;
-        private float targetCameraZPosition;
+        [FormerlySerializedAs("player")]
+        [SerializeField] private PlayerManager m_player;
+        private PlayerInputManager m_playerInputManager;
+        private Vector3 m_cameraVelocity;
+        private Vector3 m_cameraObjectPosition;
+        private float m_leftAndRightLookAngle;
+        private float m_upAndDownLookAngle;
+        private float m_cameraZPosition;
+        private float m_targetCameraZPosition;
 
-        public Camera CameraObject => cameraObject;
-        public Vector3 CameraForward => cameraObject != null ? cameraObject.transform.forward : transform.forward;
-        public Vector3 CameraRight => cameraObject != null ? cameraObject.transform.right : transform.right;
+        public Camera CameraObject => m_cameraObject;
+        public Vector3 CameraForward => m_cameraObject != null ? m_cameraObject.transform.forward : transform.forward;
+        public Vector3 CameraRight => m_cameraObject != null ? m_cameraObject.transform.right : transform.right;
 
 #if UNITY_EDITOR
         public void ConfigureRig(Transform pivot, Camera mainCamera)
         {
-            cameraPivotTransform = pivot;
-            cameraObject = mainCamera;
+            m_cameraPivotTransform = pivot;
+            m_cameraObject = mainCamera;
         }
 #endif
 
         private void Awake()
         {
-            if (instance != null && instance != this)
+            if (s_instance != null && s_instance != this)
             {
                 gameObject.SetActive(false);
                 Destroy(gameObject);
                 return;
             }
 
-            instance = this;
+            s_instance = this;
             DontDestroyOnLoad(gameObject);
 
-            if (cameraObject == null)
+            if (m_cameraObject == null)
             {
-                cameraObject = GetComponentInChildren<Camera>();
+                m_cameraObject = GetComponentInChildren<Camera>();
             }
 
-            if (cameraPivotTransform == null && cameraObject != null)
+            if (m_cameraPivotTransform == null && m_cameraObject != null)
             {
-                cameraPivotTransform = cameraObject.transform.parent;
+                m_cameraPivotTransform = m_cameraObject.transform.parent;
             }
 
-            if (cameraObject != null)
+            if (m_cameraObject != null)
             {
-                cameraZPosition = cameraObject.transform.localPosition.z;
-                targetCameraZPosition = cameraZPosition;
+                m_cameraZPosition = m_cameraObject.transform.localPosition.z;
+                m_targetCameraZPosition = m_cameraZPosition;
             }
         }
 
         public void BindPlayer(PlayerManager localPlayer)
         {
-            if (localPlayer == null || player == localPlayer)
+            if (localPlayer == null || m_player == localPlayer)
             {
                 return;
             }
 
-            player = localPlayer;
-            cameraVelocity = Vector3.zero;
+            m_player = localPlayer;
+            m_cameraVelocity = Vector3.zero;
             transform.position = localPlayer.transform.position;
+        }
+
+        public void SnapToPlayerAndResetRotation(PlayerManager localPlayer)
+        {
+            if (localPlayer == null)
+            {
+                return;
+            }
+
+            m_player = localPlayer;
+            m_cameraVelocity = Vector3.zero;
+            transform.position = localPlayer.transform.position;
+
+            m_leftAndRightLookAngle = 0f;
+            m_upAndDownLookAngle = 0f;
+            transform.rotation = Quaternion.identity;
+            if (m_cameraPivotTransform != null)
+            {
+                m_cameraPivotTransform.localRotation = Quaternion.identity;
+            }
+
+            if (m_cameraObject != null)
+            {
+                m_cameraObjectPosition = m_cameraObject.transform.localPosition;
+                m_cameraObjectPosition.z = m_cameraZPosition;
+                m_cameraObject.transform.localPosition = m_cameraObjectPosition;
+                m_targetCameraZPosition = m_cameraZPosition;
+            }
         }
 
         public void ClearPlayer(PlayerManager localPlayer)
         {
-            if (player == localPlayer)
+            if (m_player == localPlayer)
             {
-                player = null;
+                m_player = null;
             }
         }
 
         public void HandleAllCameraActions()
         {
-            if (player == null || cameraPivotTransform == null || cameraObject == null)
+            if (m_player == null || m_cameraPivotTransform == null || m_cameraObject == null)
             {
                 return;
             }
 
-            playerInputManager ??= PlayerInputManager.Instance;
+            m_playerInputManager ??= PlayerInputManager.Instance;
 
             FollowPlayer();
             HandleRotations();
@@ -113,64 +153,64 @@ namespace ZZ
         {
             transform.position = Vector3.SmoothDamp(
                 transform.position,
-                player.transform.position,
-                ref cameraVelocity,
-                cameraSmoothTime);
+                m_player.transform.position,
+                ref m_cameraVelocity,
+                m_cameraSmoothTime);
         }
 
         private void HandleRotations()
         {
-            if (playerInputManager == null)
+            if (m_playerInputManager == null)
             {
                 return;
             }
 
-            leftAndRightLookAngle += playerInputManager.CameraHorizontalInput
-                * leftAndRightRotationSpeed
+            m_leftAndRightLookAngle += m_playerInputManager.CameraHorizontalInput
+                * m_leftAndRightRotationSpeed
                 * Time.deltaTime;
-            transform.rotation = Quaternion.Euler(0f, leftAndRightLookAngle, 0f);
+            transform.rotation = Quaternion.Euler(0f, m_leftAndRightLookAngle, 0f);
 
-            upAndDownLookAngle -= playerInputManager.CameraVerticalInput
-                * upAndDownRotationSpeed
+            m_upAndDownLookAngle -= m_playerInputManager.CameraVerticalInput
+                * m_upAndDownRotationSpeed
                 * Time.deltaTime;
-            upAndDownLookAngle = Mathf.Clamp(upAndDownLookAngle, minimumPivot, maximumPivot);
-            cameraPivotTransform.localRotation = Quaternion.Euler(upAndDownLookAngle, 0f, 0f);
+            m_upAndDownLookAngle = Mathf.Clamp(m_upAndDownLookAngle, m_minimumPivot, m_maximumPivot);
+            m_cameraPivotTransform.localRotation = Quaternion.Euler(m_upAndDownLookAngle, 0f, 0f);
         }
 
         private void HandleCollisions()
         {
-            targetCameraZPosition = cameraZPosition;
+            m_targetCameraZPosition = m_cameraZPosition;
 
-            Vector3 direction = cameraObject.transform.position - cameraPivotTransform.position;
+            Vector3 direction = m_cameraObject.transform.position - m_cameraPivotTransform.position;
             direction.Normalize();
 
-            float defaultCameraDistance = Mathf.Abs(cameraZPosition);
+            float defaultCameraDistance = Mathf.Abs(m_cameraZPosition);
             if (direction.sqrMagnitude > 0f && Physics.SphereCast(
-                    cameraPivotTransform.position,
-                    cameraCollisionRadius,
+                    m_cameraPivotTransform.position,
+                    m_cameraCollisionRadius,
                     direction,
                     out RaycastHit hit,
                     defaultCameraDistance,
-                    collideWithLayers,
+                    m_collideWithLayers,
                     QueryTriggerInteraction.Ignore))
             {
-                float targetDistance = Mathf.Max(hit.distance - cameraCollisionRadius, 0f);
-                targetCameraZPosition = -targetDistance;
+                float targetDistance = Mathf.Max(hit.distance - m_cameraCollisionRadius, 0f);
+                m_targetCameraZPosition = -targetDistance;
             }
 
-            cameraObjectPosition = cameraObject.transform.localPosition;
-            cameraObjectPosition.z = Mathf.Lerp(
-                cameraObjectPosition.z,
-                targetCameraZPosition,
-                cameraCollisionSmoothSpeed * Time.deltaTime);
-            cameraObject.transform.localPosition = cameraObjectPosition;
+            m_cameraObjectPosition = m_cameraObject.transform.localPosition;
+            m_cameraObjectPosition.z = Mathf.Lerp(
+                m_cameraObjectPosition.z,
+                m_targetCameraZPosition,
+                m_cameraCollisionSmoothSpeed * Time.deltaTime);
+            m_cameraObject.transform.localPosition = m_cameraObjectPosition;
         }
 
         private void OnDestroy()
         {
-            if (instance == this)
+            if (s_instance == this)
             {
-                instance = null;
+                s_instance = null;
             }
         }
     }

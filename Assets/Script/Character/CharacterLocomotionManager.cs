@@ -5,11 +5,11 @@ namespace ZZ
     [RequireComponent(typeof(CharacterController))]
     public class CharacterLocomotionManager : MonoBehaviour
     {
-        [HideInInspector] public CharacterController characterController;
+        protected CharacterController m_characterController;
 
         protected virtual void Awake()
         {
-            characterController = GetComponent<CharacterController>();
+            m_characterController = GetComponent<CharacterController>();
         }
     }
 }

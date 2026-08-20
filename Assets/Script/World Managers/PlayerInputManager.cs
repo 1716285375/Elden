@@ -7,8 +7,8 @@ namespace ZZ
     [DefaultExecutionOrder(-10000)]
     public class PlayerInputManager : MonoBehaviour
     {
-        public static PlayerInputManager instance;
-        public static PlayerInputManager Instance => instance;
+        private static PlayerInputManager s_instance;
+        public static PlayerInputManager Instance => s_instance;
 
         public Vector2 MovementInput { get; private set; }
         public float VerticalInput { get; private set; }
@@ -19,49 +19,49 @@ namespace ZZ
         public float CameraHorizontalInput { get; private set; }
         public bool IsMovementInputEnabled { get; private set; }
 
-        private PlayerControls playerControls;
+        private PlayerControls m_playerControls;
 
         private void Awake()
         {
-            if (instance != null && instance != this)
+            if (s_instance != null && s_instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            instance = this;
+            s_instance = this;
             DontDestroyOnLoad(gameObject);
         }
 
         private void OnEnable()
         {
-            if (instance != this)
+            if (s_instance != this)
             {
                 return;
             }
 
-            playerControls ??= new PlayerControls();
-            playerControls.PlayerMovement.Movement.performed += OnMovementChanged;
-            playerControls.PlayerMovement.Movement.canceled += OnMovementChanged;
-            playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
-            playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
+            m_playerControls ??= new PlayerControls();
+            m_playerControls.PlayerMovement.Movement.performed += OnMovementChanged;
+            m_playerControls.PlayerMovement.Movement.canceled += OnMovementChanged;
+            m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             RefreshMovementInput(SceneManager.GetActiveScene());
         }
 
         private void OnDisable()
         {
-            if (instance != this || playerControls == null)
+            if (s_instance != this || m_playerControls == null)
             {
                 return;
             }
 
-            playerControls.PlayerMovement.Movement.performed -= OnMovementChanged;
-            playerControls.PlayerMovement.Movement.canceled -= OnMovementChanged;
-            playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
-            playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
+            m_playerControls.PlayerMovement.Movement.performed -= OnMovementChanged;
+            m_playerControls.PlayerMovement.Movement.canceled -= OnMovementChanged;
+            m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-            DisableMovementInput();
+            DisablePlayerControls();
         }
 
         private void Update()
@@ -99,11 +99,11 @@ namespace ZZ
         {
             if (!focus)
             {
-                DisableMovementInput();
+                DisablePlayerControls();
                 return;
             }
 
-            if (instance != this || playerControls == null)
+            if (s_instance != this || m_playerControls == null)
             {
                 return;
             }
@@ -139,12 +139,12 @@ namespace ZZ
                 return;
             }
 
-            DisableMovementInput();
+            DisablePlayerControls();
         }
 
         public void EnablePlayerControls()
         {
-            playerControls?.Enable();
+            m_playerControls?.Enable();
         }
 
         public void DisablePlayerControls()
@@ -157,24 +157,19 @@ namespace ZZ
             CameraVerticalInput = 0f;
             CameraHorizontalInput = 0f;
             IsMovementInputEnabled = false;
-            playerControls?.Disable();
-        }
-
-        private void DisableMovementInput()
-        {
-            DisablePlayerControls();
+            m_playerControls?.Disable();
         }
 
         private void OnDestroy()
         {
-            if (instance != this)
+            if (s_instance != this)
             {
                 return;
             }
 
-            instance = null;
+            s_instance = null;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-            playerControls?.Dispose();
+            m_playerControls?.Dispose();
         }
     }
 }

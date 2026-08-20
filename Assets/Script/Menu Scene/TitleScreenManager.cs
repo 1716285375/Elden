@@ -27,13 +27,22 @@ namespace ZZ
 
         public void StartNewGame()
         {
-            if (WorldSaveGameManager.instance == null)
+            NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager == null || !networkManager.IsListening || !networkManager.IsServer)
+            {
+                Debug.LogError(
+                    "Cannot start a new game because the network host is not running. " +
+                    "Resolve the transport error and try again.");
+                return;
+            }
+
+            if (WorldSaveGameManager.Instance == null)
             {
                 Debug.LogError("WorldSaveGameManager is not available.");
                 return;
             }
 
-            StartCoroutine(WorldSaveGameManager.instance.LoadNewGame());
+            StartCoroutine(WorldSaveGameManager.Instance.LoadNewGame());
         }
     }
 }

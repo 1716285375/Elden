@@ -1,38 +1,133 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ZZ
 {
     public class PlayerLocomotionManager : CharacterLocomotionManager
     {
         [Header("Movement Speeds")]
-        [SerializeField, Min(0f)] private float walkingSpeed = 2f;
-        [SerializeField, Min(0f)] private float runningSpeed = 5f;
-        [SerializeField, Min(0f)] private float rotationSpeed = 15f;
-        [SerializeField] private float gravity = -20f;
+        [FormerlySerializedAs("walkingSpeed")]
+        [SerializeField, Min(0f)] private float m_walkingSpeed = 2f;
+        [FormerlySerializedAs("runningSpeed")]
+        [SerializeField, Min(0f)] private float m_runningSpeed = 5f;
+        [FormerlySerializedAs("rotationSpeed")]
+        [SerializeField, Min(0f)] private float m_rotationSpeed = 15f;
+        [FormerlySerializedAs("gravity")]
+        [SerializeField] private float m_gravity = -20f;
 
-        private PlayerManager player;
-        private PlayerInputManager playerInputManager;
-        private PlayerCamera playerCamera;
-        private float verticalVelocity;
+        private PlayerManager m_player;
+        private PlayerInputManager m_playerInputManager;
+        private PlayerCamera m_playerCamera;
+        private float m_verticalVelocity;
 
         protected override void Awake()
         {
             base.Awake();
-            player = GetComponent<PlayerManager>();
+            m_player = GetComponent<PlayerManager>();
+        }
+
+        private void Update()
+        {
+            HandleAllMovement();
         }
 
         public void HandleAllMovement()
         {
-            playerInputManager ??= PlayerInputManager.Instance;
-            playerCamera ??= PlayerCamera.Instance;
+            if (m_player == null || !m_player.IsSpawned)
+            {
+                return;
+            }
+
+            if (!m_player.IsInGameplayScene)
+            {
+                m_verticalVelocity = 0f;
+                if (m_player.IsOwner)
+                {
+                    PublishMovementState(0f, 0f, 0f);
+                    m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(0f, 0f);
+                }
+                return;
+            }
+
+            if (m_player.IsOwner)
+            {
+                HandleOwnerMovement();
+                return;
+            }
+
+            HandleRemoteMovementAnimation();
+        }
+
+        public void WarpTo(Vector3 position, Quaternion rotation)
+        {
+            m_verticalVelocity = 0f;
+            bool controllerWasEnabled = m_characterController != null && m_characterController.enabled;
+            if (controllerWasEnabled)
+            {
+                m_characterController.enabled = false;
+            }
+
+            transform.SetPositionAndRotation(position, rotation);
+
+            if (controllerWasEnabled)
+            {
+                m_characterController.enabled = true;
+            }
+        }
+
+        private void HandleOwnerMovement()
+        {
+            m_playerInputManager ??= PlayerInputManager.Instance;
+            m_playerCamera ??= PlayerCamera.Instance;
+
+            if (m_playerInputManager == null)
+            {
+                PublishMovementState(0f, 0f, 0f);
+                m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(0f, 0f);
+                return;
+            }
 
             HandleGroundedMovement();
             HandleRotation();
+
+            PublishMovementState(
+                m_playerInputManager.HorizontalInput,
+                m_playerInputManager.VerticalInput,
+                m_playerInputManager.MoveAmount);
+            m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(
+                0f,
+                m_playerInputManager.MoveAmount);
+        }
+
+        private void HandleRemoteMovementAnimation()
+        {
+            CharacterNetworkManager networkManager = m_player.CharacterNetworkManager;
+            if (networkManager == null)
+            {
+                return;
+            }
+
+            m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(
+                0f,
+                networkManager.MoveAmount.Value);
+        }
+
+        private void PublishMovementState(float horizontal, float vertical, float amount)
+        {
+            CharacterNetworkManager networkManager = m_player.CharacterNetworkManager;
+            if (networkManager == null)
+            {
+                return;
+            }
+
+            networkManager.HorizontalMovement.Value = horizontal;
+            networkManager.VerticalMovement.Value = vertical;
+            networkManager.MoveAmount.Value = amount;
         }
 
         private void HandleGroundedMovement()
         {
-            if (playerInputManager == null || playerCamera == null || playerCamera.CameraObject == null)
+            if (m_playerInputManager == null || m_playerCamera == null || m_playerCamera.CameraObject == null)
             {
                 return;
             }
@@ -41,22 +136,22 @@ namespace ZZ
             moveDirection.y = 0f;
             moveDirection.Normalize();
 
-            float movementSpeed = playerInputManager.MoveAmount > 0.5f ? runningSpeed : walkingSpeed;
+            float movementSpeed = m_playerInputManager.MoveAmount > 0.5f ? m_runningSpeed : m_walkingSpeed;
 
-            if (characterController.isGrounded && verticalVelocity < 0f)
+            if (m_characterController.isGrounded && m_verticalVelocity < 0f)
             {
-                verticalVelocity = -2f;
+                m_verticalVelocity = -2f;
             }
 
-            verticalVelocity += gravity * Time.deltaTime;
+            m_verticalVelocity += m_gravity * Time.deltaTime;
             Vector3 velocity = moveDirection * movementSpeed;
-            velocity.y = verticalVelocity;
-            characterController.Move(velocity * Time.deltaTime);
+            velocity.y = m_verticalVelocity;
+            m_characterController.Move(velocity * Time.deltaTime);
         }
 
         private void HandleRotation()
         {
-            if (playerInputManager == null || playerCamera == null || playerCamera.CameraObject == null)
+            if (m_playerInputManager == null || m_playerCamera == null || m_playerCamera.CameraObject == null)
             {
                 return;
             }
@@ -74,19 +169,19 @@ namespace ZZ
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRotation,
-                rotationSpeed * Time.deltaTime);
+                m_rotationSpeed * Time.deltaTime);
         }
 
         private Vector3 GetCameraRelativeDirection()
         {
-            Vector3 forward = playerCamera.CameraForward;
-            Vector3 right = playerCamera.CameraRight;
+            Vector3 forward = m_playerCamera.CameraForward;
+            Vector3 right = m_playerCamera.CameraRight;
             forward.y = 0f;
             right.y = 0f;
             forward.Normalize();
             right.Normalize();
 
-            return forward * playerInputManager.VerticalInput + right * playerInputManager.HorizontalInput;
+            return forward * m_playerInputManager.VerticalInput + right * m_playerInputManager.HorizontalInput;
         }
     }
 }

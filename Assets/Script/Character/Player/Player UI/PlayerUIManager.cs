@@ -1,20 +1,22 @@
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ZZ
 {
     public class PlayerUIManager : MonoBehaviour
     {
-        public static PlayerUIManager instance;
-        
-        [Header("NETWORK JOIN")] [SerializeField]
-        private bool startGameAsClient;
+        private static PlayerUIManager s_instance;
+
+        [Header("NETWORK JOIN")]
+        [FormerlySerializedAs("startGameAsClient")]
+        [SerializeField] private bool m_shouldStartAsClient;
 
         private void Awake()
         {
-            if (instance == null)
+            if (s_instance == null)
             {
-                instance = this;
+                s_instance = this;
             }
             else
             {
@@ -26,12 +28,12 @@ namespace ZZ
         {
             DontDestroyOnLoad(gameObject);
         }
-        
+
         private void Update()
         {
-            if (startGameAsClient)
+            if (m_shouldStartAsClient)
             {
-                startGameAsClient = false;
+                m_shouldStartAsClient = false;
                 NetworkManager.Singleton.Shutdown();
 
                 NetworkManager.Singleton.StartClient();

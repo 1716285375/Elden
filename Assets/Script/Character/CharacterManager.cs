@@ -7,22 +7,23 @@ namespace ZZ
     [RequireComponent(typeof(CharacterNetworkManager))]
     public class CharacterManager : NetworkBehaviour
     {
-        [HideInInspector] public CharacterController characterController;
-        [HideInInspector] public CharacterNetworkManager characterNetworkManager;
+        [SerializeField] private Animator m_animator;
+        [SerializeField] private CharacterAnimatorManager m_characterAnimatorManager;
+        [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
+
+        public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
 
         protected virtual void Awake()
         {
-            characterController = GetComponent<CharacterController>();
-            characterNetworkManager = GetComponent<CharacterNetworkManager>();
+            m_animator = GetComponent<Animator>();
+            if (m_animator == null)
+            {
+                m_animator = GetComponentInChildren<Animator>(true);
+            }
 
-        }
-
-        protected virtual void Update()
-        {
-        }
-
-        protected virtual void LateUpdate()
-        {
+            m_characterAnimatorManager = GetComponent<CharacterAnimatorManager>();
+            m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
+            m_characterAnimatorManager?.Initialize(m_animator);
         }
     }
 }
