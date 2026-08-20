@@ -8,33 +8,33 @@ namespace ZZ.Editor
 {
     public static class PlayerMovementSetup
     {
-        private const string InputActionsPath = "Assets/PlayerControls.inputactions";
-        private const string WrapperPath = "Assets/PlayerControls.cs";
-        private const string PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
-        private const string PlayerInputManagerPrefabPath = "Assets/Data/Prefabs/Word Managers/Player Input Manager.prefab";
-        private const string MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
-        private const string WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
+        private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
+        private const string k_WrapperPath = "Assets/PlayerControls.cs";
+        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerInputManagerPrefabPath = "Assets/Data/Prefabs/Word Managers/Player Input Manager.prefab";
+        private const string k_MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
+        private const string k_WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
 
         [MenuItem("Tools/Elden/Generate Player Controls Class")]
         public static void GeneratePlayerControlsClass()
         {
-            AssetImporter importer = AssetImporter.GetAtPath(InputActionsPath);
+            AssetImporter importer = AssetImporter.GetAtPath(k_InputActionsPath);
             if (importer == null)
             {
-                Debug.LogError($"Could not find Input Actions asset at {InputActionsPath}.");
+                Debug.LogError($"Could not find Input Actions asset at {k_InputActionsPath}.");
                 return;
             }
 
             SerializedObject serializedImporter = new SerializedObject(importer);
             SetBool(serializedImporter, "m_GenerateWrapperCode", true);
-            SetString(serializedImporter, "m_WrapperCodePath", WrapperPath);
+            SetString(serializedImporter, "m_WrapperCodePath", k_WrapperPath);
             SetString(serializedImporter, "m_WrapperClassName", "PlayerControls");
             SetString(serializedImporter, "m_WrapperCodeNamespace", "ZZ");
             serializedImporter.ApplyModifiedPropertiesWithoutUndo();
 
             importer.SaveAndReimport();
             AssetDatabase.Refresh();
-            Debug.Log($"Generated {WrapperPath} from {InputActionsPath}.");
+            Debug.Log($"Generated {k_WrapperPath} from {k_InputActionsPath}.");
         }
 
         [MenuItem("Tools/Elden/Configure Player Movement")]
@@ -51,15 +51,15 @@ namespace ZZ.Editor
         [MenuItem("Tools/Elden/Configure Camera System")]
         public static void ConfigureCameraSystem()
         {
-            ConfigureCameraRig(MainMenuScenePath);
-            ConfigureCameraRig(WorldScenePath);
+            ConfigureCameraRig(k_MainMenuScenePath);
+            ConfigureCameraRig(k_WorldScenePath);
             AssetDatabase.SaveAssets();
             Debug.Log("[CameraSystemSetup] Configured Player Camera rigs in Main Menu and World scenes.");
         }
 
         private static void ConfigurePlayerPrefab()
         {
-            GameObject playerRoot = PrefabUtility.LoadPrefabContents(PlayerPrefabPath);
+            GameObject playerRoot = PrefabUtility.LoadPrefabContents(k_PlayerPrefabPath);
 
             try
             {
@@ -81,7 +81,7 @@ namespace ZZ.Editor
                 controller.slopeLimit = 45f;
                 controller.stepOffset = 0.3f;
 
-                PrefabUtility.SaveAsPrefabAsset(playerRoot, PlayerPrefabPath);
+                PrefabUtility.SaveAsPrefabAsset(playerRoot, k_PlayerPrefabPath);
             }
             finally
             {
@@ -91,12 +91,12 @@ namespace ZZ.Editor
 
         private static void ConfigureMainMenuScene()
         {
-            Scene scene = SceneManager.GetSceneByPath(MainMenuScenePath);
+            Scene scene = SceneManager.GetSceneByPath(k_MainMenuScenePath);
             bool sceneWasLoaded = scene.IsValid() && scene.isLoaded;
 
             if (!sceneWasLoaded)
             {
-                scene = EditorSceneManager.OpenScene(MainMenuScenePath, OpenSceneMode.Additive);
+                scene = EditorSceneManager.OpenScene(k_MainMenuScenePath, OpenSceneMode.Additive);
             }
 
             try
@@ -132,14 +132,14 @@ namespace ZZ.Editor
 
         private static void ConfigurePlayerInputManagerPrefab()
         {
-            GameObject inputManagerRoot = PrefabUtility.LoadPrefabContents(PlayerInputManagerPrefabPath);
+            GameObject inputManagerRoot = PrefabUtility.LoadPrefabContents(k_PlayerInputManagerPrefabPath);
 
             try
             {
                 PlayerInputManager inputManager = GetOrAddComponent<PlayerInputManager>(inputManagerRoot);
                 EditorUtility.SetDirty(inputManager);
-                PrefabUtility.SaveAsPrefabAsset(inputManagerRoot, PlayerInputManagerPrefabPath);
-                AssetDatabase.ForceReserializeAssets(new[] { PlayerInputManagerPrefabPath });
+                PrefabUtility.SaveAsPrefabAsset(inputManagerRoot, k_PlayerInputManagerPrefabPath);
+                AssetDatabase.ForceReserializeAssets(new[] { k_PlayerInputManagerPrefabPath });
             }
             finally
             {
@@ -149,7 +149,7 @@ namespace ZZ.Editor
 
         private static void ConfigureWorldCameraScene()
         {
-            ConfigureCameraRig(WorldScenePath);
+            ConfigureCameraRig(k_WorldScenePath);
         }
 
         private static void ConfigureCameraRig(string scenePath)

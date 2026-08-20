@@ -114,4 +114,18 @@ InitTestScene*.unity*
 /[Aa]ssets/Screenshots*
 
 .claude
+.codex
+.agents
+
+# Recovered art assets and recovery data (kept out of git)
+/[Aa]ssets/Art/
+/[Aa]ssets/Art*
+/Docs/ArtRecovery/
+
+# Third-party plugin binaries (reinstalled via the MCP/package installers)
+/[Aa]ssets/Plugins/NuGet/
+/[Aa]ssets/Plugins/NuGet*
+
+# Python bytecode cache
+__pycache__/
 

@@ -2,21 +2,23 @@ using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace ZZ
 {
     public class WorldSaveGameManager : MonoBehaviour
     {
-        public static WorldSaveGameManager instance;
-        public static WorldSaveGameManager Instance => instance;
+        private static WorldSaveGameManager s_instance;
+        public static WorldSaveGameManager Instance => s_instance;
 
-        [SerializeField] private string worldSceneName = "Scene_World_01";
+        [FormerlySerializedAs("worldSceneName")]
+        [SerializeField] private string m_worldSceneName = "Scene_World_01";
 
         private void Awake()
         {
-            if (instance == null)
+            if (s_instance == null)
             {
-                instance = this;
+                s_instance = this;
                 return;
             }
 
@@ -40,23 +42,23 @@ namespace ZZ
                 }
 
                 SceneEventProgressStatus status = networkManager.SceneManager.LoadScene(
-                    worldSceneName,
+                    m_worldSceneName,
                     LoadSceneMode.Single);
 
                 if (status != SceneEventProgressStatus.Started)
                 {
-                    Debug.LogError($"Could not load {worldSceneName}: {status}.");
+                    Debug.LogError($"Could not load {m_worldSceneName}: {status}.");
                 }
 
                 yield break;
             }
 
-            yield return SceneManager.LoadSceneAsync(worldSceneName, LoadSceneMode.Single);
+            yield return SceneManager.LoadSceneAsync(m_worldSceneName, LoadSceneMode.Single);
         }
 
         public int GetWorldSceneIndex()
         {
-            return SceneUtility.GetBuildIndexByScenePath($"Assets/Scenes/{worldSceneName}.unity");
+            return SceneUtility.GetBuildIndexByScenePath($"Assets/Scenes/{m_worldSceneName}.unity");
         }
     }
 }
