@@ -326,6 +326,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2978918928764968499}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 169177767431613464}
   m_SourcePrefab: {fileID: 100100000, guid: f31d312421127094ba51cefa824ee751, type: 3}
 --- !u!4 &5925388870315372678 stripped
 Transform:
@@ -514,3 +517,18 @@ MonoBehaviour:
   m_staminaRegenerationDelay: 2
   m_staminaRegenerationTickInterval: 0.1
   m_staminaRegenerationAmount: 2
+--- !u!114 &169177767431613464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33477e764d5737a4baa4e31ed5d86f53, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerEffectsManager
+  m_character: {fileID: 0}
+  m_effectToTest: {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}
+  m_shouldProcessEffect: 0
