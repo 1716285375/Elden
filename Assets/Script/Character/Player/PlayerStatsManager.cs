@@ -36,7 +36,7 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Connects this locally owned player's shared Stamina state to the persistent HUD.
+        /// Connects this locally owned player's shared Health and Stamina state to the HUD.
         /// </summary>
         public void BindLocalHUD()
         {
@@ -53,7 +53,7 @@ namespace ZZ
 
             UnbindLocalHUD();
             m_boundHUD = playerHUD;
-            m_boundHUD.BindStamina(CharacterNetworkManager);
+            m_boundHUD.BindStats(CharacterNetworkManager);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ZZ
                 return;
             }
 
-            m_boundHUD.UnbindStamina(CharacterNetworkManager);
+            m_boundHUD.UnbindStats(CharacterNetworkManager);
             m_boundHUD = null;
         }
 

@@ -7,10 +7,14 @@ namespace ZZ
     public class UIStatBar : MonoBehaviour
     {
         [SerializeField] private Slider m_slider;
+        [SerializeField] private RectTransform m_rectTransform;
+        [SerializeField] private bool m_shouldScaleBarLengthWithStats;
+        [SerializeField, Min(0f)] private float m_widthScaleMultiplier = 2f;
 
         private void Awake()
         {
             m_slider ??= GetComponent<Slider>();
+            m_rectTransform ??= GetComponent<RectTransform>();
         }
 
         /// <summary>
@@ -39,6 +43,19 @@ namespace ZZ
             m_slider.minValue = 0f;
             m_slider.maxValue = Mathf.Max(0f, maximumValue);
             m_slider.value = m_slider.maxValue;
+            ScaleBarLength(m_slider.maxValue);
+        }
+
+        private void ScaleBarLength(float maximumValue)
+        {
+            if (!m_shouldScaleBarLengthWithStats || m_rectTransform == null)
+            {
+                return;
+            }
+
+            Vector2 sizeDelta = m_rectTransform.sizeDelta;
+            sizeDelta.x = Mathf.Max(0f, maximumValue) * m_widthScaleMultiplier;
+            m_rectTransform.sizeDelta = sizeDelta;
         }
     }
 }

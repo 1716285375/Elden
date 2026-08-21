@@ -7,6 +7,7 @@ namespace ZZ
     [RequireComponent(typeof(CharacterNetworkManager))]
     public class CharacterStatsManager : NetworkBehaviour
     {
+        private const float k_HealthPerVitalityLevel = 15f;
         private const float k_StaminaPerEnduranceLevel = 10f;
 
         [Header("Stamina Regeneration")]
@@ -37,17 +38,29 @@ namespace ZZ
         {
             base.OnNetworkSpawn();
             m_characterNetworkManager.CurrentStamina.OnValueChanged += OnCurrentStaminaChanged;
+            m_characterNetworkManager.Vitality.OnValueChanged += OnVitalityChanged;
+            m_characterNetworkManager.Endurance.OnValueChanged += OnEnduranceChanged;
 
             if (IsOwner)
             {
-                InitializeStamina();
+                InitializeResources();
             }
         }
 
         public override void OnNetworkDespawn()
         {
             m_characterNetworkManager.CurrentStamina.OnValueChanged -= OnCurrentStaminaChanged;
+            m_characterNetworkManager.Vitality.OnValueChanged -= OnVitalityChanged;
+            m_characterNetworkManager.Endurance.OnValueChanged -= OnEnduranceChanged;
             base.OnNetworkDespawn();
+        }
+
+        /// <summary>
+        /// Calculates the current health cap from the vitality attribute.
+        /// </summary>
+        public float CalculateHealthBasedOnVitalityLevel(int vitalityLevel)
+        {
+            return Mathf.Max(0, vitalityLevel) * k_HealthPerVitalityLevel;
         }
 
         /// <summary>
@@ -56,6 +69,38 @@ namespace ZZ
         public float CalculateStaminaBasedOnEnduranceLevel(int enduranceLevel)
         {
             return Mathf.Max(0, enduranceLevel) * k_StaminaPerEnduranceLevel;
+        }
+
+        /// <summary>
+        /// Recalculates maximum Health and fills the owner resource to that maximum.
+        /// </summary>
+        public void SetNewMaxHealthValue()
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            float maximumHealth = CalculateHealthBasedOnVitalityLevel(
+                m_characterNetworkManager.Vitality.Value);
+            m_characterNetworkManager.MaxHealth.Value = maximumHealth;
+            m_characterNetworkManager.CurrentHealth.Value = maximumHealth;
+        }
+
+        /// <summary>
+        /// Recalculates maximum Stamina and fills the owner resource to that maximum.
+        /// </summary>
+        public void SetNewMaxStaminaValue()
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            float maximumStamina = CalculateStaminaBasedOnEnduranceLevel(
+                m_characterNetworkManager.Endurance.Value);
+            m_characterNetworkManager.MaxStamina.Value = maximumStamina;
+            m_characterNetworkManager.CurrentStamina.Value = maximumStamina;
         }
 
         /// <summary>
@@ -146,12 +191,33 @@ namespace ZZ
             return m_characterManager == null || m_characterManager.IsPerformingAction;
         }
 
-        private void InitializeStamina()
+        private void InitializeResources()
         {
-            float maximumStamina = CalculateStaminaBasedOnEnduranceLevel(
-                m_characterNetworkManager.Endurance.Value);
-            m_characterNetworkManager.MaxStamina.Value = maximumStamina;
-            m_characterNetworkManager.CurrentStamina.Value = maximumStamina;
+            if (m_characterNetworkManager.MaxHealth.Value <= 0f)
+            {
+                SetNewMaxHealthValue();
+            }
+
+            if (m_characterNetworkManager.MaxStamina.Value <= 0f)
+            {
+                SetNewMaxStaminaValue();
+            }
+        }
+
+        private void OnVitalityChanged(int previousVitality, int currentVitality)
+        {
+            if (IsOwner)
+            {
+                SetNewMaxHealthValue();
+            }
+        }
+
+        private void OnEnduranceChanged(int previousEndurance, int currentEndurance)
+        {
+            if (IsOwner)
+            {
+                SetNewMaxStaminaValue();
+            }
         }
 
         private void OnCurrentStaminaChanged(float previousStamina, float currentStamina)

@@ -88,7 +88,9 @@ namespace ZZ
                 FileShare.Read);
             using StreamReader reader = new StreamReader(stream);
             string json = reader.ReadToEnd();
-            return JsonUtility.FromJson<CharacterSaveData>(json);
+            CharacterSaveData characterData = JsonUtility.FromJson<CharacterSaveData>(json);
+            characterData?.MigrateToLatestVersion();
+            return characterData;
         }
 
         /// <summary>
