@@ -60,7 +60,7 @@ namespace ZZ
             base.OnNetworkSpawn();
             RegisterLocalPlayerForSaveData();
             TryPlaceAtSpawnPoint(SceneManager.GetActiveScene());
-            WorldSaveGameManager.Instance?.TryApplyLoadedCharacterData(this);
+            RestoreSpawnedClientState();
             BindLocalPlayerSystems();
         }
 
@@ -255,6 +255,21 @@ namespace ZZ
             if (IsOwner)
             {
                 WorldSaveGameManager.Instance?.RegisterPlayer(this);
+            }
+        }
+
+        private void RestoreSpawnedClientState()
+        {
+            WorldSaveGameManager saveGameManager = WorldSaveGameManager.Instance;
+            if (saveGameManager == null)
+            {
+                return;
+            }
+
+            bool appliedPendingData = saveGameManager.TryApplyLoadedCharacterData(this);
+            if (!appliedPendingData && IsOwner && !IsServer)
+            {
+                LoadGameDataFromCurrentCharacterData();
             }
         }
 

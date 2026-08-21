@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Animations;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,8 @@ namespace ZZ.Editor
     {
         private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_TagManagerPath = "ProjectSettings/TagManager.asset";
+        private const string k_PhysicsManagerPath = "ProjectSettings/DynamicsManager.asset";
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/Humanoid Animator Controller.controller";
         private const string k_ClipFolder =
@@ -26,6 +29,8 @@ namespace ZZ.Editor
         private const string k_JumpEndStateName = "Jump End";
         private const string k_GroundCheckPointName = "Ground Check Point";
         private const string k_ApplyJumpVelocityEventName = "ApplyJumpingVelocity";
+        private const string k_CharacterLayerName = "Player";
+        private const string k_DamageableCharacterLayerName = "Damageable Character";
         private const float k_FallingAnimationDelay = 0.25f;
 
         private static readonly StateDefinition[] s_StateDefinitions =
@@ -56,6 +61,7 @@ namespace ZZ.Editor
         public static void ConfigurePlayerJumping()
         {
             AnimatorController controller = LoadRequiredAsset<AnimatorController>(k_ControllerPath);
+            ConfigureJumpNetworking();
             ConfigureAnimator(controller);
             ConfigurePlayerPrefab();
             AssetDatabase.SaveAssets();
@@ -71,7 +77,66 @@ namespace ZZ.Editor
             ValidateAnimator(LoadRequiredAsset<AnimatorController>(k_ControllerPath));
             ValidatePlayerPrefab();
             ValidateJumpRules();
-            Debug.Log("[PlayerJumpValidation] Input, physics, stamina, momentum, and Animator are valid.");
+            ValidateJumpNetworking();
+            Debug.Log(
+                "[PlayerJumpValidation] Input, physics, network state, stamina, momentum, " +
+                "and Animator are valid.");
+        }
+
+        /// <summary>
+        /// Configures the character hitbox layer boundary used by networked players.
+        /// </summary>
+        [MenuItem("Tools/Elden/Configure Jump Networking Fix")]
+        public static void ConfigureJumpNetworking()
+        {
+            int characterLayer = GetRequiredLayer(k_CharacterLayerName);
+            int damageableCharacterLayer = EnsureLayer(k_DamageableCharacterLayerName);
+            Physics.IgnoreLayerCollision(characterLayer, damageableCharacterLayer, true);
+            UnityEngine.Object physicsManager =
+                LoadRequiredSettingsAsset(k_PhysicsManagerPath);
+            EditorUtility.SetDirty(physicsManager);
+            AssetDatabase.SaveAssets();
+        }
+
+        /// <summary>
+        /// Validates jump-state authority and the character hitbox collision boundary.
+        /// </summary>
+        [MenuItem("Tools/Elden/Validate Jump Networking Fix")]
+        public static void ValidateJumpNetworking()
+        {
+            int characterLayer = GetRequiredLayer(k_CharacterLayerName);
+            int damageableCharacterLayer = GetRequiredLayer(k_DamageableCharacterLayerName);
+            if (!Physics.GetIgnoreLayerCollision(characterLayer, damageableCharacterLayer) ||
+                Physics.GetIgnoreLayerCollision(
+                    damageableCharacterLayer,
+                    damageableCharacterLayer))
+            {
+                throw new InvalidOperationException(
+                    "Player must ignore Damageable Character without disabling self-collision " +
+                    "for the damageable layer.");
+            }
+
+            GameObject playerRoot = PrefabUtility.LoadPrefabContents(k_PlayerPrefabPath);
+            try
+            {
+                CharacterNetworkManager networkManager =
+                    playerRoot.GetComponent<CharacterNetworkManager>();
+                if (networkManager == null ||
+                    networkManager.IsJumping.ReadPerm !=
+                        NetworkVariableReadPermission.Everyone ||
+                    networkManager.IsJumping.WritePerm !=
+                        NetworkVariableWritePermission.Owner ||
+                    networkManager.IsJumping.Value)
+                {
+                    throw new InvalidOperationException(
+                        "Jump state must default to false and be readable by everyone but " +
+                        "writable only by the owner.");
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(playerRoot);
+            }
         }
 
         private static void ConfigureAnimator(AnimatorController controller)
@@ -549,6 +614,54 @@ namespace ZZ.Editor
             return result is T typedResult
                 ? typedResult
                 : throw new InvalidOperationException($"{method.Name} returned an invalid result.");
+        }
+
+        private static int EnsureLayer(string layerName)
+        {
+            int existingLayer = LayerMask.NameToLayer(layerName);
+            if (existingLayer >= 0)
+            {
+                return existingLayer;
+            }
+
+            UnityEngine.Object tagManager = LoadRequiredSettingsAsset(k_TagManagerPath);
+            SerializedObject serializedTagManager = new SerializedObject(tagManager);
+            SerializedProperty layers = serializedTagManager.FindProperty("layers") ??
+                throw new InvalidOperationException("TagManager is missing its layers array.");
+            for (int layerIndex = 8; layerIndex < layers.arraySize; layerIndex++)
+            {
+                SerializedProperty layer = layers.GetArrayElementAtIndex(layerIndex);
+                if (!string.IsNullOrEmpty(layer.stringValue))
+                {
+                    continue;
+                }
+
+                layer.stringValue = layerName;
+                serializedTagManager.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(tagManager);
+                AssetDatabase.SaveAssets();
+                return layerIndex;
+            }
+
+            throw new InvalidOperationException(
+                $"No empty user layer is available for '{layerName}'.");
+        }
+
+        private static int GetRequiredLayer(string layerName)
+        {
+            int layer = LayerMask.NameToLayer(layerName);
+            return layer >= 0
+                ? layer
+                : throw new InvalidOperationException(
+                    $"Could not find the required '{layerName}' layer.");
+        }
+
+        private static UnityEngine.Object LoadRequiredSettingsAsset(string assetPath)
+        {
+            UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
+            return assets.Length > 0
+                ? assets[0]
+                : throw new InvalidOperationException($"Could not load {assetPath}.");
         }
 
         private static T LoadRequiredAsset<T>(string assetPath) where T : UnityEngine.Object

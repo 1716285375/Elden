@@ -61,6 +61,10 @@ namespace ZZ
             NetworkVariableWritePermission.Owner);
 
         [Header("State")]
+        public NetworkVariable<bool> IsJumping = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         public NetworkVariable<bool> IsDead = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -99,6 +103,7 @@ namespace ZZ
             {
                 NetworkPosition.Value = transform.position;
                 NetworkRotation.Value = transform.rotation;
+                IsJumping.Value = false;
             }
 
             CheckHP();

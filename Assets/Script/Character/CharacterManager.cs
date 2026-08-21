@@ -15,7 +15,6 @@ namespace ZZ
         private CharacterEffectsManager m_characterEffectsManager;
         private CharacterStatsManager m_characterStatsManager;
         private bool m_isGrounded = true;
-        private bool m_isJumping;
         private bool m_isPerformingAction;
         private bool m_canMove = true;
         private bool m_canRotate = true;
@@ -32,9 +31,10 @@ namespace ZZ
         public bool IsGrounded => m_isGrounded;
 
         /// <summary>
-        /// Gets whether the character is performing a deliberate jump rather than an ordinary fall.
+        /// Gets the replicated deliberate-jump state owned by this character's network authority.
         /// </summary>
-        public bool IsJumping => m_isJumping;
+        public bool IsJumping => m_characterNetworkManager != null &&
+            m_characterNetworkManager.IsJumping.Value;
 
         /// <summary>
         /// Gets the replicated death state owned by this character's network authority.
@@ -103,7 +103,12 @@ namespace ZZ
         /// </summary>
         public void BeginJump()
         {
-            m_isJumping = true;
+            if (!IsSpawned || !IsOwner || m_characterNetworkManager == null)
+            {
+                return;
+            }
+
+            m_characterNetworkManager.IsJumping.Value = true;
         }
 
         /// <summary>
@@ -111,7 +116,12 @@ namespace ZZ
         /// </summary>
         public void EndJump()
         {
-            m_isJumping = false;
+            if (!IsSpawned || !IsOwner || m_characterNetworkManager == null)
+            {
+                return;
+            }
+
+            m_characterNetworkManager.IsJumping.Value = false;
         }
 
         /// <summary>

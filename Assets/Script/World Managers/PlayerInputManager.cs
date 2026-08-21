@@ -7,6 +7,8 @@ namespace ZZ
     [DefaultExecutionOrder(-10000)]
     public class PlayerInputManager : MonoBehaviour
     {
+        private const string k_GameplaySceneName = "Scene_World_01";
+
         private static PlayerInputManager s_instance;
         public static PlayerInputManager Instance => s_instance;
 
@@ -48,6 +50,7 @@ namespace ZZ
             }
 
             m_playerControls ??= new PlayerControls();
+            DisablePlayerControls();
             m_playerControls.PlayerMovement.Movement.performed += OnMovementChanged;
             m_playerControls.PlayerMovement.Movement.canceled += OnMovementChanged;
             m_playerControls.PlayerMovement.Dodge.performed += OnDodgePerformed;
@@ -324,7 +327,9 @@ namespace ZZ
 
         private void RefreshMovementInput(Scene activeScene)
         {
-            if (Application.isFocused && activeScene.buildIndex > 0 && !m_isGameplayInputBlocked)
+            if (Application.isFocused &&
+                activeScene.name == k_GameplaySceneName &&
+                !m_isGameplayInputBlocked)
             {
                 EnablePlayerControls();
                 return;
