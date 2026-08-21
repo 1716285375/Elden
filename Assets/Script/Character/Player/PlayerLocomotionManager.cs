@@ -5,11 +5,14 @@ namespace ZZ
 {
     public class PlayerLocomotionManager : CharacterLocomotionManager
     {
+        private const float k_SprintMovementThreshold = 0.5f;
+
         [Header("Movement Speeds")]
         [FormerlySerializedAs("walkingSpeed")]
         [SerializeField, Min(0f)] private float m_walkingSpeed = 2f;
         [FormerlySerializedAs("runningSpeed")]
         [SerializeField, Min(0f)] private float m_runningSpeed = 5f;
+        [SerializeField, Min(0f)] private float m_sprintingSpeed = 8f;
         [FormerlySerializedAs("rotationSpeed")]
         [SerializeField, Min(0f)] private float m_rotationSpeed = 15f;
         [FormerlySerializedAs("gravity")]
@@ -19,6 +22,11 @@ namespace ZZ
         private PlayerInputManager m_playerInputManager;
         private PlayerCamera m_playerCamera;
         private float m_verticalVelocity;
+
+        public bool IsSprinting =>
+            m_player != null &&
+            m_player.PlayerNetworkManager != null &&
+            m_player.PlayerNetworkManager.IsSprinting.Value;
 
         protected override void Awake()
         {
@@ -43,8 +51,9 @@ namespace ZZ
                 m_verticalVelocity = 0f;
                 if (m_player.IsOwner)
                 {
+                    SetSprinting(false);
                     PublishMovementState(0f, 0f, 0f);
-                    m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(0f, 0f);
+                    m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(0f, 0f, false);
                 }
                 return;
             }
@@ -92,6 +101,8 @@ namespace ZZ
                 return;
             }
 
+            SetSprinting(false);
+
             if (m_playerInputManager.MoveAmount > 0f)
             {
                 PerformRoll();
@@ -101,6 +112,26 @@ namespace ZZ
             PerformBackstep();
         }
 
+        /// <summary>
+        /// Resolves held sprint input into the player's validated sprint gameplay state.
+        /// </summary>
+        public void HandleSprinting(bool isSprintInputHeld)
+        {
+            if (m_player == null || !m_player.IsOwner)
+            {
+                return;
+            }
+
+            m_playerInputManager ??= PlayerInputManager.Instance;
+            float moveAmount = m_playerInputManager != null
+                ? m_playerInputManager.MoveAmount
+                : 0f;
+            SetSprinting(CanSprint(
+                isSprintInputHeld,
+                m_player.IsPerformingAction,
+                moveAmount));
+        }
+
         private void HandleOwnerMovement()
         {
             m_playerInputManager ??= PlayerInputManager.Instance;
@@ -108,8 +139,9 @@ namespace ZZ
 
             if (m_playerInputManager == null)
             {
+                SetSprinting(false);
                 PublishMovementState(0f, 0f, 0f);
-                m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(0f, 0f);
+                m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(0f, 0f, false);
                 return;
             }
 
@@ -122,7 +154,8 @@ namespace ZZ
                 m_playerInputManager.MoveAmount);
             m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(
                 0f,
-                m_playerInputManager.MoveAmount);
+                m_playerInputManager.MoveAmount,
+                IsSprinting);
         }
 
         private void HandleRemoteMovementAnimation()
@@ -135,7 +168,9 @@ namespace ZZ
 
             m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(
                 0f,
-                networkManager.MoveAmount.Value);
+                networkManager.MoveAmount.Value,
+                m_player.PlayerNetworkManager != null &&
+                m_player.PlayerNetworkManager.IsSprinting.Value);
         }
 
         private void PublishMovementState(float horizontal, float vertical, float amount)
@@ -167,7 +202,10 @@ namespace ZZ
             moveDirection.y = 0f;
             moveDirection.Normalize();
 
-            float movementSpeed = m_playerInputManager.MoveAmount > 0.5f ? m_runningSpeed : m_walkingSpeed;
+            float normalSpeed = m_playerInputManager.MoveAmount > 0.5f
+                ? m_runningSpeed
+                : m_walkingSpeed;
+            float movementSpeed = IsSprinting ? m_sprintingSpeed : normalSpeed;
 
             if (m_characterController.isGrounded && m_verticalVelocity < 0f)
             {
@@ -247,22 +285,46 @@ namespace ZZ
         private void PlayDodgeAction(CharacterActionAnimation targetAnimation)
         {
             const bool k_IsPerformingAction = true;
-            const bool k_ApplyRootMotion = true;
+            const bool k_ShouldApplyRootMotion = true;
             const bool k_CanRotate = false;
             const bool k_CanMove = false;
 
             m_player.PlayerAnimatorManager?.PlayTargetActionAnimation(
                 targetAnimation,
                 k_IsPerformingAction,
-                k_ApplyRootMotion,
+                k_ShouldApplyRootMotion,
                 k_CanRotate,
                 k_CanMove);
             m_player.CharacterNetworkManager?.NotifyServerOfActionAnimationServerRpc(
                 targetAnimation,
                 k_IsPerformingAction,
-                k_ApplyRootMotion,
+                k_ShouldApplyRootMotion,
                 k_CanRotate,
                 k_CanMove);
+        }
+
+        private static bool CanSprint(
+            bool isSprintInputHeld,
+            bool isPerformingAction,
+            float moveAmount)
+        {
+            return isSprintInputHeld &&
+                !isPerformingAction &&
+                moveAmount >= k_SprintMovementThreshold;
+        }
+
+        private void SetSprinting(bool isSprinting)
+        {
+            PlayerNetworkManager networkManager = m_player.PlayerNetworkManager;
+            if (networkManager == null ||
+                !networkManager.IsSpawned ||
+                !networkManager.IsOwner ||
+                networkManager.IsSprinting.Value == isSprinting)
+            {
+                return;
+            }
+
+            networkManager.IsSprinting.Value = isSprinting;
         }
     }
 }

@@ -58,7 +58,9 @@ namespace ZZ.Editor
             new BlendMotion("core_main_run_FR_01", 1f, 1f),
             new BlendMotion("core_main_run_FL_01", -1f, 1f),
             new BlendMotion("core_main_run_BR_01", 1f, -1f),
-            new BlendMotion("core_main_run_BL_01", -1f, -1f)
+            new BlendMotion("core_main_run_BL_01", -1f, -1f),
+
+            new BlendMotion("core_main_sprint_F_01", 0f, 2f)
         };
 
         [MenuItem("Tools/Elden/Configure Player Animation")]
@@ -74,7 +76,7 @@ namespace ZZ.Editor
 
             Debug.Log(
                 $"[PlayerAnimationSetup] Configured {s_LocomotionMotions.Length} unique " +
-                $"Idle/Walk/Run motions and wired {k_PlayerPrefabPath}.");
+                $"Idle/Walk/Run/Sprint motions and wired {k_PlayerPrefabPath}.");
         }
 
         [MenuItem("Tools/Elden/Validate Player Animation")]
@@ -124,10 +126,13 @@ namespace ZZ.Editor
                 SampleAnimator(animator, 0f, 0f);
                 SampleAnimator(animator, 0f, 1f);
                 SampleAnimator(animator, 0f, 0f);
+                SampleAnimator(animator, 0f, 2f);
+                SampleAnimator(animator, 0f, 0f);
 
                 Debug.Log(
                     "[PlayerAnimationEvaluationValidation] " +
-                    "Idle/Walk/Idle/Run/Idle Humanoid evaluation completed without a native crash.");
+                    "Idle/Walk/Idle/Run/Idle/Sprint/Idle Humanoid evaluation completed " +
+                    "without a native crash.");
             }
             finally
             {
@@ -141,6 +146,7 @@ namespace ZZ.Editor
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(k_ControllerPath);
             if (existingController != null)
             {
+                EnsureLocomotionMotions(existingController);
                 return existingController;
             }
 
@@ -168,15 +174,7 @@ namespace ZZ.Editor
 
             foreach (BlendMotion blendMotion in s_LocomotionMotions)
             {
-                AnimationClip clip =
-                    AssetDatabase.LoadAssetAtPath<AnimationClip>(blendMotion.ClipPath);
-                if (clip == null)
-                {
-                    throw new InvalidOperationException(
-                        $"Could not load locomotion clip at {blendMotion.ClipPath}.");
-                }
-
-                blendTree.AddChild(clip, blendMotion.Position);
+                blendTree.AddChild(LoadLocomotionClip(blendMotion), blendMotion.Position);
             }
 
             EditorUtility.SetDirty(blendTree);
@@ -416,6 +414,11 @@ namespace ZZ.Editor
                 ValidateNetworkVariable(networkManager.HorizontalMovement, "HorizontalMovement");
                 ValidateNetworkVariable(networkManager.VerticalMovement, "VerticalMovement");
                 ValidateNetworkVariable(networkManager.MoveAmount, "MoveAmount");
+                ValidateNetworkVariable(networkManager.IsSprinting, "IsSprinting");
+
+                PlayerLocomotionManager locomotionManager =
+                    playerRoot.GetComponent<PlayerLocomotionManager>();
+                ValidateSprintingSpeed(locomotionManager);
 
                 Animator animator = playerRoot.GetComponentInChildren<Animator>(true);
                 if (animator == null || animator.avatar == null ||
@@ -520,6 +523,38 @@ namespace ZZ.Editor
             }
         }
 
+        private static void ValidateNetworkVariable(
+            NetworkVariable<bool> variable,
+            string variableName)
+        {
+            if (variable.ReadPerm != NetworkVariableReadPermission.Everyone ||
+                variable.WritePerm != NetworkVariableWritePermission.Owner)
+            {
+                throw new InvalidOperationException(
+                    $"{variableName} must be readable by Everyone and writable by Owner.");
+            }
+        }
+
+        private static void ValidateSprintingSpeed(PlayerLocomotionManager locomotionManager)
+        {
+            if (locomotionManager == null)
+            {
+                throw new InvalidOperationException(
+                    "The Player prefab is missing PlayerLocomotionManager.");
+            }
+
+            SerializedObject serializedLocomotion = new SerializedObject(locomotionManager);
+            SerializedProperty runningSpeed = serializedLocomotion.FindProperty("m_runningSpeed");
+            SerializedProperty sprintingSpeed = serializedLocomotion.FindProperty("m_sprintingSpeed");
+            if (runningSpeed == null ||
+                sprintingSpeed == null ||
+                sprintingSpeed.floatValue <= runningSpeed.floatValue)
+            {
+                throw new InvalidOperationException(
+                    "The Player sprinting speed must be greater than its running speed.");
+            }
+        }
+
         private static void DisableLegacyRenderers(GameObject playerRoot)
         {
             foreach (Renderer renderer in playerRoot.GetComponentsInChildren<Renderer>(true))
@@ -551,6 +586,61 @@ namespace ZZ.Editor
                         $"Duplicate Blend Tree position {blendMotion.Position}.");
                 }
             }
+        }
+
+        private static void EnsureLocomotionMotions(AnimatorController controller)
+        {
+            if (controller.layers.Length == 0 ||
+                !(controller.layers[0].stateMachine.defaultState?.motion is BlendTree blendTree))
+            {
+                return;
+            }
+
+            foreach (BlendMotion blendMotion in s_LocomotionMotions)
+            {
+                AnimationClip expectedClip = LoadLocomotionClip(blendMotion);
+                ChildMotion[] children = blendTree.children;
+                bool hasPosition = false;
+                for (int index = 0; index < children.Length; index++)
+                {
+                    if (children[index].position != blendMotion.Position)
+                    {
+                        continue;
+                    }
+
+                    hasPosition = true;
+                    if (children[index].motion != expectedClip)
+                    {
+                        ChildMotion correctedChild = children[index];
+                        correctedChild.motion = expectedClip;
+                        children[index] = correctedChild;
+                        blendTree.children = children;
+                    }
+
+                    break;
+                }
+
+                if (!hasPosition)
+                {
+                    blendTree.AddChild(expectedClip, blendMotion.Position);
+                }
+            }
+
+            EditorUtility.SetDirty(blendTree);
+            EditorUtility.SetDirty(controller);
+        }
+
+        private static AnimationClip LoadLocomotionClip(BlendMotion blendMotion)
+        {
+            AnimationClip clip =
+                AssetDatabase.LoadAssetAtPath<AnimationClip>(blendMotion.ClipPath);
+            if (clip == null)
+            {
+                throw new InvalidOperationException(
+                    $"Could not load locomotion clip at {blendMotion.ClipPath}.");
+            }
+
+            return clip;
         }
 
         private static void ValidateUniqueHumanBones(Animator animator)
