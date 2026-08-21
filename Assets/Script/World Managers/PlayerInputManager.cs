@@ -22,6 +22,7 @@ namespace ZZ
         private PlayerControls m_playerControls;
         private PlayerManager m_player;
         private bool m_hasDodgeInput;
+        private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
 
         private void Awake()
@@ -133,11 +134,24 @@ namespace ZZ
             }
         }
 
+        /// <summary>
+        /// Enables local movement and camera input when gameplay is not blocked by a modal UI.
+        /// </summary>
         public void EnablePlayerControls()
         {
-            m_playerControls?.Enable();
+            if (m_isGameplayInputBlocked)
+            {
+                return;
+            }
+
+            m_playerControls?.PlayerMovement.Enable();
+            m_playerControls?.PlayerCamera.Enable();
+            IsMovementInputEnabled = true;
         }
 
+        /// <summary>
+        /// Disables local movement and camera input and clears all held gameplay intentions.
+        /// </summary>
         public void DisablePlayerControls()
         {
             MovementInput = Vector2.zero;
@@ -151,7 +165,26 @@ namespace ZZ
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             IsMovementInputEnabled = false;
-            m_playerControls?.Disable();
+            m_playerControls?.PlayerMovement.Disable();
+            m_playerControls?.PlayerCamera.Disable();
+        }
+
+        /// <summary>
+        /// Blocks gameplay controls while a modal player UI owns navigation input.
+        /// </summary>
+        public void BlockGameplayInput()
+        {
+            m_isGameplayInputBlocked = true;
+            DisablePlayerControls();
+        }
+
+        /// <summary>
+        /// Releases the modal UI block and restores controls when the active Scene permits gameplay.
+        /// </summary>
+        public void UnblockGameplayInput()
+        {
+            m_isGameplayInputBlocked = false;
+            RefreshMovementInput(SceneManager.GetActiveScene());
         }
 
         private void HandleAllInputs()
@@ -232,14 +265,9 @@ namespace ZZ
 
         private void RefreshMovementInput(Scene activeScene)
         {
-            int worldSceneIndex = WorldSaveGameManager.Instance != null
-                ? WorldSaveGameManager.Instance.GetWorldSceneIndex()
-                : -1;
-
-            if (Application.isFocused && worldSceneIndex >= 0 && activeScene.buildIndex == worldSceneIndex)
+            if (Application.isFocused && activeScene.buildIndex > 0 && !m_isGameplayInputBlocked)
             {
                 EnablePlayerControls();
-                IsMovementInputEnabled = true;
                 return;
             }
 
