@@ -64,6 +64,14 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Resolves self-collisions between this character's own body hitboxes.
+        /// </summary>
+        protected virtual void Start()
+        {
+            IgnoreMyOwnColliders();
+        }
+
+        /// <summary>
         /// Applies the movement restrictions and root-motion policy for the current character action.
         /// </summary>
         public void SetActionState(
@@ -179,6 +187,22 @@ namespace ZZ
             while (m_isDeathEventRunning)
             {
                 yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Ignores physics collisions between every collider owned by this character,
+        /// so its body hitboxes never collide with each other or with the character itself.
+        /// </summary>
+        protected virtual void IgnoreMyOwnColliders()
+        {
+            Collider[] colliders = GetComponentsInChildren<Collider>(true);
+            for (int indexA = 0; indexA < colliders.Length; indexA++)
+            {
+                for (int indexB = indexA + 1; indexB < colliders.Length; indexB++)
+                {
+                    Physics.IgnoreCollision(colliders[indexA], colliders[indexB], true);
+                }
             }
         }
     }
