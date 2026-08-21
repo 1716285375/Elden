@@ -509,6 +509,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  IsDead:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
   IsSprinting:

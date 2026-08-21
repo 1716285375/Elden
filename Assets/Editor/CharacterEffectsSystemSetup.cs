@@ -109,7 +109,7 @@ namespace ZZ.Editor
                 SerializedObject serializedManager = new SerializedObject(effectsManager);
                 SerializedProperty instantEffects =
                     GetRequiredProperty(serializedManager, "m_instantEffects");
-                instantEffects.arraySize = 1;
+                instantEffects.arraySize = Mathf.Max(1, instantEffects.arraySize);
                 instantEffects.GetArrayElementAtIndex(0).objectReferenceValue =
                     staminaDamageEffect;
                 serializedManager.ApplyModifiedPropertiesWithoutUndo();
@@ -203,7 +203,7 @@ namespace ZZ.Editor
                 WorldCharacterEffectsManager effectsManager =
                     FindComponentInScene<WorldCharacterEffectsManager>(scene);
                 if (effectsManager == null ||
-                    effectsManager.InstantEffects.Count != 1 ||
+                    effectsManager.InstantEffects.Count < 1 ||
                     effectsManager.InstantEffects[0] != staminaDamageEffect ||
                     !effectsManager.TryGetInstantEffect(0, out InstantCharacterEffect effect) ||
                     effect != staminaDamageEffect)

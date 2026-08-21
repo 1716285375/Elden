@@ -60,6 +60,12 @@ namespace ZZ
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
+        [Header("State")]
+        public NetworkVariable<bool> IsDead = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+
         [FormerlySerializedAs("networkPositionSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkPositionSmoothTime = 0.1f;
         [FormerlySerializedAs("networkRotationSmoothTime")]

@@ -8,8 +8,10 @@ namespace ZZ
         private static WorldCharacterEffectsManager s_instance;
 
         [SerializeField] private List<InstantCharacterEffect> m_instantEffects = new();
+        [SerializeField] private TakeDamageEffect m_takeDamageEffect;
 
         public static WorldCharacterEffectsManager Instance => s_instance;
+        public TakeDamageEffect TakeDamageEffect => m_takeDamageEffect;
 
         /// <summary>
         /// Gets the authored instant effects in their stable identifier order.
