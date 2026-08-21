@@ -365,6 +365,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerLocomotionManager
   m_walkingSpeed: 2
   m_runningSpeed: 5
+  m_sprintingSpeed: 8
   m_rotationSpeed: 15
   m_gravity: -20
 --- !u!114 &6368077256085200356
@@ -424,3 +425,8 @@ MonoBehaviour:
     m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
+  IsSprinting:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0

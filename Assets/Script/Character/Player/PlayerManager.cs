@@ -13,6 +13,7 @@ namespace ZZ
         [SerializeField] private PlayerAnimatorManager m_playerAnimatorManager;
 
         public PlayerAnimatorManager PlayerAnimatorManager => m_playerAnimatorManager;
+        public PlayerNetworkManager PlayerNetworkManager { get; private set; }
         public PlayerLocomotionManager LocomotionManager { get; private set; }
         public bool IsInGameplayScene =>
             SceneManager.GetActiveScene().name == k_GameplaySceneName;
@@ -31,6 +32,7 @@ namespace ZZ
         {
             base.Awake();
             m_playerAnimatorManager = GetComponentInChildren<PlayerAnimatorManager>(true);
+            PlayerNetworkManager = GetComponent<PlayerNetworkManager>();
             LocomotionManager = GetComponent<PlayerLocomotionManager>();
         }
 

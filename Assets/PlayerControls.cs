@@ -111,6 +111,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Sprint"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""3b9e4658-c9cf-45d1-bfa7-5603522d4af8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -283,7 +292,7 @@ namespace ZZ
                     ""name"": ""Gamepad East Button"",
                     ""id"": ""b598e1ac-3129-4577-b8c6-0b6c90f836c4"",
                     ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
+                    ""interactions"": ""Tap"",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Dodge"",
@@ -298,6 +307,28 @@ namespace ZZ
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Dodge"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Gamepad East Button"",
+                    ""id"": ""bc556231-35bb-425f-a378-3bd25a0e6bfb"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard Left Shift"",
+                    ""id"": ""0c575192-a2dd-48ab-ad4d-621f8e945882"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -377,6 +408,7 @@ namespace ZZ
             m_PlayerMovement = asset.FindActionMap("Player Movement", throwIfNotFound: true);
             m_PlayerMovement_Movement = m_PlayerMovement.FindAction("Movement", throwIfNotFound: true);
             m_PlayerMovement_Dodge = m_PlayerMovement.FindAction("Dodge", throwIfNotFound: true);
+            m_PlayerMovement_Sprint = m_PlayerMovement.FindAction("Sprint", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -463,6 +495,7 @@ namespace ZZ
         private List<IPlayerMovementActions> m_PlayerMovementActionsCallbackInterfaces = new List<IPlayerMovementActions>();
         private readonly InputAction m_PlayerMovement_Movement;
         private readonly InputAction m_PlayerMovement_Dodge;
+        private readonly InputAction m_PlayerMovement_Sprint;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -482,6 +515,10 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/Dodge".
             /// </summary>
             public InputAction @Dodge => m_Wrapper.m_PlayerMovement_Dodge;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/Sprint".
+            /// </summary>
+            public InputAction @Sprint => m_Wrapper.m_PlayerMovement_Sprint;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -514,6 +551,9 @@ namespace ZZ
                 @Dodge.started += instance.OnDodge;
                 @Dodge.performed += instance.OnDodge;
                 @Dodge.canceled += instance.OnDodge;
+                @Sprint.started += instance.OnSprint;
+                @Sprint.performed += instance.OnSprint;
+                @Sprint.canceled += instance.OnSprint;
             }
 
             /// <summary>
@@ -531,6 +571,9 @@ namespace ZZ
                 @Dodge.started -= instance.OnDodge;
                 @Dodge.performed -= instance.OnDodge;
                 @Dodge.canceled -= instance.OnDodge;
+                @Sprint.started -= instance.OnSprint;
+                @Sprint.performed -= instance.OnSprint;
+                @Sprint.canceled -= instance.OnSprint;
             }
 
             /// <summary>
@@ -707,6 +750,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnDodge(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Sprint" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSprint(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

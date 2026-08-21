@@ -6,6 +6,7 @@ namespace ZZ
     {
         private const float k_MovementParameterDampTime = 0.1f;
         private const float k_ActionTransitionDuration = 0.2f;
+        private const float k_SprintVerticalValue = 2f;
         private const string k_ActionOverrideLayerName = "Action Override";
 
         private static readonly int s_horizontalParameter = Animator.StringToHash("Horizontal");
@@ -42,12 +43,19 @@ namespace ZZ
             m_characterManager ??= GetComponentInParent<CharacterManager>();
         }
 
-        public void UpdateAnimatorMovementParameters(float horizontalValue, float verticalValue)
+        public void UpdateAnimatorMovementParameters(
+            float horizontalValue,
+            float verticalValue,
+            bool isSprinting)
         {
             if (m_animator == null)
             {
                 return;
             }
+
+            float resolvedVerticalValue = isSprinting
+                ? k_SprintVerticalValue
+                : verticalValue;
 
             m_animator.SetFloat(
                 s_horizontalParameter,
@@ -56,7 +64,7 @@ namespace ZZ
                 Time.deltaTime);
             m_animator.SetFloat(
                 s_verticalParameter,
-                verticalValue,
+                resolvedVerticalValue,
                 k_MovementParameterDampTime,
                 Time.deltaTime);
         }

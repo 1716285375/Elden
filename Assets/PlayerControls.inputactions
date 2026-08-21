@@ -23,6 +23,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Sprint",
+                    "type": "PassThrough",
+                    "id": "3b9e4658-c9cf-45d1-bfa7-5603522d4af8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -195,7 +204,7 @@
                     "name": "Gamepad East Button",
                     "id": "b598e1ac-3129-4577-b8c6-0b6c90f836c4",
                     "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
+                    "interactions": "Tap",
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Dodge",
@@ -210,6 +219,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Dodge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Gamepad East Button",
+                    "id": "bc556231-35bb-425f-a378-3bd25a0e6bfb",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Keyboard Left Shift",
+                    "id": "0c575192-a2dd-48ab-ad4d-621f8e945882",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

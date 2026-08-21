@@ -22,6 +22,7 @@ namespace ZZ
         private PlayerControls m_playerControls;
         private PlayerManager m_player;
         private bool m_hasDodgeInput;
+        private bool m_isSprintInputHeld;
 
         private void Awake()
         {
@@ -46,6 +47,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.Movement.performed += OnMovementChanged;
             m_playerControls.PlayerMovement.Movement.canceled += OnMovementChanged;
             m_playerControls.PlayerMovement.Dodge.performed += OnDodgePerformed;
+            m_playerControls.PlayerMovement.Sprint.performed += OnSprintPerformed;
+            m_playerControls.PlayerMovement.Sprint.canceled += OnSprintCanceled;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
@@ -62,6 +65,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.Movement.performed -= OnMovementChanged;
             m_playerControls.PlayerMovement.Movement.canceled -= OnMovementChanged;
             m_playerControls.PlayerMovement.Dodge.performed -= OnDodgePerformed;
+            m_playerControls.PlayerMovement.Sprint.performed -= OnSprintPerformed;
+            m_playerControls.PlayerMovement.Sprint.canceled -= OnSprintCanceled;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
@@ -143,6 +148,8 @@ namespace ZZ
             CameraVerticalInput = 0f;
             CameraHorizontalInput = 0f;
             m_hasDodgeInput = false;
+            m_isSprintInputHeld = false;
+            m_player?.LocomotionManager?.HandleSprinting(false);
             IsMovementInputEnabled = false;
             m_playerControls?.Disable();
         }
@@ -152,6 +159,7 @@ namespace ZZ
             HandleCameraMovementInput();
             HandlePlayerMovementInput();
             HandleDodgeInput();
+            HandleSprinting();
         }
 
         private void HandleCameraMovementInput()
@@ -187,6 +195,11 @@ namespace ZZ
             m_player?.LocomotionManager?.AttemptToPerformDodge();
         }
 
+        private void HandleSprinting()
+        {
+            m_player?.LocomotionManager?.HandleSprinting(m_isSprintInputHeld);
+        }
+
         private void OnMovementChanged(InputAction.CallbackContext context)
         {
             MovementInput = context.ReadValue<Vector2>();
@@ -200,6 +213,16 @@ namespace ZZ
         private void OnDodgePerformed(InputAction.CallbackContext context)
         {
             m_hasDodgeInput = true;
+        }
+
+        private void OnSprintPerformed(InputAction.CallbackContext context)
+        {
+            m_isSprintInputHeld = true;
+        }
+
+        private void OnSprintCanceled(InputAction.CallbackContext context)
+        {
+            m_isSprintInputHeld = false;
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
