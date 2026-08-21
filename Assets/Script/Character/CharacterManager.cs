@@ -11,6 +11,7 @@ namespace ZZ
         [SerializeField] private CharacterAnimatorManager m_characterAnimatorManager;
         [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
 
+        private CharacterStatsManager m_characterStatsManager;
         private bool m_isPerformingAction;
         private bool m_canMove = true;
         private bool m_canRotate = true;
@@ -18,6 +19,7 @@ namespace ZZ
 
         public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
+        public CharacterStatsManager CharacterStatsManager => m_characterStatsManager;
         public bool IsPerformingAction => m_isPerformingAction;
         public bool CanMove => m_canMove;
         public bool CanRotate => m_canRotate;
@@ -33,6 +35,7 @@ namespace ZZ
 
             m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
             m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
+            m_characterStatsManager = GetComponent<CharacterStatsManager>();
             m_characterAnimatorManager?.Initialize(m_animator);
         }
 
