@@ -8,6 +8,8 @@ namespace ZZ
     [RequireComponent(typeof(PlayerLocomotionManager))]
     [RequireComponent(typeof(PlayerNetworkManager))]
     [RequireComponent(typeof(PlayerStatsManager))]
+    [RequireComponent(typeof(PlayerInventoryManager))]
+    [RequireComponent(typeof(PlayerEquipmentManager))]
     public class PlayerManager : CharacterManager
     {
         private const string k_StartingGameplaySceneName = "Scene_World_01";
@@ -24,6 +26,12 @@ namespace ZZ
         public PlayerNetworkManager PlayerNetworkManager { get; private set; }
         public PlayerStatsManager PlayerStatsManager { get; private set; }
         public PlayerLocomotionManager LocomotionManager { get; private set; }
+
+        /// <summary>Gets the player's quick-slot and runtime item state.</summary>
+        public PlayerInventoryManager InventoryManager { get; private set; }
+
+        /// <summary>Gets the player's hand-model presentation manager.</summary>
+        public PlayerEquipmentManager EquipmentManager { get; private set; }
         public bool IsInGameplayScene => SceneManager.GetActiveScene().buildIndex > 0;
 
         private void OnEnable()
@@ -43,6 +51,8 @@ namespace ZZ
             PlayerNetworkManager = GetComponent<PlayerNetworkManager>();
             PlayerStatsManager = GetComponent<PlayerStatsManager>();
             LocomotionManager = GetComponent<PlayerLocomotionManager>();
+            InventoryManager = GetComponent<PlayerInventoryManager>();
+            EquipmentManager = GetComponent<PlayerEquipmentManager>();
         }
 
         public override void OnNetworkSpawn()

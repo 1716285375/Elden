@@ -129,6 +129,24 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Switch Right Weapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""cc748c6f-b8f7-4d75-94cf-e13c59bf5c42"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Switch Left Weapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""116646b1-2c92-4aa5-aaf4-16729d93a797"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -362,6 +380,50 @@ namespace ZZ
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Gamepad D-Pad Right"",
+                    ""id"": ""81a79871-68e8-44bb-a6a8-9562d5b3496f"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Switch Right Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard E"",
+                    ""id"": ""1c154436-46c2-4bdb-b3cb-d0225ae71e76"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Switch Right Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Gamepad D-Pad Left"",
+                    ""id"": ""2a3306b9-5dfa-423f-81c4-b14604b6b3db"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Switch Left Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard Q"",
+                    ""id"": ""405bcd8f-b3b7-4c9c-af98-9fcf6b5a5683"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Switch Left Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -511,6 +573,8 @@ namespace ZZ
             m_PlayerMovement_Dodge = m_PlayerMovement.FindAction("Dodge", throwIfNotFound: true);
             m_PlayerMovement_Sprint = m_PlayerMovement.FindAction("Sprint", throwIfNotFound: true);
             m_PlayerMovement_Jump = m_PlayerMovement.FindAction("Jump", throwIfNotFound: true);
+            m_PlayerMovement_SwitchRightWeapon = m_PlayerMovement.FindAction("Switch Right Weapon", throwIfNotFound: true);
+            m_PlayerMovement_SwitchLeftWeapon = m_PlayerMovement.FindAction("Switch Left Weapon", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -604,6 +668,8 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_Dodge;
         private readonly InputAction m_PlayerMovement_Sprint;
         private readonly InputAction m_PlayerMovement_Jump;
+        private readonly InputAction m_PlayerMovement_SwitchRightWeapon;
+        private readonly InputAction m_PlayerMovement_SwitchLeftWeapon;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -631,6 +697,14 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/Jump".
             /// </summary>
             public InputAction @Jump => m_Wrapper.m_PlayerMovement_Jump;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/SwitchRightWeapon".
+            /// </summary>
+            public InputAction @SwitchRightWeapon => m_Wrapper.m_PlayerMovement_SwitchRightWeapon;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/SwitchLeftWeapon".
+            /// </summary>
+            public InputAction @SwitchLeftWeapon => m_Wrapper.m_PlayerMovement_SwitchLeftWeapon;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -669,6 +743,12 @@ namespace ZZ
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @SwitchRightWeapon.started += instance.OnSwitchRightWeapon;
+                @SwitchRightWeapon.performed += instance.OnSwitchRightWeapon;
+                @SwitchRightWeapon.canceled += instance.OnSwitchRightWeapon;
+                @SwitchLeftWeapon.started += instance.OnSwitchLeftWeapon;
+                @SwitchLeftWeapon.performed += instance.OnSwitchLeftWeapon;
+                @SwitchLeftWeapon.canceled += instance.OnSwitchLeftWeapon;
             }
 
             /// <summary>
@@ -692,6 +772,12 @@ namespace ZZ
                 @Jump.started -= instance.OnJump;
                 @Jump.performed -= instance.OnJump;
                 @Jump.canceled -= instance.OnJump;
+                @SwitchRightWeapon.started -= instance.OnSwitchRightWeapon;
+                @SwitchRightWeapon.performed -= instance.OnSwitchRightWeapon;
+                @SwitchRightWeapon.canceled -= instance.OnSwitchRightWeapon;
+                @SwitchLeftWeapon.started -= instance.OnSwitchLeftWeapon;
+                @SwitchLeftWeapon.performed -= instance.OnSwitchLeftWeapon;
+                @SwitchLeftWeapon.canceled -= instance.OnSwitchLeftWeapon;
             }
 
             /// <summary>
@@ -989,6 +1075,20 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnJump(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Switch Right Weapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSwitchRightWeapon(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Switch Left Weapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSwitchLeftWeapon(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

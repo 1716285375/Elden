@@ -1,5 +1,95 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2487018999072267134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2158617297189296926}
+  - component: {fileID: 834257065668511750}
+  m_Layer: 0
+  m_Name: Left Hand Weapon Slot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2158617297189296926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2487018999072267134}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 770255859177476194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &834257065668511750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2487018999072267134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30f4e6e29a35d44799014dcc55c3c42, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponModelInstantiationSlot
+  m_weaponModelSlot: 1
+--- !u!1 &2941268009351439876
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5951654648011193395}
+  - component: {fileID: 2570785366200040732}
+  m_Layer: 0
+  m_Name: Right Hand Weapon Slot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5951654648011193395
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2941268009351439876}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 770429482175440679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2570785366200040732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2941268009351439876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30f4e6e29a35d44799014dcc55c3c42, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponModelInstantiationSlot
+  m_weaponModelSlot: 0
 --- !u!1 &7759931000489465241
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,7 +183,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4896270331586959, guid: ce106f8623d8df545997f80937d96ba3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2158617297189296926}
+    - targetCorrespondingSourceObject: {fileID: 4511530355220170, guid: ce106f8623d8df545997f80937d96ba3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5951654648011193395}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1724804207875695, guid: ce106f8623d8df545997f80937d96ba3, type: 3}
       insertIndex: -1
@@ -233,9 +329,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerSoundFXManager
   m_audioSource: {fileID: 2145748007075777998}
+--- !u!4 &770255859177476194 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4896270331586959, guid: ce106f8623d8df545997f80937d96ba3, type: 3}
+  m_PrefabInstance: {fileID: 765922818158852589}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &770401370918645763 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4531403864476142, guid: ce106f8623d8df545997f80937d96ba3, type: 3}
+  m_PrefabInstance: {fileID: 765922818158852589}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &770429482175440679 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4511530355220170, guid: ce106f8623d8df545997f80937d96ba3, type: 3}
   m_PrefabInstance: {fileID: 765922818158852589}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6174871277104142189
@@ -329,6 +435,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
       insertIndex: -1
       addedObject: {fileID: 169177767431613464}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2654529294512128537}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1045898323926164075}
   m_SourcePrefab: {fileID: 100100000, guid: f31d312421127094ba51cefa824ee751, type: 3}
 --- !u!4 &5925388870315372678 stripped
 Transform:
@@ -441,6 +553,7 @@ MonoBehaviour:
   m_characterAnimatorManager: {fileID: 0}
   m_characterNetworkManager: {fileID: 0}
   m_playerAnimatorManager: {fileID: 3813418210741993442}
+  m_respawnCharacter: 0
 --- !u!114 &1203088054556932684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -552,3 +665,36 @@ MonoBehaviour:
   m_character: {fileID: 0}
   m_effectToTest: {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}
   m_shouldProcessEffect: 0
+--- !u!114 &2654529294512128537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76819c00d8a665f45b90136505d757d2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerEquipmentManager
+--- !u!114 &1045898323926164075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2f95d7e66f74446bf6d4a88ae5ebdc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerInventoryManager
+  m_unarmedWeapon: {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
+  m_weaponsInRightHandSlots:
+  - {fileID: 11400000, guid: 56fe0958176792a498531c0014699ac9, type: 2}
+  - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
+  - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
+  m_weaponsInLeftHandSlots:
+  - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
+  - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
+  - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
