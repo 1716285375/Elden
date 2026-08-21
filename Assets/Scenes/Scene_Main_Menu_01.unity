@@ -2316,6 +2316,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldCharacterEffectsManager
   m_instantEffects:
   - {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}
+  - {fileID: 11400000, guid: 799788b7a8c4c6a42a0537d4a4bfc846, type: 2}
+  m_takeDamageEffect: {fileID: 11400000, guid: 799788b7a8c4c6a42a0537d4a4bfc846, type: 2}
 --- !u!4 &499560864
 Transform:
   m_ObjectHideFlags: 0

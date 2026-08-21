@@ -33,6 +33,12 @@ namespace ZZ
         /// Gets whether the character is performing a deliberate jump rather than an ordinary fall.
         /// </summary>
         public bool IsJumping => m_isJumping;
+
+        /// <summary>
+        /// Gets the replicated death state owned by this character's network authority.
+        /// </summary>
+        public bool IsDead => m_characterNetworkManager != null &&
+            m_characterNetworkManager.IsDead.Value;
         public bool IsPerformingAction => m_isPerformingAction;
         public bool CanMove => m_canMove;
         public bool CanRotate => m_canRotate;
