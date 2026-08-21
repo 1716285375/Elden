@@ -11,6 +11,7 @@ namespace ZZ
         [SerializeField] private CharacterAnimatorManager m_characterAnimatorManager;
         [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
 
+        private CharacterEffectsManager m_characterEffectsManager;
         private CharacterStatsManager m_characterStatsManager;
         private bool m_isGrounded = true;
         private bool m_isJumping;
@@ -20,6 +21,7 @@ namespace ZZ
         private bool m_shouldApplyRootMotion;
 
         public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
+        public CharacterEffectsManager CharacterEffectsManager => m_characterEffectsManager;
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
         public CharacterStatsManager CharacterStatsManager => m_characterStatsManager;
         /// <summary>
@@ -45,6 +47,7 @@ namespace ZZ
             }
 
             m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterEffectsManager = GetComponent<CharacterEffectsManager>();
             m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
             m_characterStatsManager = GetComponent<CharacterStatsManager>();
             m_characterAnimatorManager?.Initialize(m_animator);
