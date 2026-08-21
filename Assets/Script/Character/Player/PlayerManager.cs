@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,6 +14,11 @@ namespace ZZ
         private const string k_SpawnPointName = "Player Spawn Point";
 
         [SerializeField] private PlayerAnimatorManager m_playerAnimatorManager;
+
+        [Header("DEBUG")]
+        [SerializeField] private bool m_respawnCharacter;
+
+        private bool m_isDeathInputBlocked;
 
         public PlayerAnimatorManager PlayerAnimatorManager => m_playerAnimatorManager;
         public PlayerNetworkManager PlayerNetworkManager { get; private set; }
@@ -57,6 +63,7 @@ namespace ZZ
 
         public override void OnLostOwnership()
         {
+            ResetLocalDeathPresentation();
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
@@ -66,11 +73,26 @@ namespace ZZ
 
         public override void OnNetworkDespawn()
         {
+            ResetLocalDeathPresentation();
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
             PlayerStatsManager?.UnbindLocalHUD();
             base.OnNetworkDespawn();
+        }
+
+        private void Update()
+        {
+            if (!m_respawnCharacter)
+            {
+                return;
+            }
+
+            m_respawnCharacter = false;
+            if (IsOwner && IsDead)
+            {
+                ReviveCharacter();
+            }
         }
 
         private void LateUpdate()
@@ -82,6 +104,55 @@ namespace ZZ
 
             BindLocalPlayerSystems();
             PlayerCamera.Instance?.HandleAllCameraActions();
+        }
+
+        /// <inheritdoc />
+        public override IEnumerator ProcessDeathEvent(
+            bool manuallySelectDeathAnimation = false)
+        {
+            if (!BeginDeathEvent(manuallySelectDeathAnimation))
+            {
+                yield break;
+            }
+
+            if (IsOwner)
+            {
+                if (IsSpawned && PlayerNetworkManager != null)
+                {
+                    PlayerNetworkManager.IsSprinting.Value = false;
+                }
+
+                PlayerUIManager playerUIManager = PlayerUIManager.Instance;
+                playerUIManager?.PlayerUISaveGameManager?.SetDeathInputBlocked(true);
+                PlayerInputManager.Instance?.BlockGameplayInput();
+                m_isDeathInputBlocked = true;
+                playerUIManager?.PlayerUIPopUpManager?.SendYouDiedPopup();
+            }
+
+            yield return WaitForRevive();
+        }
+
+        /// <inheritdoc />
+        public override void ReviveCharacter()
+        {
+            if (IsOwner && IsSpawned && CharacterNetworkManager != null)
+            {
+                CharacterNetworkManager.CurrentHealth.Value =
+                    Mathf.Max(0f, CharacterNetworkManager.MaxHealth.Value);
+                CharacterNetworkManager.CurrentStamina.Value =
+                    Mathf.Max(0f, CharacterNetworkManager.MaxStamina.Value);
+                if (PlayerNetworkManager != null)
+                {
+                    PlayerNetworkManager.IsSprinting.Value = false;
+                }
+
+                base.ReviveCharacter();
+                CharacterNetworkManager.IsDead.Value = false;
+                ResetLocalDeathPresentation();
+                return;
+            }
+
+            base.ReviveCharacter();
         }
 
         /// <summary>
@@ -154,6 +225,19 @@ namespace ZZ
             PlayerCamera.Instance?.BindPlayer(this);
             PlayerInputManager.Instance?.BindPlayer(this);
             PlayerStatsManager?.BindLocalHUD();
+        }
+
+        private void ResetLocalDeathPresentation()
+        {
+            if (!m_isDeathInputBlocked)
+            {
+                return;
+            }
+
+            PlayerUIManager.Instance?.PlayerUISaveGameManager?.SetDeathInputBlocked(false);
+            PlayerUIManager.Instance?.PlayerUIPopUpManager?.HideYouDiedPopup();
+            PlayerInputManager.Instance?.UnblockGameplayInput();
+            m_isDeathInputBlocked = false;
         }
 
         private void RegisterLocalPlayerForSaveData()

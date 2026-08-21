@@ -25,6 +25,7 @@ namespace ZZ
 
         private PlayerControls m_playerControls;
         private InputAction m_toggleSaveMenuAction;
+        private bool m_isInputBlockedByDeath;
         private bool m_isSaveGameMenuOpen;
         private bool m_isInternalEventSystemActive;
         private bool m_wasCursorVisible;
@@ -34,6 +35,18 @@ namespace ZZ
         /// Gets whether the world Save Game menu currently owns local input.
         /// </summary>
         public bool IsSaveGameMenuOpen => m_isSaveGameMenuOpen;
+
+        /// <summary>
+        /// Prevents a dead local player from opening or writing the in-world Save Game menu.
+        /// </summary>
+        public void SetDeathInputBlocked(bool isBlocked)
+        {
+            m_isInputBlockedByDeath = isBlocked;
+            if (isBlocked)
+            {
+                CloseSaveGameMenu();
+            }
+        }
 
         private void OnEnable()
         {
@@ -67,7 +80,9 @@ namespace ZZ
         /// </summary>
         public void OpenSaveGameMenu()
         {
-            if (m_isSaveGameMenuOpen || SceneManager.GetActiveScene().buildIndex <= 0)
+            if (m_isInputBlockedByDeath ||
+                m_isSaveGameMenuOpen ||
+                SceneManager.GetActiveScene().buildIndex <= 0)
             {
                 return;
             }
@@ -109,6 +124,11 @@ namespace ZZ
         /// </summary>
         public void SaveCurrentGame()
         {
+            if (m_isInputBlockedByDeath)
+            {
+                return;
+            }
+
             WorldSaveGameManager saveGameManager = WorldSaveGameManager.Instance;
             bool wasSaved = saveGameManager != null && saveGameManager.SaveGame();
             if (m_feedbackText != null)
@@ -123,6 +143,11 @@ namespace ZZ
 
         private void OnToggleSaveMenuPerformed(InputAction.CallbackContext context)
         {
+            if (m_isInputBlockedByDeath)
+            {
+                return;
+            }
+
             if (m_isSaveGameMenuOpen)
             {
                 CloseSaveGameMenu();

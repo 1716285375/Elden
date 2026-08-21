@@ -13,12 +13,17 @@ namespace ZZ
         private static readonly int s_verticalParameter = Animator.StringToHash("Vertical");
         private static readonly int s_isGroundedParameter = Animator.StringToHash("isGrounded");
         private static readonly int s_inAirTimerParameter = Animator.StringToHash("inAirTimer");
+        private static readonly int s_isDeadParameter = Animator.StringToHash("isDead");
+        private static readonly int s_emptyActionState =
+            Animator.StringToHash("Action Override.Empty");
         private static readonly int s_rollForwardState =
             Animator.StringToHash("Action Override.Roll_Forward_01");
         private static readonly int s_backStepState =
             Animator.StringToHash("Action Override.Back_Step_01");
         private static readonly int s_jumpStartState =
             Animator.StringToHash("Action Override.Jump Start");
+        private static readonly int s_deathState =
+            Animator.StringToHash("Action Override.Dead_01");
 
         [SerializeField] private Animator m_animator;
 
@@ -157,8 +162,39 @@ namespace ZZ
                 shouldApplyRootMotion,
                 canRotate,
                 canMove);
+            if (targetAnimation == CharacterActionAnimation.Death)
+            {
+                m_animator.SetBool(s_isDeadParameter, true);
+            }
+
             m_animator.CrossFade(
                 actionStateHash,
+                k_ActionTransitionDuration,
+                actionLayerIndex);
+        }
+
+        /// <summary>
+        /// Clears the death Animator condition and returns the action layer to its neutral state.
+        /// </summary>
+        public void PlayEmptyActionAnimation()
+        {
+            if (m_animator == null)
+            {
+                return;
+            }
+
+            int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            if (actionLayerIndex < 0 || !m_animator.HasState(actionLayerIndex, s_emptyActionState))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} does not contain Action Override.Empty.",
+                    m_animator);
+                return;
+            }
+
+            m_animator.SetBool(s_isDeadParameter, false);
+            m_animator.CrossFade(
+                s_emptyActionState,
                 k_ActionTransitionDuration,
                 actionLayerIndex);
         }
@@ -169,7 +205,8 @@ namespace ZZ
         internal static bool IsSupportedActionAnimation(CharacterActionAnimation targetAnimation)
         {
             return targetAnimation == CharacterActionAnimation.RollForward ||
-                targetAnimation == CharacterActionAnimation.BackStep;
+                targetAnimation == CharacterActionAnimation.BackStep ||
+                targetAnimation == CharacterActionAnimation.Death;
         }
 
         private static bool TryGetActionStateHash(
@@ -183,6 +220,9 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.BackStep:
                     actionStateHash = s_backStepState;
+                    return true;
+                case CharacterActionAnimation.Death:
+                    actionStateHash = s_deathState;
                     return true;
                 default:
                     actionStateHash = 0;

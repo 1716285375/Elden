@@ -6,6 +6,7 @@ namespace ZZ
     public enum CharacterActionAnimation : byte
     {
         RollForward = 0,
-        BackStep = 1
+        BackStep = 1,
+        Death = 2
     }
 }

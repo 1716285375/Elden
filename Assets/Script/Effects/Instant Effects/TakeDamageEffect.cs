@@ -88,10 +88,6 @@ namespace ZZ
                 maximumHealth);
             float remainingHealth = Mathf.Max(0f, currentHealth - damage);
             networkManager.CurrentHealth.Value = remainingHealth;
-            if (remainingHealth <= 0f)
-            {
-                networkManager.IsDead.Value = true;
-            }
         }
     }
 }
