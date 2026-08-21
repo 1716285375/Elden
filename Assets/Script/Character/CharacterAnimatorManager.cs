@@ -8,6 +8,7 @@ namespace ZZ
         private const float k_ActionTransitionDuration = 0.2f;
         private const float k_SprintVerticalValue = 2f;
         private const string k_ActionOverrideLayerName = "Action Override";
+        private const string k_UpperBodyOverrideLayerName = "Upper Body Override";
 
         private static readonly int s_horizontalParameter = Animator.StringToHash("Horizontal");
         private static readonly int s_verticalParameter = Animator.StringToHash("Vertical");
@@ -24,6 +25,10 @@ namespace ZZ
             Animator.StringToHash("Action Override.Jump Start");
         private static readonly int s_deathState =
             Animator.StringToHash("Action Override.Dead_01");
+        private static readonly int s_swapRightWeaponState =
+            Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
+        private static readonly int s_swapLeftWeaponState =
+            Animator.StringToHash("Upper Body Override.Swap_Left_Weapon_01");
 
         [SerializeField] private Animator m_animator;
 
@@ -197,6 +202,31 @@ namespace ZZ
                 s_emptyActionState,
                 k_ActionTransitionDuration,
                 actionLayerIndex);
+        }
+
+        /// <summary>
+        /// Plays a hand-specific swap on the upper-body layer without changing movement flags.
+        /// </summary>
+        public void PlayWeaponSwapAnimation(WeaponModelSlot weaponSlot)
+        {
+            if (m_animator == null)
+            {
+                return;
+            }
+
+            int layerIndex = m_animator.GetLayerIndex(k_UpperBodyOverrideLayerName);
+            int stateHash = weaponSlot == WeaponModelSlot.RightHandSlot
+                ? s_swapRightWeaponState
+                : s_swapLeftWeaponState;
+            if (layerIndex < 0 || !m_animator.HasState(layerIndex, stateHash))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} is missing the {weaponSlot} swap state.",
+                    m_animator);
+                return;
+            }
+
+            m_animator.CrossFade(stateHash, k_ActionTransitionDuration, layerIndex);
         }
 
         /// <summary>

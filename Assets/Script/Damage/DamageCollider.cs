@@ -81,6 +81,25 @@ namespace ZZ
             m_characterCausingDamage = characterCausingDamage;
         }
 
+        /// <summary>
+        /// Configures the damage payload emitted during this collider's hit window.
+        /// </summary>
+        public void SetDamageValues(
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage)
+        {
+            m_physicalDamage = Mathf.Max(0f, physicalDamage);
+            m_magicDamage = Mathf.Max(0f, magicDamage);
+            m_fireDamage = Mathf.Max(0f, fireDamage);
+            m_lightningDamage = Mathf.Max(0f, lightningDamage);
+            m_holyDamage = Mathf.Max(0f, holyDamage);
+            m_poiseDamage = Mathf.Max(0f, poiseDamage);
+        }
+
         protected virtual void Damage(CharacterManager target, Vector3 contactPoint)
         {
             CharacterEffectsManager effectsManager = target.CharacterEffectsManager;

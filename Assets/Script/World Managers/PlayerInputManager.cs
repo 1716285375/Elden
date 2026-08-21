@@ -23,6 +23,8 @@ namespace ZZ
         private PlayerManager m_player;
         private bool m_hasDodgeInput;
         private bool m_hasJumpInput;
+        private bool m_hasSwitchRightWeaponInput;
+        private bool m_hasSwitchLeftWeaponInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
 
@@ -52,6 +54,10 @@ namespace ZZ
             m_playerControls.PlayerMovement.Sprint.performed += OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled += OnSprintCanceled;
             m_playerControls.PlayerMovement.Jump.performed += OnJumpPerformed;
+            m_playerControls.PlayerMovement.SwitchRightWeapon.performed +=
+                OnSwitchRightWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchLeftWeapon.performed +=
+                OnSwitchLeftWeaponPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
@@ -71,6 +77,10 @@ namespace ZZ
             m_playerControls.PlayerMovement.Sprint.performed -= OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled -= OnSprintCanceled;
             m_playerControls.PlayerMovement.Jump.performed -= OnJumpPerformed;
+            m_playerControls.PlayerMovement.SwitchRightWeapon.performed -=
+                OnSwitchRightWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchLeftWeapon.performed -=
+                OnSwitchLeftWeaponPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
@@ -166,6 +176,8 @@ namespace ZZ
             CameraHorizontalInput = 0f;
             m_hasDodgeInput = false;
             m_hasJumpInput = false;
+            m_hasSwitchRightWeaponInput = false;
+            m_hasSwitchLeftWeaponInput = false;
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             IsMovementInputEnabled = false;
@@ -197,6 +209,7 @@ namespace ZZ
             HandlePlayerMovementInput();
             HandleDodgeInput();
             HandleJumpInput();
+            HandleWeaponSwitchInput();
             HandleSprinting();
         }
 
@@ -249,6 +262,21 @@ namespace ZZ
             m_player?.LocomotionManager?.AttemptToPerformJump();
         }
 
+        private void HandleWeaponSwitchInput()
+        {
+            if (m_hasSwitchRightWeaponInput)
+            {
+                m_hasSwitchRightWeaponInput = false;
+                m_player?.InventoryManager?.SwitchRightWeapon();
+            }
+
+            if (m_hasSwitchLeftWeaponInput)
+            {
+                m_hasSwitchLeftWeaponInput = false;
+                m_player?.InventoryManager?.SwitchLeftWeapon();
+            }
+        }
+
         private void OnMovementChanged(InputAction.CallbackContext context)
         {
             MovementInput = context.ReadValue<Vector2>();
@@ -277,6 +305,16 @@ namespace ZZ
         private void OnJumpPerformed(InputAction.CallbackContext context)
         {
             m_hasJumpInput = true;
+        }
+
+        private void OnSwitchRightWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasSwitchRightWeaponInput = true;
+        }
+
+        private void OnSwitchLeftWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasSwitchLeftWeaponInput = true;
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
