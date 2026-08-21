@@ -72,10 +72,12 @@ namespace ZZ
         [SerializeField, Min(0.001f)] private float m_networkRotationSmoothTime = 0.1f;
 
         private CharacterAnimatorManager m_characterAnimatorManager;
+        private CharacterManager m_characterManager;
         private Vector3 m_networkPositionVelocity;
 
         private void Awake()
         {
+            m_characterManager = GetComponent<CharacterManager>();
             m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
             CurrentHealth.SetUpdateTraits(new NetworkVariableUpdateTraits
             {
@@ -89,13 +91,24 @@ namespace ZZ
 
         public override void OnNetworkSpawn()
         {
-            if (!IsOwner)
+            base.OnNetworkSpawn();
+            CurrentHealth.OnValueChanged += OnCurrentHealthChanged;
+            IsDead.OnValueChanged += OnIsDeadChanged;
+
+            if (IsOwner)
             {
-                return;
+                NetworkPosition.Value = transform.position;
+                NetworkRotation.Value = transform.rotation;
             }
 
-            NetworkPosition.Value = transform.position;
-            NetworkRotation.Value = transform.rotation;
+            CheckHP();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            CurrentHealth.OnValueChanged -= OnCurrentHealthChanged;
+            IsDead.OnValueChanged -= OnIsDeadChanged;
+            base.OnNetworkDespawn();
         }
 
         private void Update()
@@ -123,6 +136,32 @@ namespace ZZ
                     transform.rotation,
                     NetworkRotation.Value,
                     rotationInterpolation);
+            }
+        }
+
+        /// <summary>
+        /// Clamps owner Health to its maximum and starts death presentation on every peer.
+        /// </summary>
+        public void CheckHP()
+        {
+            if (!IsSpawned || m_characterManager == null)
+            {
+                return;
+            }
+
+            float maximumHealth = Mathf.Max(0f, MaxHealth.Value);
+            if (IsOwner && maximumHealth > 0f && CurrentHealth.Value > maximumHealth)
+            {
+                CurrentHealth.Value = maximumHealth;
+                return;
+            }
+
+            bool hasInitializedHealth = maximumHealth > 0f;
+            bool shouldProcessDeath = IsDead.Value ||
+                hasInitializedHealth && CurrentHealth.Value <= 0f;
+            if (shouldProcessDeath && !m_characterManager.IsDeathEventRunning)
+            {
+                StartCoroutine(m_characterManager.ProcessDeathEvent());
             }
         }
 
@@ -175,6 +214,25 @@ namespace ZZ
                 shouldApplyRootMotion,
                 canRotate,
                 canMove);
+        }
+
+        private void OnCurrentHealthChanged(float previousHealth, float currentHealth)
+        {
+            CheckHP();
+        }
+
+        private void OnIsDeadChanged(bool wasDead, bool isDead)
+        {
+            if (isDead)
+            {
+                CheckHP();
+                return;
+            }
+
+            if (wasDead && !IsOwner)
+            {
+                m_characterManager?.ReviveCharacter();
+            }
         }
     }
 }

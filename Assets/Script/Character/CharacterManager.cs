@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace ZZ
         private bool m_canMove = true;
         private bool m_canRotate = true;
         private bool m_shouldApplyRootMotion;
+        private bool m_isDeathEventRunning;
 
         public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
         public CharacterEffectsManager CharacterEffectsManager => m_characterEffectsManager;
@@ -43,6 +45,8 @@ namespace ZZ
         public bool CanMove => m_canMove;
         public bool CanRotate => m_canRotate;
         public bool ShouldApplyRootMotion => m_shouldApplyRootMotion;
+
+        internal bool IsDeathEventRunning => m_isDeathEventRunning;
 
         protected virtual void Awake()
         {
@@ -108,6 +112,64 @@ namespace ZZ
         public void EndJump()
         {
             m_isJumping = false;
+        }
+
+        /// <summary>
+        /// Enters the replicated death lifecycle and holds the character in its death action.
+        /// </summary>
+        public virtual IEnumerator ProcessDeathEvent(
+            bool manuallySelectDeathAnimation = false)
+        {
+            if (!BeginDeathEvent(manuallySelectDeathAnimation))
+            {
+                yield break;
+            }
+
+            yield return WaitForRevive();
+        }
+
+        /// <summary>
+        /// Restores the local character presentation after its authority clears the death state.
+        /// </summary>
+        public virtual void ReviveCharacter()
+        {
+            m_isDeathEventRunning = false;
+            m_characterAnimatorManager?.PlayEmptyActionAnimation();
+            ResetActionFlags();
+        }
+
+        protected bool BeginDeathEvent(bool manuallySelectDeathAnimation)
+        {
+            if (m_isDeathEventRunning)
+            {
+                return false;
+            }
+
+            m_isDeathEventRunning = true;
+            if (IsSpawned && IsOwner && m_characterNetworkManager != null)
+            {
+                m_characterNetworkManager.CurrentHealth.Value = 0f;
+                m_characterNetworkManager.IsDead.Value = true;
+            }
+
+            SetActionState(true, false, false, false);
+            EndJump();
+            if (!manuallySelectDeathAnimation)
+            {
+                m_characterAnimatorManager?.PlayTargetActionAnimation(
+                    CharacterActionAnimation.Death,
+                    true);
+            }
+
+            return true;
+        }
+
+        protected IEnumerator WaitForRevive()
+        {
+            while (m_isDeathEventRunning)
+            {
+                yield return null;
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ namespace ZZ
         [SerializeField] private bool m_shouldStartAsClient;
         [SerializeField] private PlayerUIHUDManager m_playerUIHUDManager;
         [SerializeField] private PlayerUISaveGameManager m_playerUISaveGameManager;
+        [SerializeField] private PlayerUIPopUpManager m_playerUIPopUpManager;
 
         public static PlayerUIManager Instance => s_instance;
         public PlayerUIHUDManager PlayerUIHUDManager => m_playerUIHUDManager;
@@ -22,6 +23,11 @@ namespace ZZ
         /// </summary>
         public PlayerUISaveGameManager PlayerUISaveGameManager => m_playerUISaveGameManager;
 
+        /// <summary>
+        /// Gets the persistent local transient-message controller.
+        /// </summary>
+        public PlayerUIPopUpManager PlayerUIPopUpManager => m_playerUIPopUpManager;
+
         private void Awake()
         {
             if (s_instance == null)
@@ -30,6 +36,8 @@ namespace ZZ
                 m_playerUIHUDManager ??= GetComponentInChildren<PlayerUIHUDManager>(true);
                 m_playerUISaveGameManager ??=
                     GetComponentInChildren<PlayerUISaveGameManager>(true);
+                m_playerUIPopUpManager ??=
+                    GetComponentInChildren<PlayerUIPopUpManager>(true);
             }
             else
             {
