@@ -18,6 +18,10 @@ namespace ZZ
         [FormerlySerializedAs("gravity")]
         [SerializeField] private float m_gravity = -20f;
 
+        [Header("Stamina Costs")]
+        [SerializeField, Min(0f)] private float m_sprintingStaminaCost = 10f;
+        [SerializeField, Min(0f)] private float m_dodgeStaminaCost = 25f;
+
         private PlayerManager m_player;
         private PlayerInputManager m_playerInputManager;
         private PlayerCamera m_playerCamera;
@@ -101,14 +105,29 @@ namespace ZZ
                 return;
             }
 
-            SetSprinting(false);
-
             if (m_playerInputManager.MoveAmount > 0f)
             {
+                if (m_playerCamera == null || m_playerCamera.CameraObject == null)
+                {
+                    return;
+                }
+
+                if (!TryConsumeDodgeStamina())
+                {
+                    return;
+                }
+
+                SetSprinting(false);
                 PerformRoll();
                 return;
             }
 
+            if (!TryConsumeDodgeStamina())
+            {
+                return;
+            }
+
+            SetSprinting(false);
             PerformBackstep();
         }
 
@@ -126,10 +145,14 @@ namespace ZZ
             float moveAmount = m_playerInputManager != null
                 ? m_playerInputManager.MoveAmount
                 : 0f;
+            float currentStamina = m_player.CharacterNetworkManager != null
+                ? m_player.CharacterNetworkManager.CurrentStamina.Value
+                : 0f;
             SetSprinting(CanSprint(
                 isSprintInputHeld,
                 m_player.IsPerformingAction,
-                moveAmount));
+                moveAmount,
+                currentStamina));
         }
 
         private void HandleOwnerMovement()
@@ -145,6 +168,7 @@ namespace ZZ
                 return;
             }
 
+            ConsumeSprintingStamina();
             HandleGroundedMovement();
             HandleRotation();
 
@@ -282,6 +306,34 @@ namespace ZZ
             PlayDodgeAction(CharacterActionAnimation.BackStep);
         }
 
+        private bool TryConsumeDodgeStamina()
+        {
+            return m_player.PlayerStatsManager != null &&
+                m_player.PlayerStatsManager.TryConsumeStamina(m_dodgeStaminaCost);
+        }
+
+        private void ConsumeSprintingStamina()
+        {
+            if (!IsSprinting)
+            {
+                return;
+            }
+
+            float staminaCost = m_sprintingStaminaCost * Time.deltaTime;
+            if (staminaCost <= 0f)
+            {
+                return;
+            }
+
+            PlayerStatsManager statsManager = m_player.PlayerStatsManager;
+            if (statsManager == null ||
+                !statsManager.TryConsumeStamina(staminaCost) ||
+                m_player.CharacterNetworkManager.CurrentStamina.Value <= 0f)
+            {
+                SetSprinting(false);
+            }
+        }
+
         private void PlayDodgeAction(CharacterActionAnimation targetAnimation)
         {
             const bool k_IsPerformingAction = true;
@@ -306,11 +358,13 @@ namespace ZZ
         private static bool CanSprint(
             bool isSprintInputHeld,
             bool isPerformingAction,
-            float moveAmount)
+            float moveAmount,
+            float currentStamina)
         {
             return isSprintInputHeld &&
                 !isPerformingAction &&
-                moveAmount >= k_SprintMovementThreshold;
+                moveAmount >= k_SprintMovementThreshold &&
+                currentStamina > 0f;
         }
 
         private void SetSprinting(bool isSprinting)

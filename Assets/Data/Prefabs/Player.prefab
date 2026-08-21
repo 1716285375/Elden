@@ -289,6 +289,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1203088054556932684}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f31d312421127094ba51cefa824ee751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2978918928764968499}
   m_SourcePrefab: {fileID: 100100000, guid: f31d312421127094ba51cefa824ee751, type: 3}
 --- !u!4 &5925388870315372678 stripped
 Transform:
@@ -368,6 +371,8 @@ MonoBehaviour:
   m_sprintingSpeed: 8
   m_rotationSpeed: 15
   m_gravity: -20
+  m_sprintingStaminaCost: 10
+  m_dodgeStaminaCost: 25
 --- !u!114 &6368077256085200356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,6 +428,21 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  Endurance:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  CurrentStamina:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  MaxStamina:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
   IsSprinting:
@@ -430,3 +450,19 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+--- !u!114 &2978918928764968499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a74848b0927c614da4494e7cd58963d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerStatsManager
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_staminaRegenerationDelay: 2
+  m_staminaRegenerationTickInterval: 0.1
+  m_staminaRegenerationAmount: 2

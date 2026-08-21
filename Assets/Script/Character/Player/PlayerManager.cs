@@ -5,6 +5,7 @@ namespace ZZ
 {
     [RequireComponent(typeof(PlayerLocomotionManager))]
     [RequireComponent(typeof(PlayerNetworkManager))]
+    [RequireComponent(typeof(PlayerStatsManager))]
     public class PlayerManager : CharacterManager
     {
         private const string k_GameplaySceneName = "Scene_World_01";
@@ -14,6 +15,7 @@ namespace ZZ
 
         public PlayerAnimatorManager PlayerAnimatorManager => m_playerAnimatorManager;
         public PlayerNetworkManager PlayerNetworkManager { get; private set; }
+        public PlayerStatsManager PlayerStatsManager { get; private set; }
         public PlayerLocomotionManager LocomotionManager { get; private set; }
         public bool IsInGameplayScene =>
             SceneManager.GetActiveScene().name == k_GameplaySceneName;
@@ -33,6 +35,7 @@ namespace ZZ
             base.Awake();
             m_playerAnimatorManager = GetComponentInChildren<PlayerAnimatorManager>(true);
             PlayerNetworkManager = GetComponent<PlayerNetworkManager>();
+            PlayerStatsManager = GetComponent<PlayerStatsManager>();
             LocomotionManager = GetComponent<PlayerLocomotionManager>();
         }
 
@@ -53,6 +56,7 @@ namespace ZZ
         {
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
+            PlayerStatsManager?.UnbindLocalHUD();
             base.OnLostOwnership();
         }
 
@@ -60,6 +64,7 @@ namespace ZZ
         {
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
+            PlayerStatsManager?.UnbindLocalHUD();
             base.OnNetworkDespawn();
         }
 
@@ -83,6 +88,7 @@ namespace ZZ
 
             PlayerCamera.Instance?.BindPlayer(this);
             PlayerInputManager.Instance?.BindPlayer(this);
+            PlayerStatsManager?.BindLocalHUD();
         }
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode loadMode)

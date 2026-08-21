@@ -449,13 +449,14 @@ namespace ZZ.Editor
                 "CanSprint",
                 BindingFlags.NonPublic | BindingFlags.Static);
             if (canSprint == null ||
-                CanSprint(canSprint, false, false, 1f) ||
-                CanSprint(canSprint, true, false, 0f) ||
-                CanSprint(canSprint, true, true, 1f) ||
-                !CanSprint(canSprint, true, false, 0.5f))
+                CanSprint(canSprint, false, false, 1f, 100f) ||
+                CanSprint(canSprint, true, false, 0f, 100f) ||
+                CanSprint(canSprint, true, true, 1f, 100f) ||
+                CanSprint(canSprint, true, false, 1f, 0f) ||
+                !CanSprint(canSprint, true, false, 0.5f, 100f))
             {
                 throw new InvalidOperationException(
-                    "Sprint rules must require held input, movement, and no active action.");
+                    "Sprint rules must require held input, movement, stamina, and no active action.");
             }
         }
 
@@ -463,11 +464,18 @@ namespace ZZ.Editor
             MethodInfo canSprint,
             bool isSprintInputHeld,
             bool isPerformingAction,
-            float moveAmount)
+            float moveAmount,
+            float currentStamina)
         {
             object result = canSprint.Invoke(
                 null,
-                new object[] { isSprintInputHeld, isPerformingAction, moveAmount });
+                new object[]
+                {
+                    isSprintInputHeld,
+                    isPerformingAction,
+                    moveAmount,
+                    currentStamina
+                });
             return result is bool canSprintResult && canSprintResult;
         }
 

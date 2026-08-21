@@ -6,6 +6,8 @@ namespace ZZ
 {
     public class CharacterNetworkManager : NetworkBehaviour
     {
+        private const float k_StaminaNetworkUpdateInterval = 0.1f;
+
         [Header("Position")]
         public NetworkVariable<Vector3> NetworkPosition = new NetworkVariable<Vector3>(
             Vector3.zero,
@@ -32,6 +34,20 @@ namespace ZZ
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
+        [Header("Stats")]
+        public NetworkVariable<int> Endurance = new NetworkVariable<int>(
+            10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> CurrentStamina = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> MaxStamina = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+
         [FormerlySerializedAs("networkPositionSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkPositionSmoothTime = 0.1f;
         [FormerlySerializedAs("networkRotationSmoothTime")]
@@ -43,6 +59,10 @@ namespace ZZ
         private void Awake()
         {
             m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
+            CurrentStamina.SetUpdateTraits(new NetworkVariableUpdateTraits
+            {
+                MinSecondsBetweenUpdates = k_StaminaNetworkUpdateInterval
+            });
         }
 
         public override void OnNetworkSpawn()
