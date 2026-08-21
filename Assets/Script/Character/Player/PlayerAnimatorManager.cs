@@ -14,6 +14,14 @@ namespace ZZ
             m_characterController = GetComponentInParent<CharacterController>();
         }
 
+        /// <summary>
+        /// Forwards the Jump Start animation event to the locally owned locomotion authority.
+        /// </summary>
+        public void ApplyJumpingVelocity()
+        {
+            m_player?.LocomotionManager?.ApplyJumpingVelocity();
+        }
+
         private void OnAnimatorMove()
         {
             if (m_player == null ||

@@ -22,6 +22,7 @@ namespace ZZ
         private PlayerControls m_playerControls;
         private PlayerManager m_player;
         private bool m_hasDodgeInput;
+        private bool m_hasJumpInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
 
@@ -50,6 +51,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.Dodge.performed += OnDodgePerformed;
             m_playerControls.PlayerMovement.Sprint.performed += OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled += OnSprintCanceled;
+            m_playerControls.PlayerMovement.Jump.performed += OnJumpPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
@@ -68,6 +70,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.Dodge.performed -= OnDodgePerformed;
             m_playerControls.PlayerMovement.Sprint.performed -= OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled -= OnSprintCanceled;
+            m_playerControls.PlayerMovement.Jump.performed -= OnJumpPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
@@ -162,6 +165,7 @@ namespace ZZ
             CameraVerticalInput = 0f;
             CameraHorizontalInput = 0f;
             m_hasDodgeInput = false;
+            m_hasJumpInput = false;
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             IsMovementInputEnabled = false;
@@ -192,6 +196,7 @@ namespace ZZ
             HandleCameraMovementInput();
             HandlePlayerMovementInput();
             HandleDodgeInput();
+            HandleJumpInput();
             HandleSprinting();
         }
 
@@ -233,6 +238,17 @@ namespace ZZ
             m_player?.LocomotionManager?.HandleSprinting(m_isSprintInputHeld);
         }
 
+        private void HandleJumpInput()
+        {
+            if (!m_hasJumpInput)
+            {
+                return;
+            }
+
+            m_hasJumpInput = false;
+            m_player?.LocomotionManager?.AttemptToPerformJump();
+        }
+
         private void OnMovementChanged(InputAction.CallbackContext context)
         {
             MovementInput = context.ReadValue<Vector2>();
@@ -256,6 +272,11 @@ namespace ZZ
         private void OnSprintCanceled(InputAction.CallbackContext context)
         {
             m_isSprintInputHeld = false;
+        }
+
+        private void OnJumpPerformed(InputAction.CallbackContext context)
+        {
+            m_hasJumpInput = true;
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)

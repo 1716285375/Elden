@@ -120,6 +120,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""0d689dd6-2ffc-4c50-a47d-d6f5cc3ebf58"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -331,6 +340,28 @@ namespace ZZ
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Gamepad South Button"",
+                    ""id"": ""01d764fb-3fe4-4603-aa41-07ffdf932fd9"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard F"",
+                    ""id"": ""f68f9c61-20aa-4476-9173-c90b7aeac4b6"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -479,6 +510,7 @@ namespace ZZ
             m_PlayerMovement_Movement = m_PlayerMovement.FindAction("Movement", throwIfNotFound: true);
             m_PlayerMovement_Dodge = m_PlayerMovement.FindAction("Dodge", throwIfNotFound: true);
             m_PlayerMovement_Sprint = m_PlayerMovement.FindAction("Sprint", throwIfNotFound: true);
+            m_PlayerMovement_Jump = m_PlayerMovement.FindAction("Jump", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -571,6 +603,7 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_Movement;
         private readonly InputAction m_PlayerMovement_Dodge;
         private readonly InputAction m_PlayerMovement_Sprint;
+        private readonly InputAction m_PlayerMovement_Jump;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -594,6 +627,10 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/Sprint".
             /// </summary>
             public InputAction @Sprint => m_Wrapper.m_PlayerMovement_Sprint;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/Jump".
+            /// </summary>
+            public InputAction @Jump => m_Wrapper.m_PlayerMovement_Jump;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -629,6 +666,9 @@ namespace ZZ
                 @Sprint.started += instance.OnSprint;
                 @Sprint.performed += instance.OnSprint;
                 @Sprint.canceled += instance.OnSprint;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
             }
 
             /// <summary>
@@ -649,6 +689,9 @@ namespace ZZ
                 @Sprint.started -= instance.OnSprint;
                 @Sprint.performed -= instance.OnSprint;
                 @Sprint.canceled -= instance.OnSprint;
+                @Jump.started -= instance.OnJump;
+                @Jump.performed -= instance.OnJump;
+                @Jump.canceled -= instance.OnJump;
             }
 
             /// <summary>
@@ -939,6 +982,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSprint(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnJump(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.
