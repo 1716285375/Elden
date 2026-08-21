@@ -116,9 +116,17 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Chooses the first empty fixed slot and begins loading the starting scene.
+        /// Preserves the existing title-screen entry point for creating a new character.
         /// </summary>
         public bool AttemptToCreateNewGame()
+        {
+            return NewGame();
+        }
+
+        /// <summary>
+        /// Creates starting character data in the first free slot and loads the world.
+        /// </summary>
+        public bool NewGame()
         {
             for (int slotNumber = 1; slotNumber <= 10; slotNumber++)
             {

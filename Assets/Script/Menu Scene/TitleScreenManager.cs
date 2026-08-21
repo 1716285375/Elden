@@ -58,7 +58,7 @@ namespace ZZ
                 return;
             }
 
-            if (!WorldSaveGameManager.Instance.AttemptToCreateNewGame())
+            if (!WorldSaveGameManager.Instance.NewGame())
             {
                 DisplayNoFreeCharacterSlotsPopup();
             }

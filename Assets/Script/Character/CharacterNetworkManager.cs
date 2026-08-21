@@ -6,7 +6,7 @@ namespace ZZ
 {
     public class CharacterNetworkManager : NetworkBehaviour
     {
-        private const float k_StaminaNetworkUpdateInterval = 0.1f;
+        private const float k_ResourceNetworkUpdateInterval = 0.1f;
 
         [Header("Position")]
         public NetworkVariable<Vector3> NetworkPosition = new NetworkVariable<Vector3>(
@@ -35,8 +35,20 @@ namespace ZZ
             NetworkVariableWritePermission.Owner);
 
         [Header("Stats")]
+        public NetworkVariable<int> Vitality = new NetworkVariable<int>(
+            10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         public NetworkVariable<int> Endurance = new NetworkVariable<int>(
             10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> CurrentHealth = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> MaxHealth = new NetworkVariable<float>(
+            0f,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
         public NetworkVariable<float> CurrentStamina = new NetworkVariable<float>(
@@ -59,9 +71,13 @@ namespace ZZ
         private void Awake()
         {
             m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
+            CurrentHealth.SetUpdateTraits(new NetworkVariableUpdateTraits
+            {
+                MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
+            });
             CurrentStamina.SetUpdateTraits(new NetworkVariableUpdateTraits
             {
-                MinSecondsBetweenUpdates = k_StaminaNetworkUpdateInterval
+                MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
             });
         }
 

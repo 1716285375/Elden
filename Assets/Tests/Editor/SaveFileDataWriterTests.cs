@@ -39,7 +39,11 @@ namespace ZZ.Tests
                 XPosition = 10f,
                 YPosition = 2f,
                 ZPosition = 30f,
-                SceneIndex = 1
+                SceneIndex = 1,
+                Vitality = 14,
+                Endurance = 12,
+                CurrentHealth = 142f,
+                CurrentStamina = 67f
             };
 
             Assert.That(writer.CheckToSeeIfFileExists(), Is.False);
@@ -55,10 +59,45 @@ namespace ZZ.Tests
             Assert.That(loadedData.YPosition, Is.EqualTo(2f));
             Assert.That(loadedData.ZPosition, Is.EqualTo(30f));
             Assert.That(loadedData.SceneIndex, Is.EqualTo(1));
+            Assert.That(loadedData.Vitality, Is.EqualTo(14));
+            Assert.That(loadedData.Endurance, Is.EqualTo(12));
+            Assert.That(loadedData.CurrentHealth, Is.EqualTo(142f));
+            Assert.That(loadedData.CurrentStamina, Is.EqualTo(67f));
 
             writer.DeleteSaveFile();
 
             Assert.That(writer.CheckToSeeIfFileExists(), Is.False);
+        }
+
+        [Test]
+        public void NewCharacterUsesStartingAttributeAndResourceDefaults()
+        {
+            CharacterSaveData characterData = new CharacterSaveData();
+
+            Assert.That(characterData.Vitality, Is.EqualTo(10));
+            Assert.That(characterData.Endurance, Is.EqualTo(10));
+            Assert.That(characterData.CurrentHealth, Is.EqualTo(150f));
+            Assert.That(characterData.CurrentStamina, Is.EqualTo(100f));
+        }
+
+        [Test]
+        public void LegacyCharacterDataUsesStartingAttributeAndResourceDefaults()
+        {
+            Directory.CreateDirectory(m_testDirectory);
+            File.WriteAllText(
+                Path.Combine(m_testDirectory, "CharacterSlot01.json"),
+                "{\"m_characterName\":\"LegacyKnight\",\"m_sceneIndex\":1}");
+            SaveFileDataWriter writer = new SaveFileDataWriter(
+                m_testDirectory,
+                "CharacterSlot01");
+
+            CharacterSaveData loadedData = writer.LoadSaveFile();
+
+            Assert.That(loadedData, Is.Not.Null);
+            Assert.That(loadedData.Vitality, Is.EqualTo(10));
+            Assert.That(loadedData.Endurance, Is.EqualTo(10));
+            Assert.That(loadedData.CurrentHealth, Is.EqualTo(150f));
+            Assert.That(loadedData.CurrentStamina, Is.EqualTo(100f));
         }
 
         [Test]

@@ -85,7 +85,7 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Copies the locally owned player's runtime name, position, and Scene into current save data.
+        /// Copies the locally owned player's identity, position, attributes, and resources into save data.
         /// </summary>
         public void SaveGameDataToCurrentCharacterData()
         {
@@ -102,10 +102,14 @@ namespace ZZ
             currentData.YPosition = position.y;
             currentData.ZPosition = position.z;
             currentData.SceneIndex = SceneManager.GetActiveScene().buildIndex;
+            currentData.Vitality = CharacterNetworkManager.Vitality.Value;
+            currentData.Endurance = CharacterNetworkManager.Endurance.Value;
+            currentData.CurrentHealth = CharacterNetworkManager.CurrentHealth.Value;
+            currentData.CurrentStamina = CharacterNetworkManager.CurrentStamina.Value;
         }
 
         /// <summary>
-        /// Applies current save data to the locally owned player's name and position.
+        /// Restores attributes, resource maxima, current resources, identity, and position in order.
         /// </summary>
         public void LoadGameDataFromCurrentCharacterData()
         {
@@ -116,6 +120,18 @@ namespace ZZ
                 return;
             }
 
+            CharacterNetworkManager.Vitality.Value = currentData.Vitality;
+            CharacterNetworkManager.Endurance.Value = currentData.Endurance;
+            PlayerStatsManager.SetNewMaxHealthValue();
+            PlayerStatsManager.SetNewMaxStaminaValue();
+            CharacterNetworkManager.CurrentHealth.Value = Mathf.Clamp(
+                currentData.CurrentHealth,
+                0f,
+                CharacterNetworkManager.MaxHealth.Value);
+            CharacterNetworkManager.CurrentStamina.Value = Mathf.Clamp(
+                currentData.CurrentStamina,
+                0f,
+                CharacterNetworkManager.MaxStamina.Value);
             PlayerNetworkManager.CharacterName.Value =
                 new FixedString64Bytes(currentData.CharacterName);
             Vector3 savedPosition = new Vector3(
