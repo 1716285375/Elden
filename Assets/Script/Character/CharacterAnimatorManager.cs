@@ -11,10 +11,14 @@ namespace ZZ
 
         private static readonly int s_horizontalParameter = Animator.StringToHash("Horizontal");
         private static readonly int s_verticalParameter = Animator.StringToHash("Vertical");
+        private static readonly int s_isGroundedParameter = Animator.StringToHash("isGrounded");
+        private static readonly int s_inAirTimerParameter = Animator.StringToHash("inAirTimer");
         private static readonly int s_rollForwardState =
             Animator.StringToHash("Action Override.Roll_Forward_01");
         private static readonly int s_backStepState =
             Animator.StringToHash("Action Override.Back_Step_01");
+        private static readonly int s_jumpStartState =
+            Animator.StringToHash("Action Override.Jump Start");
 
         [SerializeField] private Animator m_animator;
 
@@ -67,6 +71,52 @@ namespace ZZ
                 resolvedVerticalValue,
                 k_MovementParameterDampTime,
                 Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Presents the gameplay-owned ground contact and airborne duration to the Animator.
+        /// </summary>
+        public void UpdateAnimatorAirParameters(bool isGrounded, float inAirTimer)
+        {
+            if (m_animator == null)
+            {
+                return;
+            }
+
+            m_animator.SetBool(s_isGroundedParameter, isGrounded);
+            m_animator.SetFloat(s_inAirTimerParameter, inAirTimer);
+        }
+
+        /// <summary>
+        /// Starts the local jump action without extending the existing dodge RPC protocol.
+        /// </summary>
+        public void PlayJumpStartAnimation()
+        {
+            if (!CanPlayJumpStartAnimation())
+            {
+                Debug.LogError(
+                    $"Animator {m_animator?.name} does not contain Action Override.Jump Start.",
+                    m_animator);
+                return;
+            }
+
+            m_characterManager.SetActionState(true, false, false, false);
+            int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            m_animator.CrossFade(
+                s_jumpStartState,
+                k_ActionTransitionDuration,
+                actionLayerIndex);
+        }
+
+        internal bool CanPlayJumpStartAnimation()
+        {
+            if (m_animator == null || m_characterManager == null)
+            {
+                return false;
+            }
+
+            int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            return actionLayerIndex >= 0 && m_animator.HasState(actionLayerIndex, s_jumpStartState);
         }
 
         /// <summary>
