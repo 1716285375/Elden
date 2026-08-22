@@ -64,7 +64,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4fde62d96725554792a8eb70522ec60, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIDamageCollider
   m_characterCausingDamage: {fileID: 0}
   m_physicalDamage: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eaf18b9e74fd2034e8b5b40e11f68bc1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterUIManager
   m_character: {fileID: 2596670981253299374}
   m_characterUICanvas: {fileID: 4678111380658557212}
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
   m_Navigation:
     m_Mode: 3
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4cb1172785f05984298be07c37007f1b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterHPBar
   m_slider: {fileID: 3610295030266729606}
   m_rectTransform: {fileID: 8618107225635545665}
@@ -337,7 +337,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0.68, g: 0.035, b: 0.025, a: 1}
@@ -421,7 +421,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4fde62d96725554792a8eb70522ec60, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIDamageCollider
   m_characterCausingDamage: {fileID: 0}
   m_physicalDamage: 0
@@ -483,7 +483,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
   GlobalObjectIdHash: 0
   InScenePlacedSourceGlobalObjectIdHash: 0
@@ -579,7 +579,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f64d8b9e4fdf97459b371d75477ae72, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterNetworkManager
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkPosition:
@@ -652,6 +652,16 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  IsBlocking:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsAttacking:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
   CurrentAIState:
@@ -669,7 +679,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d7abc0088cdafe44a1dc869a7570658, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterCombatManager
   m_currentAttackType: 0
   m_leftHandDamageCollider: {fileID: 4895157094311681590}
@@ -686,12 +696,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d47393678126e2645b0d7dd8610531c3, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterStatsManager
   ShowTopMostFoldoutHeaderGroup: 1
   m_staminaRegenerationDelay: 2
   m_staminaRegenerationTickInterval: 0.1
   m_staminaRegenerationAmount: 2
+  m_totalPoiseDamage: 0
+  m_basePoiseDefense: 30
+  m_offensivePoiseBonus: 0
+  m_defaultPoiseResetTime: 8
+  m_poiseResetTimer: 0
+  m_blockingPhysicalAbsorption: 85
+  m_blockingMagicAbsorption: 40
+  m_blockingFireAbsorption: 35
+  m_blockingLightningAbsorption: 25
+  m_blockingHolyAbsorption: 35
+  m_blockingStability: 50
 --- !u!114 &7281313498304124352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -702,7 +723,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0e5ddb6092ae7e45b1b062e8233f6b1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterEffectsManager
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_character: {fileID: 0}
@@ -716,7 +737,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2355dc1172df55c41aec2998cb2ad87b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterManager
   ShowTopMostFoldoutHeaderGroup: 1
   m_animator: {fileID: 2420991618769048996}
@@ -797,7 +818,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0.015, g: 0.01, b: 0.008, a: 0.9}
@@ -872,7 +893,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1077,7 +1098,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 95829625606037309, guid: 041bad5155fb64b45aa5c4dc91208ca0, type: 3}
       propertyPath: m_Controller
-      value: 
+      value:
       objectReference: {fileID: 9100000, guid: dcb0f9828dcd4bc4c80ce66bc66b11a0, type: 2}
     - target: {fileID: 95829625606037309, guid: 041bad5155fb64b45aa5c4dc91208ca0, type: 3}
       propertyPath: m_CullingMode
@@ -1116,7 +1137,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4664d1bfd0ba41242847f04d6cd6161b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterAnimatorManager
   m_animator: {fileID: 0}
   m_hitForwardAnimations:
@@ -1135,6 +1156,22 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 17361b9b702cb8741acbdad9fe9d1ba3, type: 2}
   - {fileID: 7400000, guid: 62ae30fc18c412448b6fa0417f661d14, type: 2}
   - {fileID: 7400000, guid: 3ce89cb31a9b975408e7fff1150c639d, type: 2}
+  m_pingForwardAnimations:
+  - {fileID: 7400000, guid: bfc4f69e3be139148bcbf5125634b85c, type: 2}
+  - {fileID: 7400000, guid: b8fc9e6ff3411ee46b2167ca9c95fb37, type: 2}
+  - {fileID: 7400000, guid: 42f91455eac40514dab73ed5fab30688, type: 2}
+  m_pingBackwardAnimations:
+  - {fileID: 7400000, guid: f9b047d3f50d3e343bc14538cc2e52e7, type: 2}
+  - {fileID: 7400000, guid: 0e006c6922b844f46988fe0bf3e5a8af, type: 2}
+  - {fileID: 7400000, guid: 38e3e47d11963194f9fd7bf90ec421f8, type: 2}
+  m_pingLeftAnimations:
+  - {fileID: 7400000, guid: f92d344210c8ee24ba1a2a8365785691, type: 2}
+  - {fileID: 7400000, guid: 204d45fea10a5a24f987874a439152f4, type: 2}
+  - {fileID: 7400000, guid: 66cead2ecf8e9f34abef64815d8bb3d7, type: 2}
+  m_pingRightAnimations:
+  - {fileID: 7400000, guid: 756f666c8161a8f4896a0e9f06d7d792, type: 2}
+  - {fileID: 7400000, guid: f452ee1a21aa84a40aa96821e4b2277b, type: 2}
+  - {fileID: 7400000, guid: c56a2b28538d12c4a92863294fa286d1, type: 2}
 --- !u!82 &4933833250192825753
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1242,7 +1279,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0d495050e70b184fb91b0e3cdfc134b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterSoundFXManager
   m_audioSource: {fileID: 4933833250192825753}
   m_damageGrunts:

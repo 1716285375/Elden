@@ -9,11 +9,19 @@ namespace ZZ
     {
         private const float k_HealthPerVitalityLevel = 15f;
         private const float k_StaminaPerEnduranceLevel = 10f;
+        private const float k_PoiseTimerEpsilon = 0.0001f;
 
         [Header("Stamina Regeneration")]
         [SerializeField, Min(0f)] private float m_staminaRegenerationDelay = 2f;
         [SerializeField, Min(0.01f)] private float m_staminaRegenerationTickInterval = 0.1f;
         [SerializeField, Min(0f)] private float m_staminaRegenerationAmount = 2f;
+
+        [Header("Poise")]
+        [SerializeField] private float m_totalPoiseDamage;
+        [SerializeField, Min(0f)] private float m_basePoiseDefense = 50f;
+        [SerializeField, Min(0f)] private float m_offensivePoiseBonus;
+        [SerializeField, Min(0f)] private float m_defaultPoiseResetTime = 8f;
+        [SerializeField, Min(0f)] private float m_poiseResetTimer;
 
         [Header("Blocking Absorption")]
         [SerializeField, Range(0f, 100f)] private float m_blockingPhysicalAbsorption = 85f;
@@ -54,6 +62,24 @@ namespace ZZ
         /// <summary>Gets the percentage of incoming guard stamina damage prevented.</summary>
         public float BlockingStability => Mathf.Clamp(m_blockingStability, 0f, 100f);
 
+        /// <summary>Gets the accumulated negative Poise modifier from recent hits.</summary>
+        public float TotalPoiseDamage => Mathf.Min(0f, m_totalPoiseDamage);
+
+        /// <summary>Gets the passive Poise defense supplied by the character and future armor.</summary>
+        public float BasePoiseDefense => Mathf.Max(0f, m_basePoiseDefense);
+
+        /// <summary>Gets the temporary Poise bonus reserved for offensive actions.</summary>
+        public float OffensivePoiseBonus => Mathf.Max(0f, m_offensivePoiseBonus);
+
+        /// <summary>Gets the Poise remaining after defense, bonuses, and recent damage.</summary>
+        public float RemainingPoise => CalculateRemainingPoise(
+            BasePoiseDefense,
+            OffensivePoiseBonus,
+            TotalPoiseDamage);
+
+        /// <summary>Gets the time remaining before accumulated Poise damage clears.</summary>
+        public float PoiseResetTimer => Mathf.Max(0f, m_poiseResetTimer);
+
         protected virtual void Awake()
         {
             m_characterManager = GetComponent<CharacterManager>();
@@ -62,6 +88,7 @@ namespace ZZ
 
         private void Update()
         {
+            HandlePoiseResetTimer();
             RegenerateStamina();
         }
 
@@ -76,6 +103,8 @@ namespace ZZ
             {
                 InitializeResources();
             }
+
+            ResetPoise();
         }
 
         public override void OnNetworkDespawn()
@@ -159,6 +188,81 @@ namespace ZZ
                 maximumStamina,
                 staminaCost);
             return true;
+        }
+
+        /// <summary>Accumulates an incoming hit and returns whether it breaks current Poise.</summary>
+        public bool ApplyPoiseDamage(float poiseDamage)
+        {
+            float resolvedPoiseDamage = Mathf.Max(0f, poiseDamage);
+            if (resolvedPoiseDamage <= 0f)
+            {
+                return false;
+            }
+
+            m_totalPoiseDamage = Mathf.Min(
+                0f,
+                m_totalPoiseDamage - resolvedPoiseDamage);
+            m_poiseResetTimer = Mathf.Max(0f, m_defaultPoiseResetTime);
+            return IsPoiseBroken(RemainingPoise);
+        }
+
+        /// <summary>Clears accumulated Poise damage after its recovery delay expires.</summary>
+        public void HandlePoiseResetTimer()
+        {
+            AdvancePoiseResetTimer(Time.deltaTime);
+        }
+
+        private void AdvancePoiseResetTimer(float deltaTime)
+        {
+            if (m_poiseResetTimer <= 0f)
+            {
+                return;
+            }
+
+            m_poiseResetTimer = Mathf.Max(
+                0f,
+                m_poiseResetTimer - Mathf.Max(0f, deltaTime));
+            if (m_poiseResetTimer <= k_PoiseTimerEpsilon)
+            {
+                m_poiseResetTimer = 0f;
+                m_totalPoiseDamage = 0f;
+            }
+        }
+
+        /// <summary>Restores full Poise and clears its recovery countdown.</summary>
+        public void ResetPoise()
+        {
+            m_totalPoiseDamage = 0f;
+            m_poiseResetTimer = 0f;
+        }
+
+        /// <summary>Updates the passive Poise contribution used by equipment aggregation.</summary>
+        public void SetBasePoiseDefense(float basePoiseDefense)
+        {
+            m_basePoiseDefense = Mathf.Max(0f, basePoiseDefense);
+        }
+
+        /// <summary>Updates the temporary Poise bonus granted by an offensive action.</summary>
+        public void SetOffensivePoiseBonus(float offensivePoiseBonus)
+        {
+            m_offensivePoiseBonus = Mathf.Max(0f, offensivePoiseBonus);
+        }
+
+        /// <summary>Calculates remaining Poise from defense, offense, and negative hit buildup.</summary>
+        public static float CalculateRemainingPoise(
+            float basePoiseDefense,
+            float offensivePoiseBonus,
+            float totalPoiseDamage)
+        {
+            return Mathf.Max(0f, basePoiseDefense) +
+                Mathf.Max(0f, offensivePoiseBonus) +
+                Mathf.Min(0f, totalPoiseDamage);
+        }
+
+        /// <summary>Returns whether the supplied remaining Poise has reached its break point.</summary>
+        public static bool IsPoiseBroken(float remainingPoise)
+        {
+            return remainingPoise <= 0f;
         }
 
         /// <summary>Copies the equipped blocking weapon's defense data into character state.</summary>
