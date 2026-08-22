@@ -12,10 +12,14 @@ namespace ZZ
         [SerializeField] private CharacterAnimatorManager m_characterAnimatorManager;
         [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
 
+        [Header("Character UI")]
+        [SerializeField] private bool m_hasFloatingHPBar = true;
+
         private CharacterEffectsManager m_characterEffectsManager;
         private CharacterSoundFXManager m_characterSoundFXManager;
         private CharacterStatsManager m_characterStatsManager;
         private CharacterCombatManager m_characterCombatManager;
+        private CharacterUIManager m_characterUIManager;
         private bool m_isGrounded = true;
         private bool m_isPerformingAction;
         private bool m_canMove = true;
@@ -52,6 +56,9 @@ namespace ZZ
         public bool CanRotate => m_canRotate;
         public bool ShouldApplyRootMotion => m_shouldApplyRootMotion;
 
+        /// <summary>Gets whether this character type may present a world-space Health bar.</summary>
+        public bool HasFloatingHPBar => m_hasFloatingHPBar;
+
         internal bool IsDeathEventRunning => m_isDeathEventRunning;
 
         protected virtual void Awake()
@@ -69,7 +76,35 @@ namespace ZZ
             m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
             m_characterStatsManager = GetComponent<CharacterStatsManager>();
             m_characterCombatManager = GetComponent<CharacterCombatManager>();
+            m_characterUIManager = GetComponentInChildren<CharacterUIManager>(true);
             m_characterAnimatorManager?.Initialize(m_animator);
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            if (this is PlayerManager)
+            {
+                m_characterUIManager?.BindNetworkHealth();
+            }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            m_characterUIManager?.UnbindNetworkHealth();
+            base.OnNetworkDespawn();
+        }
+
+        public override void OnGainedOwnership()
+        {
+            base.OnGainedOwnership();
+            m_characterUIManager?.RefreshVisibility();
+        }
+
+        public override void OnLostOwnership()
+        {
+            m_characterUIManager?.RefreshVisibility();
+            base.OnLostOwnership();
         }
 
         /// <summary>

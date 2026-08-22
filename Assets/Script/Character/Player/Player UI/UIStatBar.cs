@@ -11,7 +11,7 @@ namespace ZZ
         [SerializeField] private bool m_shouldScaleBarLengthWithStats;
         [SerializeField, Min(0f)] private float m_widthScaleMultiplier = 2f;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             m_slider ??= GetComponent<Slider>();
             m_rectTransform ??= GetComponent<RectTransform>();
