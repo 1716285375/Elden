@@ -10,6 +10,7 @@ namespace ZZ
     [RequireComponent(typeof(PlayerStatsManager))]
     [RequireComponent(typeof(PlayerInventoryManager))]
     [RequireComponent(typeof(PlayerEquipmentManager))]
+    [RequireComponent(typeof(PlayerBodyManager))]
     [RequireComponent(typeof(PlayerCombatManager))]
     [RequireComponent(typeof(PlayerLockOnManager))]
     [RequireComponent(typeof(PlayerInteractionManager))]
@@ -38,6 +39,9 @@ namespace ZZ
         /// <summary>Gets the player's hand-model presentation manager.</summary>
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
+        /// <summary>Gets the modular body and gender presentation manager.</summary>
+        public PlayerBodyManager BodyManager { get; private set; }
+
         /// <summary>Gets the player's weapon-action combat manager.</summary>
         public PlayerCombatManager PlayerCombatManager { get; private set; }
         public bool IsInGameplayScene => SceneManager.GetActiveScene().buildIndex > 0;
@@ -61,6 +65,7 @@ namespace ZZ
             LocomotionManager = GetComponent<PlayerLocomotionManager>();
             InventoryManager = GetComponent<PlayerInventoryManager>();
             EquipmentManager = GetComponent<PlayerEquipmentManager>();
+            BodyManager = GetComponent<PlayerBodyManager>();
             PlayerCombatManager = GetComponent<PlayerCombatManager>();
             LockOnManager = GetComponent<PlayerLockOnManager>();
             InteractionManager = GetComponent<PlayerInteractionManager>();
@@ -202,6 +207,7 @@ namespace ZZ
             InventoryManager.InitializeLeftWeaponFromID(
                 PlayerNetworkManager.CurrentLeftHandWeaponID.Value);
             PlayerNetworkManager.RefreshTwoHandingPresentation();
+            PlayerNetworkManager.RefreshArmorPresentation();
         }
 
         /// <summary>
@@ -226,6 +232,25 @@ namespace ZZ
             currentData.Endurance = CharacterNetworkManager.Endurance.Value;
             currentData.CurrentHealth = CharacterNetworkManager.CurrentHealth.Value;
             currentData.CurrentStamina = CharacterNetworkManager.CurrentStamina.Value;
+            currentData.HeadEquipmentID = PlayerNetworkManager.CurrentHeadEquipmentID.Value;
+            currentData.BodyEquipmentID = PlayerNetworkManager.CurrentBodyEquipmentID.Value;
+            currentData.HandEquipmentID = PlayerNetworkManager.CurrentHandEquipmentID.Value;
+            currentData.LegEquipmentID = PlayerNetworkManager.CurrentLegEquipmentID.Value;
+            currentData.RightHandWeaponSlot01ID =
+                InventoryManager.GetRightHandQuickSlotItemID(0);
+            currentData.RightHandWeaponSlot02ID =
+                InventoryManager.GetRightHandQuickSlotItemID(1);
+            currentData.RightHandWeaponSlot03ID =
+                InventoryManager.GetRightHandQuickSlotItemID(2);
+            currentData.LeftHandWeaponSlot01ID =
+                InventoryManager.GetLeftHandQuickSlotItemID(0);
+            currentData.LeftHandWeaponSlot02ID =
+                InventoryManager.GetLeftHandQuickSlotItemID(1);
+            currentData.LeftHandWeaponSlot03ID =
+                InventoryManager.GetLeftHandQuickSlotItemID(2);
+            currentData.RightHandWeaponIndex = InventoryManager.RightHandWeaponIndex;
+            currentData.LeftHandWeaponIndex = InventoryManager.LeftHandWeaponIndex;
+            currentData.IsMale = PlayerNetworkManager.IsMale.Value;
         }
 
         /// <summary>
@@ -254,6 +279,30 @@ namespace ZZ
                 CharacterNetworkManager.MaxStamina.Value);
             PlayerNetworkManager.CharacterName.Value =
                 new FixedString64Bytes(currentData.CharacterName);
+            PlayerNetworkManager.IsMale.Value = currentData.IsMale;
+            PlayerNetworkManager.CurrentHeadEquipmentID.Value =
+                currentData.HeadEquipmentID;
+            PlayerNetworkManager.CurrentBodyEquipmentID.Value =
+                currentData.BodyEquipmentID;
+            PlayerNetworkManager.CurrentHandEquipmentID.Value =
+                currentData.HandEquipmentID;
+            PlayerNetworkManager.CurrentLegEquipmentID.Value =
+                currentData.LegEquipmentID;
+            InventoryManager.RestoreWeaponLoadout(
+                new[]
+                {
+                    currentData.RightHandWeaponSlot01ID,
+                    currentData.RightHandWeaponSlot02ID,
+                    currentData.RightHandWeaponSlot03ID
+                },
+                new[]
+                {
+                    currentData.LeftHandWeaponSlot01ID,
+                    currentData.LeftHandWeaponSlot02ID,
+                    currentData.LeftHandWeaponSlot03ID
+                },
+                currentData.RightHandWeaponIndex,
+                currentData.LeftHandWeaponIndex);
             Vector3 savedPosition = new Vector3(
                 currentData.XPosition,
                 currentData.YPosition,

@@ -9,6 +9,7 @@ namespace ZZ
         private const int k_DefaultRightHandWeaponID = 1;
         private const int k_DefaultLeftHandWeaponID = 3;
         private const int k_NoWeaponID = -1;
+        private const int k_NoEquipmentID = -1;
 
         [Header("Two-Hand Effect")]
         [SerializeField] private StaticCharacterEffect m_twoHandingEffect;
@@ -63,6 +64,31 @@ namespace ZZ
                 k_NoWeaponID,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentHeadEquipmentID =
+            new NetworkVariable<int>(
+                k_NoEquipmentID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentBodyEquipmentID =
+            new NetworkVariable<int>(
+                k_NoEquipmentID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentHandEquipmentID =
+            new NetworkVariable<int>(
+                k_NoEquipmentID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentLegEquipmentID =
+            new NetworkVariable<int>(
+                k_NoEquipmentID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isMale =
+            new NetworkVariable<bool>(
+                true,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -106,6 +132,21 @@ namespace ZZ
         public NetworkVariable<int> CurrentWeaponBeingTwoHanded =>
             m_currentWeaponBeingTwoHanded;
 
+        /// <summary>Gets the owner-written head-equipment identifier.</summary>
+        public NetworkVariable<int> CurrentHeadEquipmentID => m_currentHeadEquipmentID;
+
+        /// <summary>Gets the owner-written body-equipment identifier.</summary>
+        public NetworkVariable<int> CurrentBodyEquipmentID => m_currentBodyEquipmentID;
+
+        /// <summary>Gets the owner-written hand-equipment identifier.</summary>
+        public NetworkVariable<int> CurrentHandEquipmentID => m_currentHandEquipmentID;
+
+        /// <summary>Gets the owner-written leg-equipment identifier.</summary>
+        public NetworkVariable<int> CurrentLegEquipmentID => m_currentLegEquipmentID;
+
+        /// <summary>Gets the owner-written body type replicated to every client.</summary>
+        public NetworkVariable<bool> IsMale => m_isMale;
+
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -123,10 +164,21 @@ namespace ZZ
             m_isTwoHandingRightWeapon.OnValueChanged += OnTwoHandingStateChanged;
             m_isTwoHandingLeftWeapon.OnValueChanged += OnTwoHandingStateChanged;
             m_currentWeaponBeingTwoHanded.OnValueChanged += OnTwoHandWeaponIDChanged;
+            m_currentHeadEquipmentID.OnValueChanged += OnHeadEquipmentIDChanged;
+            m_currentBodyEquipmentID.OnValueChanged += OnBodyEquipmentIDChanged;
+            m_currentHandEquipmentID.OnValueChanged += OnHandEquipmentIDChanged;
+            m_currentLegEquipmentID.OnValueChanged += OnLegEquipmentIDChanged;
+            m_isMale.OnValueChanged += OnBodyTypeChanged;
+            GetComponent<PlayerBodyManager>()?.ToggleBodyType(m_isMale.Value);
             m_playerInventoryManager?.InitializeRightWeaponFromID(
                 m_currentRightHandWeaponID.Value);
             m_playerInventoryManager?.InitializeLeftWeaponFromID(
                 m_currentLeftHandWeaponID.Value);
+            m_playerInventoryManager?.InitializeArmorFromIDs(
+                m_currentHeadEquipmentID.Value,
+                m_currentBodyEquipmentID.Value,
+                m_currentHandEquipmentID.Value,
+                m_currentLegEquipmentID.Value);
             if (!IsOwner)
             {
                 UpdateRemoteAnimatorController(m_currentWeaponIDBeingUsed.Value);
@@ -148,6 +200,11 @@ namespace ZZ
             m_isTwoHandingRightWeapon.OnValueChanged -= OnTwoHandingStateChanged;
             m_isTwoHandingLeftWeapon.OnValueChanged -= OnTwoHandingStateChanged;
             m_currentWeaponBeingTwoHanded.OnValueChanged -= OnTwoHandWeaponIDChanged;
+            m_currentHeadEquipmentID.OnValueChanged -= OnHeadEquipmentIDChanged;
+            m_currentBodyEquipmentID.OnValueChanged -= OnBodyEquipmentIDChanged;
+            m_currentHandEquipmentID.OnValueChanged -= OnHandEquipmentIDChanged;
+            m_currentLegEquipmentID.OnValueChanged -= OnLegEquipmentIDChanged;
+            m_isMale.OnValueChanged -= OnBodyTypeChanged;
             RemoveTwoHandingPresentation(false);
             base.OnNetworkDespawn();
         }
@@ -174,6 +231,28 @@ namespace ZZ
             m_currentWeaponIDBeingUsed.Value = isRightHandAction
                 ? m_currentRightHandWeaponID.Value
                 : m_currentLeftHandWeaponID.Value;
+        }
+
+        /// <summary>Changes the locally owned body type and rebuilds equipped models.</summary>
+        public void SetBodyType(bool isMale)
+        {
+            if (IsSpawned && IsOwner)
+            {
+                m_isMale.Value = isMale;
+            }
+        }
+
+        /// <summary>Replays synchronized body type and armor for late-joining clients.</summary>
+        public void RefreshArmorPresentation()
+        {
+            GetComponent<PlayerBodyManager>()?.ToggleBodyType(m_isMale.Value);
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.InitializeArmorFromIDs(
+                m_currentHeadEquipmentID.Value,
+                m_currentBodyEquipmentID.Value,
+                m_currentHandEquipmentID.Value,
+                m_currentLegEquipmentID.Value);
+            GetComponent<PlayerEquipmentManager>()?.RefreshArmorPresentation(m_isMale.Value);
         }
 
         /// <summary>Toggles the requested equipped side into or out of the two-hand stance.</summary>
@@ -238,6 +317,35 @@ namespace ZZ
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.EquipLeftWeaponFromID(currentWeaponID);
             RefreshChangedTwoHandWeapon(currentWeaponID, false);
+        }
+
+        private void OnHeadEquipmentIDChanged(int previousItemID, int currentItemID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.EquipHeadEquipmentFromID(currentItemID);
+        }
+
+        private void OnBodyEquipmentIDChanged(int previousItemID, int currentItemID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.EquipBodyEquipmentFromID(currentItemID);
+        }
+
+        private void OnHandEquipmentIDChanged(int previousItemID, int currentItemID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.EquipHandEquipmentFromID(currentItemID);
+        }
+
+        private void OnLegEquipmentIDChanged(int previousItemID, int currentItemID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.EquipLegEquipmentFromID(currentItemID);
+        }
+
+        private void OnBodyTypeChanged(bool previousIsMale, bool currentIsMale)
+        {
+            GetComponent<PlayerEquipmentManager>()?.RefreshArmorPresentation(currentIsMale);
         }
 
         private void OnCurrentWeaponIDBeingUsedChanged(

@@ -49,3 +49,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 56fe0958176792a498531c0014699ac9, type: 2}
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
   - {fileID: 11400000, guid: eb73d2281cada864897040f53529cda4, type: 2}
+  - {fileID: 11400000, guid: 9eb5883dac298d244a43092a6ba95ba4, type: 2}
+  - {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
+  - {fileID: 11400000, guid: c716ad1e012c1c646869a44bf306ef64, type: 2}
+  - {fileID: 11400000, guid: 99582e7697fa6fc45babca5ec0372dfb, type: 2}
+  m_headEquipment:
+  - {fileID: 11400000, guid: 9eb5883dac298d244a43092a6ba95ba4, type: 2}
+  m_bodyEquipment:
+  - {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
+  m_handEquipment:
+  - {fileID: 11400000, guid: c716ad1e012c1c646869a44bf306ef64, type: 2}
+  m_legEquipment:
+  - {fileID: 11400000, guid: 99582e7697fa6fc45babca5ec0372dfb, type: 2}

@@ -75902,7 +75902,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &770192146136170539
 Transform:
   m_ObjectHideFlags: 0
@@ -146154,6 +146154,7 @@ GameObject:
   - component: {fileID: 169177767431613464}
   - component: {fileID: 8033323077005802984}
   - component: {fileID: 2091831257004410610}
+  - component: {fileID: 8925915934517945469}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -146195,7 +146196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4102872542
+  GlobalObjectIdHash: 2850873980
   InScenePlacedSourceGlobalObjectIdHash: 2850873980
   DeferredDespawnTick: 0
   Ownership: 1
@@ -146413,6 +146414,7 @@ MonoBehaviour:
   m_staminaRegenerationAmount: 2
   m_totalPoiseDamage: 0
   m_basePoiseDefense: 50
+  m_armorPoiseDefense: 0
   m_offensivePoiseBonus: 0
   m_defaultPoiseResetTime: 8
   m_poiseResetTimer: 0
@@ -146424,6 +146426,15 @@ MonoBehaviour:
   m_blockingLightningAbsorption: 25
   m_blockingHolyAbsorption: 35
   m_blockingStability: 50
+  m_armorPhysicalAbsorption: 0
+  m_armorMagicAbsorption: 0
+  m_armorFireAbsorption: 0
+  m_armorLightningAbsorption: 0
+  m_armorHolyAbsorption: 0
+  m_armorImmunity: 0
+  m_armorRobustness: 0
+  m_armorFocus: 0
+  m_armorVitality: 0
 --- !u!114 &2654529294512128537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146457,6 +146468,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eb73d2281cada864897040f53529cda4, type: 2}
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
   - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
+  m_startingHeadEquipment: {fileID: 11400000, guid: 9eb5883dac298d244a43092a6ba95ba4, type: 2}
+  m_startingBodyEquipment: {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
+  m_startingHandEquipment: {fileID: 11400000, guid: c716ad1e012c1c646869a44bf306ef64, type: 2}
+  m_startingLegEquipment: {fileID: 11400000, guid: 99582e7697fa6fc45babca5ec0372dfb, type: 2}
 --- !u!114 &6156979858456878683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146541,6 +146556,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9453967a1d0682d4d9b65ac54674f95b, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerInteractionManager
+--- !u!114 &8925915934517945469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc498b5cd5ac52a4eb417db3483cf3a7, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerBodyManager
+  m_modularCharacterRoot: {fileID: 770009729322371199}
 --- !u!1 &6601330394149136004
 GameObject:
   m_ObjectHideFlags: 0

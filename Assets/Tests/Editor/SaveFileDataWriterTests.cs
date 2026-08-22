@@ -43,7 +43,20 @@ namespace ZZ.Tests
                 Vitality = 14,
                 Endurance = 12,
                 CurrentHealth = 142f,
-                CurrentStamina = 67f
+                CurrentStamina = 67f,
+                HeadEquipmentID = 4,
+                BodyEquipmentID = 5,
+                HandEquipmentID = 6,
+                LegEquipmentID = 7,
+                RightHandWeaponSlot01ID = 2,
+                RightHandWeaponSlot02ID = 1,
+                RightHandWeaponSlot03ID = 0,
+                LeftHandWeaponSlot01ID = 3,
+                LeftHandWeaponSlot02ID = 0,
+                LeftHandWeaponSlot03ID = 2,
+                RightHandWeaponIndex = 1,
+                LeftHandWeaponIndex = 2,
+                IsMale = false
             };
 
             Assert.That(writer.CheckToSeeIfFileExists(), Is.False);
@@ -63,6 +76,19 @@ namespace ZZ.Tests
             Assert.That(loadedData.Endurance, Is.EqualTo(12));
             Assert.That(loadedData.CurrentHealth, Is.EqualTo(142f));
             Assert.That(loadedData.CurrentStamina, Is.EqualTo(67f));
+            Assert.That(loadedData.HeadEquipmentID, Is.EqualTo(4));
+            Assert.That(loadedData.BodyEquipmentID, Is.EqualTo(5));
+            Assert.That(loadedData.HandEquipmentID, Is.EqualTo(6));
+            Assert.That(loadedData.LegEquipmentID, Is.EqualTo(7));
+            Assert.That(loadedData.RightHandWeaponSlot01ID, Is.EqualTo(2));
+            Assert.That(loadedData.RightHandWeaponSlot02ID, Is.EqualTo(1));
+            Assert.That(loadedData.RightHandWeaponSlot03ID, Is.EqualTo(0));
+            Assert.That(loadedData.LeftHandWeaponSlot01ID, Is.EqualTo(3));
+            Assert.That(loadedData.LeftHandWeaponSlot02ID, Is.EqualTo(0));
+            Assert.That(loadedData.LeftHandWeaponSlot03ID, Is.EqualTo(2));
+            Assert.That(loadedData.RightHandWeaponIndex, Is.EqualTo(1));
+            Assert.That(loadedData.LeftHandWeaponIndex, Is.EqualTo(2));
+            Assert.That(loadedData.IsMale, Is.False);
 
             writer.DeleteSaveFile();
 
@@ -78,6 +104,13 @@ namespace ZZ.Tests
             Assert.That(characterData.Endurance, Is.EqualTo(10));
             Assert.That(characterData.CurrentHealth, Is.EqualTo(150f));
             Assert.That(characterData.CurrentStamina, Is.EqualTo(100f));
+            Assert.That(characterData.HeadEquipmentID, Is.EqualTo(-1));
+            Assert.That(characterData.BodyEquipmentID, Is.EqualTo(-1));
+            Assert.That(characterData.HandEquipmentID, Is.EqualTo(-1));
+            Assert.That(characterData.LegEquipmentID, Is.EqualTo(-1));
+            Assert.That(characterData.RightHandWeaponSlot01ID, Is.EqualTo(1));
+            Assert.That(characterData.LeftHandWeaponSlot01ID, Is.EqualTo(3));
+            Assert.That(characterData.IsMale, Is.True);
         }
 
         [Test]
@@ -98,6 +131,19 @@ namespace ZZ.Tests
             Assert.That(loadedData.Endurance, Is.EqualTo(10));
             Assert.That(loadedData.CurrentHealth, Is.EqualTo(150f));
             Assert.That(loadedData.CurrentStamina, Is.EqualTo(100f));
+            Assert.That(loadedData.HeadEquipmentID, Is.EqualTo(-1));
+            Assert.That(loadedData.BodyEquipmentID, Is.EqualTo(-1));
+            Assert.That(loadedData.HandEquipmentID, Is.EqualTo(-1));
+            Assert.That(loadedData.LegEquipmentID, Is.EqualTo(-1));
+            Assert.That(loadedData.RightHandWeaponSlot01ID, Is.EqualTo(1));
+            Assert.That(loadedData.RightHandWeaponSlot02ID, Is.EqualTo(2));
+            Assert.That(loadedData.RightHandWeaponSlot03ID, Is.EqualTo(0));
+            Assert.That(loadedData.LeftHandWeaponSlot01ID, Is.EqualTo(3));
+            Assert.That(loadedData.LeftHandWeaponSlot02ID, Is.EqualTo(2));
+            Assert.That(loadedData.LeftHandWeaponSlot03ID, Is.EqualTo(0));
+            Assert.That(loadedData.RightHandWeaponIndex, Is.EqualTo(0));
+            Assert.That(loadedData.LeftHandWeaponIndex, Is.EqualTo(0));
+            Assert.That(loadedData.IsMale, Is.True);
         }
 
         [Test]

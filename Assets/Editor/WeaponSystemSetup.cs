@@ -36,6 +36,14 @@ namespace ZZ.Editor
         private const string k_BroadswordAssetPath = k_ItemFolder + "/Broadsword.asset";
         private const string k_MediumShieldAssetPath =
             k_ItemFolder + "/Medium Shield.asset";
+        private const string k_HeadEquipmentAssetPath =
+            "Assets/Data/Items/Armor/Starter Hood.asset";
+        private const string k_BodyEquipmentAssetPath =
+            "Assets/Data/Items/Armor/Starter Armor.asset";
+        private const string k_HandEquipmentAssetPath =
+            "Assets/Data/Items/Armor/Starter Gauntlets.asset";
+        private const string k_LegEquipmentAssetPath =
+            "Assets/Data/Items/Armor/Starter Greaves.asset";
         private const string k_UnarmedPrefabPath =
             k_WeaponPrefabFolder + "/Unarmed.prefab";
         private const string k_StraightSwordPrefabPath =
@@ -272,6 +280,30 @@ namespace ZZ.Editor
                 if (mediumShield != null)
                 {
                     items.Add(mediumShield);
+                }
+
+                HeadEquipmentItem head =
+                    AssetDatabase.LoadAssetAtPath<HeadEquipmentItem>(
+                        k_HeadEquipmentAssetPath);
+                BodyEquipmentItem body =
+                    AssetDatabase.LoadAssetAtPath<BodyEquipmentItem>(
+                        k_BodyEquipmentAssetPath);
+                HandEquipmentItem hands =
+                    AssetDatabase.LoadAssetAtPath<HandEquipmentItem>(
+                        k_HandEquipmentAssetPath);
+                LegEquipmentItem legs =
+                    AssetDatabase.LoadAssetAtPath<LegEquipmentItem>(
+                        k_LegEquipmentAssetPath);
+                if (head != null && body != null && hands != null && legs != null)
+                {
+                    items.Add(head);
+                    items.Add(body);
+                    items.Add(hands);
+                    items.Add(legs);
+                    SetObjectArray(database, "m_headEquipment", new UnityEngine.Object[] { head });
+                    SetObjectArray(database, "m_bodyEquipment", new UnityEngine.Object[] { body });
+                    SetObjectArray(database, "m_handEquipment", new UnityEngine.Object[] { hands });
+                    SetObjectArray(database, "m_legEquipment", new UnityEngine.Object[] { legs });
                 }
 
                 SetObjectArray(database, "m_items", items.ToArray());
@@ -609,6 +641,26 @@ namespace ZZ.Editor
             if (mediumShield != null)
             {
                 expectedItems.Add(mediumShield);
+            }
+
+            HeadEquipmentItem head =
+                AssetDatabase.LoadAssetAtPath<HeadEquipmentItem>(
+                    k_HeadEquipmentAssetPath);
+            BodyEquipmentItem body =
+                AssetDatabase.LoadAssetAtPath<BodyEquipmentItem>(
+                    k_BodyEquipmentAssetPath);
+            HandEquipmentItem hands =
+                AssetDatabase.LoadAssetAtPath<HandEquipmentItem>(
+                    k_HandEquipmentAssetPath);
+            LegEquipmentItem legs =
+                AssetDatabase.LoadAssetAtPath<LegEquipmentItem>(
+                    k_LegEquipmentAssetPath);
+            if (head != null && body != null && hands != null && legs != null)
+            {
+                expectedItems.Add(head);
+                expectedItems.Add(body);
+                expectedItems.Add(hands);
+                expectedItems.Add(legs);
             }
 
             if (items.arraySize != expectedItems.Count)

@@ -5,7 +5,7 @@ namespace ZZ
     /// <summary>
     /// Defines the authored model, damage, requirements, and costs shared by weapons.
     /// </summary>
-    public abstract class WeaponItem : Item
+    public abstract class WeaponItem : EquipmentItem
     {
         [Header("Weapon Model")]
         [SerializeField] private GameObject m_weaponModel;

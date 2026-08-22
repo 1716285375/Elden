@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38a03b617c34e814ba76f92830e4a3dc, type: 3}
+  m_Name: Starter Right Leg
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.EquipmentModel
+  m_equipmentModelType: 9
+  m_maleModelName: Chr_LegRight_Male_01
+  m_femaleModelName: Chr_LegRight_Female_01

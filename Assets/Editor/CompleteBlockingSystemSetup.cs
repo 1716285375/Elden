@@ -366,16 +366,27 @@ namespace ZZ.Editor
             {
                 WorldItemDatabase database =
                     GetRequiredComponent<WorldItemDatabase>(databaseRoot);
+                SerializedObject serializedDatabase = new SerializedObject(database);
+                SerializedProperty currentItems = GetRequiredProperty(
+                    serializedDatabase,
+                    "m_items");
+                List<UnityEngine.Object> items = new List<UnityEngine.Object>
+                {
+                    LoadRequiredAsset<WeaponItem>(k_UnarmedPath),
+                    LoadRequiredAsset<WeaponItem>(k_StraightSwordPath),
+                    LoadRequiredAsset<WeaponItem>(k_BroadswordPath),
+                    shield
+                };
+                for (int itemIndex = 4; itemIndex < currentItems.arraySize; itemIndex++)
+                {
+                    items.Add(
+                        currentItems.GetArrayElementAtIndex(itemIndex).objectReferenceValue);
+                }
+
                 SetObjectArray(
-                    new SerializedObject(database),
+                    serializedDatabase,
                     "m_items",
-                    new UnityEngine.Object[]
-                    {
-                        LoadRequiredAsset<WeaponItem>(k_UnarmedPath),
-                        LoadRequiredAsset<WeaponItem>(k_StraightSwordPath),
-                        LoadRequiredAsset<WeaponItem>(k_BroadswordPath),
-                        shield
-                    });
+                    items.ToArray());
                 if (PrefabUtility.SaveAsPrefabAsset(
                         databaseRoot,
                         k_DatabasePrefabPath) == null)
@@ -917,7 +928,7 @@ namespace ZZ.Editor
         {
             GameObject root = LoadRequiredAsset<GameObject>(k_DatabasePrefabPath);
             WorldItemDatabase database = GetRequiredComponent<WorldItemDatabase>(root);
-            if (database.Items.Count != 4 ||
+            if (database.Items.Count < 4 ||
                 database.Items[k_ShieldItemID] !=
                     LoadRequiredAsset<WeaponItem>(k_ShieldPath))
             {

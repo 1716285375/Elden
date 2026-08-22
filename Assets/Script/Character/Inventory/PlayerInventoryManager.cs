@@ -23,11 +23,21 @@ namespace ZZ
         [SerializeField] private WeaponItem[] m_weaponsInLeftHandSlots =
             new WeaponItem[k_QuickSlotCount];
 
+        [Header("Armor Equipment")]
+        [SerializeField] private HeadEquipmentItem m_startingHeadEquipment;
+        [SerializeField] private BodyEquipmentItem m_startingBodyEquipment;
+        [SerializeField] private HandEquipmentItem m_startingHandEquipment;
+        [SerializeField] private LegEquipmentItem m_startingLegEquipment;
+
         private PlayerManager m_player;
         private PlayerEquipmentManager m_equipmentManager;
         private WeaponItem m_currentRightHandWeapon;
         private WeaponItem m_currentLeftHandWeapon;
         private WeaponItem m_currentTwoHandWeapon;
+        private HeadEquipmentItem m_currentHeadEquipment;
+        private BodyEquipmentItem m_currentBodyEquipment;
+        private HandEquipmentItem m_currentHandEquipment;
+        private LegEquipmentItem m_currentLegEquipment;
         private int m_rightHandWeaponIndex;
         private int m_leftHandWeaponIndex;
 
@@ -39,6 +49,24 @@ namespace ZZ
 
         /// <summary>Gets the equipped runtime item currently presented in the two-hand stance.</summary>
         public WeaponItem CurrentTwoHandWeapon => m_currentTwoHandWeapon;
+
+        /// <summary>Gets the runtime armor copy currently equipped in the head slot.</summary>
+        public HeadEquipmentItem CurrentHeadEquipment => m_currentHeadEquipment;
+
+        /// <summary>Gets the runtime armor copy currently equipped in the body slot.</summary>
+        public BodyEquipmentItem CurrentBodyEquipment => m_currentBodyEquipment;
+
+        /// <summary>Gets the runtime armor copy currently equipped in the hand slot.</summary>
+        public HandEquipmentItem CurrentHandEquipment => m_currentHandEquipment;
+
+        /// <summary>Gets the runtime armor copy currently equipped in the leg slot.</summary>
+        public LegEquipmentItem CurrentLegEquipment => m_currentLegEquipment;
+
+        /// <summary>Gets the selected right-hand quick-slot index.</summary>
+        public int RightHandWeaponIndex => m_rightHandWeaponIndex;
+
+        /// <summary>Gets the selected left-hand quick-slot index.</summary>
+        public int LeftHandWeaponIndex => m_leftHandWeaponIndex;
 
         /// <summary>Raised after the right-hand runtime weapon and model are refreshed.</summary>
         public event Action<WeaponItem> RightHandWeaponChanged;
@@ -83,6 +111,106 @@ namespace ZZ
             m_currentTwoHandWeapon = null;
             DestroyRuntimeWeapon(m_currentRightHandWeapon);
             DestroyRuntimeWeapon(m_currentLeftHandWeapon);
+            DestroyRuntimeItem(m_currentHeadEquipment);
+            DestroyRuntimeItem(m_currentBodyEquipment);
+            DestroyRuntimeItem(m_currentHandEquipment);
+            DestroyRuntimeItem(m_currentLegEquipment);
+        }
+
+        /// <summary>Returns the stable item ID saved for one right-hand quick slot.</summary>
+        public int GetRightHandQuickSlotItemID(int slotIndex)
+        {
+            return GetQuickSlotItemID(m_weaponsInRightHandSlots, slotIndex);
+        }
+
+        /// <summary>Returns the stable item ID saved for one left-hand quick slot.</summary>
+        public int GetLeftHandQuickSlotItemID(int slotIndex)
+        {
+            return GetQuickSlotItemID(m_weaponsInLeftHandSlots, slotIndex);
+        }
+
+        /// <summary>Restores all weapon quick slots, selected indices, and equipped weapons.</summary>
+        public void RestoreWeaponLoadout(
+            int[] rightHandItemIDs,
+            int[] leftHandItemIDs,
+            int rightHandIndex,
+            int leftHandIndex)
+        {
+            RestoreQuickSlots(m_weaponsInRightHandSlots, rightHandItemIDs);
+            RestoreQuickSlots(m_weaponsInLeftHandSlots, leftHandItemIDs);
+            m_rightHandWeaponIndex = Mathf.Clamp(rightHandIndex, 0, k_QuickSlotCount - 1);
+            m_leftHandWeaponIndex = Mathf.Clamp(leftHandIndex, 0, k_QuickSlotCount - 1);
+
+            if (m_player?.PlayerNetworkManager == null || !m_player.IsOwner)
+            {
+                return;
+            }
+
+            m_player.PlayerNetworkManager.CurrentRightHandWeaponID.Value =
+                GetQuickSlotItemID(m_weaponsInRightHandSlots, m_rightHandWeaponIndex);
+            m_player.PlayerNetworkManager.CurrentLeftHandWeaponID.Value =
+                GetQuickSlotItemID(m_weaponsInLeftHandSlots, m_leftHandWeaponIndex);
+        }
+
+        /// <summary>Reconstructs the initial armor presentation from synchronized IDs.</summary>
+        public void InitializeArmorFromIDs(
+            int headEquipmentID,
+            int bodyEquipmentID,
+            int handEquipmentID,
+            int legEquipmentID)
+        {
+            EquipHeadEquipmentFromID(headEquipmentID);
+            EquipBodyEquipmentFromID(bodyEquipmentID);
+            EquipHandEquipmentFromID(handEquipmentID);
+            EquipLegEquipmentFromID(legEquipmentID);
+        }
+
+        /// <summary>Reconstructs the runtime head item and its modular models.</summary>
+        public void EquipHeadEquipmentFromID(int itemID)
+        {
+            HeadEquipmentItem previousItem = m_currentHeadEquipment;
+            m_currentHeadEquipment = CreateRuntimeArmor(
+                itemID,
+                database => database.GetHeadEquipmentByID(itemID),
+                m_startingHeadEquipment);
+            m_equipmentManager?.LoadHeadEquipment(m_currentHeadEquipment);
+            DestroyRuntimeItem(previousItem);
+        }
+
+        /// <summary>Reconstructs the runtime body item and its modular models.</summary>
+        public void EquipBodyEquipmentFromID(int itemID)
+        {
+            BodyEquipmentItem previousItem = m_currentBodyEquipment;
+            m_currentBodyEquipment = CreateRuntimeArmor(
+                itemID,
+                database => database.GetBodyEquipmentByID(itemID),
+                m_startingBodyEquipment);
+            m_equipmentManager?.LoadBodyEquipment(m_currentBodyEquipment);
+            DestroyRuntimeItem(previousItem);
+        }
+
+        /// <summary>Reconstructs the runtime hand item and its modular models.</summary>
+        public void EquipHandEquipmentFromID(int itemID)
+        {
+            HandEquipmentItem previousItem = m_currentHandEquipment;
+            m_currentHandEquipment = CreateRuntimeArmor(
+                itemID,
+                database => database.GetHandEquipmentByID(itemID),
+                m_startingHandEquipment);
+            m_equipmentManager?.LoadHandEquipment(m_currentHandEquipment);
+            DestroyRuntimeItem(previousItem);
+        }
+
+        /// <summary>Reconstructs the runtime leg item and its modular models.</summary>
+        public void EquipLegEquipmentFromID(int itemID)
+        {
+            LegEquipmentItem previousItem = m_currentLegEquipment;
+            m_currentLegEquipment = CreateRuntimeArmor(
+                itemID,
+                database => database.GetLegEquipmentByID(itemID),
+                m_startingLegEquipment);
+            m_equipmentManager?.LoadLegEquipment(m_currentLegEquipment);
+            DestroyRuntimeItem(previousItem);
         }
 
         /// <summary>
@@ -259,6 +387,35 @@ namespace ZZ
                 : null;
         }
 
+        private T CreateRuntimeArmor<T>(
+            int itemID,
+            Func<WorldItemDatabase, T> databaseResolver,
+            T localFallback) where T : ArmorItem
+        {
+            if (itemID < 0)
+            {
+                return null;
+            }
+
+            WorldItemDatabase database = WorldItemDatabase.Instance;
+            T template = database != null ? databaseResolver(database) : null;
+            if (template == null && localFallback != null && localFallback.ItemID == itemID)
+            {
+                template = localFallback;
+            }
+
+            if (template == null)
+            {
+                Debug.LogWarning($"Could not resolve armor item ID {itemID}.", this);
+                return null;
+            }
+
+            T runtimeItem = Instantiate(template);
+            runtimeItem.name = $"{template.name} (Runtime)";
+            runtimeItem.hideFlags = HideFlags.DontSave;
+            return runtimeItem;
+        }
+
         private WeaponItem SelectNextWeapon(
             WeaponItem[] quickSlots,
             WeaponItem currentWeapon,
@@ -378,6 +535,35 @@ namespace ZZ
             if (weapon != null && (weapon.hideFlags & HideFlags.DontSave) != 0)
             {
                 Destroy(weapon);
+            }
+        }
+
+        private void RestoreQuickSlots(WeaponItem[] quickSlots, int[] itemIDs)
+        {
+            for (int slotIndex = 0; slotIndex < k_QuickSlotCount; slotIndex++)
+            {
+                int itemID = itemIDs != null && slotIndex < itemIDs.Length
+                    ? itemIDs[slotIndex]
+                    : m_unarmedWeapon?.ItemID ?? 0;
+                quickSlots[slotIndex] = ResolveWeaponTemplate(itemID) ?? m_unarmedWeapon;
+            }
+        }
+
+        private static int GetQuickSlotItemID(WeaponItem[] quickSlots, int slotIndex)
+        {
+            if (quickSlots == null || slotIndex < 0 || slotIndex >= quickSlots.Length)
+            {
+                return 0;
+            }
+
+            return quickSlots[slotIndex]?.ItemID ?? 0;
+        }
+
+        private static void DestroyRuntimeItem(Item item)
+        {
+            if (item != null && (item.hideFlags & HideFlags.DontSave) != 0)
+            {
+                Destroy(item);
             }
         }
 

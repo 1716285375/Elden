@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d991bc5fe82b84c4b912126e5a18f9bf, type: 3}
+  m_Name: Starter Hood
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.HeadEquipmentItem
+  m_itemName: Starter Hood
+  m_itemIcon: {fileID: 0}
+  m_itemDescription: A dependable starter hood fitted to a wandering warrior.
+  m_itemID: 4
+  m_itemWeight: 2.5
+  m_physicalAbsorption: 3
+  m_magicAbsorption: 4
+  m_fireAbsorption: 2
+  m_lightningAbsorption: 3
+  m_holyAbsorption: 4
+  m_immunity: 4
+  m_robustness: 4
+  m_focus: 4
+  m_vitality: 4
+  m_poise: 2
+  m_equipmentModels:
+  - {fileID: 11400000, guid: 9471f226582b9e5429be9a177c615de0, type: 2}
+  m_headEquipmentType: 2

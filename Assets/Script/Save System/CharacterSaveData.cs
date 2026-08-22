@@ -15,7 +15,8 @@ namespace ZZ
         private const float k_DefaultCurrentHealth = 150f;
         private const float k_DefaultCurrentStamina = 100f;
         private const int k_AttributeDataVersion = 1;
-        private const int k_CurrentDataVersion = 3;
+        private const int k_EquipmentDataVersion = 4;
+        private const int k_CurrentDataVersion = 4;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -28,6 +29,19 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_endurance = k_DefaultAttributeLevel;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
+        [SerializeField] private int m_headEquipmentID = -1;
+        [SerializeField] private int m_bodyEquipmentID = -1;
+        [SerializeField] private int m_handEquipmentID = -1;
+        [SerializeField] private int m_legEquipmentID = -1;
+        [SerializeField] private int m_rightHandWeaponSlot01ID = 1;
+        [SerializeField] private int m_rightHandWeaponSlot02ID = 2;
+        [SerializeField] private int m_rightHandWeaponSlot03ID;
+        [SerializeField] private int m_leftHandWeaponSlot01ID = 3;
+        [SerializeField] private int m_leftHandWeaponSlot02ID = 2;
+        [SerializeField] private int m_leftHandWeaponSlot03ID;
+        [SerializeField, Range(0, 2)] private int m_rightHandWeaponIndex;
+        [SerializeField, Range(0, 2)] private int m_leftHandWeaponIndex;
+        [SerializeField] private bool m_isMale = true;
         [SerializeField] private List<BossSaveData> m_bosses = new();
         [SerializeField] private List<SiteOfGraceSaveData> m_sitesOfGrace = new();
 
@@ -89,6 +103,84 @@ namespace ZZ
         {
             get => m_currentStamina;
             set => m_currentStamina = Mathf.Max(0f, value);
+        }
+
+        public int HeadEquipmentID
+        {
+            get => m_headEquipmentID;
+            set => m_headEquipmentID = Mathf.Max(-1, value);
+        }
+
+        public int BodyEquipmentID
+        {
+            get => m_bodyEquipmentID;
+            set => m_bodyEquipmentID = Mathf.Max(-1, value);
+        }
+
+        public int HandEquipmentID
+        {
+            get => m_handEquipmentID;
+            set => m_handEquipmentID = Mathf.Max(-1, value);
+        }
+
+        public int LegEquipmentID
+        {
+            get => m_legEquipmentID;
+            set => m_legEquipmentID = Mathf.Max(-1, value);
+        }
+
+        public int RightHandWeaponSlot01ID
+        {
+            get => m_rightHandWeaponSlot01ID;
+            set => m_rightHandWeaponSlot01ID = Mathf.Max(0, value);
+        }
+
+        public int RightHandWeaponSlot02ID
+        {
+            get => m_rightHandWeaponSlot02ID;
+            set => m_rightHandWeaponSlot02ID = Mathf.Max(0, value);
+        }
+
+        public int RightHandWeaponSlot03ID
+        {
+            get => m_rightHandWeaponSlot03ID;
+            set => m_rightHandWeaponSlot03ID = Mathf.Max(0, value);
+        }
+
+        public int LeftHandWeaponSlot01ID
+        {
+            get => m_leftHandWeaponSlot01ID;
+            set => m_leftHandWeaponSlot01ID = Mathf.Max(0, value);
+        }
+
+        public int LeftHandWeaponSlot02ID
+        {
+            get => m_leftHandWeaponSlot02ID;
+            set => m_leftHandWeaponSlot02ID = Mathf.Max(0, value);
+        }
+
+        public int LeftHandWeaponSlot03ID
+        {
+            get => m_leftHandWeaponSlot03ID;
+            set => m_leftHandWeaponSlot03ID = Mathf.Max(0, value);
+        }
+
+        public int RightHandWeaponIndex
+        {
+            get => m_rightHandWeaponIndex;
+            set => m_rightHandWeaponIndex = Mathf.Clamp(value, 0, 2);
+        }
+
+        public int LeftHandWeaponIndex
+        {
+            get => m_leftHandWeaponIndex;
+            set => m_leftHandWeaponIndex = Mathf.Clamp(value, 0, 2);
+        }
+
+        public bool IsMale
+        {
+            get => m_isMale;
+            set => m_isMale = value;
         }
 
         /// <summary>Gets the saved lifecycle state for a boss, defaulting to dormant.</summary>
@@ -172,6 +264,23 @@ namespace ZZ
                 m_endurance = k_DefaultAttributeLevel;
                 m_currentHealth = k_DefaultCurrentHealth;
                 m_currentStamina = k_DefaultCurrentStamina;
+            }
+
+            if (m_dataVersion < k_EquipmentDataVersion)
+            {
+                m_headEquipmentID = -1;
+                m_bodyEquipmentID = -1;
+                m_handEquipmentID = -1;
+                m_legEquipmentID = -1;
+                m_rightHandWeaponSlot01ID = 1;
+                m_rightHandWeaponSlot02ID = 2;
+                m_rightHandWeaponSlot03ID = 0;
+                m_leftHandWeaponSlot01ID = 3;
+                m_leftHandWeaponSlot02ID = 2;
+                m_leftHandWeaponSlot03ID = 0;
+                m_rightHandWeaponIndex = 0;
+                m_leftHandWeaponIndex = 0;
+                m_isMale = true;
             }
 
             m_bosses ??= new List<BossSaveData>();
