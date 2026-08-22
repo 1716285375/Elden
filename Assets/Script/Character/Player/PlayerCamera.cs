@@ -27,6 +27,7 @@ namespace ZZ
         [SerializeField] private float m_minimumPivot = -30f;
         [FormerlySerializedAs("maximumPivot")]
         [SerializeField] private float m_maximumPivot = 60f;
+        [SerializeField, Min(0f)] private float m_lockOnRotationSpeed = 12f;
 
         [Header("Collision Settings")]
         [FormerlySerializedAs("cameraCollisionRadius")]
@@ -165,6 +166,13 @@ namespace ZZ
                 return;
             }
 
+            PlayerLockOnManager lockOnManager = m_player.LockOnManager;
+            if (lockOnManager != null && lockOnManager.IsLockedOn)
+            {
+                HandleLockOnRotations(lockOnManager.TargetAimPoint);
+                return;
+            }
+
             m_leftAndRightLookAngle += m_playerInputManager.CameraHorizontalInput
                 * m_leftAndRightRotationSpeed
                 * Time.deltaTime;
@@ -175,6 +183,43 @@ namespace ZZ
                 * Time.deltaTime;
             m_upAndDownLookAngle = Mathf.Clamp(m_upAndDownLookAngle, m_minimumPivot, m_maximumPivot);
             m_cameraPivotTransform.localRotation = Quaternion.Euler(m_upAndDownLookAngle, 0f, 0f);
+        }
+
+        private void HandleLockOnRotations(Vector3 targetPoint)
+        {
+            Vector3 horizontalDirection = targetPoint - m_player.transform.position;
+            horizontalDirection.y = 0f;
+            if (horizontalDirection.sqrMagnitude > Mathf.Epsilon)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(horizontalDirection);
+                transform.rotation = Quaternion.Slerp(
+                    transform.rotation,
+                    targetRotation,
+                    m_lockOnRotationSpeed * Time.deltaTime);
+                m_leftAndRightLookAngle = transform.eulerAngles.y;
+            }
+
+            Vector3 pivotDirection = targetPoint - m_cameraPivotTransform.position;
+            Vector3 localPivotDirection = transform.InverseTransformDirection(
+                pivotDirection.normalized);
+            float horizontalDistance = new Vector2(
+                localPivotDirection.x,
+                localPivotDirection.z).magnitude;
+            float targetPivotAngle = -Mathf.Atan2(
+                localPivotDirection.y,
+                horizontalDistance) * Mathf.Rad2Deg;
+            targetPivotAngle = Mathf.Clamp(
+                targetPivotAngle,
+                m_minimumPivot,
+                m_maximumPivot);
+            m_upAndDownLookAngle = Mathf.LerpAngle(
+                m_upAndDownLookAngle,
+                targetPivotAngle,
+                m_lockOnRotationSpeed * Time.deltaTime);
+            m_cameraPivotTransform.localRotation = Quaternion.Euler(
+                m_upAndDownLookAngle,
+                0f,
+                0f);
         }
 
         private void HandleCollisions()

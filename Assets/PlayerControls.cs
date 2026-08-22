@@ -181,7 +181,7 @@ namespace ZZ
                 },
                 {
                     ""name"": ""up"",
-                    ""id"": ""3bb240ca-1484-4d98-a126-fcc29220746d"",
+                    ""id"": ""a4665b27-fd04-4191-a80d-41b26c8a2391"",
                     ""path"": ""<Gamepad>/leftStick/up"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -501,6 +501,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Lock On"",
+                    ""type"": ""Button"",
+                    ""id"": ""5330d7e9-ea07-4be0-99e1-380dcd6e3967"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -523,6 +532,28 @@ namespace ZZ
                     ""processors"": ""ScaleVector2(x=0.05,y=0.05)"",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a3a876e-7936-4574-b42a-092ab4903d86"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Lock On"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1d5dfccc-a1b6-4813-a31e-931019e8abb1"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Lock On"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -642,6 +673,7 @@ namespace ZZ
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
+            m_PlayerCamera_LockOn = m_PlayerCamera.FindAction("Lock On", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Delete = m_UI.FindAction("Delete", throwIfNotFound: true);
@@ -902,6 +934,7 @@ namespace ZZ
         private readonly InputActionMap m_PlayerCamera;
         private List<IPlayerCameraActions> m_PlayerCameraActionsCallbackInterfaces = new List<IPlayerCameraActions>();
         private readonly InputAction m_PlayerCamera_Movement;
+        private readonly InputAction m_PlayerCamera_LockOn;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Camera".
         /// </summary>
@@ -917,6 +950,10 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerCamera/Movement".
             /// </summary>
             public InputAction @Movement => m_Wrapper.m_PlayerCamera_Movement;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerCamera/LockOn".
+            /// </summary>
+            public InputAction @LockOn => m_Wrapper.m_PlayerCamera_LockOn;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -946,6 +983,9 @@ namespace ZZ
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
+                @LockOn.started += instance.OnLockOn;
+                @LockOn.performed += instance.OnLockOn;
+                @LockOn.canceled += instance.OnLockOn;
             }
 
             /// <summary>
@@ -960,6 +1000,9 @@ namespace ZZ
                 @Movement.started -= instance.OnMovement;
                 @Movement.performed -= instance.OnMovement;
                 @Movement.canceled -= instance.OnMovement;
+                @LockOn.started -= instance.OnLockOn;
+                @LockOn.performed -= instance.OnLockOn;
+                @LockOn.canceled -= instance.OnLockOn;
             }
 
             /// <summary>
@@ -1204,6 +1247,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnMovement(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Lock On" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnLockOn(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

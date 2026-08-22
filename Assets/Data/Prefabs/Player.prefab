@@ -145772,6 +145772,7 @@ GameObject:
   - component: {fileID: 6156979858456878683}
   - component: {fileID: 6368077256085200356}
   - component: {fileID: 169177767431613464}
+  - component: {fileID: 8033323077005802984}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -146092,6 +146093,27 @@ MonoBehaviour:
   m_character: {fileID: 0}
   m_effectToTest: {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}
   m_shouldProcessEffect: 0
+--- !u!114 &8033323077005802984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444903284586261052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 789fe5f417467fd4880dff71ddd4fe12, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerLockOnManager
+  m_lockOnRadius: 20
+  m_characterLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  m_obstructionLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  m_targetHeightOffset: 1.5
+  m_occlusionGracePeriod: 0.5
 --- !u!1 &6879944639353048933
 GameObject:
   m_ObjectHideFlags: 0
