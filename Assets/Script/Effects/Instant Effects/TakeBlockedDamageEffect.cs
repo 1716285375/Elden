@@ -21,6 +21,8 @@ namespace ZZ
         public float BlockingFireAbsorption { get; private set; }
         public float BlockingLightningAbsorption { get; private set; }
         public float BlockingHolyAbsorption { get; private set; }
+        public float BlockingStability { get; private set; }
+        public float StaminaDamage { get; private set; }
         public DamageIntensity DamageIntensity { get; private set; }
 
         /// <summary>Creates a transient blocked-hit payload from the shared template.</summary>
@@ -37,7 +39,8 @@ namespace ZZ
             float blockingMagicAbsorption,
             float blockingFireAbsorption,
             float blockingLightningAbsorption,
-            float blockingHolyAbsorption)
+            float blockingHolyAbsorption,
+            float blockingStability)
         {
             TakeBlockedDamageEffect runtimeEffect =
                 (TakeBlockedDamageEffect)CreateRuntimeInstance();
@@ -60,6 +63,11 @@ namespace ZZ
                 blockingLightningAbsorption);
             runtimeEffect.BlockingHolyAbsorption = ClampAbsorption(
                 blockingHolyAbsorption);
+            runtimeEffect.BlockingStability = ClampAbsorption(blockingStability);
+            runtimeEffect.StaminaDamage =
+                CharacterStatsManager.CalculateBlockingStaminaDamage(
+                    runtimeEffect.PoiseDamage,
+                    runtimeEffect.BlockingStability);
             runtimeEffect.WasBlocked = true;
             runtimeEffect.DamageIntensity =
                 GetDamageIntensityBasedOnPoiseDamage(runtimeEffect.PoiseDamage);
@@ -122,17 +130,11 @@ namespace ZZ
 
             WasBlocked = true;
             DamageIntensity = GetDamageIntensityBasedOnPoiseDamage(PoiseDamage);
-            character.CharacterSoundFXManager?.PlayBlockSound(
-                GetBlockSound(DamageIntensity));
+            character.CharacterSoundFXManager?.PlayBlockingSoundEffect();
             ApplyHealthDamage(character, CalculateBlockedDamage());
-        }
-
-        private AudioClip GetBlockSound(DamageIntensity damageIntensity)
-        {
-            int soundIndex = (int)damageIntensity;
-            return soundIndex >= 0 && soundIndex < m_blockSounds.Length
-                ? m_blockSounds[soundIndex]
-                : null;
+            character.CharacterStatsManager?.ApplyBlockingStaminaDamage(
+                PoiseDamage,
+                BlockingStability);
         }
 
         private static float CalculateAbsorbedDamage(

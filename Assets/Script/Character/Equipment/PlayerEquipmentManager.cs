@@ -9,7 +9,8 @@ namespace ZZ
     public class PlayerEquipmentManager : CharacterEquipmentManager
     {
         private WeaponModelInstantiationSlot m_rightHandSlot;
-        private WeaponModelInstantiationSlot m_leftHandSlot;
+        private WeaponModelInstantiationSlot m_leftHandWeaponSlot;
+        private WeaponModelInstantiationSlot m_leftHandShieldSlot;
         private PlayerManager m_player;
         private CharacterSoundFXManager m_characterSoundFXManager;
 
@@ -51,7 +52,10 @@ namespace ZZ
 
             m_rightHandSlot.LoadWeaponModel(weapon, Character);
             CurrentRightHandWeaponManager = m_rightHandSlot.CurrentWeaponManager;
-            m_player?.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
+            if (m_player?.CharacterNetworkManager?.IsBlocking.Value != true)
+            {
+                m_player?.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
+            }
         }
 
         /// <summary>
@@ -59,17 +63,27 @@ namespace ZZ
         /// </summary>
         public void LoadLeftWeapon(WeaponItem weapon)
         {
-            if (m_leftHandSlot == null)
+            WeaponModelInstantiationSlot targetSlot = weapon?.WeaponModelType ==
+                    WeaponModelType.Shield
+                ? m_leftHandShieldSlot
+                : m_leftHandWeaponSlot;
+            if (targetSlot == null)
             {
-                Debug.LogError("The player prefab is missing a left-hand weapon slot.", this);
+                Debug.LogError(
+                    $"The player prefab is missing the {weapon?.WeaponModelType} left-hand slot.",
+                    this);
                 return;
             }
 
-            m_leftHandSlot.LoadWeaponModel(weapon, Character);
-            CurrentLeftHandWeaponManager = m_leftHandSlot.CurrentWeaponManager;
-            if (m_player?.PlayerNetworkManager?.IsUsingLeftHand.Value == true)
+            m_leftHandWeaponSlot?.UnloadWeaponModel();
+            m_leftHandShieldSlot?.UnloadWeaponModel();
+            targetSlot.LoadWeaponModel(weapon, Character);
+            CurrentLeftHandWeaponManager = targetSlot.CurrentWeaponManager;
+            if (m_player?.PlayerNetworkManager?.IsUsingLeftHand.Value == true ||
+                m_player?.CharacterNetworkManager?.IsBlocking.Value == true)
             {
                 m_player.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
+                m_player.PlayerStatsManager?.SetBlockingStats(weapon);
             }
         }
 
@@ -122,7 +136,11 @@ namespace ZZ
                 }
                 else if (slot.WeaponModelSlot == WeaponModelSlot.LeftHandSlot)
                 {
-                    m_leftHandSlot = slot;
+                    m_leftHandWeaponSlot = slot;
+                }
+                else if (slot.WeaponModelSlot == WeaponModelSlot.LeftHandShieldSlot)
+                {
+                    m_leftHandShieldSlot = slot;
                 }
             }
         }

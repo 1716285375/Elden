@@ -6,7 +6,7 @@ namespace ZZ
     public class PlayerNetworkManager : CharacterNetworkManager
     {
         private const int k_DefaultRightHandWeaponID = 1;
-        private const int k_DefaultLeftHandWeaponID = 0;
+        private const int k_DefaultLeftHandWeaponID = 3;
 
         private readonly NetworkVariable<FixedString64Bytes> m_characterName =
             new NetworkVariable<FixedString64Bytes>(
@@ -87,6 +87,8 @@ namespace ZZ
             {
                 UpdateRemoteAnimatorController(m_currentWeaponIDBeingUsed.Value);
             }
+
+            RefreshBlockingPresentation();
 
             ResetOwnedSprintState();
         }

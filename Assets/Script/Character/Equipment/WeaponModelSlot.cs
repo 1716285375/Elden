@@ -6,6 +6,7 @@ namespace ZZ
     public enum WeaponModelSlot
     {
         RightHandSlot,
-        LeftHandSlot
+        LeftHandSlot,
+        LeftHandShieldSlot
     }
 }

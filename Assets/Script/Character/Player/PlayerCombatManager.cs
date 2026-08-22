@@ -9,6 +9,7 @@ namespace ZZ
     public class PlayerCombatManager : CharacterCombatManager
     {
         [SerializeField, Min(0f)] private float m_fullyChargedDuration = 0.8f;
+        [SerializeField] private bool m_canBlock = true;
 
         private PlayerManager m_player;
         private WeaponItem m_chargingWeapon;
@@ -30,6 +31,9 @@ namespace ZZ
         /// <summary>Gets whether the current animation accepts a buffered attack input.</summary>
         public bool CanQueueNextAttack => m_canQueueNextAttack;
 
+        /// <summary>Gets whether gameplay currently permits a new block.</summary>
+        public bool CanBlock => m_canBlock;
+
         protected override void Awake()
         {
             base.Awake();
@@ -47,6 +51,60 @@ namespace ZZ
             }
 
             weaponAction.AttemptToPerformAction(m_player, weapon);
+        }
+
+        /// <summary>Starts or ends owner-authoritative blocking with the off-hand weapon.</summary>
+        public bool SetBlocking(bool isBlocking, WeaponItem blockingWeapon = null)
+        {
+            CharacterNetworkManager networkManager =
+                m_player?.CharacterNetworkManager;
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                networkManager == null ||
+                !networkManager.IsSpawned)
+            {
+                return false;
+            }
+
+            if (!isBlocking)
+            {
+                networkManager.SetBlockingState(false);
+                return true;
+            }
+
+            if (!m_canBlock ||
+                m_player.IsDead ||
+                m_player.IsPerformingAction ||
+                networkManager.IsAttacking.Value ||
+                networkManager.IsBlocking.Value ||
+                blockingWeapon == null)
+            {
+                return false;
+            }
+
+            m_player.PlayerStatsManager?.SetBlockingStats(blockingWeapon);
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(false);
+            networkManager.SetBlockingState(true);
+            return true;
+        }
+
+        /// <summary>Allows authored action windows to enable or disable blocking.</summary>
+        public void SetCanBlock(bool canBlock)
+        {
+            m_canBlock = canBlock;
+            if (!m_canBlock)
+            {
+                SetBlocking(false);
+            }
+        }
+
+        /// <summary>Switches between the off-hand blocking and right-hand action sets.</summary>
+        public void ApplyBlockingAnimatorController(bool isBlockingController)
+        {
+            WeaponItem weapon = isBlockingController
+                ? m_player?.InventoryManager?.CurrentLeftHandWeapon
+                : m_player?.InventoryManager?.CurrentRightHandWeapon;
+            m_player?.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
         }
 
         /// <summary>
@@ -68,6 +126,7 @@ namespace ZZ
                 return;
             }
 
+            SetBlocking(false);
             m_chargingWeapon = weapon;
             m_chargeStartTime = Time.time;
             m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
@@ -234,6 +293,7 @@ namespace ZZ
         /// <inheritdoc />
         public override void ResetActionState()
         {
+            base.ResetActionState();
             DisableCanCombo();
             DisableCanPerformCommittedAttack();
             PlayerInputManager.Instance?.ClearAttackInputQueue();

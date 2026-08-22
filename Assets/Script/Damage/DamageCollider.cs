@@ -266,7 +266,8 @@ namespace ZZ
                     statsManager.BlockingMagicAbsorption,
                     statsManager.BlockingFireAbsorption,
                     statsManager.BlockingLightningAbsorption,
-                    statsManager.BlockingHolyAbsorption);
+                    statsManager.BlockingHolyAbsorption,
+                    statsManager.BlockingStability);
             }
 
             return effectsManager?.TakeDamageEffect?.CreateRuntimeDamageEffect(

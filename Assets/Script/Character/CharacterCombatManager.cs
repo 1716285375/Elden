@@ -29,6 +29,12 @@ namespace ZZ
         /// </summary>
         public void ReplicateAttack(AttackType attackType, WeaponItem weapon = null)
         {
+            if (Character is PlayerManager blockingPlayer)
+            {
+                blockingPlayer.PlayerCombatManager?.SetBlocking(false);
+            }
+
+            Character?.CharacterNetworkManager?.SetAttackingState(true);
             CurrentAttackType = attackType;
             WeaponItem animatorWeapon = weapon;
             if (animatorWeapon == null && Character is PlayerManager player)
@@ -44,6 +50,7 @@ namespace ZZ
         /// <summary>Clears transient combat windows when the action layer returns to neutral.</summary>
         public virtual void ResetActionState()
         {
+            Character?.CharacterNetworkManager?.SetAttackingState(false);
         }
     }
 }

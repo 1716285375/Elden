@@ -85,7 +85,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
   m_Navigation:
     m_Mode: 3
@@ -66600,6 +66600,7 @@ Transform:
   - {fileID: 770548770724405103}
   - {fileID: 770158568725315661}
   - {fileID: 2158617297189296926}
+  - {fileID: 7204655753426378215}
   m_Father: {fileID: 770277495638743405}
   m_LocalEulerAnglesHint: {x: 3.960093e-15, y: 4.1067824, z: -2.1783615e-16}
 --- !u!136 &4948881198378797573
@@ -145748,6 +145749,51 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &3907986735012474775
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7204655753426378215}
+  - component: {fileID: 3931538049184581527}
+  m_Layer: 0
+  m_Name: Left Hand Shield Slot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7204655753426378215
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3907986735012474775}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 770255859177476194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3931538049184581527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3907986735012474775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30f4e6e29a35d44799014dcc55c3c42, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponModelInstantiationSlot
+  m_weaponModelSlot: 2
 --- !u!1 &5098661731054863371
 GameObject:
   m_ObjectHideFlags: 0
@@ -146228,6 +146274,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  IsAttacking:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
   IsSprinting:
@@ -146256,6 +146307,7 @@ MonoBehaviour:
   m_blockingFireAbsorption: 35
   m_blockingLightningAbsorption: 25
   m_blockingHolyAbsorption: 35
+  m_blockingStability: 50
 --- !u!114 &2654529294512128537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146286,8 +146338,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
   - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
   m_weaponsInLeftHandSlots:
+  - {fileID: 11400000, guid: eb73d2281cada864897040f53529cda4, type: 2}
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
-  - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
   - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
 --- !u!114 &6156979858456878683
 MonoBehaviour:
@@ -146303,6 +146355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerCombatManager
   m_currentAttackType: 0
   m_fullyChargedDuration: 0.8
+  m_canBlock: 1
 --- !u!114 &6368077256085200356
 MonoBehaviour:
   m_ObjectHideFlags: 0

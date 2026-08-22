@@ -234,7 +234,8 @@ namespace ZZ.Editor
                     k_MagicAbsorption,
                     k_FireAbsorption,
                     k_LightningAbsorption,
-                    k_HolyAbsorption);
+                    k_HolyAbsorption,
+                    50f);
             TakeBlockedDamageEffect fullAbsorptionEffect =
                 template.CreateRuntimeBlockedDamageEffect(
                     null,
@@ -245,6 +246,7 @@ namespace ZZ.Editor
                     0f,
                     Vector3.zero,
                     0f,
+                    100f,
                     100f,
                     100f,
                     100f,

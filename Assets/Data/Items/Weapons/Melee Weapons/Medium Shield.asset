@@ -10,59 +10,55 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b286c1e56d7e3640959d221ba60a5b7, type: 3}
-  m_Name: Straight Sword
+  m_Name: Medium Shield
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.MeleeWeaponItem
-  m_itemName: Straight Sword
-  m_itemIcon: {fileID: 21300000, guid: ff059b920d44e894d9544dc02bc1844f, type: 3}
-  m_itemDescription: A balanced straight sword suitable for one-handed combat.
-  m_itemID: 1
-  m_weaponModel: {fileID: 5024126159876492057, guid: 053ee4bc320618145969e734e9dba307, type: 3}
+  m_itemName: Medium Shield
+  m_itemIcon: {fileID: 0}
+  m_itemDescription: A balanced shield with full Physical guard and dependable Stability.
+  m_itemID: 3
+  m_weaponModel: {fileID: 1582763652874089129, guid: 68dabc27d2a6f924c9a0a9c4779d8550, type: 3}
   m_isUnarmed: 0
-  m_weaponModelType: 0
-  m_weaponAnimator: {fileID: 22100000, guid: 4a1fe2be1ef25e14dbad6ef0713b6dbd, type: 2}
+  m_weaponModelType: 1
+  m_weaponAnimator: {fileID: 22100000, guid: fe357cc515d2e9b4d8ec0a69c7c43912, type: 2}
   m_weaponPivotPosition: {x: 0, y: 0, z: 0}
   m_weaponPivotRotation: {x: 0, y: 0, z: 0}
   m_weaponPivotScale: {x: 1, y: 1, z: 1}
-  m_physicalDamage: 20
+  m_physicalDamage: 5
   m_magicDamage: 0
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
-  m_strengthRequirement: 10
-  m_dexterityRequirement: 10
+  m_strengthRequirement: 0
+  m_dexterityRequirement: 0
   m_intelligenceRequirement: 0
   m_faithRequirement: 0
-  m_baseStaminaCost: 20
+  m_baseStaminaCost: 10
   m_basePoiseDamage: 10
-  m_blockingPhysicalAbsorption: 70
-  m_blockingMagicAbsorption: 30
-  m_blockingFireAbsorption: 25
-  m_blockingLightningAbsorption: 20
-  m_blockingHolyAbsorption: 25
-  m_blockingStability: 35
-  m_whooshes:
-  - {fileID: 8300000, guid: 2d9eee816895e894a8dc908c9bdf29e9, type: 3}
-  - {fileID: 8300000, guid: 5b963c709c1fb4f44acacfe4f10c3384, type: 3}
-  - {fileID: 8300000, guid: 7aae99c9face8fa44907294c95c66c55, type: 3}
-  - {fileID: 8300000, guid: 0372503205887834f9802a29dc67e31b, type: 3}
+  m_blockingPhysicalAbsorption: 100
+  m_blockingMagicAbsorption: 60
+  m_blockingFireAbsorption: 55
+  m_blockingLightningAbsorption: 45
+  m_blockingHolyAbsorption: 55
+  m_blockingStability: 65
+  m_whooshes: []
   m_blockingSoundEffects:
   - {fileID: 8300000, guid: 52506b408dce06c4fb071d642c0dc45a, type: 3}
   - {fileID: 8300000, guid: 921c8234df7c3204385063ac71e354d3, type: 3}
   - {fileID: 8300000, guid: 78d820b8eab284c458ef4b260d752b6a, type: 3}
-  m_rightHandAction: {fileID: 11400000, guid: ce46975f3a3c844478af9193aea3e541, type: 2}
-  m_rightHandHeavyAction: {fileID: 11400000, guid: f48816d9e0c231a4a9179ec378a172a3, type: 2}
-  m_rightHandChargedAction: {fileID: 11400000, guid: 5bb894ee600f6144b90f860ceb0792d2, type: 2}
+  m_rightHandAction: {fileID: 0}
+  m_rightHandHeavyAction: {fileID: 0}
+  m_rightHandChargedAction: {fileID: 0}
   m_twoHandRightAction: {fileID: 0}
   m_twoHandRightHeavyAction: {fileID: 0}
   m_leftHandAction: {fileID: 11400000, guid: 4d97d5a4924ec52488cc540afb61ae31, type: 2}
   m_lightAttack01DamageModifier: 1
-  m_heavyAttack01DamageModifier: 1.25
+  m_heavyAttack01DamageModifier: 1
   m_chargedAttack01DamageModifier: 1.75
   m_runningAttack01DamageModifier: 1.2
   m_rollAttack01DamageModifier: 1.1
   m_backStepAttack01DamageModifier: 1.15
   m_lightAttack01StaminaCostMultiplier: 1
-  m_heavyAttack01StaminaCostMultiplier: 1.25
+  m_heavyAttack01StaminaCostMultiplier: 1
   m_chargedAttack01StaminaCostMultiplier: 1.5
   m_runningAttack01StaminaCostMultiplier: 1.25
   m_rollAttack01StaminaCostMultiplier: 1.15

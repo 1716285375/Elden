@@ -77,6 +77,10 @@ namespace ZZ
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsAttacking = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
 
         [FormerlySerializedAs("networkPositionSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkPositionSmoothTime = 0.1f;
@@ -109,6 +113,7 @@ namespace ZZ
             CurrentHealth.OnValueChanged += OnCurrentHealthChanged;
             IsDead.OnValueChanged += OnIsDeadChanged;
             IsChargingAttack.OnValueChanged += OnIsChargingAttackChanged;
+            IsBlocking.OnValueChanged += OnIsBlockingChanged;
 
             if (IsOwner)
             {
@@ -116,9 +121,12 @@ namespace ZZ
                 NetworkRotation.Value = transform.rotation;
                 IsJumping.Value = false;
                 IsChargingAttack.Value = false;
+                IsBlocking.Value = false;
+                IsAttacking.Value = false;
             }
 
             ApplyChargingAttackState(IsChargingAttack.Value);
+            ApplyBlockingState(IsBlocking.Value);
             CheckHP();
         }
 
@@ -127,7 +135,9 @@ namespace ZZ
             CurrentHealth.OnValueChanged -= OnCurrentHealthChanged;
             IsDead.OnValueChanged -= OnIsDeadChanged;
             IsChargingAttack.OnValueChanged -= OnIsChargingAttackChanged;
+            IsBlocking.OnValueChanged -= OnIsBlockingChanged;
             ApplyChargingAttackState(false);
+            ApplyBlockingState(false);
             base.OnNetworkDespawn();
         }
 
@@ -135,6 +145,8 @@ namespace ZZ
         {
             base.OnGainedOwnership();
             SetChargingAttackState(false);
+            SetBlockingState(false);
+            SetAttackingState(false);
         }
 
         private void Update()
@@ -202,6 +214,34 @@ namespace ZZ
             }
 
             IsChargingAttack.Value = isChargingAttack;
+        }
+
+        /// <summary>Writes the owner's sustained blocking state.</summary>
+        public void SetBlockingState(bool isBlocking)
+        {
+            if (!IsSpawned || !IsOwner || IsBlocking.Value == isBlocking)
+            {
+                return;
+            }
+
+            IsBlocking.Value = isBlocking;
+        }
+
+        /// <summary>Writes whether the owner is inside an attack action.</summary>
+        public void SetAttackingState(bool isAttacking)
+        {
+            if (!IsSpawned || !IsOwner || IsAttacking.Value == isAttacking)
+            {
+                return;
+            }
+
+            IsAttacking.Value = isAttacking;
+        }
+
+        /// <summary>Reapplies late-join blocking data after replicated equipment is ready.</summary>
+        public void RefreshBlockingPresentation()
+        {
+            ApplyBlockingState(IsBlocking.Value);
         }
 
         /// <summary>
@@ -397,7 +437,8 @@ namespace ZZ
                     statsManager.BlockingMagicAbsorption,
                     statsManager.BlockingFireAbsorption,
                     statsManager.BlockingLightningAbsorption,
-                    statsManager.BlockingHolyAbsorption);
+                    statsManager.BlockingHolyAbsorption,
+                    statsManager.BlockingStability);
             }
 
             TakeDamageEffect damageTemplate = effectsManager?.TakeDamageEffect;
@@ -460,11 +501,28 @@ namespace ZZ
             ApplyChargingAttackState(isChargingAttack);
         }
 
+        private void OnIsBlockingChanged(bool wasBlocking, bool isBlocking)
+        {
+            ApplyBlockingState(isBlocking);
+        }
+
         private void ApplyChargingAttackState(bool isChargingAttack)
         {
             m_characterAnimatorManager ??=
                 GetComponentInChildren<CharacterAnimatorManager>(true);
             m_characterAnimatorManager?.SetChargingAttackState(isChargingAttack);
+        }
+
+        private void ApplyBlockingState(bool isBlocking)
+        {
+            m_characterAnimatorManager ??=
+                GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterAnimatorManager?.SetBlockingState(isBlocking);
+            if (isBlocking && m_characterManager is PlayerManager player)
+            {
+                player.PlayerStatsManager?.SetBlockingStats(
+                    player.InventoryManager?.CurrentLeftHandWeapon);
+            }
         }
     }
 }

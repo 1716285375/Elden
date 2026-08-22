@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -33,6 +34,8 @@ namespace ZZ.Editor
         private const string k_StraightSwordAssetPath =
             k_ItemFolder + "/Straight Sword.asset";
         private const string k_BroadswordAssetPath = k_ItemFolder + "/Broadsword.asset";
+        private const string k_MediumShieldAssetPath =
+            k_ItemFolder + "/Medium Shield.asset";
         private const string k_UnarmedPrefabPath =
             k_WeaponPrefabFolder + "/Unarmed.prefab";
         private const string k_StraightSwordPrefabPath =
@@ -257,10 +260,21 @@ namespace ZZ.Editor
             try
             {
                 WorldItemDatabase database = root.AddComponent<WorldItemDatabase>();
-                SetObjectArray(
-                    database,
-                    "m_items",
-                    new UnityEngine.Object[] { unarmed, straightSword, broadsword });
+                WeaponItem mediumShield =
+                    AssetDatabase.LoadAssetAtPath<WeaponItem>(
+                        k_MediumShieldAssetPath);
+                List<UnityEngine.Object> items = new List<UnityEngine.Object>
+                {
+                    unarmed,
+                    straightSword,
+                    broadsword
+                };
+                if (mediumShield != null)
+                {
+                    items.Add(mediumShield);
+                }
+
+                SetObjectArray(database, "m_items", items.ToArray());
                 if (PrefabUtility.SaveAsPrefabAsset(root, k_WorldItemDatabasePrefabPath) == null)
                 {
                     throw new InvalidOperationException(
@@ -289,10 +303,25 @@ namespace ZZ.Editor
                     inventory,
                     "m_weaponsInRightHandSlots",
                     new UnityEngine.Object[] { straightSword, broadsword, unarmed });
+                WeaponItem mediumShield =
+                    AssetDatabase.LoadAssetAtPath<WeaponItem>(
+                        k_MediumShieldAssetPath);
                 SetObjectArray(
                     inventory,
                     "m_weaponsInLeftHandSlots",
-                    new UnityEngine.Object[] { broadsword, unarmed, unarmed });
+                    mediumShield != null
+                        ? new UnityEngine.Object[]
+                        {
+                            mediumShield,
+                            broadsword,
+                            unarmed
+                        }
+                        : new UnityEngine.Object[]
+                        {
+                            broadsword,
+                            unarmed,
+                            unarmed
+                        });
 
                 Animator animator = playerRoot.GetComponentInChildren<Animator>(true);
                 if (animator == null || !animator.isHuman)
@@ -309,6 +338,13 @@ namespace ZZ.Editor
                     animator.GetBoneTransform(HumanBodyBones.LeftHand),
                     "Left Hand Weapon Slot",
                     WeaponModelSlot.LeftHandSlot);
+                if (mediumShield != null)
+                {
+                    ConfigureWeaponSlot(
+                        animator.GetBoneTransform(HumanBodyBones.LeftHand),
+                        "Left Hand Shield Slot",
+                        WeaponModelSlot.LeftHandShieldSlot);
+                }
 
                 PrefabUtility.SaveAsPrefabAsset(playerRoot, k_PlayerPrefabPath);
             }
@@ -561,14 +597,27 @@ namespace ZZ.Editor
             SerializedProperty items = GetRequiredProperty(
                 new SerializedObject(database),
                 "m_items");
-            UnityEngine.Object[] expectedItems = { unarmed, straightSword, broadsword };
-            if (items.arraySize != expectedItems.Length)
+            WeaponItem mediumShield =
+                AssetDatabase.LoadAssetAtPath<WeaponItem>(
+                    k_MediumShieldAssetPath);
+            List<UnityEngine.Object> expectedItems = new List<UnityEngine.Object>
             {
-                throw new InvalidOperationException(
-                    "World Item Database must contain exactly three episode weapons.");
+                unarmed,
+                straightSword,
+                broadsword
+            };
+            if (mediumShield != null)
+            {
+                expectedItems.Add(mediumShield);
             }
 
-            for (int itemIndex = 0; itemIndex < expectedItems.Length; itemIndex++)
+            if (items.arraySize != expectedItems.Count)
+            {
+                throw new InvalidOperationException(
+                    "World Item Database does not contain all configured weapons.");
+            }
+
+            for (int itemIndex = 0; itemIndex < expectedItems.Count; itemIndex++)
             {
                 if (items.GetArrayElementAtIndex(itemIndex).objectReferenceValue !=
                     expectedItems[itemIndex])
@@ -595,21 +644,40 @@ namespace ZZ.Editor
                     inventory,
                     "m_weaponsInRightHandSlots",
                     new UnityEngine.Object[] { straightSword, broadsword, unarmed });
+                WeaponItem mediumShield =
+                    AssetDatabase.LoadAssetAtPath<WeaponItem>(
+                        k_MediumShieldAssetPath);
                 ValidateObjectArray(
                     inventory,
                     "m_weaponsInLeftHandSlots",
-                    new UnityEngine.Object[] { broadsword, unarmed, unarmed });
+                    mediumShield != null
+                        ? new UnityEngine.Object[]
+                        {
+                            mediumShield,
+                            broadsword,
+                            unarmed
+                        }
+                        : new UnityEngine.Object[]
+                        {
+                            broadsword,
+                            unarmed,
+                            unarmed
+                        });
 
                 WeaponModelInstantiationSlot[] slots =
                     playerRoot.GetComponentsInChildren<WeaponModelInstantiationSlot>(true);
-                if (slots.Length != 2 ||
+                int expectedSlotCount = mediumShield != null ? 3 : 2;
+                if (slots.Length != expectedSlotCount ||
                     slots.Count(slot =>
                         slot.WeaponModelSlot == WeaponModelSlot.RightHandSlot) != 1 ||
                     slots.Count(slot =>
-                        slot.WeaponModelSlot == WeaponModelSlot.LeftHandSlot) != 1)
+                        slot.WeaponModelSlot == WeaponModelSlot.LeftHandSlot) != 1 ||
+                    mediumShield != null && slots.Count(slot =>
+                        slot.WeaponModelSlot ==
+                            WeaponModelSlot.LeftHandShieldSlot) != 1)
                 {
                     throw new InvalidOperationException(
-                        "Player prefab must contain one right-hand and one left-hand weapon slot.");
+                        "Player prefab has invalid weapon or shield attachment slots.");
                 }
             }
             finally

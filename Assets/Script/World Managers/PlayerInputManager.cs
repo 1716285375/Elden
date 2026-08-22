@@ -36,6 +36,7 @@ namespace ZZ
         private bool m_hasRBInput;
         private bool m_hasRTStartedInput;
         private bool m_hasRTReleasedInput;
+        private bool m_isLBInputHeld;
         private bool m_hasLockOnInput;
         private bool m_hasInteractionInput;
         private bool m_isGameplayInputBlocked;
@@ -75,6 +76,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
             m_playerControls.PlayerMovement.RT.started += OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled += OnRTCanceled;
+            m_playerControls.PlayerMovement.LB.performed += OnLBPerformed;
+            m_playerControls.PlayerMovement.LB.canceled += OnLBCanceled;
             m_playerControls.PlayerMovement.Interact.performed += OnInteractPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
@@ -103,6 +106,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
             m_playerControls.PlayerMovement.RT.started -= OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled -= OnRTCanceled;
+            m_playerControls.PlayerMovement.LB.performed -= OnLBPerformed;
+            m_playerControls.PlayerMovement.LB.canceled -= OnLBCanceled;
             m_playerControls.PlayerMovement.Interact.performed -= OnInteractPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
@@ -207,11 +212,13 @@ namespace ZZ
             m_hasRBInput = false;
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
+            m_isLBInputHeld = false;
             m_hasLockOnInput = false;
             m_hasInteractionInput = false;
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             m_player?.PlayerCombatManager?.CancelChargingAttack();
+            m_player?.PlayerCombatManager?.SetBlocking(false);
             ClearAttackInputQueue();
             IsMovementInputEnabled = false;
             m_playerControls?.PlayerMovement.Disable();
@@ -286,6 +293,7 @@ namespace ZZ
             HandleWeaponSwitchInput();
             HandleInteractionInput();
             HandleSprinting();
+            HandleBlockingInput();
             HandleAttackInput();
         }
 
@@ -331,6 +339,7 @@ namespace ZZ
             }
 
             m_hasDodgeInput = false;
+            m_player?.PlayerCombatManager?.SetBlocking(false);
             m_player?.LocomotionManager?.AttemptToPerformDodge();
         }
 
@@ -347,6 +356,7 @@ namespace ZZ
             }
 
             m_hasJumpInput = false;
+            m_player?.PlayerCombatManager?.SetBlocking(false);
             m_player?.LocomotionManager?.AttemptToPerformJump();
         }
 
@@ -391,6 +401,19 @@ namespace ZZ
                 m_hasRTReleasedInput = false;
                 m_player?.PlayerCombatManager?.ReleaseChargingHeavyAttack();
             }
+        }
+
+        private void HandleBlockingInput()
+        {
+            if (!m_isLBInputHeld)
+            {
+                return;
+            }
+
+            WeaponItem weapon = m_player?.InventoryManager?.CurrentLeftHandWeapon;
+            m_player?.PlayerCombatManager?.PerformWeaponBasedAction(
+                weapon?.LeftHandAction,
+                weapon);
         }
 
         private void HandleInteractionInput()
@@ -468,6 +491,17 @@ namespace ZZ
         private void OnRTCanceled(InputAction.CallbackContext context)
         {
             m_hasRTReleasedInput = true;
+        }
+
+        private void OnLBPerformed(InputAction.CallbackContext context)
+        {
+            m_isLBInputHeld = true;
+        }
+
+        private void OnLBCanceled(InputAction.CallbackContext context)
+        {
+            m_isLBInputHeld = false;
+            m_player?.PlayerCombatManager?.SetBlocking(false);
         }
 
         private void OnLockOnPerformed(InputAction.CallbackContext context)
