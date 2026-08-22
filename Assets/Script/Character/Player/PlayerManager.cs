@@ -12,6 +12,7 @@ namespace ZZ
     [RequireComponent(typeof(PlayerEquipmentManager))]
     [RequireComponent(typeof(PlayerCombatManager))]
     [RequireComponent(typeof(PlayerLockOnManager))]
+    [RequireComponent(typeof(PlayerInteractionManager))]
     public class PlayerManager : CharacterManager
     {
         private const string k_StartingGameplaySceneName = "Scene_World_01";
@@ -29,6 +30,7 @@ namespace ZZ
         public PlayerStatsManager PlayerStatsManager { get; private set; }
         public PlayerLocomotionManager LocomotionManager { get; private set; }
         public PlayerLockOnManager LockOnManager { get; private set; }
+        public PlayerInteractionManager InteractionManager { get; private set; }
 
         /// <summary>Gets the player's quick-slot and runtime item state.</summary>
         public PlayerInventoryManager InventoryManager { get; private set; }
@@ -61,6 +63,7 @@ namespace ZZ
             EquipmentManager = GetComponent<PlayerEquipmentManager>();
             PlayerCombatManager = GetComponent<PlayerCombatManager>();
             LockOnManager = GetComponent<PlayerLockOnManager>();
+            InteractionManager = GetComponent<PlayerInteractionManager>();
         }
 
         public override void OnNetworkSpawn()
@@ -87,6 +90,7 @@ namespace ZZ
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
+            InteractionManager?.ClearInteractions();
             PlayerUIManager.Instance?.PlayerUIHUDManager?.UnbindQuickSlots(
                 InventoryManager);
             PlayerStatsManager?.UnbindLocalHUD();
@@ -101,6 +105,7 @@ namespace ZZ
             WorldGameSessionManager.Instance?.RemovePlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
+            InteractionManager?.ClearInteractions();
             PlayerUIManager.Instance?.PlayerUIHUDManager?.UnbindQuickSlots(
                 InventoryManager);
             PlayerStatsManager?.UnbindLocalHUD();

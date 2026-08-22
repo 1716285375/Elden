@@ -15,6 +15,10 @@ namespace ZZ
         [SerializeField] private TMP_Text m_backgroundText;
         [SerializeField] private TMP_Text m_popupText;
 
+        [Header("PLAYER MESSAGE POPUP")]
+        [SerializeField] private GameObject m_playerMessagePopup;
+        [SerializeField] private TMP_Text m_playerMessageText;
+
         [Header("TIMING")]
         [SerializeField, Min(0.01f)] private float m_fadeInDuration = 0.8f;
         [SerializeField, Min(0f)] private float m_visibleDuration = 2f;
@@ -27,6 +31,7 @@ namespace ZZ
         private void OnDisable()
         {
             HideYouDiedPopup();
+            CloseAllPopUpWindows();
         }
 
         /// <summary>
@@ -34,6 +39,7 @@ namespace ZZ
         /// </summary>
         public void SendYouDiedPopup()
         {
+            CloseAllPopUpWindows();
             if (m_youDiedPopup == null ||
                 m_popupCanvasGroup == null ||
                 m_backgroundText == null ||
@@ -62,6 +68,31 @@ namespace ZZ
             m_popupRoutine = null;
             ResetPopupPresentation();
             m_youDiedPopup?.SetActive(false);
+        }
+
+        /// <summary>Displays the current interaction prompt for the locally owned player.</summary>
+        public void SendPlayerMessagePopup(string message)
+        {
+            if (m_playerMessagePopup == null || m_playerMessageText == null)
+            {
+                Debug.LogWarning("The player message popup references are incomplete.", this);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                CloseAllPopUpWindows();
+                return;
+            }
+
+            m_playerMessageText.text = message;
+            m_playerMessagePopup.SetActive(true);
+        }
+
+        /// <summary>Closes transient interaction prompts without interrupting death presentation.</summary>
+        public void CloseAllPopUpWindows()
+        {
+            m_playerMessagePopup?.SetActive(false);
         }
 
         private IEnumerator DisplayYouDiedPopup()
