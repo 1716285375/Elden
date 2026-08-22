@@ -10,10 +10,18 @@ namespace ZZ
     {
         private WeaponModelInstantiationSlot m_rightHandSlot;
         private WeaponModelInstantiationSlot m_leftHandSlot;
+        private PlayerManager m_player;
+
+        /// <summary>Gets the weapon manager of the currently loaded right-hand weapon model.</summary>
+        public WeaponManager CurrentRightHandWeaponManager { get; private set; }
+
+        /// <summary>Gets the weapon manager of the currently loaded left-hand weapon model.</summary>
+        public WeaponManager CurrentLeftHandWeaponManager { get; private set; }
 
         protected override void Awake()
         {
             base.Awake();
+            m_player = GetComponent<PlayerManager>();
             DiscoverWeaponSlots();
         }
 
@@ -39,6 +47,7 @@ namespace ZZ
             }
 
             m_rightHandSlot.LoadWeaponModel(weapon, Character);
+            CurrentRightHandWeaponManager = m_rightHandSlot.CurrentWeaponManager;
         }
 
         /// <summary>
@@ -53,6 +62,44 @@ namespace ZZ
             }
 
             m_leftHandSlot.LoadWeaponModel(weapon, Character);
+            CurrentLeftHandWeaponManager = m_leftHandSlot.CurrentWeaponManager;
+        }
+
+        /// <summary>
+        /// Enables the current action-hand weapon's damage window on the locally owned player.
+        /// </summary>
+        public void OpenDamageCollider()
+        {
+            if (m_player == null || !m_player.IsOwner)
+            {
+                return;
+            }
+
+            WeaponManager weaponManager = GetCurrentWeaponManager();
+            if (weaponManager == null)
+            {
+                return;
+            }
+
+            weaponManager.SetAttackType(m_player.PlayerCombatManager.CurrentAttackType);
+            weaponManager.OpenDamageCollider();
+        }
+
+        /// <summary>
+        /// Ends the current action-hand weapon's damage window.
+        /// </summary>
+        public void CloseDamageCollider()
+        {
+            GetCurrentWeaponManager()?.CloseDamageCollider();
+        }
+
+        private WeaponManager GetCurrentWeaponManager()
+        {
+            bool isUsingRightHand = m_player?.PlayerNetworkManager == null ||
+                m_player.PlayerNetworkManager.IsUsingRightHand.Value;
+            return isUsingRightHand
+                ? CurrentRightHandWeaponManager
+                : CurrentLeftHandWeaponManager;
         }
 
         private void DiscoverWeaponSlots()

@@ -147,6 +147,24 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RB"",
+                    ""type"": ""Button"",
+                    ""id"": ""1f2a3b4c-5d6e-4f7a-8b9c-0d1e2f3a4b5c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RT"",
+                    ""type"": ""Button"",
+                    ""id"": ""2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -424,6 +442,50 @@ namespace ZZ
                     ""action"": ""Switch Left Weapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Gamepad Right Shoulder"",
+                    ""id"": ""3b4c5d6e-7f8a-4b9c-0d1e-2f3a4b5c6d7e"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""RB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Mouse Left Button"",
+                    ""id"": ""4c5d6e7f-8a9b-4c0d-1e2f-3a4b5c6d7e8f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Gamepad Right Trigger"",
+                    ""id"": ""5d6e7f8a-9b0c-4d1e-2f3a-4b5c6d7e8f90"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""RT"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Mouse Right Button"",
+                    ""id"": ""6e7f8a9b-0c1d-4e2f-3a4b-5c6d7e8f90a1"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RT"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -575,6 +637,8 @@ namespace ZZ
             m_PlayerMovement_Jump = m_PlayerMovement.FindAction("Jump", throwIfNotFound: true);
             m_PlayerMovement_SwitchRightWeapon = m_PlayerMovement.FindAction("Switch Right Weapon", throwIfNotFound: true);
             m_PlayerMovement_SwitchLeftWeapon = m_PlayerMovement.FindAction("Switch Left Weapon", throwIfNotFound: true);
+            m_PlayerMovement_RB = m_PlayerMovement.FindAction("RB", throwIfNotFound: true);
+            m_PlayerMovement_RT = m_PlayerMovement.FindAction("RT", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -670,6 +734,8 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_Jump;
         private readonly InputAction m_PlayerMovement_SwitchRightWeapon;
         private readonly InputAction m_PlayerMovement_SwitchLeftWeapon;
+        private readonly InputAction m_PlayerMovement_RB;
+        private readonly InputAction m_PlayerMovement_RT;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -705,6 +771,14 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/SwitchLeftWeapon".
             /// </summary>
             public InputAction @SwitchLeftWeapon => m_Wrapper.m_PlayerMovement_SwitchLeftWeapon;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/RB".
+            /// </summary>
+            public InputAction @RB => m_Wrapper.m_PlayerMovement_RB;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/RT".
+            /// </summary>
+            public InputAction @RT => m_Wrapper.m_PlayerMovement_RT;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -749,6 +823,12 @@ namespace ZZ
                 @SwitchLeftWeapon.started += instance.OnSwitchLeftWeapon;
                 @SwitchLeftWeapon.performed += instance.OnSwitchLeftWeapon;
                 @SwitchLeftWeapon.canceled += instance.OnSwitchLeftWeapon;
+                @RB.started += instance.OnRB;
+                @RB.performed += instance.OnRB;
+                @RB.canceled += instance.OnRB;
+                @RT.started += instance.OnRT;
+                @RT.performed += instance.OnRT;
+                @RT.canceled += instance.OnRT;
             }
 
             /// <summary>
@@ -778,6 +858,12 @@ namespace ZZ
                 @SwitchLeftWeapon.started -= instance.OnSwitchLeftWeapon;
                 @SwitchLeftWeapon.performed -= instance.OnSwitchLeftWeapon;
                 @SwitchLeftWeapon.canceled -= instance.OnSwitchLeftWeapon;
+                @RB.started -= instance.OnRB;
+                @RB.performed -= instance.OnRB;
+                @RB.canceled -= instance.OnRB;
+                @RT.started -= instance.OnRT;
+                @RT.performed -= instance.OnRT;
+                @RT.canceled -= instance.OnRT;
             }
 
             /// <summary>
@@ -1089,6 +1175,20 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSwitchLeftWeapon(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "RB" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnRB(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "RT" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnRT(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

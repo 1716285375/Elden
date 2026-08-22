@@ -10,6 +10,7 @@ namespace ZZ
     [RequireComponent(typeof(PlayerStatsManager))]
     [RequireComponent(typeof(PlayerInventoryManager))]
     [RequireComponent(typeof(PlayerEquipmentManager))]
+    [RequireComponent(typeof(PlayerCombatManager))]
     public class PlayerManager : CharacterManager
     {
         private const string k_StartingGameplaySceneName = "Scene_World_01";
@@ -32,6 +33,9 @@ namespace ZZ
 
         /// <summary>Gets the player's hand-model presentation manager.</summary>
         public PlayerEquipmentManager EquipmentManager { get; private set; }
+
+        /// <summary>Gets the player's weapon-action combat manager.</summary>
+        public PlayerCombatManager PlayerCombatManager { get; private set; }
         public bool IsInGameplayScene => SceneManager.GetActiveScene().buildIndex > 0;
 
         private void OnEnable()
@@ -53,6 +57,7 @@ namespace ZZ
             LocomotionManager = GetComponent<PlayerLocomotionManager>();
             InventoryManager = GetComponent<PlayerInventoryManager>();
             EquipmentManager = GetComponent<PlayerEquipmentManager>();
+            PlayerCombatManager = GetComponent<PlayerCombatManager>();
         }
 
         public override void OnNetworkSpawn()

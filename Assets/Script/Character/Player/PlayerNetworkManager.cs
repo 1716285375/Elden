@@ -23,6 +23,16 @@ namespace ZZ
                 k_DefaultLeftHandWeaponID,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isUsingRightHand =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isUsingLeftHand =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -40,6 +50,12 @@ namespace ZZ
         /// Gets the owner-written left-hand weapon identifier replicated to every client.
         /// </summary>
         public NetworkVariable<int> CurrentLeftHandWeaponID => m_currentLeftHandWeaponID;
+
+        /// <summary>Gets whether the owner is currently using the right hand for actions.</summary>
+        public NetworkVariable<bool> IsUsingRightHand => m_isUsingRightHand;
+
+        /// <summary>Gets whether the owner is currently using the left hand for actions.</summary>
+        public NetworkVariable<bool> IsUsingLeftHand => m_isUsingLeftHand;
 
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
@@ -70,6 +86,20 @@ namespace ZZ
         {
             base.OnGainedOwnership();
             ResetOwnedSprintState();
+        }
+
+        /// <summary>
+        /// Sets which hand the owner is currently using for weapon actions.
+        /// </summary>
+        public void SetCharacterActionHand(bool isRightHandAction)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            m_isUsingRightHand.Value = isRightHandAction;
+            m_isUsingLeftHand.Value = !isRightHandAction;
         }
 
         private void ResetOwnedSprintState()
