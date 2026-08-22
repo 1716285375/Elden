@@ -21,6 +21,7 @@ namespace ZZ
         public float PoiseDamage { get; private set; }
         public AnimationClip DamageAnimation { get; private set; }
         public float HitAngle { get; private set; }
+        public bool IsPoiseBroken { get; private set; }
 
         // Reserved for the next damage-resolution phases.
         public AudioClip DamageSound { get; private set; }
@@ -110,7 +111,9 @@ namespace ZZ
                 ContactPoint,
                 hitDirection);
             character.CharacterSoundFXManager?.PlayDamageGrunt();
-            PlayDirectionalBasedDamageAnimation(character);
+            IsPoiseBroken = character.CharacterStatsManager == null ||
+                character.CharacterStatsManager.ApplyPoiseDamage(PoiseDamage);
+            PlayDirectionalBasedDamageAnimation(character, IsPoiseBroken);
 
             ApplyHealthDamage(character, CalculateDamage());
         }
@@ -145,6 +148,16 @@ namespace ZZ
         /// </summary>
         public void PlayDirectionalBasedDamageAnimation(CharacterManager character)
         {
+            PlayDirectionalBasedDamageAnimation(character, true);
+        }
+
+        /// <summary>
+        /// Plays a full reaction on Poise break, or a non-locking Ping reaction otherwise.
+        /// </summary>
+        public void PlayDirectionalBasedDamageAnimation(
+            CharacterManager character,
+            bool isPoiseBroken)
+        {
             if (character == null ||
                 CharacterCausingDamage == null ||
                 character.CharacterAnimatorManager == null)
@@ -156,8 +169,11 @@ namespace ZZ
                 CharacterCausingDamage.transform,
                 character.transform);
             DamageDirection damageDirection = GetDamageDirection(HitAngle);
-            DamageAnimation = character.CharacterAnimatorManager
-                .PlayDirectionalDamageAnimation(damageDirection);
+            DamageAnimation = isPoiseBroken
+                ? character.CharacterAnimatorManager.PlayDirectionalDamageAnimation(
+                    damageDirection)
+                : character.CharacterAnimatorManager.PlayDirectionalPingDamageAnimation(
+                    damageDirection);
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ namespace ZZ
         private const float k_SprintVerticalValue = 2f;
         private const string k_ActionOverrideLayerName = "Action Override";
         private const string k_UpperBodyOverrideLayerName = "Upper Body Override";
+        private const string k_PingDamageOverrideLayerName = "Ping Damage Override";
 
         private static readonly int s_horizontalParameter = Animator.StringToHash("Horizontal");
         private static readonly int s_verticalParameter = Animator.StringToHash("Vertical");
@@ -70,8 +71,15 @@ namespace ZZ
         [SerializeField] private List<AnimationClip> m_hitLeftAnimations = new();
         [SerializeField] private List<AnimationClip> m_hitRightAnimations = new();
 
+        [Header("Ping Damage Reactions")]
+        [SerializeField] private List<AnimationClip> m_pingForwardAnimations = new();
+        [SerializeField] private List<AnimationClip> m_pingBackwardAnimations = new();
+        [SerializeField] private List<AnimationClip> m_pingLeftAnimations = new();
+        [SerializeField] private List<AnimationClip> m_pingRightAnimations = new();
+
         private CharacterManager m_characterManager;
         private AnimationClip m_lastDamageAnimationPlayed;
+        private AnimationClip m_lastPingDamageAnimationPlayed;
 
         protected Animator CharacterAnimator => m_animator;
 
@@ -430,6 +438,57 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Plays a directional upper-body flinch without changing gameplay action flags.
+        /// </summary>
+        /// <returns>The selected Ping clip, or null when the pool or layer is invalid.</returns>
+        public AnimationClip PlayDirectionalPingDamageAnimation(
+            DamageDirection damageDirection)
+        {
+            if (m_animator == null)
+            {
+                return null;
+            }
+
+            int pingLayerIndex = m_animator.GetLayerIndex(k_PingDamageOverrideLayerName);
+            if (pingLayerIndex < 0)
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} is missing the " +
+                    $"{k_PingDamageOverrideLayerName} layer.",
+                    m_animator);
+                return null;
+            }
+
+            AnimationClip pingAnimation = GetRandomPingDamageAnimation(
+                GetPingDamageAnimations(damageDirection));
+            if (pingAnimation == null)
+            {
+                Debug.LogError(
+                    $"Animator {name} has no {damageDirection} Ping animations.",
+                    this);
+                return null;
+            }
+
+            int pingStateHash = Animator.StringToHash(
+                $"{k_PingDamageOverrideLayerName}.{pingAnimation.name}");
+            if (!m_animator.HasState(pingLayerIndex, pingStateHash))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} does not contain Ping state " +
+                    $"{pingAnimation.name}.",
+                    m_animator);
+                return null;
+            }
+
+            m_lastPingDamageAnimationPlayed = pingAnimation;
+            m_animator.CrossFade(
+                pingStateHash,
+                k_ActionTransitionDuration,
+                pingLayerIndex);
+            return pingAnimation;
+        }
+
+        /// <summary>
         /// Returns whether the action animation has a supported network identifier.
         /// </summary>
         internal static bool IsSupportedActionAnimation(CharacterActionAnimation targetAnimation)
@@ -492,6 +551,24 @@ namespace ZZ
             }
         }
 
+        private IReadOnlyList<AnimationClip> GetPingDamageAnimations(
+            DamageDirection damageDirection)
+        {
+            switch (damageDirection)
+            {
+                case DamageDirection.Front:
+                    return m_pingForwardAnimations;
+                case DamageDirection.Back:
+                    return m_pingBackwardAnimations;
+                case DamageDirection.Left:
+                    return m_pingLeftAnimations;
+                case DamageDirection.Right:
+                    return m_pingRightAnimations;
+                default:
+                    return m_pingForwardAnimations;
+            }
+        }
+
         private AnimationClip GetRandomDamageAnimation(
             IReadOnlyList<AnimationClip> damageAnimations)
         {
@@ -516,6 +593,37 @@ namespace ZZ
             if (candidates.Count > 1)
             {
                 candidates.Remove(m_lastDamageAnimationPlayed);
+            }
+
+            return candidates.Count > 0
+                ? candidates[Random.Range(0, candidates.Count)]
+                : null;
+        }
+
+        private AnimationClip GetRandomPingDamageAnimation(
+            IReadOnlyList<AnimationClip> damageAnimations)
+        {
+            if (damageAnimations == null || damageAnimations.Count == 0)
+            {
+                return null;
+            }
+
+            List<AnimationClip> candidates = new List<AnimationClip>(
+                damageAnimations.Count);
+            for (int animationIndex = 0;
+                animationIndex < damageAnimations.Count;
+                animationIndex++)
+            {
+                AnimationClip damageAnimation = damageAnimations[animationIndex];
+                if (damageAnimation != null)
+                {
+                    candidates.Add(damageAnimation);
+                }
+            }
+
+            if (candidates.Count > 1)
+            {
+                candidates.Remove(m_lastPingDamageAnimationPlayed);
             }
 
             return candidates.Count > 0
