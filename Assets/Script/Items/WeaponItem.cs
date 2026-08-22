@@ -105,6 +105,7 @@ namespace ZZ
             switch (attackType)
             {
                 case AttackType.HeavyAttack01:
+                case AttackType.HeavyAttack02:
                     return m_heavyAttack01DamageModifier;
                 case AttackType.ChargedAttack01:
                     return m_chargedAttack01DamageModifier;
@@ -121,6 +122,7 @@ namespace ZZ
             switch (attackType)
             {
                 case AttackType.HeavyAttack01:
+                case AttackType.HeavyAttack02:
                     return m_heavyAttack01StaminaCostMultiplier;
                 case AttackType.ChargedAttack01:
                     return m_chargedAttack01StaminaCostMultiplier;

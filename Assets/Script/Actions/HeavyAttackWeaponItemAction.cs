@@ -13,15 +13,21 @@ namespace ZZ
         /// <inheritdoc />
         public override void AttemptToPerformAction(PlayerManager player, WeaponItem weapon)
         {
+            if (player?.IsPerformingAction == true)
+            {
+                player.PlayerCombatManager?.TryPerformMainHandCombo(m_attackType);
+                return;
+            }
+
             if (!CanPerformAttack(player))
             {
                 return;
             }
 
+            player.PlayerCombatManager?.DisableCanCombo();
             player.PlayerNetworkManager?.SetCharacterActionHand(true);
             player.PlayerCombatManager?.ReplicateAttack(m_attackType);
             player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(m_attackType);
         }
-
     }
 }

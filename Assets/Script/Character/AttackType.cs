@@ -5,8 +5,11 @@ namespace ZZ
     /// </summary>
     public enum AttackType
     {
-        LightAttack01,
-        HeavyAttack01,
-        ChargedAttack01
+        LightAttack01 = 0,
+        HeavyAttack01 = 1,
+        ChargedAttack01 = 2,
+        LightAttack02 = 3,
+        LightAttack03 = 4,
+        HeavyAttack02 = 5
     }
 }

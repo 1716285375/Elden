@@ -13,12 +13,16 @@ namespace ZZ
         private PlayerManager m_player;
         private WeaponItem m_chargingWeapon;
         private float m_chargeStartTime;
+        private bool m_canComboWithMainHandWeapon;
 
         /// <summary>Gets the weapon currently selected by the player's action hand.</summary>
         public WeaponItem CurrentWeaponBeingUsed => ResolveCurrentWeapon();
 
         /// <summary>Gets whether the locally owned player is holding a heavy attack.</summary>
         public bool IsChargingAttack => m_chargingWeapon != null;
+
+        /// <summary>Gets whether the current main-hand attack accepts its next combo input.</summary>
+        public bool CanComboWithMainHandWeapon => m_canComboWithMainHandWeapon;
 
         protected override void Awake()
         {
@@ -45,6 +49,12 @@ namespace ZZ
         public void BeginChargingHeavyAttack()
         {
             WeaponItem weapon = m_player?.InventoryManager?.CurrentRightHandWeapon;
+            if (m_player?.IsPerformingAction == true)
+            {
+                weapon?.RightHandHeavyAction?.AttemptToPerformAction(m_player, weapon);
+                return;
+            }
+
             if (IsChargingAttack ||
                 weapon?.RightHandHeavyAction == null ||
                 !CanBeginChargingAttack())
@@ -90,6 +100,54 @@ namespace ZZ
 
             ClearChargingState();
             m_player?.ResetActionFlags();
+        }
+
+        /// <summary>
+        /// Opens the authored main-hand combo window when the current attack has a follow-up.
+        /// Called by an attack animation event.
+        /// </summary>
+        public void EnableCanCombo()
+        {
+            m_canComboWithMainHandWeapon =
+                m_player != null &&
+                m_player.IsOwner &&
+                m_player.IsPerformingAction &&
+                m_player.PlayerNetworkManager != null &&
+                m_player.PlayerNetworkManager.IsUsingRightHand.Value &&
+                HasNextMainHandComboAttack(CurrentAttackType);
+        }
+
+        /// <summary>Closes the current main-hand combo window.</summary>
+        public void DisableCanCombo()
+        {
+            m_canComboWithMainHandWeapon = false;
+        }
+
+        /// <summary>
+        /// Consumes a valid combo window and immediately replicates the next authored attack.
+        /// </summary>
+        public bool TryPerformMainHandCombo(AttackType requestedOpeningAttack)
+        {
+            if (!m_canComboWithMainHandWeapon ||
+                m_player == null ||
+                !m_player.IsOwner ||
+                !m_player.IsPerformingAction ||
+                m_player.CharacterNetworkManager == null ||
+                m_player.CharacterNetworkManager.CurrentStamina.Value <= 0f ||
+                !TryGetNextMainHandComboAttack(
+                    CurrentAttackType,
+                    requestedOpeningAttack,
+                    out AttackType nextAttack))
+            {
+                return false;
+            }
+
+            DisableCanCombo();
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
+            ReplicateAttack(nextAttack);
+            m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
+                nextAttack);
+            return true;
         }
 
         /// <summary>
@@ -150,6 +208,48 @@ namespace ZZ
             float fullyChargedDuration)
         {
             return chargeDuration >= Mathf.Max(0f, fullyChargedDuration);
+        }
+
+        private static bool HasNextMainHandComboAttack(AttackType currentAttack)
+        {
+            return currentAttack == AttackType.LightAttack01 ||
+                currentAttack == AttackType.LightAttack02 ||
+                currentAttack == AttackType.HeavyAttack01 ||
+                currentAttack == AttackType.ChargedAttack01;
+        }
+
+        private static bool TryGetNextMainHandComboAttack(
+            AttackType currentAttack,
+            AttackType requestedOpeningAttack,
+            out AttackType nextAttack)
+        {
+            nextAttack = default;
+            if (requestedOpeningAttack == AttackType.LightAttack01)
+            {
+                if (currentAttack == AttackType.LightAttack01)
+                {
+                    nextAttack = AttackType.LightAttack02;
+                    return true;
+                }
+
+                if (currentAttack == AttackType.LightAttack02)
+                {
+                    nextAttack = AttackType.LightAttack03;
+                    return true;
+                }
+
+                return false;
+            }
+
+            if (requestedOpeningAttack == AttackType.HeavyAttack01 &&
+                (currentAttack == AttackType.HeavyAttack01 ||
+                    currentAttack == AttackType.ChargedAttack01))
+            {
+                nextAttack = AttackType.HeavyAttack02;
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -58,12 +58,20 @@ namespace ZZ
             m_player?.SetCanRotate(false);
         }
 
-        // The following receivers satisfy authored attack animation events.
-        // They are reserved for the combo, roll-cancel, move-cancel and weapon
-        // trail systems planned for later episodes.
-        public void EnableCanDoCombo() { }
+        /// <summary>Forwards the authored combo-window start event to combat state.</summary>
+        public void EnableCanDoCombo()
+        {
+            m_player?.PlayerCombatManager?.EnableCanCombo();
+        }
 
-        public void DisableCanDoCombo() { }
+        /// <summary>Forwards the authored combo-window end event to combat state.</summary>
+        public void DisableCanDoCombo()
+        {
+            m_player?.PlayerCombatManager?.DisableCanCombo();
+        }
+
+        // The following receivers satisfy authored attack animation events.
+        // They are reserved for roll-cancel, move-cancel, and weapon-trail systems.
 
         public void EnableCanRoll() { }
 
