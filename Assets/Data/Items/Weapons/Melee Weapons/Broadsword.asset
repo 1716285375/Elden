@@ -29,6 +29,11 @@ MonoBehaviour:
   m_faithRequirement: 0
   m_baseStaminaCost: 25
   m_basePoiseDamage: 15
+  m_whooshes:
+  - {fileID: 8300000, guid: 03be3e57e583c8744aac9ca014f21a3d, type: 3}
+  - {fileID: 8300000, guid: 4fcc7747f927b1943ac4cdfb6cd9d28c, type: 3}
+  - {fileID: 8300000, guid: 92cbdf71300f1d44d83443619d2d298b, type: 3}
+  - {fileID: 8300000, guid: 0a39dafed30a08d479515aa14f8c5b4c, type: 3}
   m_rightHandAction: {fileID: 11400000, guid: ce46975f3a3c844478af9193aea3e541, type: 2}
   m_rightHandHeavyAction: {fileID: 11400000, guid: f48816d9e0c231a4a9179ec378a172a3, type: 2}
   m_rightHandChargedAction: {fileID: 11400000, guid: 5bb894ee600f6144b90f860ceb0792d2, type: 2}

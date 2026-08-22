@@ -28,6 +28,9 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_baseStaminaCost;
         [SerializeField, Min(0f)] private float m_basePoiseDamage;
 
+        [Header("Sound Effects")]
+        [SerializeField] private AudioClip[] m_whooshes = System.Array.Empty<AudioClip>();
+
         [Header("Weapon Actions")]
         [SerializeField] private WeaponItemBasedAction m_rightHandAction;
         [SerializeField] private WeaponItemBasedAction m_rightHandHeavyAction;
@@ -81,6 +84,9 @@ namespace ZZ
 
         /// <summary>Gets the poise damage forwarded to the damage effect.</summary>
         public float BasePoiseDamage => m_basePoiseDamage;
+
+        /// <summary>Gets the weapon-specific clips used when a damage window opens.</summary>
+        public AudioClip[] Whooshes => m_whooshes;
 
         /// <summary>Gets the action bound to the one-handed right-bumper slot.</summary>
         public WeaponItemBasedAction RightHandAction => m_rightHandAction;
