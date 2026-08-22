@@ -51,5 +51,14 @@ namespace ZZ
                 m_damageGrunts,
                 m_audioSource);
         }
+
+        /// <summary>Plays a resolved block-impact clip through the character's spatial source.</summary>
+        public void PlayBlockSound(AudioClip blockSound)
+        {
+            if (m_audioSource != null && blockSound != null)
+            {
+                m_audioSource.PlayOneShot(blockSound);
+            }
+        }
     }
 }

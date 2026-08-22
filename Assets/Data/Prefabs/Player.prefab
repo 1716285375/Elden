@@ -146223,6 +146223,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  IsBlocking:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
   IsSprinting:
@@ -146246,6 +146251,11 @@ MonoBehaviour:
   m_staminaRegenerationDelay: 2
   m_staminaRegenerationTickInterval: 0.1
   m_staminaRegenerationAmount: 2
+  m_blockingPhysicalAbsorption: 85
+  m_blockingMagicAbsorption: 40
+  m_blockingFireAbsorption: 35
+  m_blockingLightningAbsorption: 25
+  m_blockingHolyAbsorption: 35
 --- !u!114 &2654529294512128537
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,13 +5,20 @@ namespace ZZ
 {
     public class WorldCharacterEffectsManager : MonoBehaviour
     {
+        private const string k_BlockedDamageEffectResourcePath =
+            "Effects/Take Blocked Damage Effect";
+
         private static WorldCharacterEffectsManager s_instance;
 
         [SerializeField] private List<InstantCharacterEffect> m_instantEffects = new();
         [SerializeField] private TakeDamageEffect m_takeDamageEffect;
+        [SerializeField] private TakeBlockedDamageEffect m_takeBlockedDamageEffect;
 
         public static WorldCharacterEffectsManager Instance => s_instance;
         public TakeDamageEffect TakeDamageEffect => m_takeDamageEffect;
+        public TakeBlockedDamageEffect TakeBlockedDamageEffect =>
+            m_takeBlockedDamageEffect ??= Resources.Load<TakeBlockedDamageEffect>(
+                k_BlockedDamageEffectResourcePath);
 
         /// <summary>
         /// Gets the authored instant effects in their stable identifier order.

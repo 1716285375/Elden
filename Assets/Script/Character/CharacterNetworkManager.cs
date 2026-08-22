@@ -73,6 +73,10 @@ namespace ZZ
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsBlocking = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
 
         [FormerlySerializedAs("networkPositionSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkPositionSmoothTime = 0.1f;
@@ -293,6 +297,7 @@ namespace ZZ
             float holyDamage,
             float poiseDamage,
             Vector3 contactPoint,
+            bool wasBlocked,
             ServerRpcParams serverRpcParams = default)
         {
             if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
@@ -309,7 +314,8 @@ namespace ZZ
                 lightningDamage,
                 holyDamage,
                 poiseDamage,
-                contactPoint);
+                contactPoint,
+                wasBlocked);
         }
 
         [ClientRpc]
@@ -322,7 +328,8 @@ namespace ZZ
             float lightningDamage,
             float holyDamage,
             float poiseDamage,
-            Vector3 contactPoint)
+            Vector3 contactPoint,
+            bool wasBlocked)
         {
             CharacterManager target = ResolveCharacter(targetNetworkObjectId);
             if (target == null)
@@ -330,18 +337,79 @@ namespace ZZ
                 return;
             }
 
-            TakeDamageEffect damageTemplate =
-                WorldCharacterEffectsManager.Instance?.TakeDamageEffect;
+            InstantCharacterEffect runtimeEffect = CreateRuntimeDamageEffect(
+                target,
+                attackerNetworkObjectId,
+                physicalDamage,
+                magicDamage,
+                fireDamage,
+                lightningDamage,
+                holyDamage,
+                poiseDamage,
+                contactPoint,
+                wasBlocked);
+            if (runtimeEffect == null)
+            {
+                return;
+            }
+
+            target.CharacterEffectsManager?.ProcessRuntimeInstantEffect(runtimeEffect);
+        }
+
+        private InstantCharacterEffect CreateRuntimeDamageEffect(
+            CharacterManager target,
+            ulong attackerNetworkObjectId,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage,
+            Vector3 contactPoint,
+            bool wasBlocked)
+        {
+            WorldCharacterEffectsManager effectsManager =
+                WorldCharacterEffectsManager.Instance;
+            CharacterManager attacker = ResolveCharacter(attackerNetworkObjectId);
+            if (wasBlocked)
+            {
+                TakeBlockedDamageEffect blockedTemplate =
+                    effectsManager?.TakeBlockedDamageEffect;
+                CharacterStatsManager statsManager = target.CharacterStatsManager;
+                if (blockedTemplate == null || statsManager == null)
+                {
+                    Debug.LogWarning(
+                        "Blocked damage requires its effect template and target stats.",
+                        this);
+                    return null;
+                }
+
+                return blockedTemplate.CreateRuntimeBlockedDamageEffect(
+                    attacker,
+                    physicalDamage,
+                    magicDamage,
+                    fireDamage,
+                    lightningDamage,
+                    holyDamage,
+                    contactPoint,
+                    poiseDamage,
+                    statsManager.BlockingPhysicalAbsorption,
+                    statsManager.BlockingMagicAbsorption,
+                    statsManager.BlockingFireAbsorption,
+                    statsManager.BlockingLightningAbsorption,
+                    statsManager.BlockingHolyAbsorption);
+            }
+
+            TakeDamageEffect damageTemplate = effectsManager?.TakeDamageEffect;
             if (damageTemplate == null)
             {
                 Debug.LogWarning(
                     "WorldCharacterEffectsManager is missing the TakeDamageEffect template.",
                     this);
-                return;
+                return null;
             }
 
-            CharacterManager attacker = ResolveCharacter(attackerNetworkObjectId);
-            TakeDamageEffect runtimeEffect = damageTemplate.CreateRuntimeDamageEffect(
+            return damageTemplate.CreateRuntimeDamageEffect(
                 attacker,
                 physicalDamage,
                 magicDamage,
@@ -350,7 +418,6 @@ namespace ZZ
                 holyDamage,
                 contactPoint,
                 poiseDamage);
-            target.CharacterEffectsManager?.ProcessRuntimeInstantEffect(runtimeEffect);
         }
 
         private static CharacterManager ResolveCharacter(ulong networkObjectId)
