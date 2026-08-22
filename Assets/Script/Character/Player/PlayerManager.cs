@@ -11,6 +11,7 @@ namespace ZZ
     [RequireComponent(typeof(PlayerInventoryManager))]
     [RequireComponent(typeof(PlayerEquipmentManager))]
     [RequireComponent(typeof(PlayerCombatManager))]
+    [RequireComponent(typeof(PlayerLockOnManager))]
     public class PlayerManager : CharacterManager
     {
         private const string k_StartingGameplaySceneName = "Scene_World_01";
@@ -27,6 +28,7 @@ namespace ZZ
         public PlayerNetworkManager PlayerNetworkManager { get; private set; }
         public PlayerStatsManager PlayerStatsManager { get; private set; }
         public PlayerLocomotionManager LocomotionManager { get; private set; }
+        public PlayerLockOnManager LockOnManager { get; private set; }
 
         /// <summary>Gets the player's quick-slot and runtime item state.</summary>
         public PlayerInventoryManager InventoryManager { get; private set; }
@@ -58,6 +60,7 @@ namespace ZZ
             InventoryManager = GetComponent<PlayerInventoryManager>();
             EquipmentManager = GetComponent<PlayerEquipmentManager>();
             PlayerCombatManager = GetComponent<PlayerCombatManager>();
+            LockOnManager = GetComponent<PlayerLockOnManager>();
         }
 
         public override void OnNetworkSpawn()
@@ -80,6 +83,7 @@ namespace ZZ
         public override void OnLostOwnership()
         {
             ResetLocalDeathPresentation();
+            LockOnManager?.ClearLockOn();
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
@@ -90,6 +94,7 @@ namespace ZZ
         public override void OnNetworkDespawn()
         {
             ResetLocalDeathPresentation();
+            LockOnManager?.ClearLockOn();
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             WorldGameSessionManager.Instance?.RemovePlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);

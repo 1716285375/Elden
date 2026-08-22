@@ -342,7 +342,7 @@ namespace ZZ
                 return;
             }
 
-            Vector3 targetRotationDirection = GetCameraRelativeDirection();
+            Vector3 targetRotationDirection = GetTargetRotationDirection();
             targetRotationDirection.y = 0f;
             targetRotationDirection.Normalize();
 
@@ -368,6 +368,17 @@ namespace ZZ
             right.Normalize();
 
             return forward * m_playerInputManager.VerticalInput + right * m_playerInputManager.HorizontalInput;
+        }
+
+        private Vector3 GetTargetRotationDirection()
+        {
+            PlayerLockOnManager lockOnManager = m_player.LockOnManager;
+            if (lockOnManager != null && lockOnManager.IsLockedOn)
+            {
+                return lockOnManager.CurrentTarget.transform.position - transform.position;
+            }
+
+            return GetCameraRelativeDirection();
         }
 
         private void PerformRoll()

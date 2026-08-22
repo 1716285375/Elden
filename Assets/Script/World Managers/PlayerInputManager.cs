@@ -29,6 +29,7 @@ namespace ZZ
         private bool m_hasSwitchLeftWeaponInput;
         private bool m_hasRBInput;
         private bool m_hasRTInput;
+        private bool m_hasLockOnInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
 
@@ -67,6 +68,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.RT.performed += OnRTPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.LockOn.performed += OnLockOnPerformed;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             RefreshMovementInput(SceneManager.GetActiveScene());
         }
@@ -92,6 +94,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.RT.performed -= OnRTPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.LockOn.performed -= OnLockOnPerformed;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             DisablePlayerControls();
         }
@@ -189,6 +192,7 @@ namespace ZZ
             m_hasSwitchLeftWeaponInput = false;
             m_hasRBInput = false;
             m_hasRTInput = false;
+            m_hasLockOnInput = false;
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             IsMovementInputEnabled = false;
@@ -217,6 +221,7 @@ namespace ZZ
         private void HandleAllInputs()
         {
             HandleCameraMovementInput();
+            HandleLockOnInput();
             HandlePlayerMovementInput();
             HandleDodgeInput();
             HandleJumpInput();
@@ -229,6 +234,18 @@ namespace ZZ
         {
             CameraVerticalInput = CameraInput.y;
             CameraHorizontalInput = CameraInput.x;
+            m_player?.LockOnManager?.HandleTargetSwitchInput(CameraHorizontalInput);
+        }
+
+        private void HandleLockOnInput()
+        {
+            if (!m_hasLockOnInput)
+            {
+                return;
+            }
+
+            m_hasLockOnInput = false;
+            m_player?.LockOnManager?.HandleLockOn();
         }
 
         private void HandlePlayerMovementInput()
@@ -365,6 +382,11 @@ namespace ZZ
         private void OnRTPerformed(InputAction.CallbackContext context)
         {
             m_hasRTInput = true;
+        }
+
+        private void OnLockOnPerformed(InputAction.CallbackContext context)
+        {
+            m_hasLockOnInput = true;
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
