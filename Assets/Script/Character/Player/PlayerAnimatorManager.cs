@@ -70,6 +70,24 @@ namespace ZZ
             m_player?.PlayerCombatManager?.DisableCanCombo();
         }
 
+        /// <summary>Opens the roll-attack input window during dodge recovery.</summary>
+        public void EnableCanPerformRollAttack()
+        {
+            m_player?.PlayerCombatManager?.EnableCanPerformRollAttack();
+        }
+
+        /// <summary>Opens the backstep-attack input window during dodge recovery.</summary>
+        public void EnableCanPerformBackStepAttack()
+        {
+            m_player?.PlayerCombatManager?.EnableCanPerformBackStepAttack();
+        }
+
+        /// <summary>Closes an unconsumed moving-attack input window.</summary>
+        public void DisableCanPerformCommittedAttack()
+        {
+            m_player?.PlayerCombatManager?.DisableCanPerformCommittedAttack();
+        }
+
         // The following receivers satisfy authored attack animation events.
         // They are reserved for roll-cancel, move-cancel, and weapon-trail systems.
 

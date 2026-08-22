@@ -10,6 +10,9 @@ namespace ZZ
         ChargedAttack01 = 2,
         LightAttack02 = 3,
         LightAttack03 = 4,
-        HeavyAttack02 = 5
+        HeavyAttack02 = 5,
+        RunningAttack01 = 6,
+        RollAttack01 = 7,
+        BackStepAttack01 = 8
     }
 }

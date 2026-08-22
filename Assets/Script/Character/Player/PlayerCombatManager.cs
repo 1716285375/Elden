@@ -14,6 +14,8 @@ namespace ZZ
         private WeaponItem m_chargingWeapon;
         private float m_chargeStartTime;
         private bool m_canComboWithMainHandWeapon;
+        private bool m_canPerformCommittedAttack;
+        private AttackType m_committedAttackType;
 
         /// <summary>Gets the weapon currently selected by the player's action hand.</summary>
         public WeaponItem CurrentWeaponBeingUsed => ResolveCurrentWeapon();
@@ -150,6 +152,74 @@ namespace ZZ
             return true;
         }
 
+        /// <summary>Executes the running attack before normal light-attack resolution.</summary>
+        public bool TryPerformRunningAttack(WeaponItem weapon)
+        {
+            if (weapon == null ||
+                m_player == null ||
+                !m_player.IsOwner ||
+                m_player.IsPerformingAction ||
+                !m_player.IsGrounded ||
+                m_player.LocomotionManager == null ||
+                !m_player.LocomotionManager.IsSprinting ||
+                m_player.CharacterNetworkManager == null ||
+                m_player.CharacterNetworkManager.CurrentStamina.Value <= 0f)
+            {
+                return false;
+            }
+
+            m_player.LocomotionManager.StopSprinting();
+            PerformMovingAttack(AttackType.RunningAttack01);
+            return true;
+        }
+
+        /// <summary>Consumes the active roll or backstep recovery window as a moving attack.</summary>
+        public bool TryPerformCommittedAttack(WeaponItem weapon)
+        {
+            if (weapon == null ||
+                !m_canPerformCommittedAttack ||
+                m_player == null ||
+                !m_player.IsOwner ||
+                !m_player.IsPerformingAction ||
+                !m_player.IsGrounded ||
+                m_player.CharacterNetworkManager == null ||
+                m_player.CharacterNetworkManager.CurrentStamina.Value <= 0f)
+            {
+                return false;
+            }
+
+            AttackType attackType = m_committedAttackType;
+            DisableCanPerformCommittedAttack();
+            PerformMovingAttack(attackType);
+            return true;
+        }
+
+        /// <summary>Opens the authored roll-attack recovery window on the local owner.</summary>
+        public void EnableCanPerformRollAttack()
+        {
+            EnableCommittedAttack(AttackType.RollAttack01);
+        }
+
+        /// <summary>Opens the authored backstep-attack recovery window on the local owner.</summary>
+        public void EnableCanPerformBackStepAttack()
+        {
+            EnableCommittedAttack(AttackType.BackStepAttack01);
+        }
+
+        /// <summary>Closes any unconsumed committed-action attack window.</summary>
+        public void DisableCanPerformCommittedAttack()
+        {
+            m_canPerformCommittedAttack = false;
+            m_committedAttackType = default;
+        }
+
+        /// <inheritdoc />
+        public override void ResetActionState()
+        {
+            DisableCanCombo();
+            DisableCanPerformCommittedAttack();
+        }
+
         /// <summary>
         /// Consumes the stamina cost of the current attack on the locally owned player.
         /// Called from an attack animation event.
@@ -201,6 +271,26 @@ namespace ZZ
             m_chargingWeapon = null;
             m_chargeStartTime = 0f;
             m_player?.CharacterNetworkManager?.SetChargingAttackState(false);
+        }
+
+        private void EnableCommittedAttack(AttackType attackType)
+        {
+            if (m_player == null || !m_player.IsOwner || !m_player.IsPerformingAction)
+            {
+                return;
+            }
+
+            m_committedAttackType = attackType;
+            m_canPerformCommittedAttack = true;
+        }
+
+        private void PerformMovingAttack(AttackType attackType)
+        {
+            DisableCanCombo();
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
+            ReplicateAttack(attackType);
+            m_player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(
+                attackType);
         }
 
         private static bool ShouldUseChargedAttack(

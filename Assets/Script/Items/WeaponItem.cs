@@ -42,9 +42,15 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_lightAttack01DamageModifier = 1f;
         [SerializeField, Min(0f)] private float m_heavyAttack01DamageModifier = 1f;
         [SerializeField, Min(0f)] private float m_chargedAttack01DamageModifier = 1.75f;
+        [SerializeField, Min(0f)] private float m_runningAttack01DamageModifier = 1.2f;
+        [SerializeField, Min(0f)] private float m_rollAttack01DamageModifier = 1.1f;
+        [SerializeField, Min(0f)] private float m_backStepAttack01DamageModifier = 1.15f;
         [SerializeField, Min(0f)] private float m_lightAttack01StaminaCostMultiplier = 1f;
         [SerializeField, Min(0f)] private float m_heavyAttack01StaminaCostMultiplier = 1f;
         [SerializeField, Min(0f)] private float m_chargedAttack01StaminaCostMultiplier = 1.5f;
+        [SerializeField, Min(0f)] private float m_runningAttack01StaminaCostMultiplier = 1.25f;
+        [SerializeField, Min(0f)] private float m_rollAttack01StaminaCostMultiplier = 1.15f;
+        [SerializeField, Min(0f)] private float m_backStepAttack01StaminaCostMultiplier = 1.2f;
 
         /// <summary>Gets the prefab instantiated by an equipment slot.</summary>
         public GameObject WeaponModel => m_weaponModel;
@@ -115,6 +121,12 @@ namespace ZZ
                     return m_heavyAttack01DamageModifier;
                 case AttackType.ChargedAttack01:
                     return m_chargedAttack01DamageModifier;
+                case AttackType.RunningAttack01:
+                    return m_runningAttack01DamageModifier;
+                case AttackType.RollAttack01:
+                    return m_rollAttack01DamageModifier;
+                case AttackType.BackStepAttack01:
+                    return m_backStepAttack01DamageModifier;
                 default:
                     return m_lightAttack01DamageModifier;
             }
@@ -132,6 +144,12 @@ namespace ZZ
                     return m_heavyAttack01StaminaCostMultiplier;
                 case AttackType.ChargedAttack01:
                     return m_chargedAttack01StaminaCostMultiplier;
+                case AttackType.RunningAttack01:
+                    return m_runningAttack01StaminaCostMultiplier;
+                case AttackType.RollAttack01:
+                    return m_rollAttack01StaminaCostMultiplier;
+                case AttackType.BackStepAttack01:
+                    return m_backStepAttack01StaminaCostMultiplier;
                 default:
                     return m_lightAttack01StaminaCostMultiplier;
             }

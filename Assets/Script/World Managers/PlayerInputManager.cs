@@ -231,8 +231,8 @@ namespace ZZ
             HandleDodgeInput();
             HandleJumpInput();
             HandleWeaponSwitchInput();
-            HandleAttackInput();
             HandleSprinting();
+            HandleAttackInput();
         }
 
         private void HandleCameraMovementInput()

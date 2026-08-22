@@ -112,6 +112,7 @@ namespace ZZ
             m_canMove = true;
             m_canRotate = true;
             m_shouldApplyRootMotion = false;
+            m_characterCombatManager?.ResetActionState();
             EndJump();
         }
 
