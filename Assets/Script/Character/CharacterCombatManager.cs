@@ -27,10 +27,18 @@ namespace ZZ
         /// <summary>
         /// Records the attack type and plays its animation for local and replicated presentation.
         /// </summary>
-        public void ReplicateAttack(AttackType attackType)
+        public void ReplicateAttack(AttackType attackType, WeaponItem weapon = null)
         {
             CurrentAttackType = attackType;
-            Character?.CharacterAnimatorManager?.PlayTargetAttackActionAnimation(attackType);
+            WeaponItem animatorWeapon = weapon;
+            if (animatorWeapon == null && Character is PlayerManager player)
+            {
+                animatorWeapon = player.PlayerCombatManager?.CurrentWeaponBeingUsed;
+            }
+
+            Character?.CharacterAnimatorManager?.PlayTargetAttackActionAnimation(
+                attackType,
+                animatorWeapon);
         }
 
         /// <summary>Clears transient combat windows when the action layer returns to neutral.</summary>

@@ -33,6 +33,11 @@ namespace ZZ
                 false,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentWeaponIDBeingUsed =
+            new NetworkVariable<int>(
+                k_DefaultRightHandWeaponID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -57,6 +62,10 @@ namespace ZZ
         /// <summary>Gets whether the owner is currently using the left hand for actions.</summary>
         public NetworkVariable<bool> IsUsingLeftHand => m_isUsingLeftHand;
 
+        /// <summary>Gets the equipped weapon driving the current action animation set.</summary>
+        public NetworkVariable<int> CurrentWeaponIDBeingUsed =>
+            m_currentWeaponIDBeingUsed;
+
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -68,10 +77,17 @@ namespace ZZ
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_currentRightHandWeaponID.OnValueChanged += OnRightHandWeaponIDChanged;
             m_currentLeftHandWeaponID.OnValueChanged += OnLeftHandWeaponIDChanged;
+            m_currentWeaponIDBeingUsed.OnValueChanged +=
+                OnCurrentWeaponIDBeingUsedChanged;
             m_playerInventoryManager?.InitializeRightWeaponFromID(
                 m_currentRightHandWeaponID.Value);
             m_playerInventoryManager?.InitializeLeftWeaponFromID(
                 m_currentLeftHandWeaponID.Value);
+            if (!IsOwner)
+            {
+                UpdateRemoteAnimatorController(m_currentWeaponIDBeingUsed.Value);
+            }
+
             ResetOwnedSprintState();
         }
 
@@ -79,6 +95,8 @@ namespace ZZ
         {
             m_currentRightHandWeaponID.OnValueChanged -= OnRightHandWeaponIDChanged;
             m_currentLeftHandWeaponID.OnValueChanged -= OnLeftHandWeaponIDChanged;
+            m_currentWeaponIDBeingUsed.OnValueChanged -=
+                OnCurrentWeaponIDBeingUsedChanged;
             base.OnNetworkDespawn();
         }
 
@@ -100,6 +118,9 @@ namespace ZZ
 
             m_isUsingRightHand.Value = isRightHandAction;
             m_isUsingLeftHand.Value = !isRightHandAction;
+            m_currentWeaponIDBeingUsed.Value = isRightHandAction
+                ? m_currentRightHandWeaponID.Value
+                : m_currentLeftHandWeaponID.Value;
         }
 
         private void ResetOwnedSprintState()
@@ -120,6 +141,25 @@ namespace ZZ
         {
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.EquipLeftWeaponFromID(currentWeaponID);
+        }
+
+        private void OnCurrentWeaponIDBeingUsedChanged(
+            int previousWeaponID,
+            int currentWeaponID)
+        {
+            if (!IsOwner)
+            {
+                UpdateRemoteAnimatorController(currentWeaponID);
+            }
+        }
+
+        private void UpdateRemoteAnimatorController(int weaponID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            WeaponItem weapon = m_playerInventoryManager
+                ?.GetEquippedWeaponByID(weaponID);
+            GetComponent<PlayerManager>()?.PlayerAnimatorManager
+                ?.UpdateAnimatorController(weapon);
         }
     }
 }

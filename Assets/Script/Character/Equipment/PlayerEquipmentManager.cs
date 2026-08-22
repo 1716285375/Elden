@@ -51,6 +51,7 @@ namespace ZZ
 
             m_rightHandSlot.LoadWeaponModel(weapon, Character);
             CurrentRightHandWeaponManager = m_rightHandSlot.CurrentWeaponManager;
+            m_player?.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
         }
 
         /// <summary>
@@ -66,6 +67,10 @@ namespace ZZ
 
             m_leftHandSlot.LoadWeaponModel(weapon, Character);
             CurrentLeftHandWeaponManager = m_leftHandSlot.CurrentWeaponManager;
+            if (m_player?.PlayerNetworkManager?.IsUsingLeftHand.Value == true)
+            {
+                m_player.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
+            }
         }
 
         /// <summary>
