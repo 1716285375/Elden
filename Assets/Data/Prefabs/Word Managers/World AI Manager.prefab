@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6817649396888894455}
-  - component: {fileID: 7521135835394826510}
+  - component: {fileID: 4888572001361776218}
   m_Layer: 0
   m_Name: AI Spawn Point 01
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7522123555961254226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7521135835394826510
+--- !u!114 &4888572001361776218
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,9 +41,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1645735966587180557}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07b6bfd37712a53439278d3fd5a976f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AISpawnPoint
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_bossID: 0
 --- !u!1 &1785569251608325428
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,7 +93,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2c9dccbc4a9b54b9de536af3d068f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldAIManager
-  m_aiCharacterPrefab: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
 --- !u!1 &2341920583984802971
 GameObject:
   m_ObjectHideFlags: 0
@@ -101,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5831134903554354009}
-  - component: {fileID: 8250066471276758878}
+  - component: {fileID: 6697745581588172228}
   m_Layer: 0
   m_Name: AI Spawn Point 03
   m_TagString: Untagged
@@ -124,7 +125,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7522123555961254226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8250066471276758878
+--- !u!114 &6697745581588172228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,9 +134,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2341920583984802971}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07b6bfd37712a53439278d3fd5a976f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AISpawnPoint
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_bossID: 0
 --- !u!1 &2864727150372499814
 GameObject:
   m_ObjectHideFlags: 0
@@ -145,7 +148,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4277482473143963345}
-  - component: {fileID: 6606761083315134881}
+  - component: {fileID: 7342498928866649864}
   m_Layer: 0
   m_Name: AI Spawn Point 02
   m_TagString: Untagged
@@ -168,7 +171,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7522123555961254226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6606761083315134881
+--- !u!114 &7342498928866649864
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,6 +180,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 2864727150372499814}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07b6bfd37712a53439278d3fd5a976f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AISpawnPoint
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_bossID: 0

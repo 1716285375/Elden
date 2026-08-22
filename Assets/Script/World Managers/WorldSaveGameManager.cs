@@ -52,6 +52,37 @@ namespace ZZ
             m_player != null &&
             m_player.IsOwner;
 
+        /// <summary>Gets the active slot's saved lifecycle state for one boss.</summary>
+        public BossProgressState GetBossProgress(int bossID)
+        {
+            return m_currentCharacterData?.GetBossProgress(bossID) ??
+                BossProgressState.Dormant;
+        }
+
+        /// <summary>
+        /// Advances one boss state and optionally writes the active save immediately.
+        /// </summary>
+        public bool RecordBossProgress(
+            int bossID,
+            BossProgressState progress,
+            bool saveImmediately)
+        {
+            if (m_currentCharacterData == null)
+            {
+                return false;
+            }
+
+            bool didChange = m_currentCharacterData.SetBossProgress(
+                bossID,
+                progress);
+            if (didChange && saveImmediately && CanSaveGame)
+            {
+                SaveGame();
+            }
+
+            return didChange;
+        }
+
         private void Awake()
         {
             if (s_instance == null)

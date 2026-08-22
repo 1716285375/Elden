@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ZZ
@@ -12,7 +14,8 @@ namespace ZZ
         private const int k_DefaultAttributeLevel = 10;
         private const float k_DefaultCurrentHealth = 150f;
         private const float k_DefaultCurrentStamina = 100f;
-        private const int k_CurrentDataVersion = 1;
+        private const int k_AttributeDataVersion = 1;
+        private const int k_CurrentDataVersion = 2;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -25,6 +28,7 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_endurance = k_DefaultAttributeLevel;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
+        [SerializeField] private List<BossSaveData> m_bosses = new();
 
         public string CharacterName
         {
@@ -86,18 +90,65 @@ namespace ZZ
             set => m_currentStamina = Mathf.Max(0f, value);
         }
 
-        internal void MigrateToLatestVersion()
+        /// <summary>Gets the saved lifecycle state for a boss, defaulting to dormant.</summary>
+        public BossProgressState GetBossProgress(int bossID)
         {
-            if (m_dataVersion >= k_CurrentDataVersion)
+            BossSaveData bossData = FindBossData(bossID);
+            return bossData?.Progress ?? BossProgressState.Dormant;
+        }
+
+        /// <summary>
+        /// Adds a boss entry or advances its state without allowing progress regression.
+        /// </summary>
+        public bool SetBossProgress(int bossID, BossProgressState progress)
+        {
+            if (bossID <= 0)
             {
-                return;
+                throw new ArgumentOutOfRangeException(
+                    nameof(bossID),
+                    bossID,
+                    "Boss identifiers must be greater than zero.");
             }
 
-            m_vitality = k_DefaultAttributeLevel;
-            m_endurance = k_DefaultAttributeLevel;
-            m_currentHealth = k_DefaultCurrentHealth;
-            m_currentStamina = k_DefaultCurrentStamina;
+            m_bosses ??= new List<BossSaveData>();
+            BossSaveData bossData = FindBossData(bossID);
+            if (bossData != null)
+            {
+                return bossData.AdvanceTo(progress);
+            }
+
+            m_bosses.Add(new BossSaveData(bossID, progress));
+            return true;
+        }
+
+        /// <summary>Gets whether the identified boss should remain absent after loading.</summary>
+        public bool IsBossDefeated(int bossID)
+        {
+            return GetBossProgress(bossID) == BossProgressState.Defeated;
+        }
+
+        internal void MigrateToLatestVersion()
+        {
+            if (m_dataVersion < k_AttributeDataVersion)
+            {
+                m_vitality = k_DefaultAttributeLevel;
+                m_endurance = k_DefaultAttributeLevel;
+                m_currentHealth = k_DefaultCurrentHealth;
+                m_currentStamina = k_DefaultCurrentStamina;
+            }
+
+            m_bosses ??= new List<BossSaveData>();
             m_dataVersion = k_CurrentDataVersion;
+        }
+
+        private BossSaveData FindBossData(int bossID)
+        {
+            if (bossID <= 0 || m_bosses == null)
+            {
+                return null;
+            }
+
+            return m_bosses.FirstOrDefault(boss => boss?.BossID == bossID);
         }
     }
 }
