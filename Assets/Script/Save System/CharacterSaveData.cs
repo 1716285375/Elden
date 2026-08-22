@@ -15,7 +15,7 @@ namespace ZZ
         private const float k_DefaultCurrentHealth = 150f;
         private const float k_DefaultCurrentStamina = 100f;
         private const int k_AttributeDataVersion = 1;
-        private const int k_CurrentDataVersion = 2;
+        private const int k_CurrentDataVersion = 3;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -29,6 +29,7 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField] private List<BossSaveData> m_bosses = new();
+        [SerializeField] private List<SiteOfGraceSaveData> m_sitesOfGrace = new();
 
         public string CharacterName
         {
@@ -127,6 +128,42 @@ namespace ZZ
             return GetBossProgress(bossID) == BossProgressState.Defeated;
         }
 
+        /// <summary>Gets whether the identified Site of Grace has been restored.</summary>
+        public bool IsSiteOfGraceActivated(int siteOfGraceID)
+        {
+            return FindSiteOfGraceData(siteOfGraceID)?.IsActivated ?? false;
+        }
+
+        /// <summary>Adds or updates one Site of Grace activation entry.</summary>
+        public bool SetSiteOfGraceActivated(int siteOfGraceID, bool isActivated)
+        {
+            if (siteOfGraceID <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(siteOfGraceID),
+                    siteOfGraceID,
+                    "Site of Grace identifiers must be greater than zero.");
+            }
+
+            m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
+            SiteOfGraceSaveData siteData = FindSiteOfGraceData(siteOfGraceID);
+            if (siteData != null)
+            {
+                if (siteData.IsActivated == isActivated)
+                {
+                    return false;
+                }
+
+                siteData.IsActivated = isActivated;
+                return true;
+            }
+
+            m_sitesOfGrace.Add(new SiteOfGraceSaveData(
+                siteOfGraceID,
+                isActivated));
+            return true;
+        }
+
         internal void MigrateToLatestVersion()
         {
             if (m_dataVersion < k_AttributeDataVersion)
@@ -138,6 +175,7 @@ namespace ZZ
             }
 
             m_bosses ??= new List<BossSaveData>();
+            m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
             m_dataVersion = k_CurrentDataVersion;
         }
 
@@ -149,6 +187,17 @@ namespace ZZ
             }
 
             return m_bosses.FirstOrDefault(boss => boss?.BossID == bossID);
+        }
+
+        private SiteOfGraceSaveData FindSiteOfGraceData(int siteOfGraceID)
+        {
+            if (siteOfGraceID <= 0 || m_sitesOfGrace == null)
+            {
+                return null;
+            }
+
+            return m_sitesOfGrace.FirstOrDefault(
+                site => site?.SiteOfGraceID == siteOfGraceID);
         }
     }
 }

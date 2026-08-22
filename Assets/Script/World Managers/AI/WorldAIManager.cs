@@ -96,6 +96,47 @@ namespace ZZ
             m_characterSpawners.Remove(characterSpawner);
         }
 
+        /// <summary>Despawns every living AI and rebuilds the world from its authored spawners.</summary>
+        public void ResetAllCharacters()
+        {
+            if (!IsServerReady())
+            {
+                Debug.LogWarning(
+                    "Only the listening server can reset world AI characters.",
+                    this);
+                return;
+            }
+
+            AICharacterManager[] spawnedCharacters = m_spawnedCharacters
+                .Where(character => character != null)
+                .ToArray();
+            foreach (AICharacterManager character in spawnedCharacters)
+            {
+                NetworkObject networkObject = character.NetworkObject;
+                if (networkObject != null && networkObject.IsSpawned)
+                {
+                    networkObject.Despawn(true);
+                }
+            }
+
+            m_spawnedCharacters.Clear();
+            AICharacterSpawner[] orderedSpawners = m_characterSpawners
+                .Where(spawner => spawner != null)
+                .OrderBy(spawner => spawner.transform.GetSiblingIndex())
+                .ToArray();
+            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
+            {
+                characterSpawner.ResetSpawnState();
+            }
+
+            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
+            {
+                characterSpawner.AttemptToSpawnCharacter();
+            }
+
+            m_hasSpawnedCharacters = true;
+        }
+
         private IEnumerator SpawnWhenServerIsReady()
         {
             while (!m_hasSpawnedCharacters)

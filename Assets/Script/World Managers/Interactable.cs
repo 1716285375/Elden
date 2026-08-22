@@ -69,6 +69,16 @@ namespace ZZ
             }
         }
 
+        /// <summary>Updates the shared prompt and refreshes every overlapping local player.</summary>
+        protected void SetInteractableText(string interactableText)
+        {
+            m_interactableText = interactableText ?? string.Empty;
+            foreach (PlayerInteractionManager interactionManager in m_registeredPlayers)
+            {
+                interactionManager?.RefreshInteractionPrompt(this);
+            }
+        }
+
         /// <summary>Restores or suspends trigger detection for reusable derived interactions.</summary>
         protected void SetInteractionColliderEnabled(bool isEnabled)
         {

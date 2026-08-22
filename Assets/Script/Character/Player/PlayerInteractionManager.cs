@@ -124,8 +124,22 @@ namespace ZZ
 
             interactable.Interact(m_player);
             interactable.CompleteInteraction();
-            RemoveInteractionFromList(interactable);
             CheckForInteractable();
+        }
+
+        /// <summary>Refreshes a changed prompt while the interaction remains active.</summary>
+        public void RefreshInteractionPrompt(Interactable interactable)
+        {
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                m_activeInteractable != interactable ||
+                !interactable.CanInteract(m_player))
+            {
+                return;
+            }
+
+            SendPlayerMessagePopup(interactable.InteractableText);
+            m_hasOpenPrompt = true;
         }
 
         /// <summary>Clears every candidate and closes the local interaction prompt.</summary>
