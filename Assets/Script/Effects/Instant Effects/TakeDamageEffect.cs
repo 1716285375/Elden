@@ -16,12 +16,13 @@ namespace ZZ
         public int FinalDamageDealt { get; private set; }
         public Vector3 ContactPoint { get; private set; }
 
-        // Reserved for the next damage-resolution phases.
         public bool WasBlocked { get; private set; }
         public bool WasTargetInvulnerable { get; private set; }
         public float PoiseDamage { get; private set; }
         public AnimationClip DamageAnimation { get; private set; }
         public float HitAngle { get; private set; }
+
+        // Reserved for the next damage-resolution phases.
         public AudioClip DamageSound { get; private set; }
         public float BleedBuildup { get; private set; }
         public float PoisonBuildup { get; private set; }
@@ -80,6 +81,7 @@ namespace ZZ
             character.CharacterEffectsManager?.PlayBloodSplatterVFX(
                 ContactPoint,
                 hitDirection);
+            PlayDirectionalBasedDamageAnimation(character);
 
             if (!character.IsOwner)
             {
@@ -100,6 +102,78 @@ namespace ZZ
                 maximumHealth);
             float remainingHealth = Mathf.Max(0f, currentHealth - damage);
             networkManager.CurrentHealth.Value = remainingHealth;
+        }
+
+        /// <summary>
+        /// Resolves the incoming hit side and plays an appropriate damage reaction.
+        /// </summary>
+        public void PlayDirectionalBasedDamageAnimation(CharacterManager character)
+        {
+            if (character == null ||
+                CharacterCausingDamage == null ||
+                character.CharacterAnimatorManager == null)
+            {
+                return;
+            }
+
+            HitAngle = CalculateHitAngle(
+                CharacterCausingDamage.transform,
+                character.transform);
+            DamageDirection damageDirection = GetDamageDirection(HitAngle);
+            DamageAnimation = character.CharacterAnimatorManager
+                .PlayDirectionalDamageAnimation(damageDirection);
+        }
+
+        /// <summary>
+        /// Calculates the signed horizontal incoming angle used by directional reactions.
+        /// </summary>
+        public static float CalculateHitAngle(Transform attacker, Transform target)
+        {
+            if (attacker == null || target == null)
+            {
+                return 0f;
+            }
+
+            Vector3 targetForward = Vector3.ProjectOnPlane(
+                target.forward,
+                Vector3.up);
+            Vector3 incomingDirection = Vector3.ProjectOnPlane(
+                target.position - attacker.position,
+                Vector3.up);
+            if (targetForward.sqrMagnitude <= Mathf.Epsilon ||
+                incomingDirection.sqrMagnitude <= Mathf.Epsilon)
+            {
+                return 0f;
+            }
+
+            return Vector3.SignedAngle(
+                targetForward.normalized,
+                incomingDirection.normalized,
+                Vector3.up);
+        }
+
+        /// <summary>
+        /// Classifies a signed incoming angle into the struck side of the target.
+        /// </summary>
+        public static DamageDirection GetDamageDirection(float hitAngle)
+        {
+            float normalizedAngle = Mathf.DeltaAngle(0f, hitAngle);
+            if (normalizedAngle >= -45f && normalizedAngle <= 45f)
+            {
+                return DamageDirection.Back;
+            }
+
+            if (normalizedAngle > 45f && normalizedAngle < 145f)
+            {
+                return DamageDirection.Left;
+            }
+
+            if (normalizedAngle < -45f && normalizedAngle > -145f)
+            {
+                return DamageDirection.Right;
+            }
+
+            return DamageDirection.Front;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ZZ
@@ -36,7 +37,14 @@ namespace ZZ
 
         [SerializeField] private Animator m_animator;
 
+        [Header("Damage Reactions")]
+        [SerializeField] private List<AnimationClip> m_hitForwardAnimations = new();
+        [SerializeField] private List<AnimationClip> m_hitBackwardAnimations = new();
+        [SerializeField] private List<AnimationClip> m_hitLeftAnimations = new();
+        [SerializeField] private List<AnimationClip> m_hitRightAnimations = new();
+
         private CharacterManager m_characterManager;
+        private AnimationClip m_lastDamageAnimationPlayed;
 
         protected Animator CharacterAnimator => m_animator;
 
@@ -278,6 +286,56 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Plays a random reaction for the side that received damage.
+        /// </summary>
+        /// <returns>The selected reaction clip, or null when no valid reaction is available.</returns>
+        public AnimationClip PlayDirectionalDamageAnimation(DamageDirection damageDirection)
+        {
+            if (m_animator == null || m_characterManager == null)
+            {
+                return null;
+            }
+
+            int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            if (actionLayerIndex < 0)
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} is missing the {k_ActionOverrideLayerName} layer.",
+                    m_animator);
+                return null;
+            }
+
+            AnimationClip damageAnimation = GetRandomDamageAnimation(
+                GetDamageAnimations(damageDirection));
+            if (damageAnimation == null)
+            {
+                Debug.LogError(
+                    $"Animator {name} has no {damageDirection} damage reaction animations.",
+                    this);
+                return null;
+            }
+
+            int damageStateHash = Animator.StringToHash(
+                $"{k_ActionOverrideLayerName}.{damageAnimation.name}");
+            if (!m_animator.HasState(actionLayerIndex, damageStateHash))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} does not contain damage state " +
+                    $"{damageAnimation.name}.",
+                    m_animator);
+                return null;
+            }
+
+            m_lastDamageAnimationPlayed = damageAnimation;
+            m_characterManager.SetActionState(true, false, false, false);
+            m_animator.CrossFade(
+                damageStateHash,
+                k_ActionTransitionDuration,
+                actionLayerIndex);
+            return damageAnimation;
+        }
+
+        /// <summary>
         /// Returns whether the action animation has a supported network identifier.
         /// </summary>
         internal static bool IsSupportedActionAnimation(CharacterActionAnimation targetAnimation)
@@ -292,6 +350,55 @@ namespace ZZ
             return attackType == AttackType.HeavyAttack01
                 ? s_heavyAttack01State
                 : s_lightAttack01State;
+        }
+
+        private IReadOnlyList<AnimationClip> GetDamageAnimations(
+            DamageDirection damageDirection)
+        {
+            switch (damageDirection)
+            {
+                case DamageDirection.Front:
+                    return m_hitForwardAnimations;
+                case DamageDirection.Back:
+                    return m_hitBackwardAnimations;
+                case DamageDirection.Left:
+                    return m_hitLeftAnimations;
+                case DamageDirection.Right:
+                    return m_hitRightAnimations;
+                default:
+                    return m_hitForwardAnimations;
+            }
+        }
+
+        private AnimationClip GetRandomDamageAnimation(
+            IReadOnlyList<AnimationClip> damageAnimations)
+        {
+            if (damageAnimations == null || damageAnimations.Count == 0)
+            {
+                return null;
+            }
+
+            List<AnimationClip> candidates = new List<AnimationClip>(
+                damageAnimations.Count);
+            for (int animationIndex = 0;
+                animationIndex < damageAnimations.Count;
+                animationIndex++)
+            {
+                AnimationClip damageAnimation = damageAnimations[animationIndex];
+                if (damageAnimation != null)
+                {
+                    candidates.Add(damageAnimation);
+                }
+            }
+
+            if (candidates.Count > 1)
+            {
+                candidates.Remove(m_lastDamageAnimationPlayed);
+            }
+
+            return candidates.Count > 0
+                ? candidates[Random.Range(0, candidates.Count)]
+                : null;
         }
 
         private static bool TryGetActionStateHash(

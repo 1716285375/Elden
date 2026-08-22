@@ -113133,6 +113133,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerAnimatorManager
   m_animator: {fileID: 0}
+  m_hitForwardAnimations:
+  - {fileID: 7400000, guid: 3a06dc334b009be418392dbbf0edc7bc, type: 2}
+  - {fileID: 7400000, guid: e67e7c688eee1fb40b9d592c06450660, type: 2}
+  - {fileID: 7400000, guid: 5965ad4b745e5ad4aad6ada195a14db0, type: 2}
+  m_hitBackwardAnimations:
+  - {fileID: 7400000, guid: db8db30f70a13be44afa5a1ff5276c57, type: 2}
+  - {fileID: 7400000, guid: c49ba69bf652a5a4e81ee47179313c3c, type: 2}
+  - {fileID: 7400000, guid: 3eeae51d349fc714fa15d2ab5be2a5fb, type: 2}
+  m_hitLeftAnimations:
+  - {fileID: 7400000, guid: db7f6ae94da4b9d418570af118c9228e, type: 2}
+  - {fileID: 7400000, guid: 8c3701b3c236a5d49801f277ad8552c9, type: 2}
+  - {fileID: 7400000, guid: 608b34e2ffde185429f0a13b747af4bc, type: 2}
+  m_hitRightAnimations:
+  - {fileID: 7400000, guid: 17361b9b702cb8741acbdad9fe9d1ba3, type: 2}
+  - {fileID: 7400000, guid: 62ae30fc18c412448b6fa0417f661d14, type: 2}
+  - {fileID: 7400000, guid: 3ce89cb31a9b975408e7fff1150c639d, type: 2}
 --- !u!114 &8078494238107309435
 MonoBehaviour:
   m_ObjectHideFlags: 0
