@@ -34,8 +34,14 @@ namespace ZZ
             Animator.StringToHash("Upper Body Override.Swap_Left_Weapon_01");
         private static readonly int s_lightAttack01State =
             Animator.StringToHash("Action Override.Attack_01");
+        private static readonly int s_lightAttack02State =
+            Animator.StringToHash("Action Override.Attack_Light_02");
+        private static readonly int s_lightAttack03State =
+            Animator.StringToHash("Action Override.Attack_Light_03");
         private static readonly int s_heavyAttack01State =
             Animator.StringToHash("Action Override.Attack_02");
+        private static readonly int s_heavyAttack02State =
+            Animator.StringToHash("Action Override.Attack_Heavy_02");
         private static readonly int s_chargedAttack01State =
             Animator.StringToHash("Action Override.Attack_Charged_01");
         private static readonly int s_chargingAttackState =
@@ -388,8 +394,14 @@ namespace ZZ
         {
             switch (attackType)
             {
+                case AttackType.LightAttack02:
+                    return s_lightAttack02State;
+                case AttackType.LightAttack03:
+                    return s_lightAttack03State;
                 case AttackType.HeavyAttack01:
                     return s_heavyAttack01State;
+                case AttackType.HeavyAttack02:
+                    return s_heavyAttack02State;
                 case AttackType.ChargedAttack01:
                     return s_chargedAttack01State;
                 default:

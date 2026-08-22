@@ -18,6 +18,7 @@ namespace ZZ
                 return;
             }
 
+            player.PlayerCombatManager?.DisableCanCombo();
             player.PlayerNetworkManager?.SetCharacterActionHand(true);
             player.PlayerCombatManager?.ReplicateAttack(m_attackType);
             player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(m_attackType);
