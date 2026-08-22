@@ -146072,6 +146072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33477e764d5737a4baa4e31ed5d86f53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerEffectsManager
+  m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_character: {fileID: 0}
   m_effectToTest: {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}
   m_shouldProcessEffect: 0
