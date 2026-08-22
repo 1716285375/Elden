@@ -165,6 +165,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""4c1bc751-71a6-4199-906f-9c30fb853c58"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -486,6 +495,28 @@ namespace ZZ
                     ""action"": ""RT"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8f8a18e8-fe67-49e7-91b8-050fc7528f0a"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bee69820-4d4f-4ccb-adfd-891bc7603dfa"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -670,6 +701,7 @@ namespace ZZ
             m_PlayerMovement_SwitchLeftWeapon = m_PlayerMovement.FindAction("Switch Left Weapon", throwIfNotFound: true);
             m_PlayerMovement_RB = m_PlayerMovement.FindAction("RB", throwIfNotFound: true);
             m_PlayerMovement_RT = m_PlayerMovement.FindAction("RT", throwIfNotFound: true);
+            m_PlayerMovement_Interact = m_PlayerMovement.FindAction("Interact", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -768,6 +800,7 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_SwitchLeftWeapon;
         private readonly InputAction m_PlayerMovement_RB;
         private readonly InputAction m_PlayerMovement_RT;
+        private readonly InputAction m_PlayerMovement_Interact;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -811,6 +844,10 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/RT".
             /// </summary>
             public InputAction @RT => m_Wrapper.m_PlayerMovement_RT;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/Interact".
+            /// </summary>
+            public InputAction @Interact => m_Wrapper.m_PlayerMovement_Interact;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -861,6 +898,9 @@ namespace ZZ
                 @RT.started += instance.OnRT;
                 @RT.performed += instance.OnRT;
                 @RT.canceled += instance.OnRT;
+                @Interact.started += instance.OnInteract;
+                @Interact.performed += instance.OnInteract;
+                @Interact.canceled += instance.OnInteract;
             }
 
             /// <summary>
@@ -896,6 +936,9 @@ namespace ZZ
                 @RT.started -= instance.OnRT;
                 @RT.performed -= instance.OnRT;
                 @RT.canceled -= instance.OnRT;
+                @Interact.started -= instance.OnInteract;
+                @Interact.performed -= instance.OnInteract;
+                @Interact.canceled -= instance.OnInteract;
             }
 
             /// <summary>
@@ -1232,6 +1275,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRT(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnInteract(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

@@ -37,6 +37,7 @@ namespace ZZ
         private bool m_hasRTStartedInput;
         private bool m_hasRTReleasedInput;
         private bool m_hasLockOnInput;
+        private bool m_hasInteractionInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
 
@@ -74,6 +75,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
             m_playerControls.PlayerMovement.RT.started += OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled += OnRTCanceled;
+            m_playerControls.PlayerMovement.Interact.performed += OnInteractPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.LockOn.performed += OnLockOnPerformed;
@@ -101,6 +103,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
             m_playerControls.PlayerMovement.RT.started -= OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled -= OnRTCanceled;
+            m_playerControls.PlayerMovement.Interact.performed -= OnInteractPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.LockOn.performed -= OnLockOnPerformed;
@@ -205,6 +208,7 @@ namespace ZZ
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
             m_hasLockOnInput = false;
+            m_hasInteractionInput = false;
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             m_player?.PlayerCombatManager?.CancelChargingAttack();
@@ -280,6 +284,7 @@ namespace ZZ
             HandleDodgeInput();
             HandleJumpInput();
             HandleWeaponSwitchInput();
+            HandleInteractionInput();
             HandleSprinting();
             HandleAttackInput();
         }
@@ -388,6 +393,17 @@ namespace ZZ
             }
         }
 
+        private void HandleInteractionInput()
+        {
+            if (!m_hasInteractionInput)
+            {
+                return;
+            }
+
+            m_hasInteractionInput = false;
+            m_player?.InteractionManager?.HandleInteractionInput();
+        }
+
         private void PerformRightHandAction(WeaponItemBasedAction action)
         {
             WeaponItem weapon = m_player?.InventoryManager?.CurrentRightHandWeapon;
@@ -457,6 +473,11 @@ namespace ZZ
         private void OnLockOnPerformed(InputAction.CallbackContext context)
         {
             m_hasLockOnInput = true;
+        }
+
+        private void OnInteractPerformed(InputAction.CallbackContext context)
+        {
+            m_hasInteractionInput = true;
         }
 
         private void RemoveExpiredAttackInputs(float currentTime)
