@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace ZZ
 {
@@ -7,6 +8,10 @@ namespace ZZ
     {
         private const int k_DefaultRightHandWeaponID = 1;
         private const int k_DefaultLeftHandWeaponID = 3;
+        private const int k_NoWeaponID = -1;
+
+        [Header("Two-Hand Effect")]
+        [SerializeField] private StaticCharacterEffect m_twoHandingEffect;
 
         private readonly NetworkVariable<FixedString64Bytes> m_characterName =
             new NetworkVariable<FixedString64Bytes>(
@@ -38,6 +43,26 @@ namespace ZZ
                 k_DefaultRightHandWeaponID,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isTwoHandingWeapon =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isTwoHandingRightWeapon =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isTwoHandingLeftWeapon =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentWeaponBeingTwoHanded =
+            new NetworkVariable<int>(
+                k_NoWeaponID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -66,6 +91,21 @@ namespace ZZ
         public NetworkVariable<int> CurrentWeaponIDBeingUsed =>
             m_currentWeaponIDBeingUsed;
 
+        /// <summary>Gets whether either equipped weapon is in the replicated two-hand stance.</summary>
+        public NetworkVariable<bool> IsTwoHandingWeapon => m_isTwoHandingWeapon;
+
+        /// <summary>Gets whether the right-hand item owns the two-hand stance.</summary>
+        public NetworkVariable<bool> IsTwoHandingRightWeapon =>
+            m_isTwoHandingRightWeapon;
+
+        /// <summary>Gets whether the left-hand item owns the two-hand stance.</summary>
+        public NetworkVariable<bool> IsTwoHandingLeftWeapon =>
+            m_isTwoHandingLeftWeapon;
+
+        /// <summary>Gets the item identifier currently presented with two hands.</summary>
+        public NetworkVariable<int> CurrentWeaponBeingTwoHanded =>
+            m_currentWeaponBeingTwoHanded;
+
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -79,6 +119,10 @@ namespace ZZ
             m_currentLeftHandWeaponID.OnValueChanged += OnLeftHandWeaponIDChanged;
             m_currentWeaponIDBeingUsed.OnValueChanged +=
                 OnCurrentWeaponIDBeingUsedChanged;
+            m_isTwoHandingWeapon.OnValueChanged += OnTwoHandingStateChanged;
+            m_isTwoHandingRightWeapon.OnValueChanged += OnTwoHandingStateChanged;
+            m_isTwoHandingLeftWeapon.OnValueChanged += OnTwoHandingStateChanged;
+            m_currentWeaponBeingTwoHanded.OnValueChanged += OnTwoHandWeaponIDChanged;
             m_playerInventoryManager?.InitializeRightWeaponFromID(
                 m_currentRightHandWeaponID.Value);
             m_playerInventoryManager?.InitializeLeftWeaponFromID(
@@ -89,6 +133,7 @@ namespace ZZ
             }
 
             RefreshBlockingPresentation();
+            RefreshTwoHandingPresentation();
 
             ResetOwnedSprintState();
         }
@@ -99,6 +144,11 @@ namespace ZZ
             m_currentLeftHandWeaponID.OnValueChanged -= OnLeftHandWeaponIDChanged;
             m_currentWeaponIDBeingUsed.OnValueChanged -=
                 OnCurrentWeaponIDBeingUsedChanged;
+            m_isTwoHandingWeapon.OnValueChanged -= OnTwoHandingStateChanged;
+            m_isTwoHandingRightWeapon.OnValueChanged -= OnTwoHandingStateChanged;
+            m_isTwoHandingLeftWeapon.OnValueChanged -= OnTwoHandingStateChanged;
+            m_currentWeaponBeingTwoHanded.OnValueChanged -= OnTwoHandWeaponIDChanged;
+            RemoveTwoHandingPresentation(false);
             base.OnNetworkDespawn();
         }
 
@@ -106,6 +156,7 @@ namespace ZZ
         {
             base.OnGainedOwnership();
             ResetOwnedSprintState();
+            ResetOwnedTwoHandingState();
         }
 
         /// <summary>
@@ -125,6 +176,40 @@ namespace ZZ
                 : m_currentLeftHandWeaponID.Value;
         }
 
+        /// <summary>Toggles the requested equipped side into or out of the two-hand stance.</summary>
+        public void ToggleTwoHandWeapon(bool isRightHandWeapon)
+        {
+            if (!IsSpawned || !IsOwner || m_playerInventoryManager == null)
+            {
+                return;
+            }
+
+            WeaponItem weapon = isRightHandWeapon
+                ? m_playerInventoryManager.CurrentRightHandWeapon
+                : m_playerInventoryManager.CurrentLeftHandWeapon;
+            if (weapon == null || weapon.IsUnarmed)
+            {
+                ClearTwoHandingState();
+                return;
+            }
+
+            bool isSameSideActive = m_isTwoHandingWeapon.Value &&
+                (isRightHandWeapon
+                    ? m_isTwoHandingRightWeapon.Value
+                    : m_isTwoHandingLeftWeapon.Value);
+            if (isSameSideActive)
+            {
+                ClearTwoHandingState();
+                return;
+            }
+
+            m_currentWeaponBeingTwoHanded.Value = weapon.ItemID;
+            m_isTwoHandingRightWeapon.Value = isRightHandWeapon;
+            m_isTwoHandingLeftWeapon.Value = !isRightHandWeapon;
+            m_isTwoHandingWeapon.Value = true;
+            SetCharacterActionHand(isRightHandWeapon);
+        }
+
         private void ResetOwnedSprintState()
         {
             if (IsOwner && IsSpawned)
@@ -133,16 +218,26 @@ namespace ZZ
             }
         }
 
+        private void ResetOwnedTwoHandingState()
+        {
+            if (IsOwner && IsSpawned)
+            {
+                ClearTwoHandingState();
+            }
+        }
+
         private void OnRightHandWeaponIDChanged(int previousWeaponID, int currentWeaponID)
         {
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.EquipRightWeaponFromID(currentWeaponID);
+            RefreshChangedTwoHandWeapon(currentWeaponID, true);
         }
 
         private void OnLeftHandWeaponIDChanged(int previousWeaponID, int currentWeaponID)
         {
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.EquipLeftWeaponFromID(currentWeaponID);
+            RefreshChangedTwoHandWeapon(currentWeaponID, false);
         }
 
         private void OnCurrentWeaponIDBeingUsedChanged(
@@ -162,6 +257,116 @@ namespace ZZ
                 ?.GetEquippedWeaponByID(weaponID);
             GetComponent<PlayerManager>()?.PlayerAnimatorManager
                 ?.UpdateAnimatorController(weapon);
+        }
+
+        private void OnTwoHandingStateChanged(bool previousValue, bool currentValue)
+        {
+            RefreshTwoHandingPresentation();
+        }
+
+        private void OnTwoHandWeaponIDChanged(int previousWeaponID, int currentWeaponID)
+        {
+            RefreshTwoHandingPresentation();
+        }
+
+        /// <summary>
+        /// Replays synchronized two-hand state after equipment initialization or late join.
+        /// </summary>
+        public void RefreshTwoHandingPresentation()
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            PlayerManager player = GetComponent<PlayerManager>();
+            bool hasExactlyOneSide = m_isTwoHandingRightWeapon.Value !=
+                m_isTwoHandingLeftWeapon.Value;
+            WeaponItem weapon = m_isTwoHandingRightWeapon.Value
+                ? m_playerInventoryManager?.CurrentRightHandWeapon
+                : m_isTwoHandingLeftWeapon.Value
+                    ? m_playerInventoryManager?.CurrentLeftHandWeapon
+                    : null;
+            if (!m_isTwoHandingWeapon.Value ||
+                !hasExactlyOneSide ||
+                weapon == null ||
+                weapon.IsUnarmed ||
+                weapon.ItemID != m_currentWeaponBeingTwoHanded.Value)
+            {
+                RemoveTwoHandingPresentation();
+                return;
+            }
+
+            m_playerInventoryManager.SetCurrentTwoHandWeapon(weapon);
+            if (m_isTwoHandingRightWeapon.Value)
+            {
+                player?.EquipmentManager?.TwoHandRightWeapon();
+            }
+            else
+            {
+                player?.EquipmentManager?.TwoHandLeftWeapon();
+            }
+
+            player?.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
+            player?.PlayerAnimatorManager?.SetTwoHandingWeaponState(true);
+            player?.CharacterEffectsManager?.ProcessStaticEffect(m_twoHandingEffect);
+            if (player?.CharacterNetworkManager?.IsBlocking.Value == true)
+            {
+                player.PlayerStatsManager?.SetBlockingStats(weapon);
+            }
+        }
+
+        private void RemoveTwoHandingPresentation(bool restoreEquipment = true)
+        {
+            PlayerManager player = GetComponent<PlayerManager>();
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.ClearCurrentTwoHandWeapon();
+            player?.PlayerAnimatorManager?.SetTwoHandingWeaponState(false);
+            if (m_twoHandingEffect != null)
+            {
+                player?.CharacterEffectsManager?.RemoveStaticEffect(
+                    m_twoHandingEffect.StaticEffectID);
+            }
+
+            if (restoreEquipment)
+            {
+                player?.EquipmentManager?.UnTwoHandWeapon();
+            }
+        }
+
+        private void ClearTwoHandingState()
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            m_isTwoHandingWeapon.Value = false;
+            m_isTwoHandingRightWeapon.Value = false;
+            m_isTwoHandingLeftWeapon.Value = false;
+            m_currentWeaponBeingTwoHanded.Value = k_NoWeaponID;
+            SetCharacterActionHand(true);
+        }
+
+        private void RefreshChangedTwoHandWeapon(int currentWeaponID, bool isRightHand)
+        {
+            if (!m_isTwoHandingWeapon.Value ||
+                (isRightHand && !m_isTwoHandingRightWeapon.Value) ||
+                (!isRightHand && !m_isTwoHandingLeftWeapon.Value))
+            {
+                return;
+            }
+
+            if (IsOwner)
+            {
+                WeaponItem weapon = m_playerInventoryManager?.GetEquippedWeaponByID(
+                    currentWeaponID);
+                if (weapon == null || weapon.IsUnarmed)
+                {
+                    ClearTwoHandingState();
+                    return;
+                }
+
+                m_currentWeaponBeingTwoHanded.Value = currentWeaponID;
+            }
+
+            RefreshTwoHandingPresentation();
         }
     }
 }

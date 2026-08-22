@@ -11,6 +11,7 @@ namespace ZZ
         [SerializeField] private GameObject m_weaponModel;
         [SerializeField] private bool m_isUnarmed;
         [SerializeField] private WeaponModelType m_weaponModelType;
+        [SerializeField] private WeaponClass m_weaponClass;
         [SerializeField] private AnimatorOverrideController m_weaponAnimator;
 
         [Header("Weapon Pivot")]
@@ -78,6 +79,9 @@ namespace ZZ
 
         /// <summary>Gets whether this model uses a hand-weapon or shield attachment.</summary>
         public WeaponModelType WeaponModelType => m_weaponModelType;
+
+        /// <summary>Gets the class used to select a back or hip storage slot.</summary>
+        public WeaponClass WeaponClass => m_weaponClass;
 
         /// <summary>Gets the complete animation override set used by this weapon.</summary>
         public AnimatorOverrideController WeaponAnimator => m_weaponAnimator;

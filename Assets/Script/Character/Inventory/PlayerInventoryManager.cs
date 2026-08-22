@@ -27,6 +27,7 @@ namespace ZZ
         private PlayerEquipmentManager m_equipmentManager;
         private WeaponItem m_currentRightHandWeapon;
         private WeaponItem m_currentLeftHandWeapon;
+        private WeaponItem m_currentTwoHandWeapon;
         private int m_rightHandWeaponIndex;
         private int m_leftHandWeaponIndex;
 
@@ -35,6 +36,9 @@ namespace ZZ
 
         /// <summary>Gets the runtime copy currently selected for the left hand.</summary>
         public WeaponItem CurrentLeftHandWeapon => m_currentLeftHandWeapon;
+
+        /// <summary>Gets the equipped runtime item currently presented in the two-hand stance.</summary>
+        public WeaponItem CurrentTwoHandWeapon => m_currentTwoHandWeapon;
 
         /// <summary>Raised after the right-hand runtime weapon and model are refreshed.</summary>
         public event Action<WeaponItem> RightHandWeaponChanged;
@@ -55,6 +59,18 @@ namespace ZZ
                 : null;
         }
 
+        /// <summary>Sets the two-hand pointer without cloning or taking ownership of the item.</summary>
+        public void SetCurrentTwoHandWeapon(WeaponItem weapon)
+        {
+            m_currentTwoHandWeapon = weapon;
+        }
+
+        /// <summary>Clears the non-owning pointer used by two-hand combat and presentation.</summary>
+        public void ClearCurrentTwoHandWeapon()
+        {
+            m_currentTwoHandWeapon = null;
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -64,6 +80,7 @@ namespace ZZ
 
         private void OnDestroy()
         {
+            m_currentTwoHandWeapon = null;
             DestroyRuntimeWeapon(m_currentRightHandWeapon);
             DestroyRuntimeWeapon(m_currentLeftHandWeapon);
         }
@@ -129,8 +146,7 @@ namespace ZZ
         {
             if (TryEquipRightWeaponFromID(weaponID))
             {
-                m_player.PlayerAnimatorManager?.PlayWeaponSwapAnimation(
-                    WeaponModelSlot.RightHandSlot);
+                PlayWeaponSwapAnimationIfOneHanded(WeaponModelSlot.RightHandSlot);
             }
         }
 
@@ -149,8 +165,7 @@ namespace ZZ
         {
             if (TryEquipLeftWeaponFromID(weaponID))
             {
-                m_player.PlayerAnimatorManager?.PlayWeaponSwapAnimation(
-                    WeaponModelSlot.LeftHandSlot);
+                PlayWeaponSwapAnimationIfOneHanded(WeaponModelSlot.LeftHandSlot);
             }
         }
 
@@ -169,6 +184,7 @@ namespace ZZ
                 runtimeWeapon.ItemID,
                 ref m_rightHandWeaponIndex);
             m_equipmentManager.LoadRightWeapon(runtimeWeapon);
+            RefreshTwoHandPointer(runtimeWeapon, true);
             RightHandWeaponChanged?.Invoke(runtimeWeapon);
             return true;
         }
@@ -188,6 +204,7 @@ namespace ZZ
                 runtimeWeapon.ItemID,
                 ref m_leftHandWeaponIndex);
             m_equipmentManager.LoadLeftWeapon(runtimeWeapon);
+            RefreshTwoHandPointer(runtimeWeapon, false);
             LeftHandWeaponChanged?.Invoke(runtimeWeapon);
             return true;
         }
@@ -361,6 +378,29 @@ namespace ZZ
             if (weapon != null && (weapon.hideFlags & HideFlags.DontSave) != 0)
             {
                 Destroy(weapon);
+            }
+        }
+
+        private void RefreshTwoHandPointer(WeaponItem runtimeWeapon, bool isRightHand)
+        {
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager == null || !networkManager.IsTwoHandingWeapon.Value)
+            {
+                return;
+            }
+
+            if ((isRightHand && networkManager.IsTwoHandingRightWeapon.Value) ||
+                (!isRightHand && networkManager.IsTwoHandingLeftWeapon.Value))
+            {
+                m_currentTwoHandWeapon = runtimeWeapon;
+            }
+        }
+
+        private void PlayWeaponSwapAnimationIfOneHanded(WeaponModelSlot weaponSlot)
+        {
+            if (m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value != true)
+            {
+                m_player?.PlayerAnimatorManager?.PlayWeaponSwapAnimation(weaponSlot);
             }
         }
     }

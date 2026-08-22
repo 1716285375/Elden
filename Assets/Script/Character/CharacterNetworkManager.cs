@@ -521,7 +521,9 @@ namespace ZZ
             if (isBlocking && m_characterManager is PlayerManager player)
             {
                 player.PlayerStatsManager?.SetBlockingStats(
-                    player.InventoryManager?.CurrentLeftHandWeapon);
+                    player.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                        ? player.InventoryManager?.CurrentTwoHandWeapon
+                        : player.InventoryManager?.CurrentLeftHandWeapon);
             }
         }
     }

@@ -41,6 +41,9 @@ namespace ZZ
         private bool m_hasInteractionInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
+        private bool m_isTwoHandInputHeld;
+        private bool m_hasTwoHandRightWeaponInput;
+        private bool m_hasTwoHandLeftWeaponInput;
 
         private void Awake()
         {
@@ -78,6 +81,14 @@ namespace ZZ
             m_playerControls.PlayerMovement.RT.canceled += OnRTCanceled;
             m_playerControls.PlayerMovement.LB.performed += OnLBPerformed;
             m_playerControls.PlayerMovement.LB.canceled += OnLBCanceled;
+            m_playerControls.PlayerMovement.TwoHandWeapon.performed +=
+                OnTwoHandWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandWeapon.canceled +=
+                OnTwoHandWeaponCanceled;
+            m_playerControls.PlayerMovement.TwoHandRightWeapon.performed +=
+                OnTwoHandRightWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandLeftWeapon.performed +=
+                OnTwoHandLeftWeaponPerformed;
             m_playerControls.PlayerMovement.Interact.performed += OnInteractPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
@@ -108,6 +119,14 @@ namespace ZZ
             m_playerControls.PlayerMovement.RT.canceled -= OnRTCanceled;
             m_playerControls.PlayerMovement.LB.performed -= OnLBPerformed;
             m_playerControls.PlayerMovement.LB.canceled -= OnLBCanceled;
+            m_playerControls.PlayerMovement.TwoHandWeapon.performed -=
+                OnTwoHandWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandWeapon.canceled -=
+                OnTwoHandWeaponCanceled;
+            m_playerControls.PlayerMovement.TwoHandRightWeapon.performed -=
+                OnTwoHandRightWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandLeftWeapon.performed -=
+                OnTwoHandLeftWeaponPerformed;
             m_playerControls.PlayerMovement.Interact.performed -= OnInteractPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
@@ -216,6 +235,9 @@ namespace ZZ
             m_hasLockOnInput = false;
             m_hasInteractionInput = false;
             m_isSprintInputHeld = false;
+            m_isTwoHandInputHeld = false;
+            m_hasTwoHandRightWeaponInput = false;
+            m_hasTwoHandLeftWeaponInput = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             m_player?.PlayerCombatManager?.CancelChargingAttack();
             m_player?.PlayerCombatManager?.SetBlocking(false);
@@ -293,6 +315,7 @@ namespace ZZ
             HandleWeaponSwitchInput();
             HandleInteractionInput();
             HandleSprinting();
+            HandleTwoHandInput();
             HandleBlockingInput();
             HandleAttackInput();
         }
@@ -377,13 +400,12 @@ namespace ZZ
 
         private void HandleAttackInput()
         {
-            if (m_hasRBInput)
+            if (m_hasRBInput && !m_isTwoHandInputHeld)
             {
                 m_hasRBInput = false;
                 if (!TryQueueAttackInput(AttackInputType.Light))
                 {
-                    PerformRightHandAction(
-                        m_player?.InventoryManager?.CurrentRightHandWeapon?.RightHandAction);
+                    PerformRightHandAction();
                 }
             }
 
@@ -410,7 +432,7 @@ namespace ZZ
                 return;
             }
 
-            WeaponItem weapon = m_player?.InventoryManager?.CurrentLeftHandWeapon;
+            WeaponItem weapon = ResolveBlockingWeapon();
             m_player?.PlayerCombatManager?.PerformWeaponBasedAction(
                 weapon?.LeftHandAction,
                 weapon);
@@ -427,9 +449,37 @@ namespace ZZ
             m_player?.InteractionManager?.HandleInteractionInput();
         }
 
-        private void PerformRightHandAction(WeaponItemBasedAction action)
+        private void HandleTwoHandInput()
         {
-            WeaponItem weapon = m_player?.InventoryManager?.CurrentRightHandWeapon;
+            if (!m_isTwoHandInputHeld || m_player?.PlayerNetworkManager == null)
+            {
+                return;
+            }
+
+            if (m_hasTwoHandRightWeaponInput)
+            {
+                m_hasTwoHandRightWeaponInput = false;
+                m_hasRBInput = false;
+                m_player.PlayerCombatManager?.SetBlocking(false);
+                m_player.PlayerNetworkManager.ToggleTwoHandWeapon(true);
+            }
+
+            if (m_hasTwoHandLeftWeaponInput)
+            {
+                m_hasTwoHandLeftWeaponInput = false;
+                m_isLBInputHeld = false;
+                m_player.PlayerCombatManager?.SetBlocking(false);
+                m_player.PlayerNetworkManager.ToggleTwoHandWeapon(false);
+            }
+        }
+
+        private void PerformRightHandAction()
+        {
+            WeaponItem weapon = ResolveAttackWeapon();
+            WeaponItemBasedAction action =
+                m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                    ? weapon?.TwoHandRightAction
+                    : weapon?.RightHandAction;
             if (action == null || weapon == null)
             {
                 return;
@@ -488,6 +538,22 @@ namespace ZZ
             m_hasRTStartedInput = true;
         }
 
+        private WeaponItem ResolveAttackWeapon()
+        {
+            PlayerInventoryManager inventory = m_player?.InventoryManager;
+            return m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                ? inventory?.CurrentTwoHandWeapon
+                : inventory?.CurrentRightHandWeapon;
+        }
+
+        private WeaponItem ResolveBlockingWeapon()
+        {
+            PlayerInventoryManager inventory = m_player?.InventoryManager;
+            return m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                ? inventory?.CurrentTwoHandWeapon
+                : inventory?.CurrentLeftHandWeapon;
+        }
+
         private void OnRTCanceled(InputAction.CallbackContext context)
         {
             m_hasRTReleasedInput = true;
@@ -502,6 +568,28 @@ namespace ZZ
         {
             m_isLBInputHeld = false;
             m_player?.PlayerCombatManager?.SetBlocking(false);
+        }
+
+        private void OnTwoHandWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_isTwoHandInputHeld = true;
+        }
+
+        private void OnTwoHandWeaponCanceled(InputAction.CallbackContext context)
+        {
+            m_isTwoHandInputHeld = false;
+            m_hasTwoHandRightWeaponInput = false;
+            m_hasTwoHandLeftWeaponInput = false;
+        }
+
+        private void OnTwoHandRightWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasTwoHandRightWeaponInput = m_isTwoHandInputHeld;
+        }
+
+        private void OnTwoHandLeftWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasTwoHandLeftWeaponInput = m_isTwoHandInputHeld;
         }
 
         private void OnLockOnPerformed(InputAction.CallbackContext context)

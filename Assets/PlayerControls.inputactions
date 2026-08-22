@@ -95,6 +95,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Two Hand Weapon",
+                    "type": "PassThrough",
+                    "id": "29cbebb0-2756-4c69-b5fb-3e332ec894fc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Two Hand Right Weapon",
+                    "type": "Button",
+                    "id": "fe7cd972-c1fc-44a4-b640-673ae136df3c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Two Hand Left Weapon",
+                    "type": "Button",
+                    "id": "fc93559b-fe35-4023-a8c7-9b39e788353f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -458,6 +485,72 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "LB",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "61a8b219-8917-4680-b74d-1488c7d43026",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "hold",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Two Hand Weapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5ceb9aa5-76d1-4f9b-87b8-4626ad8249a3",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Two Hand Right Weapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ef081ffe-d1a9-459c-aee0-654881d60c76",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Two Hand Left Weapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "676d953c-d049-47dd-8b99-e86975d6df7c",
+                    "path": "<Keyboard>/y",
+                    "interactions": "hold",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Two Hand Weapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ea98fdbc-e223-44b5-bf80-75d4e672426f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Two Hand Right Weapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b29174fe-f272-4865-b72f-05b32c760860",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Two Hand Left Weapon",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

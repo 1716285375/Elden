@@ -19,6 +19,7 @@ MonoBehaviour:
   m_weaponModel: {fileID: 3537712414218709070, guid: d48a6a0d322049b40915032c1af83c84, type: 3}
   m_isUnarmed: 1
   m_weaponModelType: 0
+  m_weaponClass: 0
   m_weaponAnimator: {fileID: 22100000, guid: b178e1923afb37747bc579509ff71c31, type: 2}
   m_weaponPivotPosition: {x: 0, y: 0, z: 0}
   m_weaponPivotRotation: {x: 0, y: 0, z: 0}
