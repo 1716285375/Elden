@@ -191,7 +191,9 @@ namespace ZZ.Editor
             GameObject aiCharacterPrefab = LoadRequiredAsset<GameObject>(
                 k_AICharacterPrefabPath);
             AICharacterSpawner[] spawners = managerPrefab
-                .GetComponentsInChildren<AICharacterSpawner>(true);
+                .GetComponentsInChildren<AICharacterSpawner>(true)
+                .Where(spawner => !spawner.IsBoss)
+                .ToArray();
             if (spawners.Length != k_ExpectedSpawnerCount ||
                 managerPrefab.GetComponentsInChildren<AISpawnPoint>(true).Length != 0)
             {
@@ -230,12 +232,14 @@ namespace ZZ.Editor
                 WorldAIManager manager = scene.GetRootGameObjects()
                     .Select(root => root.GetComponent<WorldAIManager>())
                     .FirstOrDefault(candidate => candidate != null);
-                if (manager == null ||
-                    manager.GetComponentsInChildren<AICharacterSpawner>(true)
-                        .Length != k_ExpectedSpawnerCount)
+                int normalSpawnerCount = manager != null
+                    ? manager.GetComponentsInChildren<AICharacterSpawner>(true)
+                        .Count(spawner => !spawner.IsBoss)
+                    : 0;
+                if (manager == null || normalSpawnerCount != k_ExpectedSpawnerCount)
                 {
                     throw new InvalidOperationException(
-                        "The World Scene must expose three registered AI spawners.");
+                        "The World Scene must expose three normal AI spawners.");
                 }
             }
             finally

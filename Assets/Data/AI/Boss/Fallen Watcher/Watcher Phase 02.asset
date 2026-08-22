@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e6091549c8d29c4b819db379976f59c, type: 3}
+  m_Name: Watcher Phase 02
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossPhaseData
+  m_healthThreshold: 0.5
+  m_movementSpeed: 3.4
+  m_attacks:
+  - {fileID: 11400000, guid: 23693160fa899484a98cc8470762662d, type: 2}
+  - {fileID: 11400000, guid: 09899b071b3eccf44aca74ee4b5e09d1, type: 2}
+  - {fileID: 11400000, guid: 67942f297ada2324e9e169e725e270dd, type: 2}

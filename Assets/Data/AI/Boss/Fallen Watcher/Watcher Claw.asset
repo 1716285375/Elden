@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efeb866ced2838d42b5d28302ab5c8cf, type: 3}
+  m_Name: Watcher Claw
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
+  m_attackType: 0
+  m_minimumRange: 0.6
+  m_maximumRange: 2.35
+  m_selectionWeight: 3
+  m_recoveryTime: 2.15
+  m_physicalDamage: 36
+  m_magicDamage: 0
+  m_fireDamage: 0
+  m_lightningDamage: 0
+  m_holyDamage: 0
+  m_poiseDamage: 20

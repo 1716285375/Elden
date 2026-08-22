@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,9 @@ namespace ZZ
         public IReadOnlyList<AICharacterSpawner> CharacterSpawners =>
             m_characterSpawners;
 
+        /// <summary>Raised on each peer when a newly spawned AI joins the world registry.</summary>
+        public event Action<AICharacterManager> AIRegistered;
+
         private void Awake()
         {
             if (s_instance != null && s_instance != this)
@@ -60,6 +64,7 @@ namespace ZZ
             if (aiCharacter != null && !m_spawnedCharacters.Contains(aiCharacter))
             {
                 m_spawnedCharacters.Add(aiCharacter);
+                AIRegistered?.Invoke(aiCharacter);
             }
         }
 

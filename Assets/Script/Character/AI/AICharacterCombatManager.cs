@@ -20,6 +20,7 @@ namespace ZZ
         private readonly HashSet<CharacterManager> m_charactersDamaged = new();
 
         private AICharacterManager m_aiCharacter;
+        private BossAttackData m_currentBossAttack;
 
         protected override void Awake()
         {
@@ -32,6 +33,12 @@ namespace ZZ
         /// <summary>Starts the predicted server attack and replicates it to clients.</summary>
         public bool PerformAttack()
         {
+            return PerformAttack(null);
+        }
+
+        /// <summary>Starts one server-selected data-driven attack.</summary>
+        public bool PerformAttack(BossAttackData bossAttack)
+        {
             if (m_aiCharacter == null ||
                 !m_aiCharacter.IsServer ||
                 m_aiCharacter.IsDead ||
@@ -40,10 +47,14 @@ namespace ZZ
                 return false;
             }
 
+            m_currentBossAttack = bossAttack;
             PrepareAttackDamage();
-            ReplicateAttack(AttackType.LightAttack01);
+            AttackType attackType = bossAttack != null
+                ? bossAttack.AttackType
+                : AttackType.LightAttack01;
+            ReplicateAttack(attackType);
             m_aiCharacter.CharacterNetworkManager
-                ?.NotifyServerOfAttackActionServerRpc(AttackType.LightAttack01);
+                ?.NotifyServerOfAttackActionServerRpc(attackType);
             return m_aiCharacter.IsPerformingAction;
         }
 
@@ -109,6 +120,18 @@ namespace ZZ
             }
 
             damageCollider.SetDamageSource(m_aiCharacter);
+            if (m_currentBossAttack != null)
+            {
+                damageCollider.SetDamageValues(
+                    m_currentBossAttack.PhysicalDamage,
+                    m_currentBossAttack.MagicDamage,
+                    m_currentBossAttack.FireDamage,
+                    m_currentBossAttack.LightningDamage,
+                    m_currentBossAttack.HolyDamage,
+                    m_currentBossAttack.PoiseDamage);
+                return;
+            }
+
             damageCollider.SetDamageValues(
                 m_physicalDamage,
                 0f,
