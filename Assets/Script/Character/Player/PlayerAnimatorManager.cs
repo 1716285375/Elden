@@ -67,7 +67,7 @@ namespace ZZ
         /// <summary>Forwards the authored combo-window end event to combat state.</summary>
         public void DisableCanDoCombo()
         {
-            m_player?.PlayerCombatManager?.DisableCanCombo();
+            m_player?.PlayerCombatManager?.CloseAttackInputQueueWindow();
         }
 
         /// <summary>Opens the roll-attack input window during dodge recovery.</summary>
