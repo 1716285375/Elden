@@ -90,6 +90,27 @@ namespace ZZ
             return FinalDamageDealt;
         }
 
+        /// <summary>Calculates incoming damage after applying armor-only absorption.</summary>
+        public int CalculateDamage(CharacterStatsManager statsManager)
+        {
+            if (statsManager == null)
+            {
+                return CalculateDamage();
+            }
+
+            float combinedDamage = CalculateAbsorbedDamage(
+                    PhysicalDamage,
+                    statsManager.ArmorPhysicalAbsorption) +
+                CalculateAbsorbedDamage(MagicDamage, statsManager.ArmorMagicAbsorption) +
+                CalculateAbsorbedDamage(FireDamage, statsManager.ArmorFireAbsorption) +
+                CalculateAbsorbedDamage(
+                    LightningDamage,
+                    statsManager.ArmorLightningAbsorption) +
+                CalculateAbsorbedDamage(HolyDamage, statsManager.ArmorHolyAbsorption);
+            FinalDamageDealt = Mathf.Max(1, Mathf.RoundToInt(combinedDamage));
+            return FinalDamageDealt;
+        }
+
         /// <inheritdoc />
         public override void ProcessEffect(CharacterManager character)
         {
@@ -115,7 +136,7 @@ namespace ZZ
                 character.CharacterStatsManager.ApplyPoiseDamage(PoiseDamage);
             PlayDirectionalBasedDamageAnimation(character, IsPoiseBroken);
 
-            ApplyHealthDamage(character, CalculateDamage());
+            ApplyHealthDamage(character, CalculateDamage(character.CharacterStatsManager));
         }
 
         /// <summary>Applies resolved damage only on the target's owning peer.</summary>
@@ -226,6 +247,12 @@ namespace ZZ
             }
 
             return DamageDirection.Front;
+        }
+
+        private static float CalculateAbsorbedDamage(float damage, float absorption)
+        {
+            return Mathf.Max(0f, damage) *
+                (1f - Mathf.Clamp(absorption, 0f, 100f) / 100f);
         }
     }
 }

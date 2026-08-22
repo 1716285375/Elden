@@ -19,6 +19,7 @@ namespace ZZ
         [Header("Poise")]
         [SerializeField] private float m_totalPoiseDamage;
         [SerializeField, Min(0f)] private float m_basePoiseDefense = 50f;
+        [SerializeField, Min(0f)] private float m_armorPoiseDefense;
         [SerializeField, Min(0f)] private float m_offensivePoiseBonus;
         [SerializeField, Min(0f)] private float m_defaultPoiseResetTime = 8f;
         [SerializeField, Min(0f)] private float m_poiseResetTimer;
@@ -34,6 +35,19 @@ namespace ZZ
         [SerializeField, Range(0f, 100f)] private float m_blockingLightningAbsorption = 25f;
         [SerializeField, Range(0f, 100f)] private float m_blockingHolyAbsorption = 35f;
         [SerializeField, Range(0f, 100f)] private float m_blockingStability = 50f;
+
+        [Header("Armor Absorption")]
+        [SerializeField, Range(0f, 100f)] private float m_armorPhysicalAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_armorMagicAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_armorFireAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_armorLightningAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_armorHolyAbsorption;
+
+        [Header("Armor Resistance")]
+        [SerializeField, Min(0f)] private float m_armorImmunity;
+        [SerializeField, Min(0f)] private float m_armorRobustness;
+        [SerializeField, Min(0f)] private float m_armorFocus;
+        [SerializeField, Min(0f)] private float m_armorVitality;
 
         private CharacterManager m_characterManager;
         private CharacterNetworkManager m_characterNetworkManager;
@@ -70,7 +84,40 @@ namespace ZZ
         public float TotalPoiseDamage => Mathf.Min(0f, m_totalPoiseDamage);
 
         /// <summary>Gets the passive Poise defense supplied by the character and future armor.</summary>
-        public float BasePoiseDefense => Mathf.Max(0f, m_basePoiseDefense);
+        public float BasePoiseDefense =>
+            Mathf.Max(0f, m_basePoiseDefense) + Mathf.Max(0f, m_armorPoiseDefense);
+
+        /// <summary>Gets passive Poise contributed only by equipped armor.</summary>
+        public float ArmorPoiseDefense => Mathf.Max(0f, m_armorPoiseDefense);
+
+        /// <summary>Gets Physical absorption contributed only by equipped armor.</summary>
+        public float ArmorPhysicalAbsorption => ClampArmorAbsorption(
+            m_armorPhysicalAbsorption);
+
+        /// <summary>Gets Magic absorption contributed only by equipped armor.</summary>
+        public float ArmorMagicAbsorption => ClampArmorAbsorption(m_armorMagicAbsorption);
+
+        /// <summary>Gets Fire absorption contributed only by equipped armor.</summary>
+        public float ArmorFireAbsorption => ClampArmorAbsorption(m_armorFireAbsorption);
+
+        /// <summary>Gets Lightning absorption contributed only by equipped armor.</summary>
+        public float ArmorLightningAbsorption => ClampArmorAbsorption(
+            m_armorLightningAbsorption);
+
+        /// <summary>Gets Holy absorption contributed only by equipped armor.</summary>
+        public float ArmorHolyAbsorption => ClampArmorAbsorption(m_armorHolyAbsorption);
+
+        /// <summary>Gets Immunity contributed only by equipped armor.</summary>
+        public float ArmorImmunity => Mathf.Max(0f, m_armorImmunity);
+
+        /// <summary>Gets Robustness contributed only by equipped armor.</summary>
+        public float ArmorRobustness => Mathf.Max(0f, m_armorRobustness);
+
+        /// <summary>Gets Focus contributed only by equipped armor.</summary>
+        public float ArmorFocus => Mathf.Max(0f, m_armorFocus);
+
+        /// <summary>Gets Vitality contributed only by equipped armor.</summary>
+        public float ArmorVitality => Mathf.Max(0f, m_armorVitality);
 
         /// <summary>Gets the temporary Poise bonus reserved for offensive actions.</summary>
         public float OffensivePoiseBonus => Mathf.Max(0f, m_offensivePoiseBonus);
@@ -253,6 +300,58 @@ namespace ZZ
         public void SetBasePoiseDefense(float basePoiseDefense)
         {
             m_basePoiseDefense = Mathf.Max(0f, basePoiseDefense);
+        }
+
+        /// <summary>Rebuilds armor-only defense values from the currently equipped slots.</summary>
+        public void CalculateTotalArmorValues(params ArmorItem[] armorItems)
+        {
+            ResetArmorValues();
+            if (armorItems == null)
+            {
+                return;
+            }
+
+            foreach (ArmorItem armorItem in armorItems)
+            {
+                if (armorItem == null)
+                {
+                    continue;
+                }
+
+                m_armorPhysicalAbsorption += armorItem.PhysicalAbsorption;
+                m_armorMagicAbsorption += armorItem.MagicAbsorption;
+                m_armorFireAbsorption += armorItem.FireAbsorption;
+                m_armorLightningAbsorption += armorItem.LightningAbsorption;
+                m_armorHolyAbsorption += armorItem.HolyAbsorption;
+                m_armorImmunity += armorItem.Immunity;
+                m_armorRobustness += armorItem.Robustness;
+                m_armorFocus += armorItem.Focus;
+                m_armorVitality += armorItem.Vitality;
+                m_armorPoiseDefense += armorItem.Poise;
+            }
+
+            m_armorPhysicalAbsorption = ClampArmorAbsorption(
+                m_armorPhysicalAbsorption);
+            m_armorMagicAbsorption = ClampArmorAbsorption(m_armorMagicAbsorption);
+            m_armorFireAbsorption = ClampArmorAbsorption(m_armorFireAbsorption);
+            m_armorLightningAbsorption = ClampArmorAbsorption(
+                m_armorLightningAbsorption);
+            m_armorHolyAbsorption = ClampArmorAbsorption(m_armorHolyAbsorption);
+        }
+
+        /// <summary>Clears armor contributions without modifying blocking or base Poise values.</summary>
+        public void ResetArmorValues()
+        {
+            m_armorPhysicalAbsorption = 0f;
+            m_armorMagicAbsorption = 0f;
+            m_armorFireAbsorption = 0f;
+            m_armorLightningAbsorption = 0f;
+            m_armorHolyAbsorption = 0f;
+            m_armorImmunity = 0f;
+            m_armorRobustness = 0f;
+            m_armorFocus = 0f;
+            m_armorVitality = 0f;
+            m_armorPoiseDefense = 0f;
         }
 
         /// <summary>Updates the temporary Poise bonus granted by an offensive action.</summary>
@@ -486,6 +585,11 @@ namespace ZZ
         }
 
         private static float ClampBlockingValue(float value)
+        {
+            return Mathf.Clamp(value, 0f, 100f);
+        }
+
+        private static float ClampArmorAbsorption(float value)
         {
             return Mathf.Clamp(value, 0f, 100f);
         }

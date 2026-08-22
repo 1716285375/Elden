@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbe11c60381529e4a9fe913982b820b6, type: 3}
+  m_Name: Starter Greaves
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.LegEquipmentItem
+  m_itemName: Starter Greaves
+  m_itemIcon: {fileID: 0}
+  m_itemDescription: A dependable starter greaves fitted to a wandering warrior.
+  m_itemID: 7
+  m_itemWeight: 5
+  m_physicalAbsorption: 7
+  m_magicAbsorption: 5
+  m_fireAbsorption: 6
+  m_lightningAbsorption: 4
+  m_holyAbsorption: 5
+  m_immunity: 7
+  m_robustness: 8
+  m_focus: 6
+  m_vitality: 7
+  m_poise: 5
+  m_equipmentModels:
+  - {fileID: 11400000, guid: 99e47a9ce4243f64ab2d63c01afb3fd9, type: 2}
+  - {fileID: 11400000, guid: 1a5aa250e76108a47bf50c9c09456132, type: 2}
+  - {fileID: 11400000, guid: 0fbaf79bf9c123f42bad4c92cf719a5b, type: 2}

@@ -12,6 +12,10 @@ namespace ZZ
         private static WorldItemDatabase s_instance;
 
         [SerializeField] private List<Item> m_items = new();
+        [SerializeField] private List<HeadEquipmentItem> m_headEquipment = new();
+        [SerializeField] private List<BodyEquipmentItem> m_bodyEquipment = new();
+        [SerializeField] private List<HandEquipmentItem> m_handEquipment = new();
+        [SerializeField] private List<LegEquipmentItem> m_legEquipment = new();
 
         /// <summary>Gets the persistent item catalog instance.</summary>
         public static WorldItemDatabase Instance => s_instance;
@@ -52,13 +56,31 @@ namespace ZZ
         /// </summary>
         public WeaponItem GetWeaponByID(int itemID)
         {
-            if (itemID < 0 || itemID >= m_items.Count)
-            {
-                return null;
-            }
+            return GetItemByID<WeaponItem>(itemID, null);
+        }
 
-            WeaponItem weapon = m_items[itemID] as WeaponItem;
-            return weapon != null && weapon.ItemID == itemID ? weapon : null;
+        /// <summary>Returns the head-equipment template assigned to a stable item identifier.</summary>
+        public HeadEquipmentItem GetHeadEquipmentByID(int itemID)
+        {
+            return GetItemByID(itemID, m_headEquipment);
+        }
+
+        /// <summary>Returns the body-equipment template assigned to a stable item identifier.</summary>
+        public BodyEquipmentItem GetBodyEquipmentByID(int itemID)
+        {
+            return GetItemByID(itemID, m_bodyEquipment);
+        }
+
+        /// <summary>Returns the hand-equipment template assigned to a stable item identifier.</summary>
+        public HandEquipmentItem GetHandEquipmentByID(int itemID)
+        {
+            return GetItemByID(itemID, m_handEquipment);
+        }
+
+        /// <summary>Returns the leg-equipment template assigned to a stable item identifier.</summary>
+        public LegEquipmentItem GetLegEquipmentByID(int itemID)
+        {
+            return GetItemByID(itemID, m_legEquipment);
         }
 
         private void AssignItemIDs()
@@ -67,6 +89,22 @@ namespace ZZ
             {
                 m_items[itemIndex]?.AssignItemID(itemIndex);
             }
+        }
+
+        private T GetItemByID<T>(int itemID, List<T> typedItems) where T : Item
+        {
+            if (itemID < 0 || itemID >= m_items.Count)
+            {
+                return null;
+            }
+
+            T item = m_items[itemID] as T;
+            if (item == null || item.ItemID != itemID)
+            {
+                return null;
+            }
+
+            return typedItems == null || typedItems.Contains(item) ? item : null;
         }
     }
 }
