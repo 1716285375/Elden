@@ -11,6 +11,7 @@ namespace ZZ
         private WeaponModelInstantiationSlot m_rightHandSlot;
         private WeaponModelInstantiationSlot m_leftHandSlot;
         private PlayerManager m_player;
+        private CharacterSoundFXManager m_characterSoundFXManager;
 
         /// <summary>Gets the weapon manager of the currently loaded right-hand weapon model.</summary>
         public WeaponManager CurrentRightHandWeaponManager { get; private set; }
@@ -22,6 +23,8 @@ namespace ZZ
         {
             base.Awake();
             m_player = GetComponent<PlayerManager>();
+            m_characterSoundFXManager =
+                GetComponentInChildren<CharacterSoundFXManager>(true);
             DiscoverWeaponSlots();
         }
 
@@ -70,12 +73,13 @@ namespace ZZ
         /// </summary>
         public void OpenDamageCollider()
         {
+            WeaponManager weaponManager = GetCurrentWeaponManager();
+            m_characterSoundFXManager?.PlayWeaponWhoosh(weaponManager?.Weapon);
             if (m_player == null || !m_player.IsOwner)
             {
                 return;
             }
 
-            WeaponManager weaponManager = GetCurrentWeaponManager();
             if (weaponManager == null)
             {
                 return;

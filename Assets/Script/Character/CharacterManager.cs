@@ -13,6 +13,7 @@ namespace ZZ
         [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
 
         private CharacterEffectsManager m_characterEffectsManager;
+        private CharacterSoundFXManager m_characterSoundFXManager;
         private CharacterStatsManager m_characterStatsManager;
         private CharacterCombatManager m_characterCombatManager;
         private bool m_isGrounded = true;
@@ -24,6 +25,9 @@ namespace ZZ
 
         public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
         public CharacterEffectsManager CharacterEffectsManager => m_characterEffectsManager;
+        /// <summary>Gets the spatial sound presenter attached to this character.</summary>
+        public CharacterSoundFXManager CharacterSoundFXManager =>
+            m_characterSoundFXManager;
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
         public CharacterStatsManager CharacterStatsManager => m_characterStatsManager;
         public CharacterCombatManager CharacterCombatManager => m_characterCombatManager;
@@ -60,6 +64,8 @@ namespace ZZ
 
             m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
             m_characterEffectsManager = GetComponent<CharacterEffectsManager>();
+            m_characterSoundFXManager =
+                GetComponentInChildren<CharacterSoundFXManager>(true);
             m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
             m_characterStatsManager = GetComponent<CharacterStatsManager>();
             m_characterCombatManager = GetComponent<CharacterCombatManager>();

@@ -81,6 +81,7 @@ namespace ZZ
             character.CharacterEffectsManager?.PlayBloodSplatterVFX(
                 ContactPoint,
                 hitDirection);
+            character.CharacterSoundFXManager?.PlayDamageGrunt();
             PlayDirectionalBasedDamageAnimation(character);
 
             if (!character.IsOwner)

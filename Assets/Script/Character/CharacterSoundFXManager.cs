@@ -2,10 +2,15 @@ using UnityEngine;
 
 namespace ZZ
 {
+    /// <summary>Plays spatial one-shot sounds associated with one character.</summary>
     [RequireComponent(typeof(AudioSource))]
     public class CharacterSoundFXManager : MonoBehaviour
     {
         [SerializeField] private AudioSource m_audioSource;
+
+        [Header("Damage Sounds")]
+        [SerializeField] private AudioClip[] m_damageGrunts =
+            System.Array.Empty<AudioClip>();
 
         protected virtual void Awake()
         {
@@ -24,6 +29,27 @@ namespace ZZ
             }
 
             m_audioSource.PlayOneShot(rollingSoundFX);
+        }
+
+        /// <summary>Plays a random whoosh belonging to the weapon opening its hit window.</summary>
+        public void PlayWeaponWhoosh(WeaponItem weapon)
+        {
+            if (weapon == null)
+            {
+                return;
+            }
+
+            WorldSoundFXManager.Instance?.PlaySoundEffect(
+                weapon.Whooshes,
+                m_audioSource);
+        }
+
+        /// <summary>Plays one locally spatialized damage grunt for this character.</summary>
+        public void PlayDamageGrunt()
+        {
+            WorldSoundFXManager.Instance?.PlaySoundEffect(
+                m_damageGrunts,
+                m_audioSource);
         }
     }
 }

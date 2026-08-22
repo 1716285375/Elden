@@ -113015,10 +113015,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed
-    by Humanoid clips.\n\tTransform 'Eyebrows'\n\tTransform 'Head_Attachment'\n\tTransform
-    'Eyes'\n\tFrom animation clip 'ultra_th_guard_idle_01 (Block Hack)'"
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -113045,9 +113042,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 22
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -113161,7 +113158,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3424f37748f12f744b26d3dfe04dfd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerSoundFXManager
-  m_audioSource: {fileID: 0}
+  m_audioSource: {fileID: 2145748007075777998}
+  m_damageGrunts:
+  - {fileID: 8300000, guid: c28cfa12916ae3d4994ad579e5921773, type: 3}
+  - {fileID: 8300000, guid: bf430c1adb93664419e6c11865a29e8e, type: 3}
+  - {fileID: 8300000, guid: 808189a4467a6c442bb3d7915717057c, type: 3}
+  - {fileID: 8300000, guid: 463bef9b79a281f4789c0a55daf5c740, type: 3}
+  - {fileID: 8300000, guid: b060c4683e3c3814280882ce4b17ec21, type: 3}
+  - {fileID: 8300000, guid: 759e2c08e4d4eee43b3d51cf0edc494e, type: 3}
+  - {fileID: 8300000, guid: 45ba9d7d47f75d94490ee001e7610902, type: 3}
+  - {fileID: 8300000, guid: d514774ec89065446920f5add5f41192, type: 3}
 --- !u!1 &767646516357682233
 GameObject:
   m_ObjectHideFlags: 0
@@ -145990,6 +145996,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  IsChargingAttack:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
   IsSprinting:
@@ -146059,6 +146070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerCombatManager
   m_currentAttackType: 0
+  m_fullyChargedDuration: 0.8
 --- !u!114 &6368077256085200356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146103,7 +146115,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 789fe5f417467fd4880dff71ddd4fe12, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerLockOnManager
   m_lockOnRadius: 20
   m_characterLayers:
