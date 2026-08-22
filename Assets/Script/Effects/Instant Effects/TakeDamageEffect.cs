@@ -75,6 +75,12 @@ namespace ZZ
                 return;
             }
 
+            if (character.IsInvulnerable)
+            {
+                WasTargetInvulnerable = true;
+                return;
+            }
+
             Vector3 hitDirection = CharacterCausingDamage != null
                 ? (character.transform.position - CharacterCausingDamage.transform.position).normalized
                 : Vector3.zero;
