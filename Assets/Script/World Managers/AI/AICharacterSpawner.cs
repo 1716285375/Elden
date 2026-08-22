@@ -115,6 +115,22 @@ namespace ZZ
             return m_instantiatedCharacter;
         }
 
+        /// <summary>Clears this spawner's transient resolution so a living enemy can respawn.</summary>
+        public void ResetSpawnState()
+        {
+            NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager == null ||
+                !networkManager.IsListening ||
+                !networkManager.IsServer)
+            {
+                return;
+            }
+
+            m_instantiatedCharacter = null;
+            m_hasResolvedSpawn = false;
+            SetSpawnMarkerVisible(true);
+        }
+
         /// <summary>Persists the first transition into an active boss encounter.</summary>
         public void MarkBossAwakened()
         {

@@ -59,6 +59,35 @@ namespace ZZ
                 BossProgressState.Dormant;
         }
 
+        /// <summary>Gets the active slot's saved activation state for one Site of Grace.</summary>
+        public bool IsSiteOfGraceActivated(int siteOfGraceID)
+        {
+            return m_currentCharacterData?.IsSiteOfGraceActivated(siteOfGraceID) ??
+                false;
+        }
+
+        /// <summary>Updates one Site of Grace and optionally writes the active save immediately.</summary>
+        public bool RecordSiteOfGraceActivation(
+            int siteOfGraceID,
+            bool isActivated,
+            bool saveImmediately)
+        {
+            if (m_currentCharacterData == null)
+            {
+                return false;
+            }
+
+            bool didChange = m_currentCharacterData.SetSiteOfGraceActivated(
+                siteOfGraceID,
+                isActivated);
+            if (didChange && saveImmediately && CanSaveGame)
+            {
+                SaveGame();
+            }
+
+            return didChange;
+        }
+
         /// <summary>
         /// Advances one boss state and optionally writes the active save immediately.
         /// </summary>

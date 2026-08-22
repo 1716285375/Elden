@@ -8,6 +8,7 @@ namespace ZZ
         RollForward = 0,
         BackStep = 1,
         Death = 2,
-        PassThroughFog = 3
+        PassThroughFog = 3,
+        RestAtSiteOfGrace = 4
     }
 }
