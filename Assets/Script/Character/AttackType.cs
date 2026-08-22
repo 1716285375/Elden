@@ -6,6 +6,7 @@ namespace ZZ
     public enum AttackType
     {
         LightAttack01,
-        HeavyAttack01
+        HeavyAttack01,
+        ChargedAttack01
     }
 }

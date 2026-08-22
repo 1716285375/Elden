@@ -3,12 +3,12 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>
-    /// Resolves a light attack intent into a validated, replicated attack animation.
+    /// Resolves a fully charged heavy attack into its replicated release animation.
     /// </summary>
-    [CreateAssetMenu(fileName = "Light Attack", menuName = "ZZ/Actions/Light Attack")]
-    public class LightAttackWeaponItemAction : WeaponItemBasedAction
+    [CreateAssetMenu(fileName = "Charged Attack", menuName = "ZZ/Actions/Charged Attack")]
+    public class ChargedAttackWeaponItemAction : WeaponItemBasedAction
     {
-        [SerializeField] private AttackType m_attackType = AttackType.LightAttack01;
+        [SerializeField] private AttackType m_attackType = AttackType.ChargedAttack01;
 
         /// <inheritdoc />
         public override void AttemptToPerformAction(PlayerManager player, WeaponItem weapon)
@@ -22,6 +22,5 @@ namespace ZZ
             player.PlayerCombatManager?.ReplicateAttack(m_attackType);
             player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(m_attackType);
         }
-
     }
 }

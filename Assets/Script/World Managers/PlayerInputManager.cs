@@ -28,7 +28,8 @@ namespace ZZ
         private bool m_hasSwitchRightWeaponInput;
         private bool m_hasSwitchLeftWeaponInput;
         private bool m_hasRBInput;
-        private bool m_hasRTInput;
+        private bool m_hasRTStartedInput;
+        private bool m_hasRTReleasedInput;
         private bool m_hasLockOnInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
@@ -65,7 +66,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed +=
                 OnSwitchLeftWeaponPerformed;
             m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
-            m_playerControls.PlayerMovement.RT.performed += OnRTPerformed;
+            m_playerControls.PlayerMovement.RT.started += OnRTStarted;
+            m_playerControls.PlayerMovement.RT.canceled += OnRTCanceled;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.LockOn.performed += OnLockOnPerformed;
@@ -91,7 +93,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed -=
                 OnSwitchLeftWeaponPerformed;
             m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
-            m_playerControls.PlayerMovement.RT.performed -= OnRTPerformed;
+            m_playerControls.PlayerMovement.RT.started -= OnRTStarted;
+            m_playerControls.PlayerMovement.RT.canceled -= OnRTCanceled;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.LockOn.performed -= OnLockOnPerformed;
@@ -191,10 +194,12 @@ namespace ZZ
             m_hasSwitchRightWeaponInput = false;
             m_hasSwitchLeftWeaponInput = false;
             m_hasRBInput = false;
-            m_hasRTInput = false;
+            m_hasRTStartedInput = false;
+            m_hasRTReleasedInput = false;
             m_hasLockOnInput = false;
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
+            m_player?.PlayerCombatManager?.CancelChargingAttack();
             IsMovementInputEnabled = false;
             m_playerControls?.PlayerMovement.Disable();
             m_playerControls?.PlayerCamera.Disable();
@@ -315,11 +320,16 @@ namespace ZZ
                     m_player?.InventoryManager?.CurrentRightHandWeapon?.RightHandAction);
             }
 
-            if (m_hasRTInput)
+            if (m_hasRTStartedInput)
             {
-                m_hasRTInput = false;
-                PerformRightHandAction(
-                    m_player?.InventoryManager?.CurrentRightHandWeapon?.RightHandHeavyAction);
+                m_hasRTStartedInput = false;
+                m_player?.PlayerCombatManager?.BeginChargingHeavyAttack();
+            }
+
+            if (m_hasRTReleasedInput)
+            {
+                m_hasRTReleasedInput = false;
+                m_player?.PlayerCombatManager?.ReleaseChargingHeavyAttack();
             }
         }
 
@@ -379,9 +389,14 @@ namespace ZZ
             m_hasRBInput = true;
         }
 
-        private void OnRTPerformed(InputAction.CallbackContext context)
+        private void OnRTStarted(InputAction.CallbackContext context)
         {
-            m_hasRTInput = true;
+            m_hasRTStartedInput = true;
+        }
+
+        private void OnRTCanceled(InputAction.CallbackContext context)
+        {
+            m_hasRTReleasedInput = true;
         }
 
         private void OnLockOnPerformed(InputAction.CallbackContext context)

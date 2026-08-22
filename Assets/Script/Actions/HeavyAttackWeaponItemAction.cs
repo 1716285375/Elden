@@ -13,7 +13,7 @@ namespace ZZ
         /// <inheritdoc />
         public override void AttemptToPerformAction(PlayerManager player, WeaponItem weapon)
         {
-            if (!CanPerformAction(player))
+            if (!CanPerformAttack(player))
             {
                 return;
             }
@@ -23,20 +23,5 @@ namespace ZZ
             player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(m_attackType);
         }
 
-        private static bool CanPerformAction(PlayerManager player)
-        {
-            if (player == null || !player.IsOwner || player.IsPerformingAction)
-            {
-                return false;
-            }
-
-            if (!player.IsGrounded)
-            {
-                return false;
-            }
-
-            return player.CharacterNetworkManager != null &&
-                player.CharacterNetworkManager.CurrentStamina.Value > 0f;
-        }
     }
 }

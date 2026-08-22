@@ -69,6 +69,10 @@ namespace ZZ
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsChargingAttack = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
 
         [FormerlySerializedAs("networkPositionSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkPositionSmoothTime = 0.1f;
@@ -100,14 +104,17 @@ namespace ZZ
             base.OnNetworkSpawn();
             CurrentHealth.OnValueChanged += OnCurrentHealthChanged;
             IsDead.OnValueChanged += OnIsDeadChanged;
+            IsChargingAttack.OnValueChanged += OnIsChargingAttackChanged;
 
             if (IsOwner)
             {
                 NetworkPosition.Value = transform.position;
                 NetworkRotation.Value = transform.rotation;
                 IsJumping.Value = false;
+                IsChargingAttack.Value = false;
             }
 
+            ApplyChargingAttackState(IsChargingAttack.Value);
             CheckHP();
         }
 
@@ -115,7 +122,15 @@ namespace ZZ
         {
             CurrentHealth.OnValueChanged -= OnCurrentHealthChanged;
             IsDead.OnValueChanged -= OnIsDeadChanged;
+            IsChargingAttack.OnValueChanged -= OnIsChargingAttackChanged;
+            ApplyChargingAttackState(false);
             base.OnNetworkDespawn();
+        }
+
+        public override void OnGainedOwnership()
+        {
+            base.OnGainedOwnership();
+            SetChargingAttackState(false);
         }
 
         private void Update()
@@ -170,6 +185,19 @@ namespace ZZ
             {
                 StartCoroutine(m_characterManager.ProcessDeathEvent());
             }
+        }
+
+        /// <summary>
+        /// Writes the owner's charging intent for synchronized remote presentation.
+        /// </summary>
+        public void SetChargingAttackState(bool isChargingAttack)
+        {
+            if (!IsSpawned || !IsOwner || IsChargingAttack.Value == isChargingAttack)
+            {
+                return;
+            }
+
+            IsChargingAttack.Value = isChargingAttack;
         }
 
         /// <summary>
@@ -356,6 +384,20 @@ namespace ZZ
             {
                 m_characterManager?.ReviveCharacter();
             }
+        }
+
+        private void OnIsChargingAttackChanged(
+            bool wasChargingAttack,
+            bool isChargingAttack)
+        {
+            ApplyChargingAttackState(isChargingAttack);
+        }
+
+        private void ApplyChargingAttackState(bool isChargingAttack)
+        {
+            m_characterAnimatorManager ??=
+                GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterAnimatorManager?.SetChargingAttackState(isChargingAttack);
         }
     }
 }

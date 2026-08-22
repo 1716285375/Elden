@@ -31,9 +31,12 @@ MonoBehaviour:
   m_basePoiseDamage: 10
   m_rightHandAction: {fileID: 11400000, guid: ce46975f3a3c844478af9193aea3e541, type: 2}
   m_rightHandHeavyAction: {fileID: 11400000, guid: f48816d9e0c231a4a9179ec378a172a3, type: 2}
+  m_rightHandChargedAction: {fileID: 11400000, guid: 5bb894ee600f6144b90f860ceb0792d2, type: 2}
   m_twoHandRightAction: {fileID: 0}
   m_twoHandRightHeavyAction: {fileID: 0}
   m_lightAttack01DamageModifier: 1
-  m_heavyAttack01DamageModifier: 1
+  m_heavyAttack01DamageModifier: 1.25
+  m_chargedAttack01DamageModifier: 1.75
   m_lightAttack01StaminaCostMultiplier: 1
-  m_heavyAttack01StaminaCostMultiplier: 1
+  m_heavyAttack01StaminaCostMultiplier: 1.25
+  m_chargedAttack01StaminaCostMultiplier: 1.5
