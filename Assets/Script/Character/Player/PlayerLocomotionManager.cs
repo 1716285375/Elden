@@ -217,6 +217,15 @@ namespace ZZ
                 currentStamina));
         }
 
+        /// <summary>Stops the replicated sprint state when a committed action begins.</summary>
+        public void StopSprinting()
+        {
+            if (m_player != null && m_player.IsOwner)
+            {
+                SetSprinting(false);
+            }
+        }
+
         private void HandleOwnerMovement()
         {
             m_playerInputManager ??= PlayerInputManager.Instance;

@@ -15,7 +15,17 @@ namespace ZZ
         {
             if (player?.IsPerformingAction == true)
             {
+                if (player.PlayerCombatManager?.TryPerformCommittedAttack(weapon) == true)
+                {
+                    return;
+                }
+
                 player.PlayerCombatManager?.TryPerformMainHandCombo(m_attackType);
+                return;
+            }
+
+            if (player?.PlayerCombatManager?.TryPerformRunningAttack(weapon) == true)
+            {
                 return;
             }
 

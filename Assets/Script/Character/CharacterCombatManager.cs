@@ -32,5 +32,10 @@ namespace ZZ
             CurrentAttackType = attackType;
             Character?.CharacterAnimatorManager?.PlayTargetAttackActionAnimation(attackType);
         }
+
+        /// <summary>Clears transient combat windows when the action layer returns to neutral.</summary>
+        public virtual void ResetActionState()
+        {
+        }
     }
 }

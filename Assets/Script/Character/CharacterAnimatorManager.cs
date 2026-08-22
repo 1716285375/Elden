@@ -46,6 +46,12 @@ namespace ZZ
             Animator.StringToHash("Action Override.Attack_Charged_01");
         private static readonly int s_chargingAttackState =
             Animator.StringToHash("Action Override.Attack_Charge_01");
+        private static readonly int s_runningAttack01State =
+            Animator.StringToHash("Action Override.MainCore_RunAttack01");
+        private static readonly int s_rollAttack01State =
+            Animator.StringToHash("Action Override.MainCore_RollAttack01");
+        private static readonly int s_backStepAttack01State =
+            Animator.StringToHash("Action Override.MainCore_BackStepAttack01");
 
         [SerializeField] private Animator m_animator;
 
@@ -233,12 +239,12 @@ namespace ZZ
             }
 
             const bool k_IsPerformingAction = true;
-            const bool k_CanRotate = false;
+            bool canRotate = IsMovingAttack(attackType);
             const bool k_CanMove = false;
             m_characterManager.SetActionState(
                 k_IsPerformingAction,
                 shouldApplyRootMotion,
-                k_CanRotate,
+                canRotate,
                 k_CanMove);
             m_animator.CrossFade(
                 attackStateHash,
@@ -404,9 +410,22 @@ namespace ZZ
                     return s_heavyAttack02State;
                 case AttackType.ChargedAttack01:
                     return s_chargedAttack01State;
+                case AttackType.RunningAttack01:
+                    return s_runningAttack01State;
+                case AttackType.RollAttack01:
+                    return s_rollAttack01State;
+                case AttackType.BackStepAttack01:
+                    return s_backStepAttack01State;
                 default:
                     return s_lightAttack01State;
             }
+        }
+
+        private static bool IsMovingAttack(AttackType attackType)
+        {
+            return attackType == AttackType.RunningAttack01 ||
+                attackType == AttackType.RollAttack01 ||
+                attackType == AttackType.BackStepAttack01;
         }
 
         private IReadOnlyList<AnimationClip> GetDamageAnimations(

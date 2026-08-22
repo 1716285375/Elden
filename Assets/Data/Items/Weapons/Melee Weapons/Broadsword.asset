@@ -42,6 +42,12 @@ MonoBehaviour:
   m_lightAttack01DamageModifier: 1
   m_heavyAttack01DamageModifier: 1.25
   m_chargedAttack01DamageModifier: 1.75
+  m_runningAttack01DamageModifier: 1.2
+  m_rollAttack01DamageModifier: 1.1
+  m_backStepAttack01DamageModifier: 1.15
   m_lightAttack01StaminaCostMultiplier: 1
   m_heavyAttack01StaminaCostMultiplier: 1.25
   m_chargedAttack01StaminaCostMultiplier: 1.5
+  m_runningAttack01StaminaCostMultiplier: 1.25
+  m_rollAttack01StaminaCostMultiplier: 1.15
+  m_backStepAttack01StaminaCostMultiplier: 1.2
