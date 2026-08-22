@@ -12,11 +12,15 @@ namespace ZZ
         [FormerlySerializedAs("startGameAsClient")]
         [SerializeField] private bool m_shouldStartAsClient;
         [SerializeField] private PlayerUIHUDManager m_playerUIHUDManager;
+        [SerializeField] private PlayerUIBossHealthBar m_playerUIBossHealthBar;
         [SerializeField] private PlayerUISaveGameManager m_playerUISaveGameManager;
         [SerializeField] private PlayerUIPopUpManager m_playerUIPopUpManager;
 
         public static PlayerUIManager Instance => s_instance;
         public PlayerUIHUDManager PlayerUIHUDManager => m_playerUIHUDManager;
+
+        /// <summary>Gets the persistent Boss encounter HUD.</summary>
+        public PlayerUIBossHealthBar PlayerUIBossHealthBar => m_playerUIBossHealthBar;
 
         /// <summary>
         /// Gets the persistent local Save Game menu controller.
@@ -34,6 +38,8 @@ namespace ZZ
             {
                 s_instance = this;
                 m_playerUIHUDManager ??= GetComponentInChildren<PlayerUIHUDManager>(true);
+                m_playerUIBossHealthBar ??=
+                    GetComponentInChildren<PlayerUIBossHealthBar>(true);
                 m_playerUISaveGameManager ??=
                     GetComponentInChildren<PlayerUISaveGameManager>(true);
                 m_playerUIPopUpManager ??=

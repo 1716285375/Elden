@@ -862,11 +862,13 @@ namespace ZZ.Editor
             GameObject aiCharacterPrefab = LoadRequiredAsset<GameObject>(
                 k_AICharacterPrefabPath);
             AICharacterSpawner[] characterSpawners = managerPrefab
-                .GetComponentsInChildren<AICharacterSpawner>(true);
+                .GetComponentsInChildren<AICharacterSpawner>(true)
+                .Where(spawner => !spawner.IsBoss)
+                .ToArray();
             if (characterSpawners.Length != s_spawnPositions.Length)
             {
                 throw new InvalidOperationException(
-                    "World AI Manager must contain three character spawners.");
+                    "World AI Manager must contain three normal character spawners.");
             }
 
             foreach (AICharacterSpawner characterSpawner in characterSpawners)

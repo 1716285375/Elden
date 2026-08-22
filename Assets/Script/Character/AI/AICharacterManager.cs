@@ -47,6 +47,7 @@ namespace ZZ
 
         private AICharacterStateMachine m_stateMachine;
         private AICharacterSpawner m_originSpawner;
+        private BossCharacterManager m_bossCharacter;
         private PlayerManager m_currentTarget;
         private float m_nextDetectionTime;
         private float m_nextAttackTime;
@@ -65,12 +66,12 @@ namespace ZZ
             GetTargetDistanceSquared() > m_loseTargetRadius * m_loseTargetRadius;
         internal bool IsTargetWithinCombatRange =>
             GetTargetDistanceSquared() <=
-            m_combatStanceDistance * m_combatStanceDistance;
+            GetCombatStanceDistance() * GetCombatStanceDistance();
         internal bool CanStartAttack =>
             HasValidTarget &&
             !IsPerformingAction &&
             Time.time >= m_nextAttackTime &&
-            GetTargetDistanceSquared() <= m_attackDistance * m_attackDistance;
+            IsAttackAvailableAtTargetDistance();
 
         protected override void Awake()
         {
@@ -82,6 +83,7 @@ namespace ZZ
                 GetComponentInChildren<AICharacterAnimatorManager>(true);
             m_aiNetworkManager ??= GetComponent<AICharacterNetworkManager>();
             m_aiCombatManager ??= GetComponent<AICharacterCombatManager>();
+            m_bossCharacter = GetComponent<BossCharacterManager>();
             m_stateMachine = new AICharacterStateMachine(
                 this,
                 new IdleAIState(),
@@ -128,7 +130,9 @@ namespace ZZ
                 return;
             }
 
-            if (IsServer && !IsDead)
+            if (IsServer &&
+                !IsDead &&
+                (m_bossCharacter == null || m_bossCharacter.IsEncounterActive))
             {
                 m_stateMachine.Tick(Time.deltaTime);
             }
@@ -158,6 +162,7 @@ namespace ZZ
 
             if (IsServer)
             {
+                m_bossCharacter?.CompleteEncounter();
                 m_originSpawner?.MarkBossDefeated();
             }
         }
@@ -174,6 +179,19 @@ namespace ZZ
             }
 
             m_originSpawner = originSpawner;
+        }
+
+        /// <summary>Assigns the entering player and wakes a dormant server-owned Boss.</summary>
+        public void BeginBossEncounter(PlayerManager enteringPlayer)
+        {
+            if (!IsServer || m_bossCharacter == null || !IsValidTarget(enteringPlayer))
+            {
+                return;
+            }
+
+            m_currentTarget = enteringPlayer;
+            m_originSpawner?.MarkBossAwakened();
+            m_stateMachine.ChangeState(AICharacterStateId.PursueTarget);
         }
 
         internal void PublishState(AICharacterStateId stateId)
@@ -255,8 +273,17 @@ namespace ZZ
                 return false;
             }
 
-            m_nextAttackTime = Time.time + m_attackCooldown;
-            return m_aiCombatManager.PerformAttack();
+            BossAttackData bossAttack = m_bossCharacter?.SelectAttack(
+                Mathf.Sqrt(GetTargetDistanceSquared()));
+            if (m_bossCharacter != null && bossAttack == null)
+            {
+                return false;
+            }
+
+            m_nextAttackTime = Time.time + (bossAttack != null
+                ? bossAttack.RecoveryTime
+                : m_attackCooldown);
+            return m_aiCombatManager.PerformAttack(bossAttack);
         }
 
         internal void CloseAttackDamageColliders()
@@ -397,6 +424,25 @@ namespace ZZ
             Vector3 targetOffset = m_currentTarget.transform.position - transform.position;
             targetOffset.y = 0f;
             return targetOffset.sqrMagnitude;
+        }
+
+        private float GetCombatStanceDistance()
+        {
+            return m_bossCharacter != null
+                ? m_bossCharacter.GetMaximumAttackRange(m_combatStanceDistance)
+                : m_combatStanceDistance;
+        }
+
+        private bool IsAttackAvailableAtTargetDistance()
+        {
+            float targetDistanceSquared = GetTargetDistanceSquared();
+            if (m_bossCharacter != null)
+            {
+                return m_bossCharacter.HasAttackInRange(
+                    Mathf.Sqrt(targetDistanceSquared));
+            }
+
+            return targetDistanceSquared <= m_attackDistance * m_attackDistance;
         }
 
         private void RotateTowards(Vector3 direction, bool playPivot)

@@ -11,6 +11,8 @@ namespace ZZ
             Animator.StringToHash("PivotLeft");
         private static readonly int s_pivotRightTrigger =
             Animator.StringToHash("PivotRight");
+        private static readonly int s_bossPhaseTransitionState =
+            Animator.StringToHash("Action Override.Boss_Phase_Transition");
 
         private AICharacterManager m_aiCharacter;
         private AICharacterCombatManager m_combatManager;
@@ -34,6 +36,28 @@ namespace ZZ
                 turnLeft ? s_pivotRightTrigger : s_pivotLeftTrigger);
             CharacterAnimator.SetTrigger(
                 turnLeft ? s_pivotLeftTrigger : s_pivotRightTrigger);
+        }
+
+        /// <summary>Plays the authored phase transition while pausing movement and attacks.</summary>
+        public void PlayBossPhaseTransition()
+        {
+            if (CharacterAnimator == null || m_aiCharacter == null)
+            {
+                return;
+            }
+
+            int actionLayerIndex = CharacterAnimator.GetLayerIndex("Action Override");
+            if (actionLayerIndex < 0 ||
+                !CharacterAnimator.HasState(actionLayerIndex, s_bossPhaseTransitionState))
+            {
+                return;
+            }
+
+            m_aiCharacter.SetActionState(true, false, false, false);
+            CharacterAnimator.CrossFade(
+                s_bossPhaseTransitionState,
+                0.2f,
+                actionLayerIndex);
         }
 
         /// <summary>Refreshes the current swipe attack's damage payload.</summary>
