@@ -102,6 +102,28 @@ namespace ZZ
 
         protected virtual void Damage(CharacterManager target, Vector3 contactPoint)
         {
+            CharacterNetworkManager networkManager =
+                m_characterCausingDamage?.CharacterNetworkManager;
+            if (networkManager != null && networkManager.IsSpawned)
+            {
+                networkManager.RequestCharacterDamageServerRpc(
+                    target.NetworkObjectId,
+                    m_characterCausingDamage.NetworkObjectId,
+                    m_physicalDamage,
+                    m_magicDamage,
+                    m_fireDamage,
+                    m_lightningDamage,
+                    m_holyDamage,
+                    m_poiseDamage,
+                    contactPoint);
+                return;
+            }
+
+            ApplyDamageLocally(target, contactPoint);
+        }
+
+        private void ApplyDamageLocally(CharacterManager target, Vector3 contactPoint)
+        {
             CharacterEffectsManager effectsManager = target.CharacterEffectsManager;
             TakeDamageEffect damageTemplate =
                 WorldCharacterEffectsManager.Instance?.TakeDamageEffect;

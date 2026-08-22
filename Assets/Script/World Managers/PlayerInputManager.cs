@@ -27,6 +27,8 @@ namespace ZZ
         private bool m_hasJumpInput;
         private bool m_hasSwitchRightWeaponInput;
         private bool m_hasSwitchLeftWeaponInput;
+        private bool m_hasRBInput;
+        private bool m_hasRTInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
 
@@ -61,6 +63,8 @@ namespace ZZ
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed +=
                 OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
+            m_playerControls.PlayerMovement.RT.performed += OnRTPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
@@ -84,6 +88,8 @@ namespace ZZ
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed -=
                 OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
+            m_playerControls.PlayerMovement.RT.performed -= OnRTPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
@@ -181,6 +187,8 @@ namespace ZZ
             m_hasJumpInput = false;
             m_hasSwitchRightWeaponInput = false;
             m_hasSwitchLeftWeaponInput = false;
+            m_hasRBInput = false;
+            m_hasRTInput = false;
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             IsMovementInputEnabled = false;
@@ -213,6 +221,7 @@ namespace ZZ
             HandleDodgeInput();
             HandleJumpInput();
             HandleWeaponSwitchInput();
+            HandleAttackInput();
             HandleSprinting();
         }
 
@@ -280,6 +289,34 @@ namespace ZZ
             }
         }
 
+        private void HandleAttackInput()
+        {
+            if (m_hasRBInput)
+            {
+                m_hasRBInput = false;
+                PerformRightHandAction(
+                    m_player?.InventoryManager?.CurrentRightHandWeapon?.RightHandAction);
+            }
+
+            if (m_hasRTInput)
+            {
+                m_hasRTInput = false;
+                PerformRightHandAction(
+                    m_player?.InventoryManager?.CurrentRightHandWeapon?.RightHandHeavyAction);
+            }
+        }
+
+        private void PerformRightHandAction(WeaponItemBasedAction action)
+        {
+            WeaponItem weapon = m_player?.InventoryManager?.CurrentRightHandWeapon;
+            if (action == null || weapon == null)
+            {
+                return;
+            }
+
+            m_player.PlayerCombatManager?.PerformWeaponBasedAction(action, weapon);
+        }
+
         private void OnMovementChanged(InputAction.CallbackContext context)
         {
             MovementInput = context.ReadValue<Vector2>();
@@ -318,6 +355,16 @@ namespace ZZ
         private void OnSwitchLeftWeaponPerformed(InputAction.CallbackContext context)
         {
             m_hasSwitchLeftWeaponInput = true;
+        }
+
+        private void OnRBPerformed(InputAction.CallbackContext context)
+        {
+            m_hasRBInput = true;
+        }
+
+        private void OnRTPerformed(InputAction.CallbackContext context)
+        {
+            m_hasRTInput = true;
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)

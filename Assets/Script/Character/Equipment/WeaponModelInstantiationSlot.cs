@@ -17,6 +17,9 @@ namespace ZZ
         /// <summary>Gets the currently instantiated weapon model.</summary>
         public GameObject CurrentWeaponModel => m_currentWeaponModel;
 
+        /// <summary>Gets the weapon manager of the currently instantiated weapon model.</summary>
+        public WeaponManager CurrentWeaponManager { get; private set; }
+
         /// <summary>
         /// Replaces the current model with a locally aligned runtime weapon prefab.
         /// </summary>
@@ -46,6 +49,7 @@ namespace ZZ
             }
 
             weaponManager.Initialize(weaponOwner, weapon);
+            CurrentWeaponManager = weaponManager;
         }
 
         /// <summary>
@@ -60,6 +64,7 @@ namespace ZZ
 
             Destroy(m_currentWeaponModel);
             m_currentWeaponModel = null;
+            CurrentWeaponManager = null;
         }
     }
 }

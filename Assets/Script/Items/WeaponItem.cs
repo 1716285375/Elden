@@ -28,6 +28,18 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_baseStaminaCost;
         [SerializeField, Min(0f)] private float m_basePoiseDamage;
 
+        [Header("Weapon Actions")]
+        [SerializeField] private WeaponItemBasedAction m_rightHandAction;
+        [SerializeField] private WeaponItemBasedAction m_rightHandHeavyAction;
+        [SerializeField] private WeaponItemBasedAction m_twoHandRightAction;
+        [SerializeField] private WeaponItemBasedAction m_twoHandRightHeavyAction;
+
+        [Header("Attack Modifiers")]
+        [SerializeField, Min(0f)] private float m_lightAttack01DamageModifier = 1f;
+        [SerializeField, Min(0f)] private float m_heavyAttack01DamageModifier = 1f;
+        [SerializeField, Min(0f)] private float m_lightAttack01StaminaCostMultiplier = 1f;
+        [SerializeField, Min(0f)] private float m_heavyAttack01StaminaCostMultiplier = 1f;
+
         /// <summary>Gets the prefab instantiated by an equipment slot.</summary>
         public GameObject WeaponModel => m_weaponModel;
 
@@ -66,5 +78,37 @@ namespace ZZ
 
         /// <summary>Gets the poise damage forwarded to the damage effect.</summary>
         public float BasePoiseDamage => m_basePoiseDamage;
+
+        /// <summary>Gets the action bound to the one-handed right-bumper slot.</summary>
+        public WeaponItemBasedAction RightHandAction => m_rightHandAction;
+
+        /// <summary>Gets the action bound to the one-handed right-trigger slot.</summary>
+        public WeaponItemBasedAction RightHandHeavyAction => m_rightHandHeavyAction;
+
+        /// <summary>Gets the action bound to the two-handed right-bumper slot.</summary>
+        public WeaponItemBasedAction TwoHandRightAction => m_twoHandRightAction;
+
+        /// <summary>Gets the action bound to the two-handed right-trigger slot.</summary>
+        public WeaponItemBasedAction TwoHandRightHeavyAction => m_twoHandRightHeavyAction;
+
+        /// <summary>
+        /// Returns the damage multiplier applied to the supplied attack type.
+        /// </summary>
+        public float GetAttackDamageModifier(AttackType attackType)
+        {
+            return attackType == AttackType.HeavyAttack01
+                ? m_heavyAttack01DamageModifier
+                : m_lightAttack01DamageModifier;
+        }
+
+        /// <summary>
+        /// Returns the stamina cost multiplier applied to the supplied attack type.
+        /// </summary>
+        public float GetStaminaCostMultiplier(AttackType attackType)
+        {
+            return attackType == AttackType.HeavyAttack01
+                ? m_heavyAttack01StaminaCostMultiplier
+                : m_lightAttack01StaminaCostMultiplier;
+        }
     }
 }

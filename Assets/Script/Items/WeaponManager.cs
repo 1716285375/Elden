@@ -9,6 +9,8 @@ namespace ZZ
     {
         [SerializeField] private MeleeWeaponDamageCollider m_meleeDamageCollider;
 
+        private AttackType m_currentAttackType = AttackType.LightAttack01;
+
         /// <summary>Gets the per-character runtime weapon item driving this model.</summary>
         public WeaponItem Weapon { get; private set; }
 
@@ -57,6 +59,27 @@ namespace ZZ
         public void CloseDamageCollider()
         {
             m_meleeDamageCollider?.CloseDamageCollider();
+        }
+
+        /// <summary>
+        /// Applies the attack type's damage modifier to this weapon's damage collider.
+        /// </summary>
+        public void SetAttackType(AttackType attackType)
+        {
+            m_currentAttackType = attackType;
+            if (Weapon == null || m_meleeDamageCollider == null)
+            {
+                return;
+            }
+
+            float damageModifier = Weapon.GetAttackDamageModifier(attackType);
+            m_meleeDamageCollider.SetDamageValues(
+                Weapon.PhysicalDamage * damageModifier,
+                Weapon.MagicDamage * damageModifier,
+                Weapon.FireDamage * damageModifier,
+                Weapon.LightningDamage * damageModifier,
+                Weapon.HolyDamage * damageModifier,
+                Weapon.BasePoiseDamage);
         }
     }
 }

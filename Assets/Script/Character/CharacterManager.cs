@@ -14,6 +14,7 @@ namespace ZZ
 
         private CharacterEffectsManager m_characterEffectsManager;
         private CharacterStatsManager m_characterStatsManager;
+        private CharacterCombatManager m_characterCombatManager;
         private bool m_isGrounded = true;
         private bool m_isPerformingAction;
         private bool m_canMove = true;
@@ -25,6 +26,7 @@ namespace ZZ
         public CharacterEffectsManager CharacterEffectsManager => m_characterEffectsManager;
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
         public CharacterStatsManager CharacterStatsManager => m_characterStatsManager;
+        public CharacterCombatManager CharacterCombatManager => m_characterCombatManager;
         /// <summary>
         /// Gets whether the character's ground probe currently detects walkable environment.
         /// </summary>
@@ -60,6 +62,7 @@ namespace ZZ
             m_characterEffectsManager = GetComponent<CharacterEffectsManager>();
             m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
             m_characterStatsManager = GetComponent<CharacterStatsManager>();
+            m_characterCombatManager = GetComponent<CharacterCombatManager>();
             m_characterAnimatorManager?.Initialize(m_animator);
         }
 
@@ -84,6 +87,14 @@ namespace ZZ
             m_shouldApplyRootMotion = shouldApplyRootMotion;
             m_canRotate = canRotate;
             m_canMove = canMove;
+        }
+
+        /// <summary>
+        /// Updates only the rotation permission without touching the other action flags.
+        /// </summary>
+        public void SetCanRotate(bool canRotate)
+        {
+            m_canRotate = canRotate;
         }
 
         /// <summary>

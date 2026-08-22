@@ -29,6 +29,10 @@ namespace ZZ
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Left_Weapon_01");
+        private static readonly int s_lightAttack01State =
+            Animator.StringToHash("Action Override.Attack_01");
+        private static readonly int s_heavyAttack01State =
+            Animator.StringToHash("Action Override.Attack_02");
 
         [SerializeField] private Animator m_animator;
 
@@ -179,6 +183,50 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Starts an attack action and cross-fades the action override layer to its attack state.
+        /// </summary>
+        public void PlayTargetAttackActionAnimation(
+            AttackType attackType,
+            bool shouldApplyRootMotion = true)
+        {
+            if (m_animator == null || m_characterManager == null)
+            {
+                return;
+            }
+
+            int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            if (actionLayerIndex < 0)
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} is missing the {k_ActionOverrideLayerName} layer.",
+                    m_animator);
+                return;
+            }
+
+            int attackStateHash = GetAttackStateHash(attackType);
+            if (!m_animator.HasState(actionLayerIndex, attackStateHash))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} does not contain attack {attackType}.",
+                    m_animator);
+                return;
+            }
+
+            const bool k_IsPerformingAction = true;
+            const bool k_CanRotate = false;
+            const bool k_CanMove = false;
+            m_characterManager.SetActionState(
+                k_IsPerformingAction,
+                shouldApplyRootMotion,
+                k_CanRotate,
+                k_CanMove);
+            m_animator.CrossFade(
+                attackStateHash,
+                k_ActionTransitionDuration,
+                actionLayerIndex);
+        }
+
+        /// <summary>
         /// Clears the death Animator condition and returns the action layer to its neutral state.
         /// </summary>
         public void PlayEmptyActionAnimation()
@@ -237,6 +285,13 @@ namespace ZZ
             return targetAnimation == CharacterActionAnimation.RollForward ||
                 targetAnimation == CharacterActionAnimation.BackStep ||
                 targetAnimation == CharacterActionAnimation.Death;
+        }
+
+        private static int GetAttackStateHash(AttackType attackType)
+        {
+            return attackType == AttackType.HeavyAttack01
+                ? s_heavyAttack01State
+                : s_lightAttack01State;
         }
 
         private static bool TryGetActionStateHash(

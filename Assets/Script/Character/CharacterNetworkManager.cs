@@ -77,12 +77,14 @@ namespace ZZ
 
         private CharacterAnimatorManager m_characterAnimatorManager;
         private CharacterManager m_characterManager;
+        private CharacterCombatManager m_characterCombatManager;
         private Vector3 m_networkPositionVelocity;
 
         private void Awake()
         {
             m_characterManager = GetComponent<CharacterManager>();
             m_characterAnimatorManager = GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterCombatManager = GetComponent<CharacterCombatManager>();
             CurrentHealth.SetUpdateTraits(new NetworkVariableUpdateTraits
             {
                 MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
@@ -219,6 +221,122 @@ namespace ZZ
                 shouldApplyRootMotion,
                 canRotate,
                 canMove);
+        }
+
+        /// <summary>
+        /// Sends an owner-predicted attack animation to the server for replication to remote clients.
+        /// </summary>
+        [ServerRpc]
+        public void NotifyServerOfAttackActionServerRpc(
+            AttackType attackType,
+            ServerRpcParams serverRpcParams = default)
+        {
+            PlayAttackActionForAllClientsClientRpc(
+                attackType,
+                serverRpcParams.Receive.SenderClientId);
+        }
+
+        [ClientRpc]
+        private void PlayAttackActionForAllClientsClientRpc(
+            AttackType attackType,
+            ulong senderClientId)
+        {
+            if (NetworkManager.Singleton != null &&
+                senderClientId == NetworkManager.Singleton.LocalClientId)
+            {
+                return;
+            }
+
+            m_characterCombatManager ??= GetComponent<CharacterCombatManager>();
+            m_characterCombatManager?.ReplicateAttack(attackType);
+        }
+
+        /// <summary>
+        /// Requests character damage from the attacker's owner, authorized and relayed by the server.
+        /// </summary>
+        [ServerRpc(RequireOwnership = false)]
+        public void RequestCharacterDamageServerRpc(
+            ulong targetNetworkObjectId,
+            ulong attackerNetworkObjectId,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage,
+            Vector3 contactPoint,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            {
+                return;
+            }
+
+            ApplyCharacterDamageClientRpc(
+                targetNetworkObjectId,
+                attackerNetworkObjectId,
+                physicalDamage,
+                magicDamage,
+                fireDamage,
+                lightningDamage,
+                holyDamage,
+                poiseDamage,
+                contactPoint);
+        }
+
+        [ClientRpc]
+        private void ApplyCharacterDamageClientRpc(
+            ulong targetNetworkObjectId,
+            ulong attackerNetworkObjectId,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage,
+            Vector3 contactPoint)
+        {
+            CharacterManager target = ResolveCharacter(targetNetworkObjectId);
+            if (target == null)
+            {
+                return;
+            }
+
+            TakeDamageEffect damageTemplate =
+                WorldCharacterEffectsManager.Instance?.TakeDamageEffect;
+            if (damageTemplate == null)
+            {
+                Debug.LogWarning(
+                    "WorldCharacterEffectsManager is missing the TakeDamageEffect template.",
+                    this);
+                return;
+            }
+
+            CharacterManager attacker = ResolveCharacter(attackerNetworkObjectId);
+            TakeDamageEffect runtimeEffect = damageTemplate.CreateRuntimeDamageEffect(
+                attacker,
+                physicalDamage,
+                magicDamage,
+                fireDamage,
+                lightningDamage,
+                holyDamage,
+                contactPoint,
+                poiseDamage);
+            target.CharacterEffectsManager?.ProcessRuntimeInstantEffect(runtimeEffect);
+        }
+
+        private static CharacterManager ResolveCharacter(ulong networkObjectId)
+        {
+            NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager == null ||
+                !networkManager.SpawnManager.SpawnedObjects.TryGetValue(
+                    networkObjectId,
+                    out NetworkObject networkObject))
+            {
+                return null;
+            }
+
+            return networkObject.GetComponent<CharacterManager>();
         }
 
         private void OnCurrentHealthChanged(float previousHealth, float currentHealth)
