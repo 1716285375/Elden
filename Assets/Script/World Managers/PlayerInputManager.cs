@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,7 @@ namespace ZZ
     public class PlayerInputManager : MonoBehaviour
     {
         private const string k_GameplaySceneName = "Scene_World_01";
+        private const int k_MaxQueuedAttackInputs = 2;
 
         private static PlayerInputManager s_instance;
         public static PlayerInputManager Instance => s_instance;
@@ -21,8 +23,12 @@ namespace ZZ
         public float CameraHorizontalInput { get; private set; }
         public bool IsMovementInputEnabled { get; private set; }
 
+        [Header("Attack Input Buffer")]
+        [SerializeField, Min(0f)] private float m_inputBufferDuration = 0.3f;
+
         private PlayerControls m_playerControls;
         private PlayerManager m_player;
+        private readonly Queue<AttackInput> m_attackInputQueue = new();
         private bool m_hasDodgeInput;
         private bool m_hasJumpInput;
         private bool m_hasSwitchRightWeaponInput;
@@ -149,6 +155,7 @@ namespace ZZ
             }
 
             m_player = localPlayer;
+            ClearAttackInputQueue();
         }
 
         /// <summary>
@@ -158,6 +165,7 @@ namespace ZZ
         {
             if (m_player == localPlayer)
             {
+                ClearAttackInputQueue();
                 m_player = null;
             }
         }
@@ -200,6 +208,7 @@ namespace ZZ
             m_isSprintInputHeld = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             m_player?.PlayerCombatManager?.CancelChargingAttack();
+            ClearAttackInputQueue();
             IsMovementInputEnabled = false;
             m_playerControls?.PlayerMovement.Disable();
             m_playerControls?.PlayerCamera.Disable();
@@ -221,6 +230,46 @@ namespace ZZ
         {
             m_isGameplayInputBlocked = false;
             RefreshMovementInput(SceneManager.GetActiveScene());
+        }
+
+        /// <summary>
+        /// Records one attack only while the current combat animation permits queuing.
+        /// </summary>
+        public bool TryQueueAttackInput(AttackInputType inputType)
+        {
+            if (m_player?.PlayerCombatManager?.CanQueueNextAttack != true)
+            {
+                return false;
+            }
+
+            RemoveExpiredAttackInputs(Time.time);
+            if (m_attackInputQueue.Count >= k_MaxQueuedAttackInputs)
+            {
+                return false;
+            }
+
+            m_attackInputQueue.Enqueue(new AttackInput(inputType, Time.time));
+            return true;
+        }
+
+        /// <summary>Returns the oldest unexpired buffered attack.</summary>
+        public bool TryDequeueAttackInput(out AttackInput attackInput)
+        {
+            RemoveExpiredAttackInputs(Time.time);
+            if (m_attackInputQueue.Count == 0)
+            {
+                attackInput = default;
+                return false;
+            }
+
+            attackInput = m_attackInputQueue.Dequeue();
+            return true;
+        }
+
+        /// <summary>Clears every attack intent that no longer belongs to the current action.</summary>
+        public void ClearAttackInputQueue()
+        {
+            m_attackInputQueue.Clear();
         }
 
         private void HandleAllInputs()
@@ -316,14 +365,20 @@ namespace ZZ
             if (m_hasRBInput)
             {
                 m_hasRBInput = false;
-                PerformRightHandAction(
-                    m_player?.InventoryManager?.CurrentRightHandWeapon?.RightHandAction);
+                if (!TryQueueAttackInput(AttackInputType.Light))
+                {
+                    PerformRightHandAction(
+                        m_player?.InventoryManager?.CurrentRightHandWeapon?.RightHandAction);
+                }
             }
 
             if (m_hasRTStartedInput)
             {
                 m_hasRTStartedInput = false;
-                m_player?.PlayerCombatManager?.BeginChargingHeavyAttack();
+                if (!TryQueueAttackInput(AttackInputType.Heavy))
+                {
+                    m_player?.PlayerCombatManager?.BeginChargingHeavyAttack();
+                }
             }
 
             if (m_hasRTReleasedInput)
@@ -402,6 +457,27 @@ namespace ZZ
         private void OnLockOnPerformed(InputAction.CallbackContext context)
         {
             m_hasLockOnInput = true;
+        }
+
+        private void RemoveExpiredAttackInputs(float currentTime)
+        {
+            while (m_attackInputQueue.Count > 0 &&
+                IsAttackInputExpired(
+                    m_attackInputQueue.Peek(),
+                    currentTime,
+                    m_inputBufferDuration))
+            {
+                m_attackInputQueue.Dequeue();
+            }
+        }
+
+        private static bool IsAttackInputExpired(
+            AttackInput attackInput,
+            float currentTime,
+            float bufferDuration)
+        {
+            return currentTime >
+                attackInput.Timestamp + Mathf.Max(0f, bufferDuration);
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)

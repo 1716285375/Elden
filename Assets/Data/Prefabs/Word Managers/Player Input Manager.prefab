@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9fb0fb22614a9c4a813fb4b09773604, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerInputManager
-  worldSceneName: Scene_World_01
+  m_inputBufferDuration: 0.3

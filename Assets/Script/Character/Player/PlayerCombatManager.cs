@@ -14,6 +14,7 @@ namespace ZZ
         private WeaponItem m_chargingWeapon;
         private float m_chargeStartTime;
         private bool m_canComboWithMainHandWeapon;
+        private bool m_canQueueNextAttack;
         private bool m_canPerformCommittedAttack;
         private AttackType m_committedAttackType;
 
@@ -25,6 +26,9 @@ namespace ZZ
 
         /// <summary>Gets whether the current main-hand attack accepts its next combo input.</summary>
         public bool CanComboWithMainHandWeapon => m_canComboWithMainHandWeapon;
+
+        /// <summary>Gets whether the current animation accepts a buffered attack input.</summary>
+        public bool CanQueueNextAttack => m_canQueueNextAttack;
 
         protected override void Awake()
         {
@@ -110,12 +114,14 @@ namespace ZZ
         /// </summary>
         public void EnableCanCombo()
         {
-            m_canComboWithMainHandWeapon =
+            m_canQueueNextAttack =
                 m_player != null &&
                 m_player.IsOwner &&
                 m_player.IsPerformingAction &&
                 m_player.PlayerNetworkManager != null &&
-                m_player.PlayerNetworkManager.IsUsingRightHand.Value &&
+                m_player.PlayerNetworkManager.IsUsingRightHand.Value;
+            m_canComboWithMainHandWeapon =
+                m_canQueueNextAttack &&
                 HasNextMainHandComboAttack(CurrentAttackType);
         }
 
@@ -123,6 +129,18 @@ namespace ZZ
         public void DisableCanCombo()
         {
             m_canComboWithMainHandWeapon = false;
+            m_canQueueNextAttack = false;
+        }
+
+        /// <summary>
+        /// Closes the authored queue window and consumes its oldest valid attack intent.
+        /// </summary>
+        public void CloseAttackInputQueueWindow()
+        {
+            if (!m_canQueueNextAttack || !TryConsumeQueuedAttackInput())
+            {
+                DisableCanCombo();
+            }
         }
 
         /// <summary>
@@ -218,6 +236,7 @@ namespace ZZ
         {
             DisableCanCombo();
             DisableCanPerformCommittedAttack();
+            PlayerInputManager.Instance?.ClearAttackInputQueue();
         }
 
         /// <summary>
@@ -291,6 +310,41 @@ namespace ZZ
             ReplicateAttack(attackType);
             m_player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(
                 attackType);
+        }
+
+        private bool TryConsumeQueuedAttackInput()
+        {
+            PlayerInputManager inputManager = PlayerInputManager.Instance;
+            if (inputManager == null ||
+                !inputManager.TryDequeueAttackInput(out AttackInput attackInput))
+            {
+                return false;
+            }
+
+            AttackType requestedOpeningAttack =
+                attackInput.InputType == AttackInputType.Heavy
+                    ? AttackType.HeavyAttack01
+                    : AttackType.LightAttack01;
+            if (TryPerformMainHandCombo(requestedOpeningAttack))
+            {
+                return true;
+            }
+
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                !m_player.IsPerformingAction ||
+                m_player.CharacterNetworkManager == null ||
+                m_player.CharacterNetworkManager.CurrentStamina.Value <= 0f)
+            {
+                return false;
+            }
+
+            DisableCanCombo();
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
+            ReplicateAttack(requestedOpeningAttack);
+            m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
+                requestedOpeningAttack);
+            return true;
         }
 
         private static bool ShouldUseChargedAttack(
