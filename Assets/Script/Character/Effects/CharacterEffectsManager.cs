@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ZZ
@@ -10,11 +11,19 @@ namespace ZZ
 
         [SerializeField] private CharacterManager m_character;
 
+        [Header("Static Effects")]
+        [SerializeField] private List<StaticCharacterEffect> m_staticEffects = new();
+
         protected CharacterManager Character => m_character;
 
         protected virtual void Awake()
         {
             m_character ??= GetComponent<CharacterManager>();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            RemoveAllStaticEffects();
         }
 
         /// <summary>
@@ -81,6 +90,76 @@ namespace ZZ
             finally
             {
                 DestroyRuntimeEffect(runtimeEffect);
+            }
+        }
+
+        /// <summary>Clones and applies a static effect unless that identifier is already active.</summary>
+        public bool ProcessStaticEffect(StaticCharacterEffect effect)
+        {
+            if (effect == null || m_character == null || HasStaticEffect(effect.StaticEffectID))
+            {
+                return false;
+            }
+
+            StaticCharacterEffect runtimeEffect = effect.CreateRuntimeInstance();
+            runtimeEffect.ProcessStaticEffect(m_character);
+            m_staticEffects.Add(runtimeEffect);
+            return true;
+        }
+
+        /// <summary>Removes and disposes the active static effect with the supplied identifier.</summary>
+        public bool RemoveStaticEffect(int staticEffectID)
+        {
+            for (int effectIndex = m_staticEffects.Count - 1; effectIndex >= 0; effectIndex--)
+            {
+                StaticCharacterEffect runtimeEffect = m_staticEffects[effectIndex];
+                if (runtimeEffect == null || runtimeEffect.StaticEffectID != staticEffectID)
+                {
+                    continue;
+                }
+
+                runtimeEffect.RemoveStaticEffect(m_character);
+                m_staticEffects.RemoveAt(effectIndex);
+                DestroyStaticEffect(runtimeEffect);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Gets whether one static effect identifier is currently active.</summary>
+        public bool HasStaticEffect(int staticEffectID)
+        {
+            return m_staticEffects.Exists(effect =>
+                effect != null && effect.StaticEffectID == staticEffectID);
+        }
+
+        private void RemoveAllStaticEffects()
+        {
+            for (int effectIndex = m_staticEffects.Count - 1; effectIndex >= 0; effectIndex--)
+            {
+                StaticCharacterEffect runtimeEffect = m_staticEffects[effectIndex];
+                runtimeEffect?.RemoveStaticEffect(m_character);
+                DestroyStaticEffect(runtimeEffect);
+            }
+
+            m_staticEffects.Clear();
+        }
+
+        private static void DestroyStaticEffect(StaticCharacterEffect runtimeEffect)
+        {
+            if (runtimeEffect == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(runtimeEffect);
+            }
+            else
+            {
+                DestroyImmediate(runtimeEffect);
             }
         }
 

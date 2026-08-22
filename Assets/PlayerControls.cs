@@ -183,6 +183,33 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Two Hand Weapon"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""29cbebb0-2756-4c69-b5fb-3e332ec894fc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Two Hand Right Weapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""fe7cd972-c1fc-44a4-b640-673ae136df3c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Two Hand Left Weapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""fc93559b-fe35-4023-a8c7-9b39e788353f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -548,6 +575,72 @@ namespace ZZ
                     ""action"": ""LB"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""61a8b219-8917-4680-b74d-1488c7d43026"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": ""hold"",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Two Hand Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ceb9aa5-76d1-4f9b-87b8-4626ad8249a3"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Two Hand Right Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ef081ffe-d1a9-459c-aee0-654881d60c76"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Two Hand Left Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""676d953c-d049-47dd-8b99-e86975d6df7c"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": ""hold"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Two Hand Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ea98fdbc-e223-44b5-bf80-75d4e672426f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Two Hand Right Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b29174fe-f272-4865-b72f-05b32c760860"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Two Hand Left Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -734,6 +827,9 @@ namespace ZZ
             m_PlayerMovement_RT = m_PlayerMovement.FindAction("RT", throwIfNotFound: true);
             m_PlayerMovement_Interact = m_PlayerMovement.FindAction("Interact", throwIfNotFound: true);
             m_PlayerMovement_LB = m_PlayerMovement.FindAction("LB", throwIfNotFound: true);
+            m_PlayerMovement_TwoHandWeapon = m_PlayerMovement.FindAction("Two Hand Weapon", throwIfNotFound: true);
+            m_PlayerMovement_TwoHandRightWeapon = m_PlayerMovement.FindAction("Two Hand Right Weapon", throwIfNotFound: true);
+            m_PlayerMovement_TwoHandLeftWeapon = m_PlayerMovement.FindAction("Two Hand Left Weapon", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -834,6 +930,9 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_RT;
         private readonly InputAction m_PlayerMovement_Interact;
         private readonly InputAction m_PlayerMovement_LB;
+        private readonly InputAction m_PlayerMovement_TwoHandWeapon;
+        private readonly InputAction m_PlayerMovement_TwoHandRightWeapon;
+        private readonly InputAction m_PlayerMovement_TwoHandLeftWeapon;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -885,6 +984,18 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/LB".
             /// </summary>
             public InputAction @LB => m_Wrapper.m_PlayerMovement_LB;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/TwoHandWeapon".
+            /// </summary>
+            public InputAction @TwoHandWeapon => m_Wrapper.m_PlayerMovement_TwoHandWeapon;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/TwoHandRightWeapon".
+            /// </summary>
+            public InputAction @TwoHandRightWeapon => m_Wrapper.m_PlayerMovement_TwoHandRightWeapon;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/TwoHandLeftWeapon".
+            /// </summary>
+            public InputAction @TwoHandLeftWeapon => m_Wrapper.m_PlayerMovement_TwoHandLeftWeapon;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -941,6 +1052,15 @@ namespace ZZ
                 @LB.started += instance.OnLB;
                 @LB.performed += instance.OnLB;
                 @LB.canceled += instance.OnLB;
+                @TwoHandWeapon.started += instance.OnTwoHandWeapon;
+                @TwoHandWeapon.performed += instance.OnTwoHandWeapon;
+                @TwoHandWeapon.canceled += instance.OnTwoHandWeapon;
+                @TwoHandRightWeapon.started += instance.OnTwoHandRightWeapon;
+                @TwoHandRightWeapon.performed += instance.OnTwoHandRightWeapon;
+                @TwoHandRightWeapon.canceled += instance.OnTwoHandRightWeapon;
+                @TwoHandLeftWeapon.started += instance.OnTwoHandLeftWeapon;
+                @TwoHandLeftWeapon.performed += instance.OnTwoHandLeftWeapon;
+                @TwoHandLeftWeapon.canceled += instance.OnTwoHandLeftWeapon;
             }
 
             /// <summary>
@@ -982,6 +1102,15 @@ namespace ZZ
                 @LB.started -= instance.OnLB;
                 @LB.performed -= instance.OnLB;
                 @LB.canceled -= instance.OnLB;
+                @TwoHandWeapon.started -= instance.OnTwoHandWeapon;
+                @TwoHandWeapon.performed -= instance.OnTwoHandWeapon;
+                @TwoHandWeapon.canceled -= instance.OnTwoHandWeapon;
+                @TwoHandRightWeapon.started -= instance.OnTwoHandRightWeapon;
+                @TwoHandRightWeapon.performed -= instance.OnTwoHandRightWeapon;
+                @TwoHandRightWeapon.canceled -= instance.OnTwoHandRightWeapon;
+                @TwoHandLeftWeapon.started -= instance.OnTwoHandLeftWeapon;
+                @TwoHandLeftWeapon.performed -= instance.OnTwoHandLeftWeapon;
+                @TwoHandLeftWeapon.canceled -= instance.OnTwoHandLeftWeapon;
             }
 
             /// <summary>
@@ -1332,6 +1461,27 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnLB(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Two Hand Weapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnTwoHandWeapon(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Two Hand Right Weapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnTwoHandRightWeapon(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Two Hand Left Weapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnTwoHandLeftWeapon(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

@@ -22,6 +22,8 @@ namespace ZZ
             Animator.StringToHash("isChargingAttack");
         private static readonly int s_isBlockingParameter =
             Animator.StringToHash("isBlocking");
+        private static readonly int s_isTwoHandingWeaponParameter =
+            Animator.StringToHash("isTwoHandingWeapon");
         private static readonly int s_emptyActionState =
             Animator.StringToHash("Action Override.Empty");
         private static readonly int s_rollForwardState =
@@ -62,6 +64,26 @@ namespace ZZ
             Animator.StringToHash("Action Override.MainCore_RollAttack01");
         private static readonly int s_backStepAttack01State =
             Animator.StringToHash("Action Override.MainCore_BackStepAttack01");
+        private static readonly int s_twoHandLightAttack01State =
+            Animator.StringToHash("Action Override.TwoHand_Attack_Light_01");
+        private static readonly int s_twoHandLightAttack02State =
+            Animator.StringToHash("Action Override.TwoHand_Attack_Light_02");
+        private static readonly int s_twoHandLightAttack03State =
+            Animator.StringToHash("Action Override.TwoHand_Attack_Light_03");
+        private static readonly int s_twoHandHeavyAttack01State =
+            Animator.StringToHash("Action Override.TwoHand_Attack_Heavy_01");
+        private static readonly int s_twoHandHeavyAttack02State =
+            Animator.StringToHash("Action Override.TwoHand_Attack_Heavy_02");
+        private static readonly int s_twoHandChargedAttack01State =
+            Animator.StringToHash("Action Override.TwoHand_Attack_Charged_01");
+        private static readonly int s_twoHandChargingAttackState =
+            Animator.StringToHash("Action Override.TwoHand_Attack_Charge_01");
+        private static readonly int s_twoHandRunningAttack01State =
+            Animator.StringToHash("Action Override.TwoHand_RunAttack01");
+        private static readonly int s_twoHandRollAttack01State =
+            Animator.StringToHash("Action Override.TwoHand_RollAttack01");
+        private static readonly int s_twoHandBackStepAttack01State =
+            Animator.StringToHash("Action Override.TwoHand_BackStepAttack01");
 
         [SerializeField] private Animator m_animator;
 
@@ -120,6 +142,14 @@ namespace ZZ
                 m_animator.runtimeAnimatorController = weapon.WeaponAnimator;
             }
 
+            if (m_characterManager is PlayerManager player)
+            {
+                SetTwoHandingWeaponState(
+                    player.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true);
+                SetBlockingState(
+                    player.CharacterNetworkManager?.IsBlocking.Value == true);
+            }
+
             return true;
         }
 
@@ -156,6 +186,12 @@ namespace ZZ
         public void SetBlockingState(bool isBlocking)
         {
             m_animator?.SetBool(s_isBlockingParameter, isBlocking);
+        }
+
+        /// <summary>Applies the replicated two-hand locomotion and blocking condition.</summary>
+        public void SetTwoHandingWeaponState(bool isTwoHandingWeapon)
+        {
+            m_animator?.SetBool(s_isTwoHandingWeaponParameter, isTwoHandingWeapon);
         }
 
         /// <summary>
@@ -320,8 +356,11 @@ namespace ZZ
             }
 
             int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            int chargingState = IsTwoHandingWeapon()
+                ? s_twoHandChargingAttackState
+                : s_chargingAttackState;
             if (actionLayerIndex < 0 ||
-                !m_animator.HasState(actionLayerIndex, s_chargingAttackState))
+                !m_animator.HasState(actionLayerIndex, chargingState))
             {
                 Debug.LogError(
                     $"Animator {m_animator.name} does not contain Attack_Charge_01.",
@@ -331,7 +370,7 @@ namespace ZZ
 
             m_characterManager.SetActionState(true, false, true, false);
             m_animator.CrossFade(
-                s_chargingAttackState,
+                chargingState,
                 k_ActionTransitionDuration,
                 actionLayerIndex);
         }
@@ -501,8 +540,13 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.GuardBreak;
         }
 
-        private static int GetAttackStateHash(AttackType attackType)
+        private int GetAttackStateHash(AttackType attackType)
         {
+            if (IsTwoHandingWeapon())
+            {
+                return GetTwoHandAttackStateHash(attackType);
+            }
+
             switch (attackType)
             {
                 case AttackType.LightAttack02:
@@ -524,6 +568,37 @@ namespace ZZ
                 default:
                     return s_lightAttack01State;
             }
+        }
+
+        private static int GetTwoHandAttackStateHash(AttackType attackType)
+        {
+            switch (attackType)
+            {
+                case AttackType.LightAttack02:
+                    return s_twoHandLightAttack02State;
+                case AttackType.LightAttack03:
+                    return s_twoHandLightAttack03State;
+                case AttackType.HeavyAttack01:
+                    return s_twoHandHeavyAttack01State;
+                case AttackType.HeavyAttack02:
+                    return s_twoHandHeavyAttack02State;
+                case AttackType.ChargedAttack01:
+                    return s_twoHandChargedAttack01State;
+                case AttackType.RunningAttack01:
+                    return s_twoHandRunningAttack01State;
+                case AttackType.RollAttack01:
+                    return s_twoHandRollAttack01State;
+                case AttackType.BackStepAttack01:
+                    return s_twoHandBackStepAttack01State;
+                default:
+                    return s_twoHandLightAttack01State;
+            }
+        }
+
+        private bool IsTwoHandingWeapon()
+        {
+            return m_characterManager is PlayerManager player &&
+                player.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true;
         }
 
         private static bool IsMovingAttack(AttackType attackType)

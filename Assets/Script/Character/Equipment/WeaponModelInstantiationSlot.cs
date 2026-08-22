@@ -25,6 +25,24 @@ namespace ZZ
         /// </summary>
         public void LoadWeaponModel(WeaponItem weapon, CharacterManager weaponOwner)
         {
+            LoadWeaponModelAtPlacement(
+                weapon,
+                weaponOwner,
+                weapon != null ? weapon.WeaponPivotPosition : Vector3.zero,
+                weapon != null ? weapon.WeaponPivotRotation : Vector3.zero,
+                weapon != null ? weapon.WeaponPivotScale : Vector3.one);
+        }
+
+        /// <summary>
+        /// Replaces the current model using a placement override supplied by an equipment slot.
+        /// </summary>
+        public void LoadWeaponModelAtPlacement(
+            WeaponItem weapon,
+            CharacterManager weaponOwner,
+            Vector3 localPosition,
+            Vector3 localEulerRotation,
+            Vector3 localScale)
+        {
             UnloadWeaponModel();
             if (weapon == null || weapon.WeaponModel == null)
             {
@@ -34,10 +52,9 @@ namespace ZZ
 
             m_currentWeaponModel = Instantiate(weapon.WeaponModel, transform);
             Transform modelTransform = m_currentWeaponModel.transform;
-            modelTransform.localPosition = weapon.WeaponPivotPosition;
-            modelTransform.localRotation = Quaternion.Euler(
-                weapon.WeaponPivotRotation);
-            modelTransform.localScale = weapon.WeaponPivotScale;
+            modelTransform.localPosition = localPosition;
+            modelTransform.localRotation = Quaternion.Euler(localEulerRotation);
+            modelTransform.localScale = localScale;
 
             WeaponManager weaponManager =
                 m_currentWeaponModel.GetComponentInChildren<WeaponManager>(true);

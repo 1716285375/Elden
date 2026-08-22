@@ -45,6 +45,12 @@ namespace ZZ
             m_meleeDamageCollider.CloseDamageCollider();
         }
 
+        /// <summary>Recalculates collider damage after equipment or attribute presentation changes.</summary>
+        public void SetWeaponDamage()
+        {
+            SetAttackType(m_currentAttackType);
+        }
+
         /// <summary>
         /// Enables this weapon's one-hit-per-target damage window.
         /// </summary>

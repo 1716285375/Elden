@@ -90046,6 +90046,7 @@ Transform:
   m_Children:
   - {fileID: 769915514514932333}
   - {fileID: 770134667188818208}
+  - {fileID: 5940861908894481778}
   m_Father: {fileID: 770524796792683608}
   m_LocalEulerAnglesHint: {x: -180, y: -6.986688e-14, z: 11.248348}
 --- !u!1 &767241960719967121
@@ -116094,6 +116095,7 @@ Transform:
   - {fileID: 770524796792683608}
   - {fileID: 769784067653237691}
   - {fileID: 770468377235835152}
+  - {fileID: 6046467362184671953}
   m_Father: {fileID: 769621830626761609}
   m_LocalEulerAnglesHint: {x: 90, y: 8.592854, z: 90}
 --- !u!1 &767670712934583607
@@ -145619,6 +145621,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 769626527310777840}
   m_LocalEulerAnglesHint: {x: -60.565712, y: -0.000000053816446, z: -0.00000009215914}
+--- !u!1 &2838148793634617411
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5940861908894481778}
+  - component: {fileID: 2673702354290740128}
+  m_Layer: 0
+  m_Name: Back Weapon Slot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5940861908894481778
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2838148793634617411}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 769621381066300408}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2673702354290740128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2838148793634617411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30f4e6e29a35d44799014dcc55c3c42, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponModelInstantiationSlot
+  m_weaponModelSlot: 3
 --- !u!1 &2941268009351439876
 GameObject:
   m_ObjectHideFlags: 0
@@ -146040,6 +146087,51 @@ Transform:
   - {fileID: 769741283602914037}
   m_Father: {fileID: 1000459750720051557}
   m_LocalEulerAnglesHint: {x: 35, y: -0, z: 0}
+--- !u!1 &6188603688575080423
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6046467362184671953}
+  - component: {fileID: 150180382635965513}
+  m_Layer: 0
+  m_Name: Hip Weapon Slot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6046467362184671953
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6188603688575080423}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 770577768460628631}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &150180382635965513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6188603688575080423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30f4e6e29a35d44799014dcc55c3c42, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponModelInstantiationSlot
+  m_weaponModelSlot: 4
 --- !u!1 &6444903284586261052
 GameObject:
   m_ObjectHideFlags: 0
@@ -146297,6 +146389,7 @@ MonoBehaviour:
     m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
+  m_twoHandingEffect: {fileID: 11400000, guid: fb1f1aad80a3ead48af58c34585722a9, type: 2}
   IsSprinting:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -146323,6 +146416,8 @@ MonoBehaviour:
   m_offensivePoiseBonus: 0
   m_defaultPoiseResetTime: 8
   m_poiseResetTimer: 0
+  m_strengthLevel: 10
+  m_strengthModifier: 0
   m_blockingPhysicalAbsorption: 85
   m_blockingMagicAbsorption: 40
   m_blockingFireAbsorption: 35
@@ -146410,6 +146505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerEffectsManager
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_character: {fileID: 0}
+  m_staticEffects: []
   m_effectToTest: {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}
   m_shouldProcessEffect: 0
 --- !u!114 &8033323077005802984

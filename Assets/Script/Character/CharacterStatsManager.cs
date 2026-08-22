@@ -23,6 +23,10 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_defaultPoiseResetTime = 8f;
         [SerializeField, Min(0f)] private float m_poiseResetTimer;
 
+        [Header("Attributes")]
+        [SerializeField, Min(0)] private int m_strengthLevel = 10;
+        [SerializeField] private int m_strengthModifier;
+
         [Header("Blocking Absorption")]
         [SerializeField, Range(0f, 100f)] private float m_blockingPhysicalAbsorption = 85f;
         [SerializeField, Range(0f, 100f)] private float m_blockingMagicAbsorption = 40f;
@@ -79,6 +83,15 @@ namespace ZZ
 
         /// <summary>Gets the time remaining before accumulated Poise damage clears.</summary>
         public float PoiseResetTimer => Mathf.Max(0f, m_poiseResetTimer);
+
+        /// <summary>Gets the persistent base Strength level.</summary>
+        public int StrengthLevel => Mathf.Max(0, m_strengthLevel);
+
+        /// <summary>Gets the additive Strength supplied by persistent effects.</summary>
+        public int StrengthModifier => m_strengthModifier;
+
+        /// <summary>Gets base Strength plus every active additive modifier.</summary>
+        public int TotalStrength => Mathf.Max(0, StrengthLevel + m_strengthModifier);
 
         protected virtual void Awake()
         {
@@ -246,6 +259,12 @@ namespace ZZ
         public void SetOffensivePoiseBonus(float offensivePoiseBonus)
         {
             m_offensivePoiseBonus = Mathf.Max(0f, offensivePoiseBonus);
+        }
+
+        /// <summary>Adds or removes an independent Strength modifier.</summary>
+        public void ModifyStrengthModifier(int modifierDelta)
+        {
+            m_strengthModifier += modifierDelta;
         }
 
         /// <summary>Calculates remaining Poise from defense, offense, and negative hit buildup.</summary>

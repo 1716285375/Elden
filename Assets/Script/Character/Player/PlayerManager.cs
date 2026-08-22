@@ -201,6 +201,7 @@ namespace ZZ
                 PlayerNetworkManager.CurrentRightHandWeaponID.Value);
             InventoryManager.InitializeLeftWeaponFromID(
                 PlayerNetworkManager.CurrentLeftHandWeaponID.Value);
+            PlayerNetworkManager.RefreshTwoHandingPresentation();
         }
 
         /// <summary>

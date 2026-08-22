@@ -7,6 +7,8 @@ namespace ZZ
     {
         RightHandSlot,
         LeftHandSlot,
-        LeftHandShieldSlot
+        LeftHandShieldSlot,
+        BackSlot,
+        HipSlot
     }
 }

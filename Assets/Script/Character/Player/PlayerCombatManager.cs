@@ -83,7 +83,9 @@ namespace ZZ
             }
 
             m_player.PlayerStatsManager?.SetBlockingStats(blockingWeapon);
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(false);
+            bool isRightHandBlock =
+                m_player.PlayerNetworkManager?.IsTwoHandingRightWeapon.Value == true;
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(isRightHandBlock);
             networkManager.SetBlockingState(true);
             return true;
         }
@@ -101,9 +103,11 @@ namespace ZZ
         /// <summary>Switches between the off-hand blocking and right-hand action sets.</summary>
         public void ApplyBlockingAnimatorController(bool isBlockingController)
         {
-            WeaponItem weapon = isBlockingController
-                ? m_player?.InventoryManager?.CurrentLeftHandWeapon
-                : m_player?.InventoryManager?.CurrentRightHandWeapon;
+            WeaponItem weapon = m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                ? m_player.InventoryManager?.CurrentTwoHandWeapon
+                : isBlockingController
+                    ? m_player?.InventoryManager?.CurrentLeftHandWeapon
+                    : m_player?.InventoryManager?.CurrentRightHandWeapon;
             m_player?.PlayerAnimatorManager?.UpdateAnimatorController(weapon);
         }
 
@@ -112,15 +116,19 @@ namespace ZZ
         /// </summary>
         public void BeginChargingHeavyAttack()
         {
-            WeaponItem weapon = m_player?.InventoryManager?.CurrentRightHandWeapon;
+            WeaponItem weapon = ResolveCurrentWeapon();
+            WeaponItemBasedAction heavyAction =
+                m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                    ? weapon?.TwoHandRightHeavyAction
+                    : weapon?.RightHandHeavyAction;
             if (m_player?.IsPerformingAction == true)
             {
-                weapon?.RightHandHeavyAction?.AttemptToPerformAction(m_player, weapon);
+                heavyAction?.AttemptToPerformAction(m_player, weapon);
                 return;
             }
 
             if (IsChargingAttack ||
-                weapon?.RightHandHeavyAction == null ||
+                heavyAction == null ||
                 !CanBeginChargingAttack())
             {
                 return;
@@ -129,7 +137,7 @@ namespace ZZ
             SetBlocking(false);
             m_chargingWeapon = weapon;
             m_chargeStartTime = Time.time;
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
+            SetCurrentWeaponActionHand();
             m_player.CharacterNetworkManager?.SetChargingAttackState(true);
         }
 
@@ -149,7 +157,9 @@ namespace ZZ
                 ShouldUseChargedAttack(chargeDuration, m_fullyChargedDuration) &&
                 weapon.RightHandChargedAction != null
                     ? weapon.RightHandChargedAction
-                    : weapon.RightHandHeavyAction;
+                    : m_player.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                        ? weapon.TwoHandRightHeavyAction
+                        : weapon.RightHandHeavyAction;
             ClearChargingState();
             m_player.ResetActionFlags();
             PerformWeaponBasedAction(weaponAction, weapon);
@@ -178,10 +188,11 @@ namespace ZZ
                 m_player.IsOwner &&
                 m_player.IsPerformingAction &&
                 m_player.PlayerNetworkManager != null &&
-                m_player.PlayerNetworkManager.IsUsingRightHand.Value;
-            m_canComboWithMainHandWeapon =
-                m_canQueueNextAttack &&
+                (m_player.PlayerNetworkManager.IsUsingRightHand.Value ||
+                    m_player.PlayerNetworkManager.IsTwoHandingWeapon.Value) &&
                 HasNextMainHandComboAttack(CurrentAttackType);
+            m_canComboWithMainHandWeapon =
+                m_canQueueNextAttack;
         }
 
         /// <summary>Closes the current main-hand combo window.</summary>
@@ -222,7 +233,7 @@ namespace ZZ
             }
 
             DisableCanCombo();
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
+            SetCurrentWeaponActionHand();
             ReplicateAttack(nextAttack, CurrentWeaponBeingUsed);
             m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
                 nextAttack);
@@ -328,6 +339,11 @@ namespace ZZ
                 return null;
             }
 
+            if (m_player.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true)
+            {
+                return m_player.InventoryManager.CurrentTwoHandWeapon;
+            }
+
             bool isUsingRightHand = m_player.PlayerNetworkManager == null ||
                 m_player.PlayerNetworkManager.IsUsingRightHand.Value;
             return isUsingRightHand
@@ -366,7 +382,7 @@ namespace ZZ
         private void PerformMovingAttack(AttackType attackType)
         {
             DisableCanCombo();
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
+            SetCurrentWeaponActionHand();
             ReplicateAttack(attackType, CurrentWeaponBeingUsed);
             m_player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(
                 attackType);
@@ -400,7 +416,7 @@ namespace ZZ
             }
 
             DisableCanCombo();
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
+            SetCurrentWeaponActionHand();
             ReplicateAttack(requestedOpeningAttack, CurrentWeaponBeingUsed);
             m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
                 requestedOpeningAttack);
@@ -412,6 +428,13 @@ namespace ZZ
             float fullyChargedDuration)
         {
             return chargeDuration >= Mathf.Max(0f, fullyChargedDuration);
+        }
+
+        private void SetCurrentWeaponActionHand()
+        {
+            bool isRightHandAction =
+                m_player?.PlayerNetworkManager?.IsTwoHandingLeftWeapon.Value != true;
+            m_player?.PlayerNetworkManager?.SetCharacterActionHand(isRightHandAction);
         }
 
         private static bool HasNextMainHandComboAttack(AttackType currentAttack)
