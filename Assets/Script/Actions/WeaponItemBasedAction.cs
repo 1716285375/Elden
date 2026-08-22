@@ -18,6 +18,22 @@ namespace ZZ
         /// </summary>
         public abstract void AttemptToPerformAction(PlayerManager player, WeaponItem weapon);
 
+        protected static bool CanPerformAttack(PlayerManager player)
+        {
+            if (player == null || !player.IsOwner || player.IsPerformingAction)
+            {
+                return false;
+            }
+
+            if (!player.IsGrounded)
+            {
+                return false;
+            }
+
+            return player.CharacterNetworkManager != null &&
+                player.CharacterNetworkManager.CurrentStamina.Value > 0f;
+        }
+
         internal void AssignActionID(int actionID)
         {
             m_actionID = actionID;

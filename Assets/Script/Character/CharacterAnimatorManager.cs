@@ -16,6 +16,8 @@ namespace ZZ
         private static readonly int s_isGroundedParameter = Animator.StringToHash("isGrounded");
         private static readonly int s_inAirTimerParameter = Animator.StringToHash("inAirTimer");
         private static readonly int s_isDeadParameter = Animator.StringToHash("isDead");
+        private static readonly int s_isChargingAttackParameter =
+            Animator.StringToHash("isChargingAttack");
         private static readonly int s_emptyActionState =
             Animator.StringToHash("Action Override.Empty");
         private static readonly int s_rollForwardState =
@@ -34,6 +36,10 @@ namespace ZZ
             Animator.StringToHash("Action Override.Attack_01");
         private static readonly int s_heavyAttack01State =
             Animator.StringToHash("Action Override.Attack_02");
+        private static readonly int s_chargedAttack01State =
+            Animator.StringToHash("Action Override.Attack_Charged_01");
+        private static readonly int s_chargingAttackState =
+            Animator.StringToHash("Action Override.Attack_Charge_01");
 
         [SerializeField] private Animator m_animator;
 
@@ -235,6 +241,39 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Updates the charge parameter and enters the authored charge pose when charging begins.
+        /// </summary>
+        public void SetChargingAttackState(bool isChargingAttack)
+        {
+            if (m_animator == null)
+            {
+                return;
+            }
+
+            m_animator.SetBool(s_isChargingAttackParameter, isChargingAttack);
+            if (!isChargingAttack || m_characterManager == null)
+            {
+                return;
+            }
+
+            int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            if (actionLayerIndex < 0 ||
+                !m_animator.HasState(actionLayerIndex, s_chargingAttackState))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} does not contain Attack_Charge_01.",
+                    m_animator);
+                return;
+            }
+
+            m_characterManager.SetActionState(true, false, true, false);
+            m_animator.CrossFade(
+                s_chargingAttackState,
+                k_ActionTransitionDuration,
+                actionLayerIndex);
+        }
+
+        /// <summary>
         /// Clears the death Animator condition and returns the action layer to its neutral state.
         /// </summary>
         public void PlayEmptyActionAnimation()
@@ -347,9 +386,15 @@ namespace ZZ
 
         private static int GetAttackStateHash(AttackType attackType)
         {
-            return attackType == AttackType.HeavyAttack01
-                ? s_heavyAttack01State
-                : s_lightAttack01State;
+            switch (attackType)
+            {
+                case AttackType.HeavyAttack01:
+                    return s_heavyAttack01State;
+                case AttackType.ChargedAttack01:
+                    return s_chargedAttack01State;
+                default:
+                    return s_lightAttack01State;
+            }
         }
 
         private IReadOnlyList<AnimationClip> GetDamageAnimations(

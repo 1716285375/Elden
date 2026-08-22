@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7ef8dd6c739f9e4dbdc888da0ff18a2, type: 3}
   m_Name: Heavy Attack
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.HeavyAttackWeaponItemAction
-  m_actionID: 0
+  m_actionID: 1
   m_attackType: 1

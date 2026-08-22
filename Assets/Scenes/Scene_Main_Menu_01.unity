@@ -6638,6 +6638,7 @@ MonoBehaviour:
   m_weaponActions:
   - {fileID: 11400000, guid: ce46975f3a3c844478af9193aea3e541, type: 2}
   - {fileID: 11400000, guid: f48816d9e0c231a4a9179ec378a172a3, type: 2}
+  - {fileID: 11400000, guid: 5bb894ee600f6144b90f860ceb0792d2, type: 2}
 --- !u!1 &1645924063
 GameObject:
   m_ObjectHideFlags: 0
