@@ -5,6 +5,9 @@ namespace ZZ
     [RequireComponent(typeof(CharacterManager))]
     public class CharacterEffectsManager : MonoBehaviour
     {
+        [Header("Visual Effects")]
+        [SerializeField] private GameObject m_bloodSplatterVFX;
+
         [SerializeField] private CharacterManager m_character;
 
         protected CharacterManager Character => m_character;
@@ -12,6 +15,22 @@ namespace ZZ
         protected virtual void Awake()
         {
             m_character ??= GetComponent<CharacterManager>();
+        }
+
+        /// <summary>
+        /// Spawns the blood splatter effect at a damage contact point, facing the hit direction.
+        /// </summary>
+        public void PlayBloodSplatterVFX(Vector3 contactPoint, Vector3 hitDirection)
+        {
+            if (m_bloodSplatterVFX == null)
+            {
+                return;
+            }
+
+            Quaternion rotation = hitDirection.sqrMagnitude > 0.0001f
+                ? Quaternion.LookRotation(hitDirection)
+                : Quaternion.identity;
+            Instantiate(m_bloodSplatterVFX, contactPoint, rotation);
         }
 
         /// <summary>

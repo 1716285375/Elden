@@ -69,7 +69,19 @@ namespace ZZ
         /// <inheritdoc />
         public override void ProcessEffect(CharacterManager character)
         {
-            if (character == null || !character.IsOwner || character.IsDead)
+            if (character == null || character.IsDead)
+            {
+                return;
+            }
+
+            Vector3 hitDirection = CharacterCausingDamage != null
+                ? (character.transform.position - CharacterCausingDamage.transform.position).normalized
+                : Vector3.zero;
+            character.CharacterEffectsManager?.PlayBloodSplatterVFX(
+                ContactPoint,
+                hitDirection);
+
+            if (!character.IsOwner)
             {
                 return;
             }

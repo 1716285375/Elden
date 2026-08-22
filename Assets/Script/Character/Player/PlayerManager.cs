@@ -64,6 +64,7 @@ namespace ZZ
         {
             base.OnNetworkSpawn();
             RegisterLocalPlayerForSaveData();
+            WorldGameSessionManager.Instance?.AddPlayer(this);
             TryPlaceAtSpawnPoint(SceneManager.GetActiveScene());
             RestoreSpawnedClientState();
             BindLocalPlayerSystems();
@@ -90,6 +91,7 @@ namespace ZZ
         {
             ResetLocalDeathPresentation();
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
+            WorldGameSessionManager.Instance?.RemovePlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
             PlayerStatsManager?.UnbindLocalHUD();
@@ -168,6 +170,23 @@ namespace ZZ
             }
 
             base.ReviveCharacter();
+        }
+
+        /// <summary>
+        /// Refreshes equipment presentation from already-synchronized network identifiers.
+        /// Called for late-joining clients once existing players have spawned.
+        /// </summary>
+        public void LoadOtherPlayerCharacter()
+        {
+            if (InventoryManager == null || PlayerNetworkManager == null)
+            {
+                return;
+            }
+
+            InventoryManager.InitializeRightWeaponFromID(
+                PlayerNetworkManager.CurrentRightHandWeaponID.Value);
+            InventoryManager.InitializeLeftWeaponFromID(
+                PlayerNetworkManager.CurrentLeftHandWeaponID.Value);
         }
 
         /// <summary>
