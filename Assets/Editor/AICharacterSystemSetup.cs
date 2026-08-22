@@ -500,8 +500,7 @@ namespace ZZ.Editor
                 root =>
                 {
                     root.name = "World AI Manager";
-                    WorldAIManager manager = GetOrAddComponent<WorldAIManager>(root);
-                    SetObjectReference(manager, "m_aiCharacterPrefab", aiCharacterPrefab);
+                    GetOrAddComponent<WorldAIManager>(root);
                     for (int spawnIndex = 0;
                         spawnIndex < s_spawnPositions.Length;
                         spawnIndex++)
@@ -515,7 +514,22 @@ namespace ZZ.Editor
                             spawnIndex * 120f,
                             0f);
                         spawnPoint.localScale = Vector3.one;
-                        GetOrAddComponent<AISpawnPoint>(spawnPoint.gameObject);
+                        AISpawnPoint legacySpawnPoint =
+                            spawnPoint.GetComponent<AISpawnPoint>();
+                        if (legacySpawnPoint != null)
+                        {
+                            UnityEngine.Object.DestroyImmediate(
+                                legacySpawnPoint,
+                                true);
+                        }
+
+                        AICharacterSpawner characterSpawner =
+                            GetOrAddComponent<AICharacterSpawner>(
+                                spawnPoint.gameObject);
+                        SetObjectReference(
+                            characterSpawner,
+                            "m_characterGameObject",
+                            aiCharacterPrefab);
                     }
                 });
         }
@@ -844,17 +858,23 @@ namespace ZZ.Editor
         {
             GameObject managerPrefab = LoadRequiredAsset<GameObject>(
                 k_WorldAIManagerPrefabPath);
-            WorldAIManager manager = GetRequiredComponent<WorldAIManager>(managerPrefab);
-            ValidateObjectReference(
-                manager,
-                "m_aiCharacterPrefab",
-                LoadRequiredAsset<GameObject>(k_AICharacterPrefabPath));
-            AISpawnPoint[] spawnPoints = managerPrefab
-                .GetComponentsInChildren<AISpawnPoint>(true);
-            if (spawnPoints.Length != s_spawnPositions.Length)
+            GetRequiredComponent<WorldAIManager>(managerPrefab);
+            GameObject aiCharacterPrefab = LoadRequiredAsset<GameObject>(
+                k_AICharacterPrefabPath);
+            AICharacterSpawner[] characterSpawners = managerPrefab
+                .GetComponentsInChildren<AICharacterSpawner>(true);
+            if (characterSpawners.Length != s_spawnPositions.Length)
             {
                 throw new InvalidOperationException(
-                    "World AI Manager must contain three spawn points.");
+                    "World AI Manager must contain three character spawners.");
+            }
+
+            foreach (AICharacterSpawner characterSpawner in characterSpawners)
+            {
+                ValidateObjectReference(
+                    characterSpawner,
+                    "m_characterGameObject",
+                    aiCharacterPrefab);
             }
         }
 
@@ -913,17 +933,17 @@ namespace ZZ.Editor
                         "World Scene requires one AI manager and a baked NavMeshSurface.");
                 }
 
-                foreach (AISpawnPoint spawnPoint in
-                    managers[0].GetComponentsInChildren<AISpawnPoint>(true))
+                foreach (AICharacterSpawner characterSpawner in
+                    managers[0].GetComponentsInChildren<AICharacterSpawner>(true))
                 {
                     if (!NavMesh.SamplePosition(
-                            spawnPoint.transform.position,
+                            characterSpawner.transform.position,
                             out _,
                             4f,
                             NavMesh.AllAreas))
                     {
                         throw new InvalidOperationException(
-                            $"{spawnPoint.name} is not near the baked NavMesh.");
+                            $"{characterSpawner.name} is not near the baked NavMesh.");
                     }
                 }
             }

@@ -46,6 +46,7 @@ namespace ZZ
         private readonly RaycastHit[] m_sightHits = new RaycastHit[16];
 
         private AICharacterStateMachine m_stateMachine;
+        private AICharacterSpawner m_originSpawner;
         private PlayerManager m_currentTarget;
         private float m_nextDetectionTime;
         private float m_nextAttackTime;
@@ -110,6 +111,7 @@ namespace ZZ
         public override void OnNetworkDespawn()
         {
             WorldAIManager.Instance?.UnregisterAI(this);
+            m_originSpawner?.NotifyCharacterDespawned(this);
             CloseAttackDamageColliders();
             if (m_navMeshAgent != null)
             {
@@ -153,6 +155,25 @@ namespace ZZ
             {
                 m_bodyCollider.enabled = false;
             }
+
+            if (IsServer)
+            {
+                m_originSpawner?.MarkBossDefeated();
+            }
+        }
+
+        /// <summary>Connects this server-spawned AI to its authored scene spawner.</summary>
+        public void SetOriginSpawner(AICharacterSpawner originSpawner)
+        {
+            if (IsSpawned)
+            {
+                Debug.LogWarning(
+                    "An AI origin spawner must be assigned before network spawning.",
+                    this);
+                return;
+            }
+
+            m_originSpawner = originSpawner;
         }
 
         internal void PublishState(AICharacterStateId stateId)
@@ -174,6 +195,11 @@ namespace ZZ
 
             m_nextDetectionTime = Time.time + m_detectionInterval;
             m_currentTarget = FindNearestVisiblePlayer();
+            if (m_currentTarget != null)
+            {
+                m_originSpawner?.MarkBossAwakened();
+            }
+
             return m_currentTarget != null;
         }
 

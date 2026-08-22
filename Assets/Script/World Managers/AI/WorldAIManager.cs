@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace ZZ
 {
@@ -13,12 +12,9 @@ namespace ZZ
     [DefaultExecutionOrder(-8000)]
     public class WorldAIManager : MonoBehaviour
     {
-        private const float k_SpawnSampleDistance = 4f;
-
         private static WorldAIManager s_instance;
 
-        [SerializeField] private GameObject m_aiCharacterPrefab;
-
+        private readonly List<AICharacterSpawner> m_characterSpawners = new();
         private readonly List<AICharacterManager> m_spawnedCharacters = new();
 
         private bool m_hasSpawnedCharacters;
@@ -29,6 +25,10 @@ namespace ZZ
         /// <summary>Gets every currently spawned AI registered on this peer.</summary>
         public IReadOnlyList<AICharacterManager> SpawnedCharacters =>
             m_spawnedCharacters;
+
+        /// <summary>Gets every registered spawn point in this gameplay scene.</summary>
+        public IReadOnlyList<AICharacterSpawner> CharacterSpawners =>
+            m_characterSpawners;
 
         private void Awake()
         {
@@ -69,14 +69,33 @@ namespace ZZ
             m_spawnedCharacters.Remove(aiCharacter);
         }
 
+        /// <summary>Registers one scene-authored spawner without duplicates.</summary>
+        public void RegisterSpawner(AICharacterSpawner characterSpawner)
+        {
+            if (characterSpawner == null ||
+                m_characterSpawners.Contains(characterSpawner))
+            {
+                return;
+            }
+
+            m_characterSpawners.Add(characterSpawner);
+            if (m_hasSpawnedCharacters && IsServerReady())
+            {
+                characterSpawner.AttemptToSpawnCharacter();
+            }
+        }
+
+        /// <summary>Removes a destroyed scene spawner from the world registry.</summary>
+        public void UnregisterSpawner(AICharacterSpawner characterSpawner)
+        {
+            m_characterSpawners.Remove(characterSpawner);
+        }
+
         private IEnumerator SpawnWhenServerIsReady()
         {
             while (!m_hasSpawnedCharacters)
             {
-                NetworkManager networkManager = NetworkManager.Singleton;
-                if (networkManager != null &&
-                    networkManager.IsListening &&
-                    networkManager.IsServer)
+                if (IsServerReady())
                 {
                     SpawnAICharacters();
                     yield break;
@@ -88,59 +107,29 @@ namespace ZZ
 
         private void SpawnAICharacters()
         {
-            if (m_hasSpawnedCharacters || m_aiCharacterPrefab == null)
+            if (m_hasSpawnedCharacters)
             {
                 return;
             }
 
-            NetworkObject prefabNetworkObject =
-                m_aiCharacterPrefab.GetComponent<NetworkObject>();
-            if (prefabNetworkObject == null)
-            {
-                Debug.LogError("The AI prefab must contain a NetworkObject.", this);
-                return;
-            }
-
-            AISpawnPoint[] spawnPoints = GetComponentsInChildren<AISpawnPoint>(true)
-                .OrderBy(spawnPoint => spawnPoint.transform.GetSiblingIndex())
+            AICharacterSpawner[] orderedSpawners = m_characterSpawners
+                .Where(spawner => spawner != null)
+                .OrderBy(spawner => spawner.transform.GetSiblingIndex())
                 .ToArray();
-            foreach (AISpawnPoint spawnPoint in spawnPoints)
+            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
             {
-                if (!TryResolveSpawnPosition(spawnPoint.transform.position, out Vector3 position))
-                {
-                    Debug.LogWarning(
-                        $"No NavMesh was found near AI spawn point {spawnPoint.name}.",
-                        spawnPoint);
-                    continue;
-                }
-
-                GameObject instance = Instantiate(
-                    m_aiCharacterPrefab,
-                    position,
-                    spawnPoint.transform.rotation);
-                NetworkObject networkObject = instance.GetComponent<NetworkObject>();
-                networkObject.Spawn(true);
+                characterSpawner.AttemptToSpawnCharacter();
             }
 
             m_hasSpawnedCharacters = true;
         }
 
-        private static bool TryResolveSpawnPosition(
-            Vector3 sourcePosition,
-            out Vector3 spawnPosition)
+        private static bool IsServerReady()
         {
-            if (NavMesh.SamplePosition(
-                    sourcePosition,
-                    out NavMeshHit hit,
-                    k_SpawnSampleDistance,
-                    NavMesh.AllAreas))
-            {
-                spawnPosition = hit.position;
-                return true;
-            }
-
-            spawnPosition = sourcePosition;
-            return false;
+            NetworkManager networkManager = NetworkManager.Singleton;
+            return networkManager != null &&
+                networkManager.IsListening &&
+                networkManager.IsServer;
         }
     }
 }
