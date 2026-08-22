@@ -174,6 +174,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LB"",
+                    ""type"": ""Button"",
+                    ""id"": ""5a183825-c45c-49e5-9936-5f6f16ceb359"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -517,6 +526,28 @@ namespace ZZ
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""727df01b-ddd3-46e5-825f-7479722ec6ce"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""LB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7ee04d0e-eab3-4fb7-a6aa-debf549bbff2"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""LB"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -702,6 +733,7 @@ namespace ZZ
             m_PlayerMovement_RB = m_PlayerMovement.FindAction("RB", throwIfNotFound: true);
             m_PlayerMovement_RT = m_PlayerMovement.FindAction("RT", throwIfNotFound: true);
             m_PlayerMovement_Interact = m_PlayerMovement.FindAction("Interact", throwIfNotFound: true);
+            m_PlayerMovement_LB = m_PlayerMovement.FindAction("LB", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -801,6 +833,7 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_RB;
         private readonly InputAction m_PlayerMovement_RT;
         private readonly InputAction m_PlayerMovement_Interact;
+        private readonly InputAction m_PlayerMovement_LB;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -848,6 +881,10 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/Interact".
             /// </summary>
             public InputAction @Interact => m_Wrapper.m_PlayerMovement_Interact;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/LB".
+            /// </summary>
+            public InputAction @LB => m_Wrapper.m_PlayerMovement_LB;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -901,6 +938,9 @@ namespace ZZ
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
+                @LB.started += instance.OnLB;
+                @LB.performed += instance.OnLB;
+                @LB.canceled += instance.OnLB;
             }
 
             /// <summary>
@@ -939,6 +979,9 @@ namespace ZZ
                 @Interact.started -= instance.OnInteract;
                 @Interact.performed -= instance.OnInteract;
                 @Interact.canceled -= instance.OnInteract;
+                @LB.started -= instance.OnLB;
+                @LB.performed -= instance.OnLB;
+                @LB.canceled -= instance.OnLB;
             }
 
             /// <summary>
@@ -1282,6 +1325,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnInteract(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "LB" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnLB(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

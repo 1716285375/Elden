@@ -9,6 +9,7 @@ namespace ZZ
         BackStep = 1,
         Death = 2,
         PassThroughFog = 3,
-        RestAtSiteOfGrace = 4
+        RestAtSiteOfGrace = 4,
+        GuardBreak = 5
     }
 }

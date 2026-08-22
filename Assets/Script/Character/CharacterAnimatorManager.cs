@@ -13,11 +13,14 @@ namespace ZZ
 
         private static readonly int s_horizontalParameter = Animator.StringToHash("Horizontal");
         private static readonly int s_verticalParameter = Animator.StringToHash("Vertical");
+        private static readonly int s_isMovingParameter = Animator.StringToHash("isMoving");
         private static readonly int s_isGroundedParameter = Animator.StringToHash("isGrounded");
         private static readonly int s_inAirTimerParameter = Animator.StringToHash("inAirTimer");
         private static readonly int s_isDeadParameter = Animator.StringToHash("isDead");
         private static readonly int s_isChargingAttackParameter =
             Animator.StringToHash("isChargingAttack");
+        private static readonly int s_isBlockingParameter =
+            Animator.StringToHash("isBlocking");
         private static readonly int s_emptyActionState =
             Animator.StringToHash("Action Override.Empty");
         private static readonly int s_rollForwardState =
@@ -32,6 +35,8 @@ namespace ZZ
             Animator.StringToHash("Action Override.Pass Through Fog");
         private static readonly int s_restAtSiteOfGraceState =
             Animator.StringToHash("Action Override.Rest At Site Of Grace");
+        private static readonly int s_guardBreakState =
+            Animator.StringToHash("Action Override.Guard_Break_01");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -134,6 +139,15 @@ namespace ZZ
                 resolvedVerticalValue,
                 k_MovementParameterDampTime,
                 Time.deltaTime);
+            m_animator.SetBool(
+                s_isMovingParameter,
+                Mathf.Abs(horizontalValue) + Mathf.Abs(verticalValue) > 0.1f);
+        }
+
+        /// <summary>Applies the replicated sustained block condition to the Animator.</summary>
+        public void SetBlockingState(bool isBlocking)
+        {
+            m_animator?.SetBool(s_isBlockingParameter, isBlocking);
         }
 
         /// <summary>
@@ -424,7 +438,8 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.BackStep ||
                 targetAnimation == CharacterActionAnimation.Death ||
                 targetAnimation == CharacterActionAnimation.PassThroughFog ||
-                targetAnimation == CharacterActionAnimation.RestAtSiteOfGrace;
+                targetAnimation == CharacterActionAnimation.RestAtSiteOfGrace ||
+                targetAnimation == CharacterActionAnimation.GuardBreak;
         }
 
         private static int GetAttackStateHash(AttackType attackType)
@@ -528,6 +543,9 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.RestAtSiteOfGrace:
                     actionStateHash = s_restAtSiteOfGraceState;
+                    return true;
+                case CharacterActionAnimation.GuardBreak:
+                    actionStateHash = s_guardBreakState;
                     return true;
                 default:
                     actionStateHash = 0;

@@ -21,6 +21,7 @@ namespace ZZ
         [SerializeField, Range(0f, 100f)] private float m_blockingFireAbsorption = 35f;
         [SerializeField, Range(0f, 100f)] private float m_blockingLightningAbsorption = 25f;
         [SerializeField, Range(0f, 100f)] private float m_blockingHolyAbsorption = 35f;
+        [SerializeField, Range(0f, 100f)] private float m_blockingStability = 50f;
 
         private CharacterManager m_characterManager;
         private CharacterNetworkManager m_characterNetworkManager;
@@ -49,6 +50,9 @@ namespace ZZ
         /// <summary>Gets Holy damage absorption while a valid block is active.</summary>
         public float BlockingHolyAbsorption =>
             Mathf.Clamp(m_blockingHolyAbsorption, 0f, 100f);
+
+        /// <summary>Gets the percentage of incoming guard stamina damage prevented.</summary>
+        public float BlockingStability => Mathf.Clamp(m_blockingStability, 0f, 100f);
 
         protected virtual void Awake()
         {
@@ -154,6 +158,80 @@ namespace ZZ
                 currentStamina,
                 maximumStamina,
                 staminaCost);
+            return true;
+        }
+
+        /// <summary>Copies the equipped blocking weapon's defense data into character state.</summary>
+        public void SetBlockingStats(WeaponItem blockingWeapon)
+        {
+            m_blockingPhysicalAbsorption = ClampBlockingValue(
+                blockingWeapon?.BlockingPhysicalAbsorption ?? 0f);
+            m_blockingMagicAbsorption = ClampBlockingValue(
+                blockingWeapon?.BlockingMagicAbsorption ?? 0f);
+            m_blockingFireAbsorption = ClampBlockingValue(
+                blockingWeapon?.BlockingFireAbsorption ?? 0f);
+            m_blockingLightningAbsorption = ClampBlockingValue(
+                blockingWeapon?.BlockingLightningAbsorption ?? 0f);
+            m_blockingHolyAbsorption = ClampBlockingValue(
+                blockingWeapon?.BlockingHolyAbsorption ?? 0f);
+            m_blockingStability = ClampBlockingValue(
+                blockingWeapon?.BlockingStability ?? 0f);
+        }
+
+        /// <summary>
+        /// Removes owner-authoritative guard stamina and checks Guard Break last.
+        /// </summary>
+        public bool ApplyBlockingStaminaDamage(
+            float poiseDamage,
+            float blockingStability)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            float staminaDamage = CalculateBlockingStaminaDamage(
+                poiseDamage,
+                blockingStability);
+            if (staminaDamage > 0f)
+            {
+                TryConsumeStamina(staminaDamage);
+            }
+
+            return CheckForGuardBreak();
+        }
+
+        /// <summary>Calculates Poise-based guard damage after Stability mitigation.</summary>
+        public static float CalculateBlockingStaminaDamage(
+            float poiseDamage,
+            float blockingStability)
+        {
+            return Mathf.Max(0f, poiseDamage) *
+                (1f - ClampBlockingValue(blockingStability) / 100f);
+        }
+
+        /// <summary>Breaks an active guard after owner Stamina reaches zero.</summary>
+        public bool CheckForGuardBreak()
+        {
+            if (!IsSpawned ||
+                !IsOwner ||
+                m_characterNetworkManager == null ||
+                !m_characterNetworkManager.IsBlocking.Value ||
+                m_characterNetworkManager.CurrentStamina.Value > 0f)
+            {
+                return false;
+            }
+
+            m_characterNetworkManager.SetBlockingState(false);
+            m_characterManager?.CharacterAnimatorManager?.PlayTargetActionAnimation(
+                CharacterActionAnimation.GuardBreak,
+                true);
+            m_characterNetworkManager.NotifyServerOfActionAnimationServerRpc(
+                CharacterActionAnimation.GuardBreak,
+                true,
+                false,
+                false,
+                false);
             return true;
         }
 
@@ -282,6 +360,11 @@ namespace ZZ
                 Mathf.FloorToInt(
                     Mathf.Max(0f, staminaTickTimer) /
                     Mathf.Max(0.01f, staminaTickInterval)));
+        }
+
+        private static float ClampBlockingValue(float value)
+        {
+            return Mathf.Clamp(value, 0f, 100f);
         }
     }
 }

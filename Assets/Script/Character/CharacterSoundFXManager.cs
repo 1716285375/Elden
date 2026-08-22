@@ -12,6 +12,8 @@ namespace ZZ
         [SerializeField] private AudioClip[] m_damageGrunts =
             System.Array.Empty<AudioClip>();
 
+        protected AudioSource CharacterAudioSource => m_audioSource;
+
         protected virtual void Awake()
         {
             m_audioSource ??= GetComponent<AudioSource>();
@@ -59,6 +61,11 @@ namespace ZZ
             {
                 m_audioSource.PlayOneShot(blockSound);
             }
+        }
+
+        /// <summary>Plays blocking feedback selected by the character implementation.</summary>
+        public virtual void PlayBlockingSoundEffect()
+        {
         }
     }
 }

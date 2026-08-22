@@ -10,6 +10,7 @@ namespace ZZ
         [Header("Weapon Model")]
         [SerializeField] private GameObject m_weaponModel;
         [SerializeField] private bool m_isUnarmed;
+        [SerializeField] private WeaponModelType m_weaponModelType;
         [SerializeField] private AnimatorOverrideController m_weaponAnimator;
 
         [Header("Weapon Pivot")]
@@ -34,8 +35,18 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_baseStaminaCost;
         [SerializeField, Min(0f)] private float m_basePoiseDamage;
 
+        [Header("Blocking")]
+        [SerializeField, Range(0f, 100f)] private float m_blockingPhysicalAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_blockingMagicAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_blockingFireAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_blockingLightningAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_blockingHolyAbsorption;
+        [SerializeField, Range(0f, 100f)] private float m_blockingStability;
+
         [Header("Sound Effects")]
         [SerializeField] private AudioClip[] m_whooshes = System.Array.Empty<AudioClip>();
+        [SerializeField] private AudioClip[] m_blockingSoundEffects =
+            System.Array.Empty<AudioClip>();
 
         [Header("Weapon Actions")]
         [SerializeField] private WeaponItemBasedAction m_rightHandAction;
@@ -43,6 +54,7 @@ namespace ZZ
         [SerializeField] private WeaponItemBasedAction m_rightHandChargedAction;
         [SerializeField] private WeaponItemBasedAction m_twoHandRightAction;
         [SerializeField] private WeaponItemBasedAction m_twoHandRightHeavyAction;
+        [SerializeField] private OffHandMeleeAction m_leftHandAction;
 
         [Header("Attack Modifiers")]
         [SerializeField, Min(0f)] private float m_lightAttack01DamageModifier = 1f;
@@ -63,6 +75,9 @@ namespace ZZ
 
         /// <summary>Gets whether this item represents the non-null unarmed fallback.</summary>
         public bool IsUnarmed => m_isUnarmed;
+
+        /// <summary>Gets whether this model uses a hand-weapon or shield attachment.</summary>
+        public WeaponModelType WeaponModelType => m_weaponModelType;
 
         /// <summary>Gets the complete animation override set used by this weapon.</summary>
         public AnimatorOverrideController WeaponAnimator => m_weaponAnimator;
@@ -109,8 +124,29 @@ namespace ZZ
         /// <summary>Gets the poise damage forwarded to the damage effect.</summary>
         public float BasePoiseDamage => m_basePoiseDamage;
 
+        /// <summary>Gets Physical damage absorption supplied while blocking.</summary>
+        public float BlockingPhysicalAbsorption => m_blockingPhysicalAbsorption;
+
+        /// <summary>Gets Magic damage absorption supplied while blocking.</summary>
+        public float BlockingMagicAbsorption => m_blockingMagicAbsorption;
+
+        /// <summary>Gets Fire damage absorption supplied while blocking.</summary>
+        public float BlockingFireAbsorption => m_blockingFireAbsorption;
+
+        /// <summary>Gets Lightning damage absorption supplied while blocking.</summary>
+        public float BlockingLightningAbsorption => m_blockingLightningAbsorption;
+
+        /// <summary>Gets Holy damage absorption supplied while blocking.</summary>
+        public float BlockingHolyAbsorption => m_blockingHolyAbsorption;
+
+        /// <summary>Gets the percentage of incoming guard stamina damage prevented.</summary>
+        public float BlockingStability => m_blockingStability;
+
         /// <summary>Gets the weapon-specific clips used when a damage window opens.</summary>
         public AudioClip[] Whooshes => m_whooshes;
+
+        /// <summary>Gets impact sounds played while this weapon blocks.</summary>
+        public AudioClip[] BlockingSoundEffects => m_blockingSoundEffects;
 
         /// <summary>Gets the action bound to the one-handed right-bumper slot.</summary>
         public WeaponItemBasedAction RightHandAction => m_rightHandAction;
@@ -126,6 +162,9 @@ namespace ZZ
 
         /// <summary>Gets the action bound to the two-handed right-trigger slot.</summary>
         public WeaponItemBasedAction TwoHandRightHeavyAction => m_twoHandRightHeavyAction;
+
+        /// <summary>Gets the sustained action bound to the left bumper.</summary>
+        public OffHandMeleeAction LeftHandAction => m_leftHandAction;
 
         /// <summary>
         /// Returns the damage multiplier applied to the supplied attack type.

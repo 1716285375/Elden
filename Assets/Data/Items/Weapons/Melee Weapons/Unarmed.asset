@@ -18,6 +18,7 @@ MonoBehaviour:
   m_itemID: 0
   m_weaponModel: {fileID: 3537712414218709070, guid: d48a6a0d322049b40915032c1af83c84, type: 3}
   m_isUnarmed: 1
+  m_weaponModelType: 0
   m_weaponAnimator: {fileID: 22100000, guid: b178e1923afb37747bc579509ff71c31, type: 2}
   m_weaponPivotPosition: {x: 0, y: 0, z: 0}
   m_weaponPivotRotation: {x: 0, y: 0, z: 0}
@@ -33,6 +34,12 @@ MonoBehaviour:
   m_faithRequirement: 0
   m_baseStaminaCost: 8
   m_basePoiseDamage: 5
+  m_blockingPhysicalAbsorption: 35
+  m_blockingMagicAbsorption: 15
+  m_blockingFireAbsorption: 15
+  m_blockingLightningAbsorption: 10
+  m_blockingHolyAbsorption: 15
+  m_blockingStability: 15
   m_whooshes:
   - {fileID: 8300000, guid: 1a44403d1b700cd44ac07d73b55bc152, type: 3}
   - {fileID: 8300000, guid: 33ad83188e8353c4aad2d3f7e7eb8919, type: 3}
@@ -40,11 +47,16 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a3798b84a1da13547aec20fe592f9cc0, type: 3}
   - {fileID: 8300000, guid: 79172ae985e243d49b910e3cb96a88dd, type: 3}
   - {fileID: 8300000, guid: 610b45d6ae155064880319b09c2d4532, type: 3}
+  m_blockingSoundEffects:
+  - {fileID: 8300000, guid: 52506b408dce06c4fb071d642c0dc45a, type: 3}
+  - {fileID: 8300000, guid: 921c8234df7c3204385063ac71e354d3, type: 3}
+  - {fileID: 8300000, guid: 78d820b8eab284c458ef4b260d752b6a, type: 3}
   m_rightHandAction: {fileID: 11400000, guid: ce46975f3a3c844478af9193aea3e541, type: 2}
   m_rightHandHeavyAction: {fileID: 11400000, guid: f48816d9e0c231a4a9179ec378a172a3, type: 2}
   m_rightHandChargedAction: {fileID: 11400000, guid: 5bb894ee600f6144b90f860ceb0792d2, type: 2}
   m_twoHandRightAction: {fileID: 0}
   m_twoHandRightHeavyAction: {fileID: 0}
+  m_leftHandAction: {fileID: 11400000, guid: 4d97d5a4924ec52488cc540afb61ae31, type: 2}
   m_lightAttack01DamageModifier: 1
   m_heavyAttack01DamageModifier: 1.25
   m_chargedAttack01DamageModifier: 1.75
