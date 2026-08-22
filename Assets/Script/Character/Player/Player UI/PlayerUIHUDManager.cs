@@ -7,8 +7,13 @@ namespace ZZ
     {
         [SerializeField] private UIStatBar m_healthBar;
         [SerializeField] private UIStatBar m_staminaBar;
+        [SerializeField] private UIQuickSlot m_leftWeaponQuickSlot;
+        [SerializeField] private UIQuickSlot m_rightWeaponQuickSlot;
+        [SerializeField] private UIQuickSlot m_spellQuickSlot;
+        [SerializeField] private UIQuickSlot m_itemQuickSlot;
 
         private CharacterNetworkManager m_boundNetworkManager;
+        private PlayerInventoryManager m_boundInventoryManager;
 
         /// <summary>
         /// Updates the local Health presentation from shared character state.
@@ -83,6 +88,45 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Binds the reusable quick slots to the locally owned player's equipped weapons.
+        /// </summary>
+        public void BindQuickSlots(PlayerInventoryManager inventoryManager)
+        {
+            if (inventoryManager == null)
+            {
+                return;
+            }
+
+            if (m_boundInventoryManager == inventoryManager)
+            {
+                return;
+            }
+
+            UnbindCurrentQuickSlots();
+            m_boundInventoryManager = inventoryManager;
+            m_boundInventoryManager.RightHandWeaponChanged +=
+                OnRightHandWeaponChanged;
+            m_boundInventoryManager.LeftHandWeaponChanged +=
+                OnLeftHandWeaponChanged;
+            RefreshQuickSlots();
+        }
+
+        /// <summary>
+        /// Releases the quick-slot binding only when it still represents the supplied inventory.
+        /// </summary>
+        public void UnbindQuickSlots(PlayerInventoryManager inventoryManager)
+        {
+            if (m_boundInventoryManager != inventoryManager)
+            {
+                return;
+            }
+
+            UnbindCurrentQuickSlots();
+            m_leftWeaponQuickSlot?.SetItem(null);
+            m_rightWeaponQuickSlot?.SetItem(null);
+        }
+
+        /// <summary>
         /// Forces the status-bar layout to react to stat-driven width changes.
         /// </summary>
         public void RefreshHUD()
@@ -124,12 +168,32 @@ namespace ZZ
             }
         }
 
+        private void OnRightHandWeaponChanged(WeaponItem weapon)
+        {
+            m_rightWeaponQuickSlot?.SetItem(weapon);
+        }
+
+        private void OnLeftHandWeaponChanged(WeaponItem weapon)
+        {
+            m_leftWeaponQuickSlot?.SetItem(weapon);
+        }
+
         private void RefreshStatBars()
         {
             SetMaxHealthValue(m_boundNetworkManager.MaxHealth.Value);
             SetNewHealthValue(m_boundNetworkManager.CurrentHealth.Value);
             SetMaxStaminaValue(m_boundNetworkManager.MaxStamina.Value);
             SetNewStaminaValue(m_boundNetworkManager.CurrentStamina.Value);
+        }
+
+        private void RefreshQuickSlots()
+        {
+            m_leftWeaponQuickSlot?.SetItem(
+                m_boundInventoryManager.CurrentLeftHandWeapon);
+            m_rightWeaponQuickSlot?.SetItem(
+                m_boundInventoryManager.CurrentRightHandWeapon);
+            m_spellQuickSlot?.SetItem(null);
+            m_itemQuickSlot?.SetItem(null);
         }
 
         private void UnbindCurrentStats()
@@ -144,6 +208,20 @@ namespace ZZ
             m_boundNetworkManager.CurrentStamina.OnValueChanged -= OnCurrentStaminaChanged;
             m_boundNetworkManager.MaxStamina.OnValueChanged -= OnMaxStaminaChanged;
             m_boundNetworkManager = null;
+        }
+
+        private void UnbindCurrentQuickSlots()
+        {
+            if (m_boundInventoryManager == null)
+            {
+                return;
+            }
+
+            m_boundInventoryManager.RightHandWeaponChanged -=
+                OnRightHandWeaponChanged;
+            m_boundInventoryManager.LeftHandWeaponChanged -=
+                OnLeftHandWeaponChanged;
+            m_boundInventoryManager = null;
         }
 
         private static void RefreshStatBarLayout(UIStatBar statBar)

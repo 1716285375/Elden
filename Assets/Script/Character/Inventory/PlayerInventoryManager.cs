@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ZZ
@@ -34,6 +35,12 @@ namespace ZZ
 
         /// <summary>Gets the runtime copy currently selected for the left hand.</summary>
         public WeaponItem CurrentLeftHandWeapon => m_currentLeftHandWeapon;
+
+        /// <summary>Raised after the right-hand runtime weapon and model are refreshed.</summary>
+        public event Action<WeaponItem> RightHandWeaponChanged;
+
+        /// <summary>Raised after the left-hand runtime weapon and model are refreshed.</summary>
+        public event Action<WeaponItem> LeftHandWeaponChanged;
 
         protected override void Awake()
         {
@@ -149,6 +156,7 @@ namespace ZZ
                 runtimeWeapon.ItemID,
                 ref m_rightHandWeaponIndex);
             m_equipmentManager.LoadRightWeapon(runtimeWeapon);
+            RightHandWeaponChanged?.Invoke(runtimeWeapon);
             return true;
         }
 
@@ -167,6 +175,7 @@ namespace ZZ
                 runtimeWeapon.ItemID,
                 ref m_leftHandWeaponIndex);
             m_equipmentManager.LoadLeftWeapon(runtimeWeapon);
+            LeftHandWeaponChanged?.Invoke(runtimeWeapon);
             return true;
         }
 

@@ -87,6 +87,8 @@ namespace ZZ
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
+            PlayerUIManager.Instance?.PlayerUIHUDManager?.UnbindQuickSlots(
+                InventoryManager);
             PlayerStatsManager?.UnbindLocalHUD();
             base.OnLostOwnership();
         }
@@ -99,6 +101,8 @@ namespace ZZ
             WorldGameSessionManager.Instance?.RemovePlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
             PlayerInputManager.Instance?.ClearPlayer(this);
+            PlayerUIManager.Instance?.PlayerUIHUDManager?.UnbindQuickSlots(
+                InventoryManager);
             PlayerStatsManager?.UnbindLocalHUD();
             base.OnNetworkDespawn();
         }
@@ -263,6 +267,8 @@ namespace ZZ
 
             PlayerCamera.Instance?.BindPlayer(this);
             PlayerInputManager.Instance?.BindPlayer(this);
+            PlayerUIManager.Instance?.PlayerUIHUDManager?.BindQuickSlots(
+                InventoryManager);
             PlayerStatsManager?.BindLocalHUD();
         }
 

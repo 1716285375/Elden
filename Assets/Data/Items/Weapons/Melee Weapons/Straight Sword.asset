@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Straight Sword
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.MeleeWeaponItem
   m_itemName: Straight Sword
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 21300000, guid: ff059b920d44e894d9544dc02bc1844f, type: 3}
   m_itemDescription: A balanced straight sword suitable for one-handed combat.
   m_itemID: 1
   m_weaponModel: {fileID: 5024126159876492057, guid: 053ee4bc320618145969e734e9dba307, type: 3}
