@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace ZZ
         [SerializeField] private bool m_shouldDisableColliderAfterInteraction = true;
 
         private Rigidbody m_rigidbody;
+        private readonly HashSet<PlayerInteractionManager> m_registeredPlayers = new();
 
         public string InteractableText => m_interactableText;
         public Collider InteractableCollider => m_interactableCollider;
@@ -33,6 +35,11 @@ namespace ZZ
             m_rigidbody = GetComponent<Rigidbody>();
             m_interactableCollider ??= GetComponentInChildren<Collider>(true);
             ConfigurePhysicsComponents();
+        }
+
+        private void OnDisable()
+        {
+            ClearInteractionRegistrations();
         }
 
         /// <summary>Returns whether the supplied local player may use this interaction.</summary>
@@ -58,6 +65,7 @@ namespace ZZ
             if (m_shouldDisableColliderAfterInteraction && m_interactableCollider != null)
             {
                 m_interactableCollider.enabled = false;
+                ClearInteractionRegistrations();
             }
         }
 
@@ -68,18 +76,43 @@ namespace ZZ
             {
                 m_interactableCollider.enabled = isEnabled;
             }
+
+            if (!isEnabled)
+            {
+                ClearInteractionRegistrations();
+            }
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            other.GetComponentInParent<PlayerInteractionManager>()
-                ?.AddInteractionToList(this);
+            PlayerInteractionManager interactionManager =
+                other.GetComponentInParent<PlayerInteractionManager>();
+            if (interactionManager != null &&
+                m_registeredPlayers.Add(interactionManager))
+            {
+                interactionManager.AddInteractionToList(this);
+            }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            other.GetComponentInParent<PlayerInteractionManager>()
-                ?.RemoveInteractionFromList(this);
+            PlayerInteractionManager interactionManager =
+                other.GetComponentInParent<PlayerInteractionManager>();
+            if (interactionManager != null &&
+                m_registeredPlayers.Remove(interactionManager))
+            {
+                interactionManager.RemoveInteractionFromList(this);
+            }
+        }
+
+        private void ClearInteractionRegistrations()
+        {
+            foreach (PlayerInteractionManager interactionManager in m_registeredPlayers)
+            {
+                interactionManager?.RemoveInteractionFromList(this);
+            }
+
+            m_registeredPlayers.Clear();
         }
 
         private void ConfigurePhysicsComponents()

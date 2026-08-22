@@ -22,6 +22,7 @@ namespace ZZ.Editor
             k_InstantEffectsFolder + "/Take Damage Effect.asset";
         private const string k_DamageLayerName = "Damage Collider";
         private const string k_CharacterLayerName = "Player";
+        private const string k_DamageableCharacterLayerName = "Damageable Character";
         private const string k_WallOfPainName = "Wall Of Pain";
         private const int k_TakeDamageEffectId = 1;
         private const float k_WallPhysicalDamage = 10f;
@@ -35,7 +36,12 @@ namespace ZZ.Editor
             EnsureAssetFolder(k_InstantEffectsFolder);
             int damageLayer = EnsureLayer(k_DamageLayerName);
             int characterLayer = GetRequiredLayer(k_CharacterLayerName);
-            ConfigureLayerCollisionMatrix(damageLayer, characterLayer);
+            int damageableCharacterLayer = GetRequiredLayer(
+                k_DamageableCharacterLayerName);
+            ConfigureLayerCollisionMatrix(
+                damageLayer,
+                characterLayer,
+                damageableCharacterLayer);
             TakeDamageEffect takeDamageEffect = ConfigureTakeDamageEffect();
             ConfigurePlayerPrefab();
             ConfigureMainMenuScene(takeDamageEffect);
@@ -202,14 +208,16 @@ namespace ZZ.Editor
 
         private static void ConfigureLayerCollisionMatrix(
             int damageLayer,
-            int characterLayer)
+            int characterLayer,
+            int damageableCharacterLayer)
         {
             for (int layerIndex = 0; layerIndex < 32; layerIndex++)
             {
                 Physics.IgnoreLayerCollision(
                     damageLayer,
                     layerIndex,
-                    layerIndex != characterLayer);
+                    layerIndex != characterLayer &&
+                    layerIndex != damageableCharacterLayer);
             }
 
             UnityEngine.Object physicsManager =
@@ -311,14 +319,21 @@ namespace ZZ.Editor
         {
             int damageLayer = GetRequiredLayer(k_DamageLayerName);
             int characterLayer = GetRequiredLayer(k_CharacterLayerName);
+            int damageableCharacterLayer = GetRequiredLayer(
+                k_DamageableCharacterLayerName);
             for (int layerIndex = 0; layerIndex < 32; layerIndex++)
             {
                 bool isCollisionEnabled =
                     !Physics.GetIgnoreLayerCollision(damageLayer, layerIndex);
-                if (isCollisionEnabled != (layerIndex == characterLayer))
+                bool shouldCollide = layerIndex == characterLayer ||
+                    layerIndex == damageableCharacterLayer;
+                if (isCollisionEnabled != shouldCollide)
                 {
                     throw new InvalidOperationException(
-                        "Damage Collider must collide exclusively with the Player layer.");
+                        "Damage Collider must collide exclusively with Player and " +
+                        "Damageable Character layers. " +
+                        $"Unexpected layer {layerIndex} ({LayerMask.LayerToName(layerIndex)}), " +
+                        $"collision enabled: {isCollisionEnabled}.");
                 }
             }
         }

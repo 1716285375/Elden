@@ -7,6 +7,7 @@ namespace ZZ
     {
         RollForward = 0,
         BackStep = 1,
-        Death = 2
+        Death = 2,
+        PassThroughFog = 3
     }
 }

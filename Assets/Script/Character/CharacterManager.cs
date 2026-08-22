@@ -26,6 +26,7 @@ namespace ZZ
         private bool m_canRotate = true;
         private bool m_shouldApplyRootMotion;
         private bool m_isDeathEventRunning;
+        private bool m_isInvulnerable;
 
         public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
         public CharacterEffectsManager CharacterEffectsManager => m_characterEffectsManager;
@@ -55,6 +56,7 @@ namespace ZZ
         public bool CanMove => m_canMove;
         public bool CanRotate => m_canRotate;
         public bool ShouldApplyRootMotion => m_shouldApplyRootMotion;
+        public bool IsInvulnerable => m_isInvulnerable;
 
         /// <summary>Gets whether this character type may present a world-space Health bar.</summary>
         public bool HasFloatingHPBar => m_hasFloatingHPBar;
@@ -138,6 +140,12 @@ namespace ZZ
             m_canRotate = canRotate;
         }
 
+        /// <summary>Sets whether incoming instant damage should be ignored.</summary>
+        public void SetInvulnerable(bool isInvulnerable)
+        {
+            m_isInvulnerable = isInvulnerable;
+        }
+
         /// <summary>
         /// Restores the default action state after an action animation returns to Empty.
         /// </summary>
@@ -205,6 +213,7 @@ namespace ZZ
         public virtual void ReviveCharacter()
         {
             m_isDeathEventRunning = false;
+            m_isInvulnerable = false;
             m_characterAnimatorManager?.PlayEmptyActionAnimation();
             ResetActionFlags();
         }

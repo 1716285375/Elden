@@ -28,6 +28,8 @@ namespace ZZ
             Animator.StringToHash("Action Override.Jump Start");
         private static readonly int s_deathState =
             Animator.StringToHash("Action Override.Dead_01");
+        private static readonly int s_passThroughFogState =
+            Animator.StringToHash("Action Override.Pass Through Fog");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -393,7 +395,8 @@ namespace ZZ
         {
             return targetAnimation == CharacterActionAnimation.RollForward ||
                 targetAnimation == CharacterActionAnimation.BackStep ||
-                targetAnimation == CharacterActionAnimation.Death;
+                targetAnimation == CharacterActionAnimation.Death ||
+                targetAnimation == CharacterActionAnimation.PassThroughFog;
         }
 
         private static int GetAttackStateHash(AttackType attackType)
@@ -491,6 +494,9 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.Death:
                     actionStateHash = s_deathState;
+                    return true;
+                case CharacterActionAnimation.PassThroughFog:
+                    actionStateHash = s_passThroughFogState;
                     return true;
                 default:
                     actionStateHash = 0;

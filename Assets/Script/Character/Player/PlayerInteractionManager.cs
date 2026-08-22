@@ -49,8 +49,7 @@ namespace ZZ
             m_currentInteractableActions.Remove(interactable);
             if (m_activeInteractable == interactable)
             {
-                m_activeInteractable = null;
-                CloseAllPopUpWindows();
+                ClearActiveInteraction();
             }
         }
 

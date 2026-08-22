@@ -129,10 +129,20 @@ namespace ZZ
 
         private void SetArenaLocked(bool isLocked)
         {
-            if (m_fogWallRoot != null)
+            if (m_fogWallRoot == null)
             {
-                m_fogWallRoot.SetActive(isLocked);
+                return;
             }
+
+            FogWallInteractable fogWall =
+                m_fogWallRoot.GetComponent<FogWallInteractable>();
+            if (fogWall != null)
+            {
+                fogWall.SetFogWallActive(isLocked);
+                return;
+            }
+
+            m_fogWallRoot.SetActive(isLocked);
         }
 
         private void OnDrawGizmosSelected()
