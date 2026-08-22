@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Unarmed
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.MeleeWeaponItem
   m_itemName: Unarmed
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 21300000, guid: acb985449c8a0dd42a22de227338e719, type: 3}
   m_itemDescription: Bare hands used when no weapon is equipped.
   m_itemID: 0
   m_weaponModel: {fileID: 3537712414218709070, guid: d48a6a0d322049b40915032c1af83c84, type: 3}
