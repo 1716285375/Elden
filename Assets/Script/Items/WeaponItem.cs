@@ -10,6 +10,12 @@ namespace ZZ
         [Header("Weapon Model")]
         [SerializeField] private GameObject m_weaponModel;
         [SerializeField] private bool m_isUnarmed;
+        [SerializeField] private AnimatorOverrideController m_weaponAnimator;
+
+        [Header("Weapon Pivot")]
+        [SerializeField] private Vector3 m_weaponPivotPosition;
+        [SerializeField] private Vector3 m_weaponPivotRotation;
+        [SerializeField] private Vector3 m_weaponPivotScale = Vector3.one;
 
         [Header("Base Damage")]
         [SerializeField, Min(0f)] private float m_physicalDamage;
@@ -57,6 +63,18 @@ namespace ZZ
 
         /// <summary>Gets whether this item represents the non-null unarmed fallback.</summary>
         public bool IsUnarmed => m_isUnarmed;
+
+        /// <summary>Gets the complete animation override set used by this weapon.</summary>
+        public AnimatorOverrideController WeaponAnimator => m_weaponAnimator;
+
+        /// <summary>Gets the local hand-slot position adjustment for this weapon model.</summary>
+        public Vector3 WeaponPivotPosition => m_weaponPivotPosition;
+
+        /// <summary>Gets the local hand-slot Euler rotation adjustment.</summary>
+        public Vector3 WeaponPivotRotation => m_weaponPivotRotation;
+
+        /// <summary>Gets the local hand-slot scale adjustment.</summary>
+        public Vector3 WeaponPivotScale => m_weaponPivotScale;
 
         /// <summary>Gets the weapon's base physical damage.</summary>
         public float PhysicalDamage => m_physicalDamage;

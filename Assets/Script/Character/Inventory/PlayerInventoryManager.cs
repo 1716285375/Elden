@@ -42,6 +42,19 @@ namespace ZZ
         /// <summary>Raised after the left-hand runtime weapon and model are refreshed.</summary>
         public event Action<WeaponItem> LeftHandWeaponChanged;
 
+        /// <summary>Resolves one currently equipped runtime weapon for animation updates.</summary>
+        public WeaponItem GetEquippedWeaponByID(int weaponID)
+        {
+            if (m_currentRightHandWeapon?.ItemID == weaponID)
+            {
+                return m_currentRightHandWeapon;
+            }
+
+            return m_currentLeftHandWeapon?.ItemID == weaponID
+                ? m_currentLeftHandWeapon
+                : null;
+        }
+
         protected override void Awake()
         {
             base.Awake();

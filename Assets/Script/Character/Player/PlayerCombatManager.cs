@@ -164,7 +164,7 @@ namespace ZZ
 
             DisableCanCombo();
             m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
-            ReplicateAttack(nextAttack);
+            ReplicateAttack(nextAttack, CurrentWeaponBeingUsed);
             m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
                 nextAttack);
             return true;
@@ -307,7 +307,7 @@ namespace ZZ
         {
             DisableCanCombo();
             m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
-            ReplicateAttack(attackType);
+            ReplicateAttack(attackType, CurrentWeaponBeingUsed);
             m_player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(
                 attackType);
         }
@@ -341,7 +341,7 @@ namespace ZZ
 
             DisableCanCombo();
             m_player.PlayerNetworkManager?.SetCharacterActionHand(true);
-            ReplicateAttack(requestedOpeningAttack);
+            ReplicateAttack(requestedOpeningAttack, CurrentWeaponBeingUsed);
             m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
                 requestedOpeningAttack);
             return true;

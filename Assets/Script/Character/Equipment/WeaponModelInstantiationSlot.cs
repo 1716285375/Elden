@@ -34,9 +34,10 @@ namespace ZZ
 
             m_currentWeaponModel = Instantiate(weapon.WeaponModel, transform);
             Transform modelTransform = m_currentWeaponModel.transform;
-            modelTransform.localPosition = Vector3.zero;
-            modelTransform.localRotation = Quaternion.identity;
-            modelTransform.localScale = Vector3.one;
+            modelTransform.localPosition = weapon.WeaponPivotPosition;
+            modelTransform.localRotation = Quaternion.Euler(
+                weapon.WeaponPivotRotation);
+            modelTransform.localScale = weapon.WeaponPivotScale;
 
             WeaponManager weaponManager =
                 m_currentWeaponModel.GetComponentInChildren<WeaponManager>(true);

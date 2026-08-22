@@ -91,6 +91,25 @@ namespace ZZ
             m_characterManager ??= GetComponentInParent<CharacterManager>();
         }
 
+        /// <summary>Switches the Animator to the complete override set authored by a weapon.</summary>
+        public bool UpdateAnimatorController(WeaponItem weapon)
+        {
+            if (m_animator == null || weapon?.WeaponAnimator == null)
+            {
+                Debug.LogError(
+                    $"Weapon {weapon?.name ?? "None"} requires an AnimatorOverrideController.",
+                    this);
+                return false;
+            }
+
+            if (m_animator.runtimeAnimatorController != weapon.WeaponAnimator)
+            {
+                m_animator.runtimeAnimatorController = weapon.WeaponAnimator;
+            }
+
+            return true;
+        }
+
         public void UpdateAnimatorMovementParameters(
             float horizontalValue,
             float verticalValue,
@@ -217,9 +236,15 @@ namespace ZZ
         /// </summary>
         public void PlayTargetAttackActionAnimation(
             AttackType attackType,
+            WeaponItem weapon = null,
             bool shouldApplyRootMotion = true)
         {
             if (m_animator == null || m_characterManager == null)
+            {
+                return;
+            }
+
+            if (weapon != null && !UpdateAnimatorController(weapon))
             {
                 return;
             }
