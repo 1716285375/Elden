@@ -15,6 +15,13 @@ namespace ZZ
         [SerializeField, Min(0.01f)] private float m_staminaRegenerationTickInterval = 0.1f;
         [SerializeField, Min(0f)] private float m_staminaRegenerationAmount = 2f;
 
+        [Header("Blocking Absorption")]
+        [SerializeField, Range(0f, 100f)] private float m_blockingPhysicalAbsorption = 85f;
+        [SerializeField, Range(0f, 100f)] private float m_blockingMagicAbsorption = 40f;
+        [SerializeField, Range(0f, 100f)] private float m_blockingFireAbsorption = 35f;
+        [SerializeField, Range(0f, 100f)] private float m_blockingLightningAbsorption = 25f;
+        [SerializeField, Range(0f, 100f)] private float m_blockingHolyAbsorption = 35f;
+
         private CharacterManager m_characterManager;
         private CharacterNetworkManager m_characterNetworkManager;
         private float m_staminaRegenerationTimer;
@@ -22,6 +29,26 @@ namespace ZZ
 
         protected CharacterManager CharacterManager => m_characterManager;
         protected CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
+
+        /// <summary>Gets Physical damage absorption while a valid block is active.</summary>
+        public float BlockingPhysicalAbsorption =>
+            Mathf.Clamp(m_blockingPhysicalAbsorption, 0f, 100f);
+
+        /// <summary>Gets Magic damage absorption while a valid block is active.</summary>
+        public float BlockingMagicAbsorption =>
+            Mathf.Clamp(m_blockingMagicAbsorption, 0f, 100f);
+
+        /// <summary>Gets Fire damage absorption while a valid block is active.</summary>
+        public float BlockingFireAbsorption =>
+            Mathf.Clamp(m_blockingFireAbsorption, 0f, 100f);
+
+        /// <summary>Gets Lightning damage absorption while a valid block is active.</summary>
+        public float BlockingLightningAbsorption =>
+            Mathf.Clamp(m_blockingLightningAbsorption, 0f, 100f);
+
+        /// <summary>Gets Holy damage absorption while a valid block is active.</summary>
+        public float BlockingHolyAbsorption =>
+            Mathf.Clamp(m_blockingHolyAbsorption, 0f, 100f);
 
         protected virtual void Awake()
         {

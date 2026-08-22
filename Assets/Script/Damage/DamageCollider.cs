@@ -6,6 +6,8 @@ namespace ZZ
     [RequireComponent(typeof(Collider))]
     public class DamageCollider : MonoBehaviour
     {
+        private const float k_MinimumBlockingDot = 0.3f;
+
         [Header("Damage Source")]
         [SerializeField] private CharacterManager m_characterCausingDamage;
 
@@ -51,9 +53,14 @@ namespace ZZ
                 return;
             }
 
-            m_charactersDamaged.Add(target);
             Vector3 contactPoint = other.ClosestPointOnBounds(transform.position);
-            Damage(target, contactPoint);
+            bool wasBlocked = CheckForBlock(target);
+            if (!wasBlocked)
+            {
+                m_charactersDamaged.Add(target);
+            }
+
+            Damage(target, contactPoint, wasBlocked);
         }
 
         /// <summary>
@@ -100,7 +107,84 @@ namespace ZZ
             m_poiseDamage = Mathf.Max(0f, poiseDamage);
         }
 
-        protected virtual void Damage(CharacterManager target, Vector3 contactPoint)
+        /// <summary>
+        /// Returns whether the target is actively blocking a hit that originates in front.
+        /// Successful blocks immediately enter the per-window hit registry.
+        /// </summary>
+        public bool CheckForBlock(CharacterManager damageTarget)
+        {
+            CharacterNetworkManager targetNetworkManager =
+                damageTarget?.CharacterNetworkManager;
+            if (targetNetworkManager == null ||
+                !targetNetworkManager.IsBlocking.Value ||
+                GetBlockingDotValues(damageTarget) <= k_MinimumBlockingDot)
+            {
+                return false;
+            }
+
+            if (!m_charactersDamaged.Contains(damageTarget))
+            {
+                m_charactersDamaged.Add(damageTarget);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Calculates the forward-facing block dot from the target towards the melee attacker.
+        /// Projectile colliders can override this to use their own transform as the origin.
+        /// </summary>
+        protected virtual float GetBlockingDotValues(CharacterManager damageTarget)
+        {
+            if (damageTarget == null || m_characterCausingDamage == null)
+            {
+                return -1f;
+            }
+
+            Vector3 targetForward = Vector3.ProjectOnPlane(
+                damageTarget.transform.forward,
+                Vector3.up);
+            Vector3 directionToAttackOrigin = Vector3.ProjectOnPlane(
+                m_characterCausingDamage.transform.position -
+                    damageTarget.transform.position,
+                Vector3.up);
+            if (targetForward.sqrMagnitude <= Mathf.Epsilon ||
+                directionToAttackOrigin.sqrMagnitude <= Mathf.Epsilon)
+            {
+                return -1f;
+            }
+
+            return CalculateBlockingDot(
+                targetForward,
+                directionToAttackOrigin);
+        }
+
+        /// <summary>Calculates a normalized horizontal facing dot for deterministic tests.</summary>
+        public static float CalculateBlockingDot(
+            Vector3 targetForward,
+            Vector3 directionToAttackOrigin)
+        {
+            Vector3 horizontalForward = Vector3.ProjectOnPlane(
+                targetForward,
+                Vector3.up);
+            Vector3 horizontalDirection = Vector3.ProjectOnPlane(
+                directionToAttackOrigin,
+                Vector3.up);
+            if (horizontalForward.sqrMagnitude <= Mathf.Epsilon ||
+                horizontalDirection.sqrMagnitude <= Mathf.Epsilon)
+            {
+                return -1f;
+            }
+
+            return Vector3.Dot(
+                horizontalDirection.normalized,
+                horizontalForward.normalized);
+        }
+
+        protected virtual void Damage(
+            CharacterManager target,
+            Vector3 contactPoint,
+            bool wasBlocked)
         {
             CharacterNetworkManager networkManager =
                 m_characterCausingDamage?.CharacterNetworkManager;
@@ -115,27 +199,77 @@ namespace ZZ
                     m_lightningDamage,
                     m_holyDamage,
                     m_poiseDamage,
-                    contactPoint);
+                    contactPoint,
+                    wasBlocked);
                 return;
             }
 
-            ApplyDamageLocally(target, contactPoint);
+            ApplyDamageLocally(target, contactPoint, wasBlocked);
         }
 
-        private void ApplyDamageLocally(CharacterManager target, Vector3 contactPoint)
+        private void ApplyDamageLocally(
+            CharacterManager target,
+            Vector3 contactPoint,
+            bool wasBlocked)
         {
             CharacterEffectsManager effectsManager = target.CharacterEffectsManager;
-            TakeDamageEffect damageTemplate =
-                WorldCharacterEffectsManager.Instance?.TakeDamageEffect;
-            if (effectsManager == null || damageTemplate == null)
+            if (effectsManager == null)
             {
                 Debug.LogWarning(
-                    "Damage requires a target effects manager and the world damage template.",
+                    "Damage requires a target effects manager.",
                     this);
                 return;
             }
 
-            TakeDamageEffect runtimeEffect = damageTemplate.CreateRuntimeDamageEffect(
+            InstantCharacterEffect runtimeEffect = CreateRuntimeDamageEffect(
+                target,
+                contactPoint,
+                wasBlocked);
+            if (runtimeEffect == null)
+            {
+                Debug.LogWarning(
+                    "Damage requires the matching world damage template.",
+                    this);
+                return;
+            }
+
+            effectsManager.ProcessRuntimeInstantEffect(runtimeEffect);
+        }
+
+        private InstantCharacterEffect CreateRuntimeDamageEffect(
+            CharacterManager target,
+            Vector3 contactPoint,
+            bool wasBlocked)
+        {
+            WorldCharacterEffectsManager effectsManager =
+                WorldCharacterEffectsManager.Instance;
+            if (wasBlocked)
+            {
+                TakeBlockedDamageEffect blockedTemplate =
+                    effectsManager?.TakeBlockedDamageEffect;
+                CharacterStatsManager statsManager = target.CharacterStatsManager;
+                if (blockedTemplate == null || statsManager == null)
+                {
+                    return null;
+                }
+
+                return blockedTemplate.CreateRuntimeBlockedDamageEffect(
+                    m_characterCausingDamage,
+                    m_physicalDamage,
+                    m_magicDamage,
+                    m_fireDamage,
+                    m_lightningDamage,
+                    m_holyDamage,
+                    contactPoint,
+                    m_poiseDamage,
+                    statsManager.BlockingPhysicalAbsorption,
+                    statsManager.BlockingMagicAbsorption,
+                    statsManager.BlockingFireAbsorption,
+                    statsManager.BlockingLightningAbsorption,
+                    statsManager.BlockingHolyAbsorption);
+            }
+
+            return effectsManager?.TakeDamageEffect?.CreateRuntimeDamageEffect(
                 m_characterCausingDamage,
                 m_physicalDamage,
                 m_magicDamage,
@@ -144,7 +278,6 @@ namespace ZZ
                 m_holyDamage,
                 contactPoint,
                 m_poiseDamage);
-            effectsManager.ProcessRuntimeInstantEffect(runtimeEffect);
         }
 
         private Collider GetDamageCollider()

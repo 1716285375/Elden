@@ -13,11 +13,11 @@ namespace ZZ
         public float FireDamage { get; private set; }
         public float LightningDamage { get; private set; }
         public float HolyDamage { get; private set; }
-        public int FinalDamageDealt { get; private set; }
+        public int FinalDamageDealt { get; protected set; }
         public Vector3 ContactPoint { get; private set; }
 
-        public bool WasBlocked { get; private set; }
-        public bool WasTargetInvulnerable { get; private set; }
+        public bool WasBlocked { get; protected set; }
+        public bool WasTargetInvulnerable { get; protected set; }
         public float PoiseDamage { get; private set; }
         public AnimationClip DamageAnimation { get; private set; }
         public float HitAngle { get; private set; }
@@ -42,15 +42,37 @@ namespace ZZ
         {
             TakeDamageEffect runtimeEffect =
                 (TakeDamageEffect)CreateRuntimeInstance();
-            runtimeEffect.CharacterCausingDamage = characterCausingDamage;
-            runtimeEffect.PhysicalDamage = Mathf.Max(0f, physicalDamage);
-            runtimeEffect.MagicDamage = Mathf.Max(0f, magicDamage);
-            runtimeEffect.FireDamage = Mathf.Max(0f, fireDamage);
-            runtimeEffect.LightningDamage = Mathf.Max(0f, lightningDamage);
-            runtimeEffect.HolyDamage = Mathf.Max(0f, holyDamage);
-            runtimeEffect.ContactPoint = contactPoint;
-            runtimeEffect.PoiseDamage = Mathf.Max(0f, poiseDamage);
+            runtimeEffect.ConfigureRuntimeDamage(
+                characterCausingDamage,
+                physicalDamage,
+                magicDamage,
+                fireDamage,
+                lightningDamage,
+                holyDamage,
+                contactPoint,
+                poiseDamage);
             return runtimeEffect;
+        }
+
+        /// <summary>Assigns sanitized hit data to a transient derived damage effect.</summary>
+        protected void ConfigureRuntimeDamage(
+            CharacterManager characterCausingDamage,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            Vector3 contactPoint,
+            float poiseDamage)
+        {
+            CharacterCausingDamage = characterCausingDamage;
+            PhysicalDamage = Mathf.Max(0f, physicalDamage);
+            MagicDamage = Mathf.Max(0f, magicDamage);
+            FireDamage = Mathf.Max(0f, fireDamage);
+            LightningDamage = Mathf.Max(0f, lightningDamage);
+            HolyDamage = Mathf.Max(0f, holyDamage);
+            ContactPoint = contactPoint;
+            PoiseDamage = Mathf.Max(0f, poiseDamage);
         }
 
         /// <summary>
@@ -90,7 +112,13 @@ namespace ZZ
             character.CharacterSoundFXManager?.PlayDamageGrunt();
             PlayDirectionalBasedDamageAnimation(character);
 
-            if (!character.IsOwner)
+            ApplyHealthDamage(character, CalculateDamage());
+        }
+
+        /// <summary>Applies resolved damage only on the target's owning peer.</summary>
+        protected void ApplyHealthDamage(CharacterManager character, int damage)
+        {
+            if (character == null || !character.IsOwner)
             {
                 return;
             }
@@ -101,13 +129,14 @@ namespace ZZ
                 return;
             }
 
-            int damage = CalculateDamage();
             float maximumHealth = Mathf.Max(0f, networkManager.MaxHealth.Value);
             float currentHealth = Mathf.Clamp(
                 networkManager.CurrentHealth.Value,
                 0f,
                 maximumHealth);
-            float remainingHealth = Mathf.Max(0f, currentHealth - damage);
+            float remainingHealth = Mathf.Max(
+                0f,
+                currentHealth - Mathf.Max(0, damage));
             networkManager.CurrentHealth.Value = remainingHealth;
         }
 

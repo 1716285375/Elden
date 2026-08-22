@@ -9,7 +9,10 @@ namespace ZZ
     {
         private AICharacterCombatManager m_combatManager;
 
-        protected override void Damage(CharacterManager target, Vector3 contactPoint)
+        protected override void Damage(
+            CharacterManager target,
+            Vector3 contactPoint,
+            bool wasBlocked)
         {
             m_combatManager ??= GetComponentInParent<AICharacterCombatManager>();
             if (m_combatManager == null ||
@@ -18,7 +21,7 @@ namespace ZZ
                 return;
             }
 
-            base.Damage(target, contactPoint);
+            base.Damage(target, contactPoint, wasBlocked);
         }
     }
 }

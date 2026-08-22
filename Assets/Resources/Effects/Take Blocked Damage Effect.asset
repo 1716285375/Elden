@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3377c8a4ca99ed245bd60b9250179339, type: 3}
+  m_Name: Take Blocked Damage Effect
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.TakeBlockedDamageEffect
+  m_instantEffectId: 2
+  m_blockSounds:
+  - {fileID: 8300000, guid: da5969a8b318af6499b0a4fce42140dd, type: 3}
+  - {fileID: 8300000, guid: bb162516b69c4374596eb1da37d183fa, type: 3}
+  - {fileID: 8300000, guid: 1b5c6c73b15619c4695d2bb6582b0e98, type: 3}
+  - {fileID: 8300000, guid: 2ec18d0b9cbabad42b7067620b3a6d7a, type: 3}
+  - {fileID: 8300000, guid: 6b38ba880ca183d41901359c2be2a587, type: 3}
