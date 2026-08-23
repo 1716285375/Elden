@@ -17,8 +17,12 @@ namespace ZZ.Editor
     {
         private const string k_AIAnimatorControllerPath =
             "Assets/Data/Animations/AI/Undead AI Animator.controller";
+        private const string k_AIAvatarPath =
+            "Assets/Data/Animations/AI/Undead AI Avatar.asset";
         private const string k_AICharacterPrefabPath =
             "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+        private const string k_BossCharacterPrefabPath =
+            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_WorldAIManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
         private const string k_WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
@@ -57,6 +61,7 @@ namespace ZZ.Editor
         private const string k_AttackStateName = "Attack_01";
         private const string k_DeathStateName = "Dead_01";
         private const string k_VisualRootName = "Undead Visuals";
+        private const string k_RigRootName = "Root";
         private const string k_DamageColliderRootName = "AI Damage Colliders";
         private const string k_LeftDamageColliderName = "Left Hand Damage Collider";
         private const string k_RightDamageColliderName = "Right Hand Damage Collider";
@@ -67,6 +72,32 @@ namespace ZZ.Editor
             new Vector3(-6f, 0.1f, 7f),
             new Vector3(6f, 0.1f, 7f),
             new Vector3(0f, 0.1f, 11f)
+        };
+
+        private static readonly HumanBoneDefinition[] s_humanBoneDefinitions =
+        {
+            new HumanBoneDefinition(HumanBodyBones.Hips, "Hips"),
+            new HumanBoneDefinition(HumanBodyBones.LeftUpperLeg, "UpperLeg_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightUpperLeg, "UpperLeg_R"),
+            new HumanBoneDefinition(HumanBodyBones.LeftLowerLeg, "LowerLeg_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightLowerLeg, "LowerLeg_R"),
+            new HumanBoneDefinition(HumanBodyBones.LeftFoot, "Ankle_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightFoot, "Ankle_R"),
+            new HumanBoneDefinition(HumanBodyBones.Spine, "Spine_01"),
+            new HumanBoneDefinition(HumanBodyBones.Chest, "Spine_02"),
+            new HumanBoneDefinition(HumanBodyBones.UpperChest, "Spine_03"),
+            new HumanBoneDefinition(HumanBodyBones.Neck, "Neck"),
+            new HumanBoneDefinition(HumanBodyBones.Head, "Head"),
+            new HumanBoneDefinition(HumanBodyBones.LeftShoulder, "Clavicle_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightShoulder, "Clavicle_R"),
+            new HumanBoneDefinition(HumanBodyBones.LeftUpperArm, "Shoulder_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightUpperArm, "Shoulder_R"),
+            new HumanBoneDefinition(HumanBodyBones.LeftLowerArm, "Elbow_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightLowerArm, "Elbow_R"),
+            new HumanBoneDefinition(HumanBodyBones.LeftHand, "Hand_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightHand, "Hand_R"),
+            new HumanBoneDefinition(HumanBodyBones.LeftToes, "Ball_L"),
+            new HumanBoneDefinition(HumanBodyBones.RightToes, "Ball_R")
         };
 
         private static readonly ReactionDefinition[] s_reactionDefinitions =
@@ -111,8 +142,10 @@ namespace ZZ.Editor
             EnsureFolder("Assets/Data/Animations/AI");
             EnsureFolder("Assets/Data/Prefabs/Characters/AI");
 
+            Avatar avatar = ConfigureAIAnimatorAvatar();
             AnimatorController controller = ConfigureAnimatorController();
-            GameObject aiCharacterPrefab = ConfigureAICharacterPrefab(controller);
+            GameObject aiCharacterPrefab = ConfigureAICharacterPrefab(controller, avatar);
+            AssignAnimatorAvatarIfPresent(k_BossCharacterPrefabPath, avatar);
             ConfigureWorldAIManagerPrefab(aiCharacterPrefab);
             RegisterNetworkPrefab(aiCharacterPrefab);
             ConfigureWorldScene();
@@ -129,6 +162,7 @@ namespace ZZ.Editor
             ValidateStateIdentifiers();
             ValidateStateArchitecture();
             ValidateAnimatorController();
+            ValidateAIAnimatorAvatar();
             ValidateAICharacterPrefab();
             ValidateWorldAIManagerPrefab();
             ValidateNetworkPrefabRegistration();
@@ -136,6 +170,125 @@ namespace ZZ.Editor
             Debug.Log(
                 "[AICharacterSystemValidation] AI states, prefab, animation events, " +
                 "network registration, spawn points, and NavMesh are valid.");
+        }
+
+        [MenuItem("Tools/Elden/Repair AI Animator Avatar")]
+        public static void RepairAIAnimatorAvatar()
+        {
+            EnsureFolder("Assets/Data/Animations/AI");
+            Avatar avatar = ConfigureAIAnimatorAvatar();
+            AssignAnimatorAvatar(k_AICharacterPrefabPath, avatar);
+            AssignAnimatorAvatarIfPresent(k_BossCharacterPrefabPath, avatar);
+            AssetDatabase.SaveAssets();
+            ValidateAIAnimatorAvatar();
+            Debug.Log(
+                "[AICharacterSystemSetup] Rebuilt and assigned the Undead Humanoid Avatar.");
+        }
+
+        [MenuItem("Tools/Elden/Validate AI Animator Evaluation")]
+        public static void ValidateAIAnimatorEvaluation()
+        {
+            ValidateAnimatorEvaluation(k_AICharacterPrefabPath);
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(k_BossCharacterPrefabPath) != null)
+            {
+                ValidateAnimatorEvaluation(k_BossCharacterPrefabPath);
+            }
+
+            Debug.Log(
+                "[AICharacterSystemValidation] AI Humanoid animation evaluation is valid.");
+        }
+
+        private static Avatar ConfigureAIAnimatorAvatar()
+        {
+            GameObject sourceRoot = PrefabUtility.LoadPrefabContents(
+                k_SourceVisualPrefabPath);
+            try
+            {
+                Transform rigRoot = sourceRoot.transform.Find(k_RigRootName) ??
+                    throw new InvalidOperationException(
+                        $"{k_SourceVisualPrefabPath} has no {k_RigRootName} rig root.");
+                HumanDescription description = CreateAIHumanDescription(
+                    sourceRoot.transform,
+                    rigRoot);
+                Avatar rebuiltAvatar = AvatarBuilder.BuildHumanAvatar(
+                    sourceRoot,
+                    description);
+                rebuiltAvatar.name = "Undead AI Avatar";
+                if (!rebuiltAvatar.isHuman || !rebuiltAvatar.isValid)
+                {
+                    UnityEngine.Object.DestroyImmediate(rebuiltAvatar);
+                    throw new InvalidOperationException(
+                        "Could not build a valid Humanoid Avatar for the Undead rig.");
+                }
+
+                Avatar avatar = AssetDatabase.LoadAssetAtPath<Avatar>(k_AIAvatarPath);
+                if (avatar == null)
+                {
+                    AssetDatabase.CreateAsset(rebuiltAvatar, k_AIAvatarPath);
+                    avatar = rebuiltAvatar;
+                }
+                else
+                {
+                    EditorUtility.CopySerialized(rebuiltAvatar, avatar);
+                    UnityEngine.Object.DestroyImmediate(rebuiltAvatar);
+                    EditorUtility.SetDirty(avatar);
+                }
+
+                return avatar;
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(sourceRoot);
+            }
+        }
+
+        private static HumanDescription CreateAIHumanDescription(
+            Transform sourceRoot,
+            Transform rigRoot)
+        {
+            HumanBone[] humanBones = s_humanBoneDefinitions
+                .Select(definition => new HumanBone
+                {
+                    boneName = definition.RigBoneName,
+                    humanName = HumanTrait.BoneName[(int)definition.HumanBone],
+                    limit = new HumanLimit
+                    {
+                        useDefaultValues = true
+                    }
+                })
+                .ToArray();
+            List<SkeletonBone> skeletonBones = new List<SkeletonBone>
+            {
+                CreateSkeletonBone(sourceRoot)
+            };
+            skeletonBones.AddRange(
+                rigRoot.GetComponentsInChildren<Transform>(true)
+                    .Select(CreateSkeletonBone));
+
+            return new HumanDescription
+            {
+                human = humanBones,
+                skeleton = skeletonBones.ToArray(),
+                upperArmTwist = 0.5f,
+                lowerArmTwist = 0.5f,
+                upperLegTwist = 0.5f,
+                lowerLegTwist = 0.5f,
+                armStretch = 0.05f,
+                legStretch = 0.05f,
+                feetSpacing = 0f,
+                hasTranslationDoF = false
+            };
+        }
+
+        private static SkeletonBone CreateSkeletonBone(Transform transform)
+        {
+            return new SkeletonBone
+            {
+                name = transform.name,
+                position = transform.localPosition,
+                rotation = transform.localRotation,
+                scale = transform.localScale
+            };
         }
 
         private static AnimatorController ConfigureAnimatorController()
@@ -151,6 +304,7 @@ namespace ZZ.Editor
 
             EnsureParameter(controller, "Horizontal", AnimatorControllerParameterType.Float);
             EnsureParameter(controller, "Vertical", AnimatorControllerParameterType.Float);
+            EnsureParameter(controller, "isMoving", AnimatorControllerParameterType.Bool);
             EnsureParameter(controller, "isGrounded", AnimatorControllerParameterType.Bool);
             EnsureParameter(controller, "inAirTimer", AnimatorControllerParameterType.Float);
             EnsureParameter(controller, "isDead", AnimatorControllerParameterType.Bool);
@@ -158,6 +312,7 @@ namespace ZZ.Editor
                 controller,
                 "isChargingAttack",
                 AnimatorControllerParameterType.Bool);
+            EnsureParameter(controller, "isBlocking", AnimatorControllerParameterType.Bool);
             EnsureParameter(controller, "PivotLeft", AnimatorControllerParameterType.Trigger);
             EnsureParameter(controller, "PivotRight", AnimatorControllerParameterType.Trigger);
 
@@ -301,18 +456,20 @@ namespace ZZ.Editor
         }
 
         private static GameObject ConfigureAICharacterPrefab(
-            RuntimeAnimatorController controller)
+            RuntimeAnimatorController controller,
+            Avatar avatar)
         {
             EditPrefab(
                 k_AICharacterPrefabPath,
                 "Undead AI",
-                root => ConfigureAICharacterRoot(root, controller));
+                root => ConfigureAICharacterRoot(root, controller, avatar));
             return LoadRequiredAsset<GameObject>(k_AICharacterPrefabPath);
         }
 
         private static void ConfigureAICharacterRoot(
             GameObject root,
-            RuntimeAnimatorController controller)
+            RuntimeAnimatorController controller,
+            Avatar avatar)
         {
             root.name = "Undead AI";
             int damageableLayer = LayerMask.NameToLayer(k_DamageableLayerName);
@@ -370,6 +527,7 @@ namespace ZZ.Editor
             Animator animator = visualRoot.GetComponentInChildren<Animator>(true) ??
                 throw new InvalidOperationException(
                     $"{k_SourceVisualPrefabPath} is missing an Animator.");
+            animator.avatar = avatar;
             animator.runtimeAnimatorController = controller;
             animator.applyRootMotion = false;
             animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
@@ -666,6 +824,38 @@ namespace ZZ.Editor
         {
             AnimatorController controller = LoadRequiredAsset<AnimatorController>(
                 k_AIAnimatorControllerPath);
+            ValidateAnimatorParameter(
+                controller,
+                "Horizontal",
+                AnimatorControllerParameterType.Float);
+            ValidateAnimatorParameter(
+                controller,
+                "Vertical",
+                AnimatorControllerParameterType.Float);
+            ValidateAnimatorParameter(
+                controller,
+                "isMoving",
+                AnimatorControllerParameterType.Bool);
+            ValidateAnimatorParameter(
+                controller,
+                "isGrounded",
+                AnimatorControllerParameterType.Bool);
+            ValidateAnimatorParameter(
+                controller,
+                "inAirTimer",
+                AnimatorControllerParameterType.Float);
+            ValidateAnimatorParameter(
+                controller,
+                "isDead",
+                AnimatorControllerParameterType.Bool);
+            ValidateAnimatorParameter(
+                controller,
+                "isChargingAttack",
+                AnimatorControllerParameterType.Bool);
+            ValidateAnimatorParameter(
+                controller,
+                "isBlocking",
+                AnimatorControllerParameterType.Bool);
             AnimatorControllerLayer baseLayer = GetRequiredLayer(
                 controller,
                 k_BaseLayerName);
@@ -734,6 +924,88 @@ namespace ZZ.Editor
             ValidateAnimationEventReceivers();
         }
 
+        private static void ValidateAIAnimatorAvatar()
+        {
+            Avatar avatar = LoadRequiredAsset<Avatar>(k_AIAvatarPath);
+            if (!avatar.isHuman || !avatar.isValid)
+            {
+                throw new InvalidOperationException(
+                    $"{k_AIAvatarPath} must be a valid Humanoid Avatar.");
+            }
+
+            HumanBone[] humanBones = avatar.humanDescription.human;
+            if (humanBones.Length != s_humanBoneDefinitions.Length)
+            {
+                throw new InvalidOperationException(
+                    $"{k_AIAvatarPath} has unexpected optional Humanoid mappings.");
+            }
+
+            foreach (HumanBoneDefinition definition in s_humanBoneDefinitions)
+            {
+                string expectedHumanName =
+                    HumanTrait.BoneName[(int)definition.HumanBone];
+                int mappingCount = humanBones.Count(humanBone =>
+                    humanBone.humanName == expectedHumanName &&
+                    humanBone.boneName == definition.RigBoneName);
+                if (mappingCount != 1)
+                {
+                    throw new InvalidOperationException(
+                        $"{k_AIAvatarPath} must map {expectedHumanName} to " +
+                        $"{definition.RigBoneName} exactly once.");
+                }
+            }
+
+            ValidatePrefabAnimatorAvatar(k_AICharacterPrefabPath, avatar);
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(k_BossCharacterPrefabPath) != null)
+            {
+                ValidatePrefabAnimatorAvatar(k_BossCharacterPrefabPath, avatar);
+            }
+        }
+
+        private static void ValidatePrefabAnimatorAvatar(
+            string prefabPath,
+            Avatar expectedAvatar)
+        {
+            GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                Animator animator = root.GetComponentInChildren<Animator>(true) ??
+                    throw new InvalidOperationException(
+                        $"{prefabPath} is missing an Animator.");
+                if (animator.avatar != expectedAvatar)
+                {
+                    throw new InvalidOperationException(
+                        $"{prefabPath} is not using {k_AIAvatarPath}.");
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
+        private static void ValidateAnimatorEvaluation(string prefabPath)
+        {
+            GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                Animator animator = root.GetComponentInChildren<Animator>(true) ??
+                    throw new InvalidOperationException(
+                        $"{prefabPath} is missing an Animator.");
+                animator.enabled = true;
+                animator.Rebind();
+                animator.Play(k_LocomotionStateName, 0, 0f);
+                for (int sampleIndex = 0; sampleIndex < 10; sampleIndex++)
+                {
+                    animator.Update(1f / 60f);
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
         private static void ValidateAnimationEventReceivers()
         {
             AnimationClip attackClip = LoadRequiredAsset<AnimationClip>(k_AttackClipPath);
@@ -797,10 +1069,17 @@ namespace ZZ.Editor
                     animatorManager.GetComponent<Animator>()?
                         .runtimeAnimatorController ==
                     LoadRequiredAsset<AnimatorController>(k_AIAnimatorControllerPath);
+                Animator animator = animatorManager?.GetComponent<Animator>();
+                Avatar expectedAvatar = LoadRequiredAsset<Avatar>(k_AIAvatarPath);
+                bool hasExpectedAvatar = animator != null &&
+                    animator.avatar == expectedAvatar &&
+                    expectedAvatar.isHuman &&
+                    expectedAvatar.isValid;
                 if (controller.enabled ||
                     !bodyCollider.enabled ||
                     root.layer != LayerMask.NameToLayer(k_DamageableLayerName) ||
                     !hasExpectedAnimatorController ||
+                    !hasExpectedAvatar ||
                     damageColliders.Length != 2 ||
                     hasInvalidDamageCollider)
                 {
@@ -810,6 +1089,7 @@ namespace ZZ.Editor
                         $"bodyColliderEnabled={bodyCollider.enabled}, " +
                         $"rootLayer={root.layer}, " +
                         $"animatorController={hasExpectedAnimatorController}, " +
+                        $"animatorAvatar={hasExpectedAvatar}, " +
                         $"damageColliderCount={damageColliders.Length}, " +
                         $"invalidDamageCollider={hasInvalidDamageCollider}.");
                 }
@@ -1014,6 +1294,37 @@ namespace ZZ.Editor
             }
         }
 
+        private static void AssignAnimatorAvatarIfPresent(
+            string prefabPath,
+            Avatar avatar)
+        {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) != null)
+            {
+                AssignAnimatorAvatar(prefabPath, avatar);
+            }
+        }
+
+        private static void AssignAnimatorAvatar(string prefabPath, Avatar avatar)
+        {
+            GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                Animator animator = root.GetComponentInChildren<Animator>(true) ??
+                    throw new InvalidOperationException(
+                        $"{prefabPath} is missing an Animator.");
+                animator.avatar = avatar;
+                if (PrefabUtility.SaveAsPrefabAsset(root, prefabPath) == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Could not save {prefabPath}.");
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
         private static AnimatorControllerLayer GetOrCreateLayer(
             AnimatorController controller,
             string layerName)
@@ -1125,6 +1436,20 @@ namespace ZZ.Editor
             {
                 controller.RemoveParameter(parameter);
                 controller.AddParameter(parameterName, parameterType);
+            }
+        }
+
+        private static void ValidateAnimatorParameter(
+            AnimatorController controller,
+            string parameterName,
+            AnimatorControllerParameterType parameterType)
+        {
+            AnimatorControllerParameter parameter = controller.parameters
+                .FirstOrDefault(candidate => candidate.name == parameterName);
+            if (parameter == null || parameter.type != parameterType)
+            {
+                throw new InvalidOperationException(
+                    $"AI Animator parameter {parameterName} must be {parameterType}.");
             }
         }
 
@@ -1274,6 +1599,20 @@ namespace ZZ.Editor
 
             internal string SerializedPropertyName { get; }
             internal string[] AnimationPaths { get; }
+        }
+
+        private sealed class HumanBoneDefinition
+        {
+            internal HumanBoneDefinition(
+                HumanBodyBones humanBone,
+                string rigBoneName)
+            {
+                HumanBone = humanBone;
+                RigBoneName = rigBoneName;
+            }
+
+            internal HumanBodyBones HumanBone { get; }
+            internal string RigBoneName { get; }
         }
     }
 }

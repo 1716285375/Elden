@@ -275,15 +275,27 @@ MonoBehaviour:
   m_staminaRegenerationAmount: 2
   m_totalPoiseDamage: 0
   m_basePoiseDefense: 80
+  m_armorPoiseDefense: 0
   m_offensivePoiseBonus: 0
   m_defaultPoiseResetTime: 8
   m_poiseResetTimer: 0
+  m_strengthLevel: 10
+  m_strengthModifier: 0
   m_blockingPhysicalAbsorption: 85
   m_blockingMagicAbsorption: 40
   m_blockingFireAbsorption: 35
   m_blockingLightningAbsorption: 25
   m_blockingHolyAbsorption: 35
   m_blockingStability: 50
+  m_armorPhysicalAbsorption: 0
+  m_armorMagicAbsorption: 0
+  m_armorFireAbsorption: 0
+  m_armorLightningAbsorption: 0
+  m_armorHolyAbsorption: 0
+  m_armorImmunity: 0
+  m_armorRobustness: 0
+  m_armorFocus: 0
+  m_armorVitality: 0
 --- !u!114 &2986318966281015176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,6 +310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterEffectsManager
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_character: {fileID: 0}
+  m_staticEffects: []
 --- !u!114 &4286986041506688607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1116,6 +1129,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -0
       objectReference: {fileID: 0}
+    - target: {fileID: 95829625606037309, guid: 041bad5155fb64b45aa5c4dc91208ca0, type: 3}
+      propertyPath: m_Avatar
+      value:
+      objectReference: {fileID: 9000000, guid: 6a7a3e98abfcc89469937203cf8bf468, type: 2}
     - target: {fileID: 95829625606037309, guid: 041bad5155fb64b45aa5c4dc91208ca0, type: 3}
       propertyPath: m_Controller
       value:
