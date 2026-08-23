@@ -42,6 +42,7 @@
 
 # Visual Studio cache directory
 .vs/
+.vscode/
 
 # Gradle cache directory
 .gradle/
@@ -113,9 +114,12 @@ InitTestScene*.unity*
 /[Aa]ssets/Screenshots/
 /[Aa]ssets/Screenshots*
 
+# AI Agent
 .claude
 .codex
 .agents
+.codebuddy
+.agent
 
 # Recovered art assets and recovery data (kept out of git)
 /[Aa]ssets/Art/
@@ -129,3 +133,5 @@ InitTestScene*.unity*
 # Python bytecode cache
 __pycache__/
 
+# Rider
+.iead*
