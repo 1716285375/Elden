@@ -448,6 +448,7 @@ GameObject:
   - component: {fileID: 4706865235773157865}
   - component: {fileID: 7281313498304124352}
   - component: {fileID: 2596670981253299374}
+  - component: {fileID: 5746630919942641762}
   m_Layer: 10
   m_Name: Undead AI
   m_TagString: Untagged
@@ -792,6 +793,23 @@ MonoBehaviour:
   m_aiAnimatorManager: {fileID: 1723738376503569580}
   m_aiNetworkManager: {fileID: 7778667314902435192}
   m_aiCombatManager: {fileID: 2825352268374875321}
+  m_aiInventoryManager: {fileID: 5746630919942641762}
+--- !u!114 &5746630919942641762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4713752444425064866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 644edb7de7c69e94590b351dabbfeebc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterInventoryManager
+  m_droppableItems:
+  - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
+  - {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
+  m_dropItemChance: 10
 --- !u!1 &4916886901977103027
 GameObject:
   m_ObjectHideFlags: 0

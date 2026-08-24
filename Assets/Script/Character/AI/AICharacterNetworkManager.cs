@@ -22,6 +22,28 @@ namespace ZZ
             }
         }
 
+        /// <inheritdoc />
+        protected override void OnIsDeadChanged(bool wasDead, bool isDead)
+        {
+            base.OnIsDeadChanged(wasDead, isDead);
+            AICharacterInventoryManager inventoryManager =
+                GetComponent<AICharacterInventoryManager>();
+            if (!isDead)
+            {
+                if (wasDead && IsServer)
+                {
+                    inventoryManager?.ResetDropState();
+                }
+
+                return;
+            }
+
+            if (!wasDead && IsServer)
+            {
+                inventoryManager?.DropItem();
+            }
+        }
+
         /// <summary>Plays one server-selected pivot on every peer.</summary>
         public void ReplicatePivot(bool turnLeft)
         {

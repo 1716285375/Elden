@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 2986318966281015176}
   - component: {fileID: 4286986041506688607}
   - component: {fileID: 4940141526569775837}
+  - component: {fileID: 3305790393369884577}
   m_Layer: 10
   m_Name: Fallen Watcher Boss
   m_TagString: Untagged
@@ -363,6 +364,7 @@ MonoBehaviour:
   m_aiAnimatorManager: {fileID: 30343454688366691}
   m_aiNetworkManager: {fileID: 4892175029703522127}
   m_aiCombatManager: {fileID: 6671377376681802008}
+  m_aiInventoryManager: {fileID: 3305790393369884577}
 --- !u!114 &4940141526569775837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +384,22 @@ MonoBehaviour:
   m_phases:
   - {fileID: 11400000, guid: ea5e6fa07ff15fe41a44d2d36a39bf79, type: 2}
   - {fileID: 11400000, guid: 5409cbd104b6d994c908f92f372d5b9f, type: 2}
+--- !u!114 &3305790393369884577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271294674669322707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 644edb7de7c69e94590b351dabbfeebc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterInventoryManager
+  m_droppableItems:
+  - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
+  - {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
+  m_dropItemChance: 10
 --- !u!1 &1957558510727032389
 GameObject:
   m_ObjectHideFlags: 0

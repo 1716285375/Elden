@@ -60,6 +60,8 @@ namespace ZZ
             Animator.StringToHash("Action Override.Parry_Land_01");
         private static readonly int s_parriedState =
             Animator.StringToHash("Action Override.Parried_01");
+        private static readonly int s_pickupItemState =
+            Animator.StringToHash("Action Override.Pickup_Item_01");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -645,7 +647,8 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.ParryMedium ||
                 targetAnimation == CharacterActionAnimation.ParrySlow ||
                 targetAnimation == CharacterActionAnimation.ParryLand ||
-                targetAnimation == CharacterActionAnimation.Parried;
+                targetAnimation == CharacterActionAnimation.Parried ||
+                targetAnimation == CharacterActionAnimation.PickupItem;
         }
 
         /// <summary>Returns whether an action is approved for zero-blend network playback.</summary>
@@ -880,6 +883,9 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.Parried:
                     actionStateHash = s_parriedState;
+                    return true;
+                case CharacterActionAnimation.PickupItem:
+                    actionStateHash = s_pickupItemState;
                     return true;
                 default:
                     actionStateHash = 0;

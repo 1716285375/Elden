@@ -12,6 +12,7 @@ namespace ZZ
     [RequireComponent(typeof(AICharacterCombatManager))]
     [RequireComponent(typeof(CharacterStatsManager))]
     [RequireComponent(typeof(CharacterEffectsManager))]
+    [RequireComponent(typeof(AICharacterInventoryManager))]
     [RequireComponent(typeof(NavMeshAgent))]
     public class AICharacterManager : CharacterManager
     {
@@ -42,6 +43,7 @@ namespace ZZ
         [SerializeField] private AICharacterAnimatorManager m_aiAnimatorManager;
         [SerializeField] private AICharacterNetworkManager m_aiNetworkManager;
         [SerializeField] private AICharacterCombatManager m_aiCombatManager;
+        [SerializeField] private AICharacterInventoryManager m_aiInventoryManager;
 
         private readonly RaycastHit[] m_sightHits = new RaycastHit[16];
 
@@ -55,6 +57,9 @@ namespace ZZ
 
         /// <summary>Gets the server-selected player target.</summary>
         public PlayerManager CurrentTarget => m_currentTarget;
+
+        /// <summary>Gets this enemy's server-authoritative loot inventory.</summary>
+        public AICharacterInventoryManager InventoryManager => m_aiInventoryManager;
 
         /// <summary>Gets the state currently published to the network.</summary>
         public AICharacterStateId CurrentState => m_aiNetworkManager != null
@@ -83,6 +88,7 @@ namespace ZZ
                 GetComponentInChildren<AICharacterAnimatorManager>(true);
             m_aiNetworkManager ??= GetComponent<AICharacterNetworkManager>();
             m_aiCombatManager ??= GetComponent<AICharacterCombatManager>();
+            m_aiInventoryManager ??= GetComponent<AICharacterInventoryManager>();
             m_bossCharacter = GetComponent<BossCharacterManager>();
             m_stateMachine = new AICharacterStateMachine(
                 this,

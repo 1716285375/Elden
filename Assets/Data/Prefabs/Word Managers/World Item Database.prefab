@@ -64,3 +64,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 99582e7697fa6fc45babca5ec0372dfb, type: 2}
   m_ashesOfWar:
   - {fileID: 11400000, guid: efd7f47b2b576de4ca5c5a18b9ba494a, type: 2}
+  m_creatureDropPickupPrefab: {fileID: 4996127031911254275, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
