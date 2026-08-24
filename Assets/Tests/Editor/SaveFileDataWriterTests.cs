@@ -42,8 +42,11 @@ namespace ZZ.Tests
                 SceneIndex = 1,
                 Vitality = 14,
                 Endurance = 12,
+                Mind = 17,
                 CurrentHealth = 142f,
                 CurrentStamina = 67f,
+                CurrentFocusPoints = 73f,
+                CurrentSpellID = 10,
                 HeadEquipmentID = 4,
                 BodyEquipmentID = 5,
                 HandEquipmentID = 6,
@@ -74,8 +77,11 @@ namespace ZZ.Tests
             Assert.That(loadedData.SceneIndex, Is.EqualTo(1));
             Assert.That(loadedData.Vitality, Is.EqualTo(14));
             Assert.That(loadedData.Endurance, Is.EqualTo(12));
+            Assert.That(loadedData.Mind, Is.EqualTo(17));
             Assert.That(loadedData.CurrentHealth, Is.EqualTo(142f));
             Assert.That(loadedData.CurrentStamina, Is.EqualTo(67f));
+            Assert.That(loadedData.CurrentFocusPoints, Is.EqualTo(73f));
+            Assert.That(loadedData.CurrentSpellID, Is.EqualTo(10));
             Assert.That(loadedData.HeadEquipmentID, Is.EqualTo(4));
             Assert.That(loadedData.BodyEquipmentID, Is.EqualTo(5));
             Assert.That(loadedData.HandEquipmentID, Is.EqualTo(6));
@@ -102,8 +108,11 @@ namespace ZZ.Tests
 
             Assert.That(characterData.Vitality, Is.EqualTo(10));
             Assert.That(characterData.Endurance, Is.EqualTo(10));
+            Assert.That(characterData.Mind, Is.EqualTo(10));
             Assert.That(characterData.CurrentHealth, Is.EqualTo(150f));
             Assert.That(characterData.CurrentStamina, Is.EqualTo(100f));
+            Assert.That(characterData.CurrentFocusPoints, Is.EqualTo(100f));
+            Assert.That(characterData.CurrentSpellID, Is.EqualTo(10));
             Assert.That(characterData.HeadEquipmentID, Is.EqualTo(-1));
             Assert.That(characterData.BodyEquipmentID, Is.EqualTo(-1));
             Assert.That(characterData.HandEquipmentID, Is.EqualTo(-1));
@@ -129,8 +138,11 @@ namespace ZZ.Tests
             Assert.That(loadedData, Is.Not.Null);
             Assert.That(loadedData.Vitality, Is.EqualTo(10));
             Assert.That(loadedData.Endurance, Is.EqualTo(10));
+            Assert.That(loadedData.Mind, Is.EqualTo(10));
             Assert.That(loadedData.CurrentHealth, Is.EqualTo(150f));
             Assert.That(loadedData.CurrentStamina, Is.EqualTo(100f));
+            Assert.That(loadedData.CurrentFocusPoints, Is.EqualTo(100f));
+            Assert.That(loadedData.CurrentSpellID, Is.EqualTo(10));
             Assert.That(loadedData.HeadEquipmentID, Is.EqualTo(-1));
             Assert.That(loadedData.BodyEquipmentID, Is.EqualTo(-1));
             Assert.That(loadedData.HandEquipmentID, Is.EqualTo(-1));

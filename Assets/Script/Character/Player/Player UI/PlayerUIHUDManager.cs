@@ -7,6 +7,7 @@ namespace ZZ
     {
         [SerializeField] private UIStatBar m_healthBar;
         [SerializeField] private UIStatBar m_staminaBar;
+        [SerializeField] private UIStatBar m_focusPointsBar;
         [SerializeField] private UIQuickSlot m_leftWeaponQuickSlot;
         [SerializeField] private UIQuickSlot m_rightWeaponQuickSlot;
         [SerializeField] private UIQuickSlot m_spellQuickSlot;
@@ -51,6 +52,19 @@ namespace ZZ
             RefreshHUD();
         }
 
+        /// <summary>Updates the local Focus Point presentation.</summary>
+        public void SetNewFocusPointsValue(float currentFocusPoints)
+        {
+            m_focusPointsBar?.SetStat(currentFocusPoints);
+        }
+
+        /// <summary>Updates the local Focus Point range.</summary>
+        public void SetMaxFocusPointsValue(float maximumFocusPoints)
+        {
+            m_focusPointsBar?.SetMaxStat(maximumFocusPoints);
+            RefreshHUD();
+        }
+
         /// <summary>
         /// Subscribes the HUD to one locally owned character and initializes its resources.
         /// </summary>
@@ -69,6 +83,10 @@ namespace ZZ
                 m_boundNetworkManager.MaxHealth.OnValueChanged += OnMaxHealthChanged;
                 m_boundNetworkManager.CurrentStamina.OnValueChanged += OnCurrentStaminaChanged;
                 m_boundNetworkManager.MaxStamina.OnValueChanged += OnMaxStaminaChanged;
+                m_boundNetworkManager.CurrentFocusPoints.OnValueChanged +=
+                    OnCurrentFocusPointsChanged;
+                m_boundNetworkManager.MaxFocusPoints.OnValueChanged +=
+                    OnMaxFocusPointsChanged;
             }
 
             gameObject.SetActive(true);
@@ -110,6 +128,7 @@ namespace ZZ
                 OnRightHandWeaponChanged;
             m_boundInventoryManager.LeftHandWeaponChanged +=
                 OnLeftHandWeaponChanged;
+            m_boundInventoryManager.CurrentSpellChanged += OnCurrentSpellChanged;
             RefreshQuickSlots();
         }
 
@@ -126,6 +145,7 @@ namespace ZZ
             UnbindCurrentQuickSlots();
             m_leftWeaponQuickSlot?.SetItem(null);
             m_rightWeaponQuickSlot?.SetItem(null);
+            m_spellQuickSlot?.SetItem(null);
         }
 
         /// <summary>
@@ -135,6 +155,7 @@ namespace ZZ
         {
             RefreshStatBarLayout(m_healthBar);
             RefreshStatBarLayout(m_staminaBar);
+            RefreshStatBarLayout(m_focusPointsBar);
 
             if (transform is RectTransform rectTransform)
             {
@@ -182,6 +203,25 @@ namespace ZZ
             }
         }
 
+        private void OnCurrentFocusPointsChanged(
+            float previousFocusPoints,
+            float currentFocusPoints)
+        {
+            SetNewFocusPointsValue(currentFocusPoints);
+        }
+
+        private void OnMaxFocusPointsChanged(
+            float previousFocusPoints,
+            float maximumFocusPoints)
+        {
+            SetMaxFocusPointsValue(maximumFocusPoints);
+            if (m_boundNetworkManager != null)
+            {
+                SetNewFocusPointsValue(
+                    m_boundNetworkManager.CurrentFocusPoints.Value);
+            }
+        }
+
         private void OnRightHandWeaponChanged(WeaponItem weapon)
         {
             m_rightWeaponQuickSlot?.SetItem(weapon);
@@ -192,12 +232,20 @@ namespace ZZ
             m_leftWeaponQuickSlot?.SetItem(weapon);
         }
 
+        private void OnCurrentSpellChanged(SpellItem spell)
+        {
+            m_spellQuickSlot?.SetItem(spell);
+        }
+
         private void RefreshStatBars()
         {
             SetMaxHealthValue(m_boundNetworkManager.MaxHealth.Value);
             SetNewHealthValue(m_boundNetworkManager.CurrentHealth.Value);
             SetMaxStaminaValue(m_boundNetworkManager.MaxStamina.Value);
             SetNewStaminaValue(m_boundNetworkManager.CurrentStamina.Value);
+            SetMaxFocusPointsValue(m_boundNetworkManager.MaxFocusPoints.Value);
+            SetNewFocusPointsValue(
+                m_boundNetworkManager.CurrentFocusPoints.Value);
         }
 
         private void RefreshQuickSlots()
@@ -206,7 +254,7 @@ namespace ZZ
                 m_boundInventoryManager.CurrentLeftHandWeapon);
             m_rightWeaponQuickSlot?.SetItem(
                 m_boundInventoryManager.CurrentRightHandWeapon);
-            m_spellQuickSlot?.SetItem(null);
+            m_spellQuickSlot?.SetItem(m_boundInventoryManager.CurrentSpell);
             m_itemQuickSlot?.SetItem(null);
         }
 
@@ -221,6 +269,10 @@ namespace ZZ
             m_boundNetworkManager.MaxHealth.OnValueChanged -= OnMaxHealthChanged;
             m_boundNetworkManager.CurrentStamina.OnValueChanged -= OnCurrentStaminaChanged;
             m_boundNetworkManager.MaxStamina.OnValueChanged -= OnMaxStaminaChanged;
+            m_boundNetworkManager.CurrentFocusPoints.OnValueChanged -=
+                OnCurrentFocusPointsChanged;
+            m_boundNetworkManager.MaxFocusPoints.OnValueChanged -=
+                OnMaxFocusPointsChanged;
             m_boundNetworkManager = null;
         }
 
@@ -235,6 +287,7 @@ namespace ZZ
                 OnRightHandWeaponChanged;
             m_boundInventoryManager.LeftHandWeaponChanged -=
                 OnLeftHandWeaponChanged;
+            m_boundInventoryManager.CurrentSpellChanged -= OnCurrentSpellChanged;
             m_boundInventoryManager = null;
         }
 

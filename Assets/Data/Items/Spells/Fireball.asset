@@ -20,6 +20,8 @@ MonoBehaviour:
   m_spellClass: 0
   m_spellSlotsUsed: 1
   m_fullChargeModifier: 1.4
+  m_staminaCost: 25
+  m_focusPointsCost: 25
   m_spellWarmUpEffect: {fileID: 6249949662890084357, guid: 48be85055b6b3bd448fd746f8d17f2b5, type: 3}
   m_spellReleaseEffect: {fileID: 5548827477355850168, guid: a385652aa523a5d4ab911ef414781070, type: 3}
   m_spellFullyChargedEffect: {fileID: 4147613305936680986, guid: 211a9db1fad0bab4fb0279aac97fbd57, type: 3}

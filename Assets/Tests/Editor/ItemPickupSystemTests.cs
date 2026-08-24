@@ -15,11 +15,12 @@ namespace ZZ.Tests
         [Test]
         public void RuntimeInventoryAddsAndRemovesItemsThroughItsPublicBoundary()
         {
-            ScriptableObject item = AssetDatabase.LoadAssetAtPath<ScriptableObject>(k_ItemPath);
-            Assert.That(item, Is.Not.Null);
             GameObject playerRoot = PrefabUtility.LoadPrefabContents(k_PlayerPrefabPath);
             try
             {
+                ScriptableObject item = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+                    k_ItemPath);
+                Assert.That(item, Is.Not.Null);
                 Component inventory = playerRoot.GetComponent("PlayerInventoryManager");
                 Assert.That(inventory, Is.Not.Null);
                 PropertyInfo itemsProperty = inventory.GetType().GetProperty("ItemsInInventory");

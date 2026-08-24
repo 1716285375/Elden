@@ -231,8 +231,12 @@ namespace ZZ
             currentData.SceneIndex = SceneManager.GetActiveScene().buildIndex;
             currentData.Vitality = CharacterNetworkManager.Vitality.Value;
             currentData.Endurance = CharacterNetworkManager.Endurance.Value;
+            currentData.Mind = CharacterNetworkManager.Mind.Value;
             currentData.CurrentHealth = CharacterNetworkManager.CurrentHealth.Value;
             currentData.CurrentStamina = CharacterNetworkManager.CurrentStamina.Value;
+            currentData.CurrentFocusPoints =
+                CharacterNetworkManager.CurrentFocusPoints.Value;
+            currentData.CurrentSpellID = InventoryManager.CurrentSpell?.ItemID ?? -1;
             currentData.HeadEquipmentID = PlayerNetworkManager.CurrentHeadEquipmentID.Value;
             currentData.BodyEquipmentID = PlayerNetworkManager.CurrentBodyEquipmentID.Value;
             currentData.HandEquipmentID = PlayerNetworkManager.CurrentHandEquipmentID.Value;
@@ -268,8 +272,10 @@ namespace ZZ
 
             CharacterNetworkManager.Vitality.Value = currentData.Vitality;
             CharacterNetworkManager.Endurance.Value = currentData.Endurance;
+            CharacterNetworkManager.Mind.Value = currentData.Mind;
             PlayerStatsManager.SetNewMaxHealthValue();
             PlayerStatsManager.SetNewMaxStaminaValue();
+            PlayerStatsManager.SetNewMaxFocusPointsValue();
             CharacterNetworkManager.CurrentHealth.Value = Mathf.Clamp(
                 currentData.CurrentHealth,
                 0f,
@@ -278,6 +284,10 @@ namespace ZZ
                 currentData.CurrentStamina,
                 0f,
                 CharacterNetworkManager.MaxStamina.Value);
+            CharacterNetworkManager.CurrentFocusPoints.Value = Mathf.Clamp(
+                currentData.CurrentFocusPoints,
+                0f,
+                CharacterNetworkManager.MaxFocusPoints.Value);
             PlayerNetworkManager.CharacterName.Value =
                 new FixedString64Bytes(currentData.CharacterName);
             PlayerNetworkManager.IsMale.Value = currentData.IsMale;
@@ -304,6 +314,13 @@ namespace ZZ
                 },
                 currentData.RightHandWeaponIndex,
                 currentData.LeftHandWeaponIndex);
+            SpellItem savedSpell = WorldItemDatabase.Instance?.GetSpellByID(
+                currentData.CurrentSpellID);
+            int resolvedSpellID = savedSpell != null
+                ? savedSpell.ItemID
+                : -1;
+            PlayerNetworkManager.CurrentSpellID.Value = resolvedSpellID;
+            InventoryManager.InitializeCurrentSpellFromID(resolvedSpellID);
             Vector3 savedPosition = new Vector3(
                 currentData.XPosition,
                 currentData.YPosition,

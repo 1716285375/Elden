@@ -14,10 +14,13 @@ namespace ZZ
         private const int k_DefaultAttributeLevel = 10;
         private const float k_DefaultCurrentHealth = 150f;
         private const float k_DefaultCurrentStamina = 100f;
+        private const float k_DefaultCurrentFocusPoints = 100f;
+        private const int k_DefaultSpellID = 10;
         private const int k_AttributeDataVersion = 1;
         private const int k_EquipmentDataVersion = 4;
         private const int k_WorldLootDataVersion = 5;
-        private const int k_CurrentDataVersion = 5;
+        private const int k_FocusPointsDataVersion = 6;
+        private const int k_CurrentDataVersion = 6;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -28,8 +31,12 @@ namespace ZZ
         [SerializeField] private int m_sceneIndex;
         [SerializeField, Min(0)] private int m_vitality = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_endurance = k_DefaultAttributeLevel;
+        [SerializeField, Min(0)] private int m_mind = k_DefaultAttributeLevel;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
+        [SerializeField, Min(0f)] private float m_currentFocusPoints =
+            k_DefaultCurrentFocusPoints;
+        [SerializeField] private int m_currentSpellID = k_DefaultSpellID;
         [SerializeField] private int m_headEquipmentID = -1;
         [SerializeField] private int m_bodyEquipmentID = -1;
         [SerializeField] private int m_handEquipmentID = -1;
@@ -95,6 +102,12 @@ namespace ZZ
             set => m_endurance = Mathf.Max(0, value);
         }
 
+        public int Mind
+        {
+            get => m_mind;
+            set => m_mind = Mathf.Max(0, value);
+        }
+
         public float CurrentHealth
         {
             get => m_currentHealth;
@@ -105,6 +118,18 @@ namespace ZZ
         {
             get => m_currentStamina;
             set => m_currentStamina = Mathf.Max(0f, value);
+        }
+
+        public float CurrentFocusPoints
+        {
+            get => m_currentFocusPoints;
+            set => m_currentFocusPoints = Mathf.Max(0f, value);
+        }
+
+        public int CurrentSpellID
+        {
+            get => m_currentSpellID;
+            set => m_currentSpellID = Mathf.Max(-1, value);
         }
 
         public int HeadEquipmentID
@@ -328,6 +353,13 @@ namespace ZZ
             if (m_dataVersion < k_WorldLootDataVersion || m_worldItemsLooted == null)
             {
                 m_worldItemsLooted = new WorldItemLootDictionary();
+            }
+
+            if (m_dataVersion < k_FocusPointsDataVersion)
+            {
+                m_mind = k_DefaultAttributeLevel;
+                m_currentFocusPoints = k_DefaultCurrentFocusPoints;
+                m_currentSpellID = k_DefaultSpellID;
             }
 
             m_bosses ??= new List<BossSaveData>();

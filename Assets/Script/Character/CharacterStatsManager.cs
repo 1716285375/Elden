@@ -9,6 +9,7 @@ namespace ZZ
     {
         private const float k_HealthPerVitalityLevel = 15f;
         private const float k_StaminaPerEnduranceLevel = 10f;
+        private const float k_FocusPointsPerMindLevel = 10f;
         private const float k_PoiseTimerEpsilon = 0.0001f;
 
         [Header("Stamina Regeneration")]
@@ -158,6 +159,7 @@ namespace ZZ
             m_characterNetworkManager.CurrentStamina.OnValueChanged += OnCurrentStaminaChanged;
             m_characterNetworkManager.Vitality.OnValueChanged += OnVitalityChanged;
             m_characterNetworkManager.Endurance.OnValueChanged += OnEnduranceChanged;
+            m_characterNetworkManager.Mind.OnValueChanged += OnMindChanged;
 
             if (IsOwner)
             {
@@ -172,6 +174,7 @@ namespace ZZ
             m_characterNetworkManager.CurrentStamina.OnValueChanged -= OnCurrentStaminaChanged;
             m_characterNetworkManager.Vitality.OnValueChanged -= OnVitalityChanged;
             m_characterNetworkManager.Endurance.OnValueChanged -= OnEnduranceChanged;
+            m_characterNetworkManager.Mind.OnValueChanged -= OnMindChanged;
             base.OnNetworkDespawn();
         }
 
@@ -189,6 +192,12 @@ namespace ZZ
         public float CalculateStaminaBasedOnEnduranceLevel(int enduranceLevel)
         {
             return Mathf.Max(0, enduranceLevel) * k_StaminaPerEnduranceLevel;
+        }
+
+        /// <summary>Calculates the current Focus Point cap from the Mind attribute.</summary>
+        public static float CalculateFocusPointsBasedOnMindLevel(int mindLevel)
+        {
+            return Mathf.Max(0, mindLevel) * k_FocusPointsPerMindLevel;
         }
 
         /// <summary>
@@ -224,6 +233,22 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Recalculates maximum Focus Points and fills the owner resource to that maximum.
+        /// </summary>
+        public void SetNewMaxFocusPointsValue()
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            float maximumFocusPoints = CalculateFocusPointsBasedOnMindLevel(
+                m_characterNetworkManager.Mind.Value);
+            m_characterNetworkManager.MaxFocusPoints.Value = maximumFocusPoints;
+            m_characterNetworkManager.CurrentFocusPoints.Value = maximumFocusPoints;
+        }
+
+        /// <summary>
         /// Consumes stamina for an owner-authoritative action while preserving resource bounds.
         /// </summary>
         public bool TryConsumeStamina(float staminaCost)
@@ -247,6 +272,33 @@ namespace ZZ
                 currentStamina,
                 maximumStamina,
                 staminaCost);
+            return true;
+        }
+
+        /// <summary>Consumes owner Focus Points and clamps the resource to its valid range.</summary>
+        public bool TryConsumeFocusPoints(float focusPointsCost)
+        {
+            if (!IsSpawned || !IsOwner || focusPointsCost <= 0f)
+            {
+                return false;
+            }
+
+            float maximumFocusPoints = Mathf.Max(
+                0f,
+                m_characterNetworkManager.MaxFocusPoints.Value);
+            float currentFocusPoints = Mathf.Clamp(
+                m_characterNetworkManager.CurrentFocusPoints.Value,
+                0f,
+                maximumFocusPoints);
+            if (currentFocusPoints <= 0f)
+            {
+                return false;
+            }
+
+            m_characterNetworkManager.CurrentFocusPoints.Value = Mathf.Clamp(
+                currentFocusPoints - focusPointsCost,
+                0f,
+                maximumFocusPoints);
             return true;
         }
 
@@ -529,6 +581,11 @@ namespace ZZ
             {
                 SetNewMaxStaminaValue();
             }
+
+            if (m_characterNetworkManager.MaxFocusPoints.Value <= 0f)
+            {
+                SetNewMaxFocusPointsValue();
+            }
         }
 
         private void OnVitalityChanged(int previousVitality, int currentVitality)
@@ -544,6 +601,14 @@ namespace ZZ
             if (IsOwner)
             {
                 SetNewMaxStaminaValue();
+            }
+        }
+
+        private void OnMindChanged(int previousMind, int currentMind)
+        {
+            if (IsOwner)
+            {
+                SetNewMaxFocusPointsValue();
             }
         }
 

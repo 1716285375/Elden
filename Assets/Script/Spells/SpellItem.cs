@@ -14,6 +14,10 @@ namespace ZZ
         [Header("Charge")]
         [SerializeField, Min(1f)] private float m_fullChargeModifier = 1.4f;
 
+        [Header("Casting Costs")]
+        [SerializeField, Min(0f)] private float m_staminaCost = 25f;
+        [SerializeField, Min(0)] private int m_focusPointsCost = 25;
+
         [Header("Action Effects")]
         [SerializeField] private GameObject m_spellWarmUpEffect;
         [SerializeField] private GameObject m_spellReleaseEffect;
@@ -27,6 +31,12 @@ namespace ZZ
 
         /// <summary>Gets the damage multiplier applied after a complete charge.</summary>
         public float FullChargeModifier => m_fullChargeModifier;
+
+        /// <summary>Gets the base Stamina consumed by a successful release.</summary>
+        public float StaminaCost => Mathf.Max(0f, m_staminaCost);
+
+        /// <summary>Gets the base Focus Points consumed by a successful release.</summary>
+        public int FocusPointsCost => Mathf.Max(0, m_focusPointsCost);
 
         /// <summary>Gets the locally instantiated warm-up presentation prefab.</summary>
         public GameObject SpellWarmUpEffect => m_spellWarmUpEffect;
@@ -42,11 +52,16 @@ namespace ZZ
             PlayerManager player,
             CasterWeaponItem casterWeapon)
         {
+            CharacterNetworkManager networkManager =
+                player?.CharacterNetworkManager;
             return player != null &&
                 player.IsOwner &&
                 !player.IsDead &&
                 !player.IsPerformingAction &&
                 player.IsGrounded &&
+                networkManager != null &&
+                networkManager.CurrentStamina.Value > 0f &&
+                networkManager.CurrentFocusPoints.Value > FocusPointsCost &&
                 player.InventoryManager?.CurrentSpell == this &&
                 casterWeapon != null &&
                 casterWeapon.SpellClass == m_spellClass;
@@ -75,6 +90,7 @@ namespace ZZ
             CasterWeaponItem casterWeapon,
             bool isRightHand)
         {
+            ConsumeCastingResources(player, false);
             player?.PlayerCombatManager?.ReplicateSpellRelease(
                 isRightHand,
                 false);
@@ -86,9 +102,23 @@ namespace ZZ
             CasterWeaponItem casterWeapon,
             bool isRightHand)
         {
+            ConsumeCastingResources(player, true);
             player?.PlayerCombatManager?.ReplicateSpellRelease(
                 isRightHand,
                 true);
+        }
+
+        /// <summary>Returns the rounded Focus Point cost for one release type.</summary>
+        public int GetFocusPointsCost(bool isFullyCharged)
+        {
+            float modifier = isFullyCharged ? FullChargeModifier : 1f;
+            return Mathf.RoundToInt(FocusPointsCost * modifier);
+        }
+
+        /// <summary>Returns the Stamina cost for one release type.</summary>
+        public float GetStaminaCost(bool isFullyCharged)
+        {
+            return StaminaCost * (isFullyCharged ? FullChargeModifier : 1f);
         }
 
         /// <summary>Creates the one-shot full-charge presentation on this peer.</summary>
@@ -132,6 +162,28 @@ namespace ZZ
                     m_spellReleaseEffect,
                     anchor.position,
                     anchor.rotation);
+            }
+        }
+
+        private void ConsumeCastingResources(
+            PlayerManager player,
+            bool isFullyCharged)
+        {
+            if (player?.IsOwner != true || player.PlayerStatsManager == null)
+            {
+                return;
+            }
+
+            float staminaCost = GetStaminaCost(isFullyCharged);
+            if (staminaCost > 0f)
+            {
+                player.PlayerStatsManager.TryConsumeStamina(staminaCost);
+            }
+
+            int focusPointsCost = GetFocusPointsCost(isFullyCharged);
+            if (focusPointsCost > 0)
+            {
+                player.PlayerStatsManager.TryConsumeFocusPoints(focusPointsCost);
             }
         }
 
