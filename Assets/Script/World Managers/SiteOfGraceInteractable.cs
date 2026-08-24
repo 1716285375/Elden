@@ -23,6 +23,7 @@ namespace ZZ
         [SerializeField] private AudioClip m_restSound;
         [SerializeField, Min(0.1f)] private float m_restDuration = 3f;
         [SerializeField, Min(0.1f)] private float m_maxInteractionDistance = 5f;
+        [SerializeField] private Transform m_teleportTransform;
 
         private readonly NetworkVariable<bool> m_isActivated = new(
             false,
@@ -36,6 +37,9 @@ namespace ZZ
 
         /// <summary>Gets the synchronized activation state.</summary>
         public bool IsActivated => m_isActivated.Value;
+
+        /// <summary>Gets the authored destination used for local fast travel.</summary>
+        public Transform TeleportTransform => m_teleportTransform;
 
         protected override void Awake()
         {
@@ -56,10 +60,12 @@ namespace ZZ
             }
 
             OnIsActivatedChanged(false, m_isActivated.Value);
+            WorldObjectManager.Instance?.RegisterSiteOfGrace(this);
         }
 
         public override void OnNetworkDespawn()
         {
+            WorldObjectManager.Instance?.UnregisterSiteOfGrace(this);
             m_isActivated.OnValueChanged -= OnIsActivatedChanged;
             if (m_restRoutine != null)
             {
@@ -80,6 +86,47 @@ namespace ZZ
             }
 
             RequestSiteOfGraceInteractionServerRpc(player.NetworkObjectId);
+        }
+
+        /// <summary>Moves the locally owned player to this Site's separate destination.</summary>
+        public bool TeleportLocalPlayer()
+        {
+            NetworkObject playerNetworkObject =
+                NetworkManager.Singleton?.LocalClient?.PlayerObject;
+            PlayerManager player =
+                playerNetworkObject?.GetComponent<PlayerManager>();
+            return TeleportPlayer(player, m_teleportTransform);
+        }
+
+        /// <summary>Applies one owner-authoritative teleport to an authored destination.</summary>
+        public static bool TeleportPlayer(
+            PlayerManager player,
+            Transform teleportTransform)
+        {
+            if (player == null || !player.IsOwner || teleportTransform == null)
+            {
+                return false;
+            }
+
+            CharacterController characterController =
+                player.GetComponent<CharacterController>();
+            bool wasControllerEnabled = characterController?.enabled == true;
+            if (wasControllerEnabled)
+            {
+                characterController.enabled = false;
+            }
+
+            player.transform.SetPositionAndRotation(
+                teleportTransform.position,
+                teleportTransform.rotation);
+            Physics.SyncTransforms();
+            if (wasControllerEnabled)
+            {
+                characterController.enabled = true;
+            }
+
+            player.ResetActionFlags();
+            return true;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -229,6 +276,8 @@ namespace ZZ
             {
                 PlayerUIManager.Instance?.PlayerUIPopUpManager
                     ?.CloseAllPopUpWindows();
+                PlayerUIManager.Instance?.PlayerUISiteOfGraceManager
+                    ?.OpenSiteOfGraceMenu();
             }
 
             SetInteractionColliderEnabled(true);

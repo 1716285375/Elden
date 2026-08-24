@@ -568,6 +568,8 @@ namespace ZZ
                 return;
             }
 
+            m_player.PlayerNetworkManager.CancelTwoHanding();
+
             WeaponItem nextWeapon = SelectNextWeapon(
                 m_weaponsInRightHandSlots,
                 m_currentRightHandWeapon,
@@ -590,6 +592,8 @@ namespace ZZ
             {
                 return;
             }
+
+            m_player.PlayerNetworkManager.CancelTwoHanding();
 
             WeaponItem nextWeapon = SelectNextWeapon(
                 m_weaponsInLeftHandSlots,

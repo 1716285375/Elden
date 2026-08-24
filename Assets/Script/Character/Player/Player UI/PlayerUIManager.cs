@@ -20,6 +20,10 @@ namespace ZZ
         [SerializeField] private PlayerUICharacterMenuManager
             m_playerUICharacterMenuManager;
         [SerializeField] private PlayerUIEquipmentManager m_playerUIEquipmentManager;
+        [SerializeField] private PlayerUISiteOfGraceManager
+            m_playerUISiteOfGraceManager;
+        [SerializeField] private PlayerUITeleportLocationManager
+            m_playerUITeleportLocationManager;
         [SerializeField] private GameObject m_menuEventSystem;
 
         private bool m_isMenuWindowOpen;
@@ -52,6 +56,14 @@ namespace ZZ
         public PlayerUIEquipmentManager PlayerUIEquipmentManager =>
             m_playerUIEquipmentManager;
 
+        /// <summary>Gets the local Site of Grace rest-menu controller.</summary>
+        public PlayerUISiteOfGraceManager PlayerUISiteOfGraceManager =>
+            m_playerUISiteOfGraceManager;
+
+        /// <summary>Gets the local unlocked fast-travel location controller.</summary>
+        public PlayerUITeleportLocationManager PlayerUITeleportLocationManager =>
+            m_playerUITeleportLocationManager;
+
         /// <summary>Gets whether any modal player menu currently owns UI input.</summary>
         public bool IsMenuWindowOpen => m_isMenuWindowOpen;
 
@@ -75,6 +87,10 @@ namespace ZZ
                     GetComponentInChildren<PlayerUICharacterMenuManager>(true);
                 m_playerUIEquipmentManager ??=
                     GetComponentInChildren<PlayerUIEquipmentManager>(true);
+                m_playerUISiteOfGraceManager ??=
+                    GetComponentInChildren<PlayerUISiteOfGraceManager>(true);
+                m_playerUITeleportLocationManager ??=
+                    GetComponentInChildren<PlayerUITeleportLocationManager>(true);
             }
             else
             {
@@ -112,6 +128,8 @@ namespace ZZ
             m_playerUICharacterMenuManager?.CloseCharacterMenu();
             m_playerUIEquipmentManager?.CloseEquipmentManagerMenu();
             m_playerUISaveGameManager?.CloseSaveGameMenu();
+            m_playerUISiteOfGraceManager?.CloseSiteOfGraceMenu();
+            m_playerUITeleportLocationManager?.CloseTeleportLocationMenu();
             ReleaseMenuInput();
         }
 
@@ -148,7 +166,10 @@ namespace ZZ
             bool hasOpenMenu =
                 m_playerUICharacterMenuManager?.IsCharacterMenuOpen == true ||
                 m_playerUIEquipmentManager?.IsEquipmentMenuOpen == true ||
-                m_playerUISaveGameManager?.IsSaveGameMenuOpen == true;
+                m_playerUISaveGameManager?.IsSaveGameMenuOpen == true ||
+                m_playerUISiteOfGraceManager?.IsSiteOfGraceMenuOpen == true ||
+                m_playerUITeleportLocationManager
+                    ?.IsTeleportLocationMenuOpen == true;
             if (hasOpenMenu)
             {
                 NotifyMenuWindowOpened();

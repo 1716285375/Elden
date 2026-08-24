@@ -766,6 +766,15 @@ namespace ZZ
             SetCharacterActionHand(isRightHandWeapon);
         }
 
+        /// <summary>Exits the replicated two-hand stance for the locally owned player.</summary>
+        public void CancelTwoHanding()
+        {
+            if (IsOwner && IsSpawned)
+            {
+                ClearTwoHandingState();
+            }
+        }
+
         private void ResetOwnedSprintState()
         {
             if (IsOwner && IsSpawned)
