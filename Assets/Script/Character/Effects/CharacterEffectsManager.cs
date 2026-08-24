@@ -15,6 +15,8 @@ namespace ZZ
         [Header("Static Effects")]
         [SerializeField] private List<StaticCharacterEffect> m_staticEffects = new();
 
+        private readonly List<GameObject> m_currentActionEffects = new();
+
         protected CharacterManager Character => m_character;
 
         protected virtual void Awake()
@@ -24,7 +26,44 @@ namespace ZZ
 
         protected virtual void OnDestroy()
         {
+            DestroyAllCurrentActionEffects();
             RemoveAllStaticEffects();
+        }
+
+        /// <summary>Tracks one locally instantiated effect owned by the current action.</summary>
+        public void RegisterCurrentActionEffect(GameObject actionEffect)
+        {
+            m_currentActionEffects.RemoveAll(effect => effect == null);
+            if (actionEffect != null && !m_currentActionEffects.Contains(actionEffect))
+            {
+                m_currentActionEffects.Add(actionEffect);
+            }
+        }
+
+        /// <summary>Destroys every local warm-up or charge effect owned by the current action.</summary>
+        public void DestroyAllCurrentActionEffects()
+        {
+            for (int effectIndex = m_currentActionEffects.Count - 1;
+                effectIndex >= 0;
+                effectIndex--)
+            {
+                GameObject actionEffect = m_currentActionEffects[effectIndex];
+                if (actionEffect == null)
+                {
+                    continue;
+                }
+
+                if (Application.isPlaying)
+                {
+                    Destroy(actionEffect);
+                }
+                else
+                {
+                    DestroyImmediate(actionEffect);
+                }
+            }
+
+            m_currentActionEffects.Clear();
         }
 
         /// <summary>

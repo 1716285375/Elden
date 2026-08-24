@@ -10,6 +10,7 @@ namespace ZZ
         private const int k_DefaultLeftHandWeaponID = 3;
         private const int k_NoWeaponID = -1;
         private const int k_NoEquipmentID = -1;
+        private const int k_NoSpellID = -1;
 
         [Header("Two-Hand Effect")]
         [SerializeField] private StaticCharacterEffect m_twoHandingEffect;
@@ -89,6 +90,26 @@ namespace ZZ
                 true,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentSpellID =
+            new NetworkVariable<int>(
+                k_NoSpellID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isChargingRightSpell =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isChargingLeftSpell =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isSpellFullyCharged =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -147,6 +168,18 @@ namespace ZZ
         /// <summary>Gets the owner-written body type replicated to every client.</summary>
         public NetworkVariable<bool> IsMale => m_isMale;
 
+        /// <summary>Gets the owner-selected spell occupying the single replicated slot.</summary>
+        public NetworkVariable<int> CurrentSpellID => m_currentSpellID;
+
+        /// <summary>Gets whether the owner is charging a right-hand spell.</summary>
+        public NetworkVariable<bool> IsChargingRightSpell => m_isChargingRightSpell;
+
+        /// <summary>Gets whether the owner is charging a left-hand spell.</summary>
+        public NetworkVariable<bool> IsChargingLeftSpell => m_isChargingLeftSpell;
+
+        /// <summary>Gets whether the active spell reached its full-charge threshold.</summary>
+        public NetworkVariable<bool> IsSpellFullyCharged => m_isSpellFullyCharged;
+
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -169,6 +202,10 @@ namespace ZZ
             m_currentHandEquipmentID.OnValueChanged += OnHandEquipmentIDChanged;
             m_currentLegEquipmentID.OnValueChanged += OnLegEquipmentIDChanged;
             m_isMale.OnValueChanged += OnBodyTypeChanged;
+            m_currentSpellID.OnValueChanged += OnCurrentSpellIDChanged;
+            m_isChargingRightSpell.OnValueChanged += OnChargingSpellStateChanged;
+            m_isChargingLeftSpell.OnValueChanged += OnChargingSpellStateChanged;
+            m_isSpellFullyCharged.OnValueChanged += OnSpellFullyChargedChanged;
             GetComponent<PlayerBodyManager>()?.ToggleBodyType(m_isMale.Value);
             m_playerInventoryManager?.InitializeRightWeaponFromID(
                 m_currentRightHandWeaponID.Value);
@@ -179,6 +216,16 @@ namespace ZZ
                 m_currentBodyEquipmentID.Value,
                 m_currentHandEquipmentID.Value,
                 m_currentLegEquipmentID.Value);
+            if (IsOwner &&
+                m_currentSpellID.Value == k_NoSpellID &&
+                m_playerInventoryManager?.CurrentSpell != null)
+            {
+                m_currentSpellID.Value =
+                    m_playerInventoryManager.CurrentSpell.ItemID;
+            }
+
+            m_playerInventoryManager?.InitializeCurrentSpellFromID(
+                m_currentSpellID.Value);
             if (!IsOwner)
             {
                 UpdateRemoteAnimatorController(m_currentWeaponIDBeingUsed.Value);
@@ -186,6 +233,7 @@ namespace ZZ
 
             RefreshBlockingPresentation();
             RefreshTwoHandingPresentation();
+            ApplyChargingSpellPresentation();
 
             ResetOwnedSprintState();
         }
@@ -205,6 +253,10 @@ namespace ZZ
             m_currentHandEquipmentID.OnValueChanged -= OnHandEquipmentIDChanged;
             m_currentLegEquipmentID.OnValueChanged -= OnLegEquipmentIDChanged;
             m_isMale.OnValueChanged -= OnBodyTypeChanged;
+            m_currentSpellID.OnValueChanged -= OnCurrentSpellIDChanged;
+            m_isChargingRightSpell.OnValueChanged -= OnChargingSpellStateChanged;
+            m_isChargingLeftSpell.OnValueChanged -= OnChargingSpellStateChanged;
+            m_isSpellFullyCharged.OnValueChanged -= OnSpellFullyChargedChanged;
             RemoveTwoHandingPresentation(false);
             base.OnNetworkDespawn();
         }
@@ -214,6 +266,43 @@ namespace ZZ
             base.OnGainedOwnership();
             ResetOwnedSprintState();
             ResetOwnedTwoHandingState();
+            ResetOwnedSpellState();
+        }
+
+        /// <summary>Writes one hand's sustained spell charge only when its value changes.</summary>
+        public void SetChargingSpellState(bool isRightHand, bool isCharging)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            NetworkVariable<bool> selectedState = isRightHand
+                ? m_isChargingRightSpell
+                : m_isChargingLeftSpell;
+            NetworkVariable<bool> oppositeState = isRightHand
+                ? m_isChargingLeftSpell
+                : m_isChargingRightSpell;
+            if (oppositeState.Value)
+            {
+                oppositeState.Value = false;
+            }
+
+            if (selectedState.Value != isCharging)
+            {
+                selectedState.Value = isCharging;
+            }
+        }
+
+        /// <summary>Writes the one-shot full-charge condition when its value changes.</summary>
+        public void SetSpellFullyChargedState(bool isFullyCharged)
+        {
+            if (IsSpawned &&
+                IsOwner &&
+                m_isSpellFullyCharged.Value != isFullyCharged)
+            {
+                m_isSpellFullyCharged.Value = isFullyCharged;
+            }
         }
 
         /// <summary>
@@ -303,6 +392,65 @@ namespace ZZ
             {
                 ClearTwoHandingState();
             }
+        }
+
+        private void ResetOwnedSpellState()
+        {
+            if (!IsOwner || !IsSpawned)
+            {
+                return;
+            }
+
+            m_isChargingRightSpell.Value = false;
+            m_isChargingLeftSpell.Value = false;
+            m_isSpellFullyCharged.Value = false;
+        }
+
+        private void OnCurrentSpellIDChanged(int previousSpellID, int currentSpellID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.InitializeCurrentSpellFromID(currentSpellID);
+        }
+
+        private void OnChargingSpellStateChanged(
+            bool previousValue,
+            bool currentValue)
+        {
+            ApplyChargingSpellPresentation();
+        }
+
+        private void ApplyChargingSpellPresentation()
+        {
+            PlayerManager player = GetComponent<PlayerManager>();
+            player?.PlayerAnimatorManager?.SetSpellChargingState(
+                m_isChargingRightSpell.Value,
+                m_isChargingLeftSpell.Value);
+            if (!m_isChargingRightSpell.Value && !m_isChargingLeftSpell.Value)
+            {
+                player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
+            }
+        }
+
+        private void OnSpellFullyChargedChanged(
+            bool previousValue,
+            bool currentValue)
+        {
+            PlayerManager player = GetComponent<PlayerManager>();
+            player?.PlayerAnimatorManager?.SetSpellFullyChargedState(currentValue);
+            if (!currentValue)
+            {
+                return;
+            }
+
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            CasterWeaponItem casterWeapon = (m_isUsingLeftHand.Value
+                ? m_playerInventoryManager?.CurrentLeftHandWeapon
+                : m_playerInventoryManager?.CurrentRightHandWeapon) as
+                    CasterWeaponItem;
+            m_playerInventoryManager?.CurrentSpell?.SuccessfullyChargeSpell(
+                player,
+                casterWeapon,
+                m_isUsingLeftHand.Value == false);
         }
 
         private void OnRightHandWeaponIDChanged(int previousWeaponID, int currentWeaponID)

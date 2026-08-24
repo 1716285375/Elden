@@ -54,6 +54,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c716ad1e012c1c646869a44bf306ef64, type: 2}
   - {fileID: 11400000, guid: 99582e7697fa6fc45babca5ec0372dfb, type: 2}
   - {fileID: 11400000, guid: efd7f47b2b576de4ca5c5a18b9ba494a, type: 2}
+  - {fileID: 11400000, guid: a59c54d06240ad24ba8e34a9339a0e0e, type: 2}
+  - {fileID: 11400000, guid: f56b04b88b0fd2a4184f522fc0bd515e, type: 2}
   m_headEquipment:
   - {fileID: 11400000, guid: 9eb5883dac298d244a43092a6ba95ba4, type: 2}
   m_bodyEquipment:
@@ -64,4 +66,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 99582e7697fa6fc45babca5ec0372dfb, type: 2}
   m_ashesOfWar:
   - {fileID: 11400000, guid: efd7f47b2b576de4ca5c5a18b9ba494a, type: 2}
+  m_spells:
+  - {fileID: 11400000, guid: f56b04b88b0fd2a4184f522fc0bd515e, type: 2}
   m_creatureDropPickupPrefab: {fileID: 4996127031911254275, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}

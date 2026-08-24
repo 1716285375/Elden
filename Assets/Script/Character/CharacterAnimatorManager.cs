@@ -24,6 +24,12 @@ namespace ZZ
             Animator.StringToHash("isBlocking");
         private static readonly int s_isTwoHandingWeaponParameter =
             Animator.StringToHash("isTwoHandingWeapon");
+        private static readonly int s_isChargingRightSpellParameter =
+            Animator.StringToHash("isChargingRightSpell");
+        private static readonly int s_isChargingLeftSpellParameter =
+            Animator.StringToHash("isChargingLeftSpell");
+        private static readonly int s_isSpellFullyChargedParameter =
+            Animator.StringToHash("isSpellFullyCharged");
         private static readonly int s_emptyActionState =
             Animator.StringToHash("Action Override.Empty");
         private static readonly int s_rollForwardState =
@@ -62,6 +68,18 @@ namespace ZZ
             Animator.StringToHash("Action Override.Parried_01");
         private static readonly int s_pickupItemState =
             Animator.StringToHash("Action Override.Pickup_Item_01");
+        private static readonly int s_chargeSpellRightState =
+            Animator.StringToHash("Action Override.Cast_Spell_Right_Charge");
+        private static readonly int s_chargeSpellLeftState =
+            Animator.StringToHash("Action Override.Cast_Spell_Left_Charge");
+        private static readonly int s_releaseSpellRightState =
+            Animator.StringToHash("Action Override.Cast_Spell_Right_Release");
+        private static readonly int s_releaseSpellLeftState =
+            Animator.StringToHash("Action Override.Cast_Spell_Left_Release");
+        private static readonly int s_releaseFullChargeSpellRightState =
+            Animator.StringToHash("Action Override.Cast_Spell_Right_Release_Full");
+        private static readonly int s_releaseFullChargeSpellLeftState =
+            Animator.StringToHash("Action Override.Cast_Spell_Left_Release_Full");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -214,6 +232,27 @@ namespace ZZ
         public void SetTwoHandingWeaponState(bool isTwoHandingWeapon)
         {
             m_animator?.SetBool(s_isTwoHandingWeaponParameter, isTwoHandingWeapon);
+        }
+
+        /// <summary>Applies the two independent replicated spell-charge branches.</summary>
+        public void SetSpellChargingState(
+            bool isChargingRightSpell,
+            bool isChargingLeftSpell)
+        {
+            m_animator?.SetBool(
+                s_isChargingRightSpellParameter,
+                isChargingRightSpell);
+            m_animator?.SetBool(
+                s_isChargingLeftSpellParameter,
+                isChargingLeftSpell);
+        }
+
+        /// <summary>Applies the replicated full-charge presentation condition.</summary>
+        public void SetSpellFullyChargedState(bool isSpellFullyCharged)
+        {
+            m_animator?.SetBool(
+                s_isSpellFullyChargedParameter,
+                isSpellFullyCharged);
         }
 
         /// <summary>
@@ -648,7 +687,15 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.ParrySlow ||
                 targetAnimation == CharacterActionAnimation.ParryLand ||
                 targetAnimation == CharacterActionAnimation.Parried ||
-                targetAnimation == CharacterActionAnimation.PickupItem;
+                targetAnimation == CharacterActionAnimation.PickupItem ||
+                targetAnimation == CharacterActionAnimation.ChargeSpellRight ||
+                targetAnimation == CharacterActionAnimation.ChargeSpellLeft ||
+                targetAnimation == CharacterActionAnimation.ReleaseSpellRight ||
+                targetAnimation == CharacterActionAnimation.ReleaseSpellLeft ||
+                targetAnimation ==
+                    CharacterActionAnimation.ReleaseFullChargeSpellRight ||
+                targetAnimation ==
+                    CharacterActionAnimation.ReleaseFullChargeSpellLeft;
         }
 
         /// <summary>Returns whether an action is approved for zero-blend network playback.</summary>
@@ -886,6 +933,24 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.PickupItem:
                     actionStateHash = s_pickupItemState;
+                    return true;
+                case CharacterActionAnimation.ChargeSpellRight:
+                    actionStateHash = s_chargeSpellRightState;
+                    return true;
+                case CharacterActionAnimation.ChargeSpellLeft:
+                    actionStateHash = s_chargeSpellLeftState;
+                    return true;
+                case CharacterActionAnimation.ReleaseSpellRight:
+                    actionStateHash = s_releaseSpellRightState;
+                    return true;
+                case CharacterActionAnimation.ReleaseSpellLeft:
+                    actionStateHash = s_releaseSpellLeftState;
+                    return true;
+                case CharacterActionAnimation.ReleaseFullChargeSpellRight:
+                    actionStateHash = s_releaseFullChargeSpellRightState;
+                    return true;
+                case CharacterActionAnimation.ReleaseFullChargeSpellLeft:
+                    actionStateHash = s_releaseFullChargeSpellLeftState;
                     return true;
                 default:
                     actionStateHash = 0;

@@ -17,6 +17,7 @@ namespace ZZ
         [SerializeField] private List<HandEquipmentItem> m_handEquipment = new();
         [SerializeField] private List<LegEquipmentItem> m_legEquipment = new();
         [SerializeField] private List<AshOfWar> m_ashesOfWar = new();
+        [SerializeField] private List<SpellItem> m_spells = new();
 
         [Header("World Pickups")]
         [SerializeField] private GameObject m_creatureDropPickupPrefab;
@@ -31,6 +32,9 @@ namespace ZZ
 
         /// <summary>Gets the authored Ashes of War registered in the item catalog.</summary>
         public IReadOnlyList<AshOfWar> AshesOfWar => m_ashesOfWar;
+
+        /// <summary>Gets the authored spells registered in the global item catalog.</summary>
+        public IReadOnlyList<SpellItem> Spells => m_spells;
 
         /// <summary>Gets the server-spawned pickup presentation used by creature loot.</summary>
         public GameObject CreatureDropPickupPrefab => m_creatureDropPickupPrefab;
@@ -105,11 +109,34 @@ namespace ZZ
             return GetItemByID(itemID, m_ashesOfWar);
         }
 
+        /// <summary>Returns the spell assigned to a stable item identifier.</summary>
+        public SpellItem GetSpellByID(int itemID)
+        {
+            return GetItemByID(itemID, m_spells);
+        }
+
         private void AssignItemIDs()
         {
+            AppendMissingItems(m_spells);
             for (int itemIndex = 0; itemIndex < m_items.Count; itemIndex++)
             {
                 m_items[itemIndex]?.AssignItemID(itemIndex);
+            }
+        }
+
+        private void AppendMissingItems<T>(IEnumerable<T> typedItems) where T : Item
+        {
+            if (typedItems == null)
+            {
+                return;
+            }
+
+            foreach (T item in typedItems)
+            {
+                if (item != null && !m_items.Contains(item))
+                {
+                    m_items.Add(item);
+                }
             }
         }
 

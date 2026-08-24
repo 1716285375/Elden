@@ -9,6 +9,7 @@ namespace ZZ
     public class PlayerCombatManager : CharacterCombatManager
     {
         [SerializeField, Min(0f)] private float m_fullyChargedDuration = 0.8f;
+        [SerializeField, Min(0f)] private float m_fullyChargedSpellDuration = 1.5f;
         [SerializeField] private bool m_canBlock = true;
 
         private PlayerManager m_player;
@@ -18,6 +19,11 @@ namespace ZZ
         private bool m_canQueueNextAttack;
         private bool m_canPerformCommittedAttack;
         private AttackType m_committedAttackType;
+        private SpellItem m_currentCastingSpell;
+        private CasterWeaponItem m_currentCasterWeapon;
+        private float m_spellChargeStartTime;
+        private bool m_isCastingRightHandSpell;
+        private bool m_hasReachedFullSpellCharge;
 
         /// <summary>Gets the weapon currently selected by the player's action hand.</summary>
         public WeaponItem CurrentWeaponBeingUsed => ResolveCurrentWeapon();
@@ -34,10 +40,37 @@ namespace ZZ
         /// <summary>Gets whether gameplay currently permits a new block.</summary>
         public bool CanBlock => m_canBlock;
 
+        /// <summary>Gets whether this owner currently holds either spell-casting input.</summary>
+        public bool IsChargingSpell => m_currentCastingSpell != null;
+
+        /// <summary>Gets whether replicated input still holds the active spell charge.</summary>
+        public bool IsHoldingSpellInput => IsChargingSpell &&
+            (m_player?.PlayerNetworkManager?.IsChargingRightSpell.Value == true ||
+                m_player?.PlayerNetworkManager?.IsChargingLeftSpell.Value == true);
+
         protected override void Awake()
         {
             base.Awake();
             m_player = GetComponent<PlayerManager>();
+        }
+
+        private void Update()
+        {
+            if (!IsChargingSpell ||
+                m_hasReachedFullSpellCharge ||
+                m_player == null ||
+                !m_player.IsOwner)
+            {
+                return;
+            }
+
+            if (Time.time - m_spellChargeStartTime < m_fullyChargedSpellDuration)
+            {
+                return;
+            }
+
+            m_hasReachedFullSpellCharge = true;
+            m_player.PlayerNetworkManager?.SetSpellFullyChargedState(true);
         }
 
         /// <summary>
@@ -51,6 +84,147 @@ namespace ZZ
             }
 
             weaponAction.AttemptToPerformAction(m_player, weapon);
+        }
+
+        /// <summary>Begins one owner-authoritative spell charge and replicates its animation.</summary>
+        public void BeginChargingSpell(
+            SpellItem spell,
+            CasterWeaponItem casterWeapon,
+            bool isRightHand)
+        {
+            if (spell == null ||
+                casterWeapon == null ||
+                IsChargingSpell ||
+                !spell.CanICastThisSpell(m_player, casterWeapon))
+            {
+                return;
+            }
+
+            SetBlocking(false);
+            CancelChargingAttack();
+            m_currentCastingSpell = spell;
+            m_currentCasterWeapon = casterWeapon;
+            m_isCastingRightHandSpell = isRightHand;
+            m_spellChargeStartTime = Time.time;
+            m_hasReachedFullSpellCharge = false;
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(isRightHand);
+            m_player.PlayerNetworkManager?.SetSpellFullyChargedState(false);
+            m_player.PlayerNetworkManager?.SetChargingSpellState(isRightHand, true);
+            CharacterActionAnimation animation = isRightHand
+                ? CharacterActionAnimation.ChargeSpellRight
+                : CharacterActionAnimation.ChargeSpellLeft;
+            ReplicateSpellAction(animation);
+        }
+
+        /// <summary>Releases the active spell only for the hand that began its charge.</summary>
+        public void ReleaseChargingSpell(bool isRightHand)
+        {
+            if (!IsChargingSpell || m_isCastingRightHandSpell != isRightHand)
+            {
+                return;
+            }
+
+            SpellItem spell = m_currentCastingSpell;
+            CasterWeaponItem casterWeapon = m_currentCasterWeapon;
+            bool isFullyCharged = m_hasReachedFullSpellCharge;
+            m_player.PlayerNetworkManager?.SetChargingSpellState(isRightHand, false);
+            if (isFullyCharged)
+            {
+                spell.SuccessfullyCastSpellFullCharge(
+                    m_player,
+                    casterWeapon,
+                    isRightHand);
+            }
+            else
+            {
+                spell.SuccessfullyCastSpell(m_player, casterWeapon, isRightHand);
+            }
+        }
+
+        /// <summary>Aborts a held spell without releasing a projectile.</summary>
+        public void CancelChargingSpell()
+        {
+            if (m_player?.PlayerNetworkManager != null)
+            {
+                m_player.PlayerNetworkManager.SetChargingSpellState(
+                    m_isCastingRightHandSpell,
+                    false);
+                m_player.PlayerNetworkManager.SetSpellFullyChargedState(false);
+            }
+
+            ClearLocalSpellState();
+            m_player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
+        }
+
+        /// <summary>Replicates the correct normal or full-charge hand release.</summary>
+        public void ReplicateSpellRelease(bool isRightHand, bool isFullyCharged)
+        {
+            CharacterActionAnimation animation = (isRightHand, isFullyCharged) switch
+            {
+                (true, true) =>
+                    CharacterActionAnimation.ReleaseFullChargeSpellRight,
+                (false, true) =>
+                    CharacterActionAnimation.ReleaseFullChargeSpellLeft,
+                (true, false) => CharacterActionAnimation.ReleaseSpellRight,
+                _ => CharacterActionAnimation.ReleaseSpellLeft
+            };
+            ReplicateSpellAction(animation);
+        }
+
+        /// <summary>Animation Event: creates warm-up effects from replicated spell data.</summary>
+        public void InstantiateSpellWarmUpEffects()
+        {
+            bool isRightHand = ResolveCurrentSpellHand();
+            CasterWeaponItem casterWeapon = ResolveCasterWeapon(isRightHand);
+            m_player?.InventoryManager?.CurrentSpell?.InstantiateSpellWarmUpEffects(
+                m_player,
+                casterWeapon,
+                isRightHand);
+        }
+
+        /// <summary>Animation Event: instantiates the released projectile on this peer.</summary>
+        public void InstantiateCurrentSpell()
+        {
+            bool isRightHand = ResolveCurrentSpellHand();
+            CasterWeaponItem casterWeapon = ResolveCasterWeapon(isRightHand);
+            SpellItem spell = m_player?.InventoryManager?.CurrentSpell;
+            if (spell == null || casterWeapon == null)
+            {
+                return;
+            }
+
+            bool isFullyCharged =
+                m_player.PlayerNetworkManager?.IsSpellFullyCharged.Value == true;
+            spell.InstantiateSpell(
+                m_player,
+                casterWeapon,
+                isRightHand,
+                isFullyCharged);
+        }
+
+        /// <summary>Ends local spell presentation and clears owner-written charge state.</summary>
+        public void CompleteSpellCast()
+        {
+            m_player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
+            if (m_player?.IsOwner == true)
+            {
+                m_player.PlayerNetworkManager?.SetChargingSpellState(
+                    m_isCastingRightHandSpell,
+                    false);
+                m_player.PlayerNetworkManager?.SetSpellFullyChargedState(false);
+            }
+
+            ClearLocalSpellState();
+        }
+
+        /// <summary>Returns the loaded catalyst anchor for one casting hand.</summary>
+        public Transform GetSpellInstantiationTransform(bool isRightHand)
+        {
+            WeaponManager weaponManager = isRightHand
+                ? m_player?.EquipmentManager?.CurrentRightHandWeaponManager
+                : m_player?.EquipmentManager?.CurrentLeftHandWeaponManager;
+            return weaponManager?.SpellInstantiationLocation
+                ?.InstantiationTransform;
         }
 
         /// <summary>Executes the Ash of War selected for the current hand state.</summary>
@@ -320,6 +494,7 @@ namespace ZZ
         public override void ResetActionState()
         {
             base.ResetActionState();
+            CompleteSpellCast();
             DisableCanCombo();
             DisableCanPerformCommittedAttack();
             PlayerInputManager.Instance?.ClearAttackInputQueue();
@@ -526,6 +701,54 @@ namespace ZZ
             m_chargingWeapon = null;
             m_chargeStartTime = 0f;
             m_player?.CharacterNetworkManager?.SetChargingAttackState(false);
+        }
+
+        private void ReplicateSpellAction(CharacterActionAnimation animation)
+        {
+            const bool k_IsPerformingAction = true;
+            const bool k_ShouldApplyRootMotion = false;
+            const bool k_CanRotate = true;
+            const bool k_CanMove = false;
+            m_player?.PlayerAnimatorManager?.PlayTargetActionAnimation(
+                animation,
+                k_IsPerformingAction,
+                k_ShouldApplyRootMotion,
+                k_CanRotate,
+                k_CanMove);
+            m_player?.CharacterNetworkManager
+                ?.NotifyServerOfActionAnimationServerRpc(
+                    animation,
+                    k_IsPerformingAction,
+                    k_ShouldApplyRootMotion,
+                    k_CanRotate,
+                    k_CanMove);
+        }
+
+        private bool ResolveCurrentSpellHand()
+        {
+            if (m_currentCastingSpell != null)
+            {
+                return m_isCastingRightHandSpell;
+            }
+
+            return m_player?.PlayerNetworkManager?.IsUsingLeftHand.Value != true;
+        }
+
+        private CasterWeaponItem ResolveCasterWeapon(bool isRightHand)
+        {
+            return (isRightHand
+                ? m_player?.InventoryManager?.CurrentRightHandWeapon
+                : m_player?.InventoryManager?.CurrentLeftHandWeapon) as
+                    CasterWeaponItem;
+        }
+
+        private void ClearLocalSpellState()
+        {
+            m_currentCastingSpell = null;
+            m_currentCasterWeapon = null;
+            m_spellChargeStartTime = 0f;
+            m_isCastingRightHandSpell = false;
+            m_hasReachedFullSpellCharge = false;
         }
 
         private void EnableCommittedAttack(AttackType attackType)
