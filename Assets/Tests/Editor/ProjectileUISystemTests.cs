@@ -90,9 +90,9 @@ namespace ZZ.Tests
                 SerializedProperty quantities = serializedManager.FindProperty(
                     "m_equipmentSlotQuantityTexts");
 
-                Assert.That(icons.arraySize, Is.EqualTo(12));
-                Assert.That(buttons.arraySize, Is.EqualTo(12));
-                Assert.That(quantities.arraySize, Is.EqualTo(12));
+                Assert.That(icons.arraySize, Is.EqualTo(15));
+                Assert.That(buttons.arraySize, Is.EqualTo(15));
+                Assert.That(quantities.arraySize, Is.EqualTo(15));
                 Assert.That(
                     quantities.GetArrayElementAtIndex(10).objectReferenceValue,
                     Is.Not.Null);

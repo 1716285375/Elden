@@ -140,6 +140,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Switch Quick Slot Item",
+                    "type": "Button",
+                    "id": "2eff00c4-25db-4817-9471-7610cc1b0406",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -613,6 +622,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Use Quick Slot Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4e1cf88a-bd6b-4017-b94a-9ff1c8975fca",
+                    "path": "<Gamepad>/dpad/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Switch Quick Slot Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "91233441-ceb8-4972-bd4c-4091a9385145",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Switch Quick Slot Item",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

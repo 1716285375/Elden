@@ -51,6 +51,21 @@ namespace ZZ
                 hasIcon);
         }
 
+        /// <summary>Updates one gameplay item icon and its owner-specific amount.</summary>
+        public void SetQuickSlotItem(
+            QuickSlotItem quickSlotItem,
+            PlayerManager player)
+        {
+            bool hasIcon = quickSlotItem?.ItemIcon != null;
+            SetItem(hasIcon ? quickSlotItem : null);
+            bool shouldShowQuantity = hasIcon && quickSlotItem.IsConsumable;
+            SetQuantity(
+                shouldShowQuantity
+                    ? quickSlotItem.GetCurrentAmount(player)
+                    : -1,
+                shouldShowQuantity);
+        }
+
         /// <summary>Controls the reserved selection highlight.</summary>
         public void SetHighlighted(bool isHighlighted)
         {

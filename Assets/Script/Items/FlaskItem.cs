@@ -16,6 +16,15 @@ namespace ZZ
         public float FlaskRestoration => Mathf.Max(0f, m_flaskRestoration);
 
         /// <inheritdoc />
+        public override int GetCurrentAmount(PlayerManager player)
+        {
+            return Mathf.Max(
+                0,
+                player?.PlayerNetworkManager?.GetRemainingFlaskCount(
+                    m_restoresHealth) ?? 0);
+        }
+
+        /// <inheritdoc />
         public override void AttemptToUseItem(PlayerManager player)
         {
             if (!CanIUseThisItem(player))
