@@ -1198,6 +1198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldSoundFXManager
   m_rollingSoundFX: {fileID: 8300000, guid: 439af5d91c2670549bcdc9f9dedab078, type: 3}
+  m_pickupItemSoundEffect: {fileID: 8300000, guid: 1bc34465e56b93d48bc40170994aa90c, type: 3}
 --- !u!4 &355002551
 Transform:
   m_ObjectHideFlags: 0

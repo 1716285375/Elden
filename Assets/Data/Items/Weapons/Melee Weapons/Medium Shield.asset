@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Medium Shield
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.MeleeWeaponItem
   m_itemName: Medium Shield
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 21300000, guid: 5c6eb0f112197a140b8e306b96ec7bf2, type: 3}
   m_itemDescription: A balanced shield with full Physical guard and dependable Stability.
   m_itemID: 3
   m_weaponModel: {fileID: 1582763652874089129, guid: 68dabc27d2a6f924c9a0a9c4779d8550, type: 3}

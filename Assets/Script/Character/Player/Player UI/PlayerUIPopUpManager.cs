@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ZZ
 {
@@ -19,6 +20,12 @@ namespace ZZ
         [SerializeField] private GameObject m_playerMessagePopup;
         [SerializeField] private TMP_Text m_playerMessageText;
 
+        [Header("ITEM POPUP")]
+        [SerializeField] private GameObject m_itemPopup;
+        [SerializeField] private Image m_itemIcon;
+        [SerializeField] private TMP_Text m_itemNameText;
+        [SerializeField] private TMP_Text m_itemAmountText;
+
         [Header("TIMING")]
         [SerializeField, Min(0.01f)] private float m_fadeInDuration = 0.8f;
         [SerializeField, Min(0f)] private float m_visibleDuration = 2f;
@@ -27,6 +34,8 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_finalCharacterSpacing = 22f;
 
         private Coroutine m_popupRoutine;
+
+        public bool IsPopUpWindowOpen { get; private set; }
 
         private void OnDisable()
         {
@@ -56,6 +65,7 @@ namespace ZZ
 
             ResetPopupPresentation();
             m_youDiedPopup.SetActive(true);
+            RefreshPopupState();
             m_popupRoutine = StartCoroutine(DisplayYouDiedPopup());
         }
 
@@ -68,6 +78,7 @@ namespace ZZ
             m_popupRoutine = null;
             ResetPopupPresentation();
             m_youDiedPopup?.SetActive(false);
+            RefreshPopupState();
         }
 
         /// <summary>Displays the current interaction prompt for the locally owned player.</summary>
@@ -87,12 +98,44 @@ namespace ZZ
 
             m_playerMessageText.text = message;
             m_playerMessagePopup.SetActive(true);
+            RefreshPopupState();
+        }
+
+        /// <summary>Displays the authored item presentation and collected amount.</summary>
+        public void SendItemPopup(Item item, int amount)
+        {
+            if (item == null ||
+                m_itemPopup == null ||
+                m_itemIcon == null ||
+                m_itemNameText == null ||
+                m_itemAmountText == null)
+            {
+                Debug.LogWarning("The item popup references are incomplete.", this);
+                return;
+            }
+
+            ClosePlayerMessagePopup();
+            m_itemIcon.sprite = item.ItemIcon;
+            m_itemIcon.enabled = item.ItemIcon != null;
+            m_itemNameText.text = item.ItemName;
+            m_itemAmountText.text = $"x{Mathf.Max(1, amount)}";
+            m_itemPopup.SetActive(true);
+            RefreshPopupState();
+        }
+
+        /// <summary>Closes only the proximity prompt without dismissing an item popup.</summary>
+        public void ClosePlayerMessagePopup()
+        {
+            m_playerMessagePopup?.SetActive(false);
+            RefreshPopupState();
         }
 
         /// <summary>Closes transient interaction prompts without interrupting death presentation.</summary>
         public void CloseAllPopUpWindows()
         {
             m_playerMessagePopup?.SetActive(false);
+            m_itemPopup?.SetActive(false);
+            RefreshPopupState();
         }
 
         private IEnumerator DisplayYouDiedPopup()
@@ -103,6 +146,7 @@ namespace ZZ
 
             m_youDiedPopup.SetActive(false);
             m_popupRoutine = null;
+            RefreshPopupState();
         }
 
         private IEnumerator FadeInPopUpOverTime()
@@ -176,6 +220,13 @@ namespace ZZ
             {
                 m_popupText.characterSpacing = 0f;
             }
+        }
+
+        private void RefreshPopupState()
+        {
+            IsPopUpWindowOpen = m_youDiedPopup?.activeSelf == true ||
+                m_playerMessagePopup?.activeSelf == true ||
+                m_itemPopup?.activeSelf == true;
         }
     }
 }

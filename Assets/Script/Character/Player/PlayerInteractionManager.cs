@@ -115,6 +115,7 @@ namespace ZZ
         /// <summary>Uses the first eligible interaction and applies its one-shot policy.</summary>
         public void HandleInteractionInput()
         {
+            CloseAllPopUpWindows();
             CheckForInteractable();
             Interactable interactable = m_activeInteractable;
             if (interactable == null || !interactable.CanInteract(m_player))
@@ -161,6 +162,12 @@ namespace ZZ
                 ?.CloseAllPopUpWindows();
         }
 
+        private static void ClosePlayerMessagePopup()
+        {
+            PlayerUIManager.Instance?.PlayerUIPopUpManager
+                ?.ClosePlayerMessagePopup();
+        }
+
         private Interactable FindFirstEligibleInteraction()
         {
             foreach (Interactable interactable in m_currentInteractableActions)
@@ -183,7 +190,7 @@ namespace ZZ
 
             m_activeInteractable = null;
             m_hasOpenPrompt = false;
-            CloseAllPopUpWindows();
+            ClosePlayerMessagePopup();
         }
     }
 }

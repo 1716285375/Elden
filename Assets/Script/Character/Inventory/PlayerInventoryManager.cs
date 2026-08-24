@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ZZ
@@ -28,6 +29,9 @@ namespace ZZ
         [SerializeField] private BodyEquipmentItem m_startingBodyEquipment;
         [SerializeField] private HandEquipmentItem m_startingHandEquipment;
         [SerializeField] private LegEquipmentItem m_startingLegEquipment;
+
+        [Header("Runtime Inventory")]
+        [SerializeField] private List<Item> m_itemsInInventory = new();
 
         private PlayerManager m_player;
         private PlayerEquipmentManager m_equipmentManager;
@@ -61,6 +65,9 @@ namespace ZZ
 
         /// <summary>Gets the runtime armor copy currently equipped in the leg slot.</summary>
         public LegEquipmentItem CurrentLegEquipment => m_currentLegEquipment;
+
+        /// <summary>Gets the item assets collected during the current play session.</summary>
+        public IReadOnlyList<Item> ItemsInInventory => m_itemsInInventory;
 
         /// <summary>Gets the selected right-hand quick-slot index.</summary>
         public int RightHandWeaponIndex => m_rightHandWeaponIndex;
@@ -97,6 +104,27 @@ namespace ZZ
         public void ClearCurrentTwoHandWeapon()
         {
             m_currentTwoHandWeapon = null;
+        }
+
+        /// <summary>Adds one authored item to the runtime inventory.</summary>
+        public bool AddItemToInventory(Item item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            m_itemsInInventory ??= new List<Item>();
+            m_itemsInInventory.Add(item);
+            return true;
+        }
+
+        /// <summary>Removes one matching item and clears stale references.</summary>
+        public bool RemoveItemFromInventory(Item item)
+        {
+            m_itemsInInventory ??= new List<Item>();
+            m_itemsInInventory.RemoveAll(candidate => candidate == null);
+            return item != null && m_itemsInInventory.Remove(item);
         }
 
         protected override void Awake()
