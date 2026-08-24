@@ -8,6 +8,7 @@ namespace ZZ
     public class WeaponManager : MonoBehaviour
     {
         [SerializeField] private MeleeWeaponDamageCollider m_meleeDamageCollider;
+        [SerializeField] private Animator m_weaponAnimator;
 
         private AttackType m_currentAttackType = AttackType.LightAttack01;
 
@@ -27,6 +28,7 @@ namespace ZZ
                 GetComponentInChildren<MeleeWeaponDamageCollider>(true);
             SpellInstantiationLocation ??=
                 GetComponentInChildren<SpellInstantiationLocation>(true);
+            m_weaponAnimator ??= GetComponentInChildren<Animator>(true);
             m_meleeDamageCollider?.CloseDamageCollider();
         }
 
@@ -97,6 +99,20 @@ namespace ZZ
                 Weapon.LightningDamage * damageModifier,
                 Weapon.HolyDamage * damageModifier,
                 Weapon.BasePoiseDamage);
+        }
+
+        /// <summary>Updates an independent bow Animator without requiring melee hitboxes.</summary>
+        public void SetRangedWeaponState(
+            bool hasArrowNotched,
+            bool isHoldingArrow)
+        {
+            if (m_weaponAnimator == null)
+            {
+                return;
+            }
+
+            m_weaponAnimator.SetBool("hasArrowNotched", hasArrowNotched);
+            m_weaponAnimator.SetBool("isHoldingArrow", isHoldingArrow);
         }
     }
 }

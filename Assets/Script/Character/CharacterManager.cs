@@ -142,6 +142,12 @@ namespace ZZ
                 {
                     player.PlayerCombatManager.CancelChargingSpell();
                 }
+
+                if (this is PlayerManager rangedPlayer &&
+                    rangedPlayer.PlayerCombatManager?.HasArrowNotched == true)
+                {
+                    rangedPlayer.PlayerCombatManager.CancelNotchedProjectile(false);
+                }
             }
 
             m_isPerformingAction = isPerformingAction;
@@ -156,6 +162,12 @@ namespace ZZ
         public void SetCanRotate(bool canRotate)
         {
             m_canRotate = canRotate;
+        }
+
+        /// <summary>Updates only the movement permission for an active action state.</summary>
+        public void SetCanMove(bool canMove)
+        {
+            m_canMove = canMove;
         }
 
         /// <summary>Sets whether incoming instant damage should be ignored.</summary>

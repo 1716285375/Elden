@@ -33,6 +33,10 @@ namespace ZZ
         [Header("Spell Slot")]
         [SerializeField] private SpellItem m_startingSpell;
 
+        [Header("Projectile Slots")]
+        [SerializeField] private RangedProjectileItem m_startingMainProjectile;
+        [SerializeField] private RangedProjectileItem m_startingSecondaryProjectile;
+
         [Header("Runtime Inventory")]
         [SerializeField] private List<Item> m_itemsInInventory = new();
 
@@ -46,6 +50,8 @@ namespace ZZ
         private HandEquipmentItem m_currentHandEquipment;
         private LegEquipmentItem m_currentLegEquipment;
         private SpellItem m_currentSpell;
+        private RangedProjectileItem m_mainProjectile;
+        private RangedProjectileItem m_secondaryProjectile;
         private int m_rightHandWeaponIndex;
         private int m_leftHandWeaponIndex;
 
@@ -72,6 +78,12 @@ namespace ZZ
 
         /// <summary>Gets the spell currently occupying the player's single spell slot.</summary>
         public SpellItem CurrentSpell => m_currentSpell;
+
+        /// <summary>Gets the per-player runtime ammunition in the primary slot.</summary>
+        public RangedProjectileItem MainProjectile => m_mainProjectile;
+
+        /// <summary>Gets the per-player runtime ammunition in the secondary slot.</summary>
+        public RangedProjectileItem SecondaryProjectile => m_secondaryProjectile;
 
         /// <summary>Gets the item assets collected during the current play session.</summary>
         public IReadOnlyList<Item> ItemsInInventory => m_itemsInInventory;
@@ -257,6 +269,38 @@ namespace ZZ
             m_currentSpell = m_startingSpell;
         }
 
+        /// <summary>Returns the per-player ammunition copy selected by an input slot.</summary>
+        public RangedProjectileItem GetProjectile(ProjectileSlot projectileSlot)
+        {
+            return projectileSlot == ProjectileSlot.Main
+                ? m_mainProjectile
+                : m_secondaryProjectile;
+        }
+
+        /// <summary>Reconstructs the primary ammunition slot from replicated state.</summary>
+        public void InitializeMainProjectileFromID(
+            int projectileID,
+            int currentAmount = -1)
+        {
+            ReplaceRuntimeProjectile(
+                ref m_mainProjectile,
+                projectileID,
+                currentAmount,
+                m_startingMainProjectile);
+        }
+
+        /// <summary>Reconstructs the secondary ammunition slot from replicated state.</summary>
+        public void InitializeSecondaryProjectileFromID(
+            int projectileID,
+            int currentAmount = -1)
+        {
+            ReplaceRuntimeProjectile(
+                ref m_secondaryProjectile,
+                projectileID,
+                currentAmount,
+                m_startingSecondaryProjectile);
+        }
+
         /// <summary>Reconstructs the synchronized single spell slot from its stable ID.</summary>
         public void InitializeCurrentSpellFromID(int spellID)
         {
@@ -298,6 +342,8 @@ namespace ZZ
             DestroyRuntimeItem(m_currentBodyEquipment);
             DestroyRuntimeItem(m_currentHandEquipment);
             DestroyRuntimeItem(m_currentLegEquipment);
+            DestroyRuntimeItem(m_mainProjectile);
+            DestroyRuntimeItem(m_secondaryProjectile);
         }
 
         /// <summary>Returns the stable item ID saved for one right-hand quick slot.</summary>
@@ -829,6 +875,35 @@ namespace ZZ
             return m_unarmedWeapon != null && m_unarmedWeapon.ItemID == weaponID
                 ? m_unarmedWeapon
                 : null;
+        }
+
+        private void ReplaceRuntimeProjectile(
+            ref RangedProjectileItem currentProjectile,
+            int projectileID,
+            int currentAmount,
+            RangedProjectileItem fallback)
+        {
+            RangedProjectileItem template = WorldItemDatabase.Instance
+                ?.GetProjectileByID(projectileID);
+            if (template == null && fallback?.ItemID == projectileID)
+            {
+                template = fallback;
+            }
+
+            RangedProjectileItem previousProjectile = currentProjectile;
+            currentProjectile = null;
+            if (template != null)
+            {
+                currentProjectile = Instantiate(template);
+                currentProjectile.name = $"{template.name} (Runtime)";
+                currentProjectile.hideFlags = HideFlags.DontSave;
+                currentProjectile.SetCurrentAmmoAmount(
+                    currentAmount >= 0
+                        ? currentAmount
+                        : template.CurrentAmmoAmount);
+            }
+
+            DestroyRuntimeItem(previousProjectile);
         }
 
         private T CreateRuntimeArmor<T>(

@@ -155,9 +155,19 @@ namespace ZZ
         /// </summary>
         public void AttemptToPerformDodge()
         {
-            if (m_player == null || !m_player.IsOwner || m_player.IsPerformingAction)
+            if (m_player == null || !m_player.IsOwner)
             {
                 return;
+            }
+
+            if (m_player.IsPerformingAction)
+            {
+                if (m_player.PlayerCombatManager?.HasArrowNotched != true)
+                {
+                    return;
+                }
+
+                m_player.PlayerCombatManager.CancelNotchedProjectile(true);
             }
 
             m_playerInputManager ??= PlayerInputManager.Instance;
@@ -214,7 +224,7 @@ namespace ZZ
                 isSprintInputHeld,
                 m_player.IsPerformingAction,
                 moveAmount,
-                currentStamina));
+                currentStamina) && CanRun);
         }
 
         /// <summary>Stops the replicated sprint state when a committed action begins.</summary>
@@ -252,9 +262,12 @@ namespace ZZ
                 m_playerInputManager.HorizontalInput,
                 m_playerInputManager.VerticalInput,
                 m_playerInputManager.MoveAmount);
+            bool usesStrafeMovement = UsesStrafeMovement();
             m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(
-                0f,
-                m_playerInputManager.MoveAmount,
+                usesStrafeMovement ? m_playerInputManager.HorizontalInput : 0f,
+                usesStrafeMovement
+                    ? m_playerInputManager.VerticalInput
+                    : m_playerInputManager.MoveAmount,
                 IsSprinting);
             UpdateAnimatorAirParameters();
         }
@@ -267,9 +280,12 @@ namespace ZZ
                 return;
             }
 
+            bool usesStrafeMovement = UsesStrafeMovement();
             m_player.PlayerAnimatorManager?.UpdateAnimatorMovementParameters(
-                0f,
-                networkManager.MoveAmount.Value,
+                usesStrafeMovement ? networkManager.HorizontalMovement.Value : 0f,
+                usesStrafeMovement
+                    ? networkManager.VerticalMovement.Value
+                    : networkManager.MoveAmount.Value,
                 m_player.PlayerNetworkManager != null &&
                 m_player.PlayerNetworkManager.IsSprinting.Value);
             UpdateAnimatorAirParameters();
@@ -300,11 +316,14 @@ namespace ZZ
                 return;
             }
 
-            Vector3 moveDirection = GetCameraRelativeDirection();
+            Vector3 moveDirection = GetMovementDirection();
             moveDirection.y = 0f;
             moveDirection.Normalize();
 
-            float normalSpeed = m_playerInputManager.MoveAmount > 0.5f
+            float movementAmount = CanRun
+                ? m_playerInputManager.MoveAmount
+                : Mathf.Min(0.5f, m_playerInputManager.MoveAmount);
+            float normalSpeed = movementAmount > 0.5f
                 ? m_runningSpeed
                 : m_walkingSpeed;
             float movementSpeed = IsSprinting ? m_sprintingSpeed : normalSpeed;
@@ -379,6 +398,17 @@ namespace ZZ
             return forward * m_playerInputManager.VerticalInput + right * m_playerInputManager.HorizontalInput;
         }
 
+        private Vector3 GetMovementDirection()
+        {
+            if (m_player?.PlayerNetworkManager?.IsAiming.Value == true)
+            {
+                return transform.forward * m_playerInputManager.VerticalInput +
+                    transform.right * m_playerInputManager.HorizontalInput;
+            }
+
+            return GetCameraRelativeDirection();
+        }
+
         private Vector3 GetTargetRotationDirection()
         {
             PlayerLockOnManager lockOnManager = m_player.LockOnManager;
@@ -387,7 +417,20 @@ namespace ZZ
                 return lockOnManager.CurrentTarget.transform.position - transform.position;
             }
 
+            if (m_player?.PlayerNetworkManager?.IsAiming.Value == true)
+            {
+                Vector3 aimDirection = m_playerCamera.AimDirection;
+                aimDirection.y = 0f;
+                return aimDirection;
+            }
+
             return GetCameraRelativeDirection();
+        }
+
+        private bool UsesStrafeMovement()
+        {
+            return m_player?.PlayerNetworkManager?.IsAiming.Value == true ||
+                m_player?.LockOnManager?.IsLockedOn == true;
         }
 
         private void PerformRoll()

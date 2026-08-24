@@ -30,6 +30,12 @@ namespace ZZ
             Animator.StringToHash("isChargingLeftSpell");
         private static readonly int s_isSpellFullyChargedParameter =
             Animator.StringToHash("isSpellFullyCharged");
+        private static readonly int s_hasArrowNotchedParameter =
+            Animator.StringToHash("hasArrowNotched");
+        private static readonly int s_isHoldingArrowParameter =
+            Animator.StringToHash("isHoldingArrow");
+        private static readonly int s_isAimingParameter =
+            Animator.StringToHash("isAiming");
         private static readonly int s_emptyActionState =
             Animator.StringToHash("Action Override.Empty");
         private static readonly int s_rollForwardState =
@@ -80,6 +86,10 @@ namespace ZZ
             Animator.StringToHash("Action Override.Cast_Spell_Right_Release_Full");
         private static readonly int s_releaseFullChargeSpellLeftState =
             Animator.StringToHash("Action Override.Cast_Spell_Left_Release_Full");
+        private static readonly int s_bowDrawState =
+            Animator.StringToHash("Action Override.Bow_Draw");
+        private static readonly int s_bowOutOfAmmoState =
+            Animator.StringToHash("Action Override.Bow_Out_Of_Ammo");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -261,6 +271,22 @@ namespace ZZ
             m_animator?.SetBool(
                 s_isSpellFullyChargedParameter,
                 isSpellFullyCharged);
+        }
+
+        /// <summary>Applies replicated bow hold and aim conditions to the character Animator.</summary>
+        public void SetRangedWeaponState(
+            bool hasArrowNotched,
+            bool isHoldingArrow,
+            bool isAiming)
+        {
+            if (m_animator == null)
+            {
+                return;
+            }
+
+            m_animator.SetBool(s_hasArrowNotchedParameter, hasArrowNotched);
+            m_animator.SetBool(s_isHoldingArrowParameter, isHoldingArrow);
+            m_animator.SetBool(s_isAimingParameter, isAiming);
         }
 
         /// <summary>
@@ -967,6 +993,12 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.ReleaseFullChargeSpellLeft:
                     actionStateHash = s_releaseFullChargeSpellLeftState;
+                    return true;
+                case CharacterActionAnimation.BowDraw:
+                    actionStateHash = s_bowDrawState;
+                    return true;
+                case CharacterActionAnimation.BowOutOfAmmo:
+                    actionStateHash = s_bowOutOfAmmoState;
                     return true;
                 default:
                     actionStateHash = 0;

@@ -27,6 +27,8 @@ namespace ZZ
         ReleaseSpellRight = 19,
         ReleaseSpellLeft = 20,
         ReleaseFullChargeSpellRight = 21,
-        ReleaseFullChargeSpellLeft = 22
+        ReleaseFullChargeSpellLeft = 22,
+        BowDraw = 23,
+        BowOutOfAmmo = 24
     }
 }

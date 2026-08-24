@@ -56,6 +56,23 @@ namespace ZZ
                 m_audioSource);
         }
 
+        /// <summary>Plays a randomized bow draw or release clip through this character.</summary>
+        public void PlayRangedWeaponSound(
+            RangedWeaponItem weapon,
+            bool isRelease)
+        {
+            if (weapon == null)
+            {
+                return;
+            }
+
+            WorldSoundFXManager.Instance?.PlaySoundEffect(
+                isRelease
+                    ? weapon.ReleaseSoundEffects
+                    : weapon.DrawSoundEffects,
+                m_audioSource);
+        }
+
         /// <summary>Plays one locally spatialized damage grunt for this character.</summary>
         public void PlayDamageGrunt()
         {

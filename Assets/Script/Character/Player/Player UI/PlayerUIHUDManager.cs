@@ -12,6 +12,7 @@ namespace ZZ
         [SerializeField] private UIQuickSlot m_rightWeaponQuickSlot;
         [SerializeField] private UIQuickSlot m_spellQuickSlot;
         [SerializeField] private UIQuickSlot m_itemQuickSlot;
+        [SerializeField] private GameObject m_crosshair;
         [SerializeField] private CanvasGroup[] m_hudCanvasGroups =
             System.Array.Empty<CanvasGroup>();
 
@@ -173,6 +174,12 @@ namespace ZZ
         public void ShowHUD()
         {
             SetHUDVisibility(true);
+        }
+
+        /// <summary>Shows the center-screen reticle only during first-person aiming.</summary>
+        public void SetCrosshairVisible(bool isVisible)
+        {
+            m_crosshair?.SetActive(isVisible);
         }
 
         private void OnCurrentHealthChanged(float previousHealth, float currentHealth)

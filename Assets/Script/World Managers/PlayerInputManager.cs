@@ -35,6 +35,8 @@ namespace ZZ
         private bool m_hasSwitchLeftWeaponInput;
         private bool m_hasRBInput;
         private bool m_isRBSpellInput;
+        private bool m_isRangedRBInput;
+        private bool m_isRangedRTInput;
         private bool m_hasRTStartedInput;
         private bool m_hasRTReleasedInput;
         private bool m_hasLTInput;
@@ -241,6 +243,8 @@ namespace ZZ
             m_hasSwitchLeftWeaponInput = false;
             m_hasRBInput = false;
             m_isRBSpellInput = false;
+            m_isRangedRBInput = false;
+            m_isRangedRTInput = false;
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
             m_hasLTInput = false;
@@ -255,6 +259,8 @@ namespace ZZ
             m_player?.LocomotionManager?.HandleSprinting(false);
             m_player?.PlayerCombatManager?.CancelChargingAttack();
             m_player?.PlayerCombatManager?.CancelChargingSpell();
+            m_player?.PlayerCombatManager?.CancelNotchedProjectile(true);
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
             m_player?.PlayerCombatManager?.SetBlocking(false);
             ClearAttackInputQueue();
             IsMovementInputEnabled = false;
@@ -356,6 +362,7 @@ namespace ZZ
             }
 
             m_hasLockOnInput = false;
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
             m_player?.LockOnManager?.HandleLockOn();
         }
 
@@ -409,12 +416,14 @@ namespace ZZ
             if (m_hasSwitchRightWeaponInput)
             {
                 m_hasSwitchRightWeaponInput = false;
+                CancelRangedInputState();
                 m_player?.InventoryManager?.SwitchRightWeapon();
             }
 
             if (m_hasSwitchLeftWeaponInput)
             {
                 m_hasSwitchLeftWeaponInput = false;
+                CancelRangedInputState();
                 m_player?.InventoryManager?.SwitchLeftWeapon();
             }
         }
@@ -424,7 +433,11 @@ namespace ZZ
             if (m_hasRBInput && !m_isTwoHandInputHeld)
             {
                 m_hasRBInput = false;
-                if (!TryQueueAttackInput(AttackInputType.Light))
+                if (m_isRangedRBInput)
+                {
+                    PerformRangedProjectileAction(ProjectileSlot.Main);
+                }
+                else if (!TryQueueAttackInput(AttackInputType.Light))
                 {
                     PerformRightHandAction();
                 }
@@ -574,22 +587,36 @@ namespace ZZ
         private void OnRBStarted(InputAction.CallbackContext context)
         {
             m_isRBSpellInput = TryBeginSpellInput(true);
+            m_isRangedRBInput = !m_isRBSpellInput &&
+                ResolveAttackWeapon() is RangedWeaponItem;
         }
 
         private void OnRBCanceled(InputAction.CallbackContext context)
         {
-            if (!m_isRBSpellInput)
+            if (m_isRBSpellInput)
             {
-                return;
+                m_isRBSpellInput = false;
+                m_player?.PlayerCombatManager?.ReleaseChargingSpell(true);
+            }
+            else if (m_isRangedRBInput)
+            {
+                m_player?.PlayerCombatManager?.ReleaseHeldProjectileInput();
             }
 
-            m_isRBSpellInput = false;
-            m_player?.PlayerCombatManager?.ReleaseChargingSpell(true);
+            m_isRangedRBInput = false;
         }
 
         private void OnRTStarted(InputAction.CallbackContext context)
         {
-            m_hasRTStartedInput = true;
+            m_isRangedRTInput = ResolveAttackWeapon() is RangedWeaponItem;
+            if (m_isRangedRTInput)
+            {
+                PerformRangedProjectileAction(ProjectileSlot.Secondary);
+            }
+            else
+            {
+                m_hasRTStartedInput = true;
+            }
         }
 
         private WeaponItem ResolveAttackWeapon()
@@ -603,14 +630,27 @@ namespace ZZ
         private WeaponItem ResolveBlockingWeapon()
         {
             PlayerInventoryManager inventory = m_player?.InventoryManager;
-            return m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
-                ? inventory?.CurrentTwoHandWeapon
+            if (m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true)
+            {
+                return inventory?.CurrentTwoHandWeapon;
+            }
+
+            return inventory?.CurrentRightHandWeapon is RangedWeaponItem
+                ? inventory.CurrentRightHandWeapon
                 : inventory?.CurrentLeftHandWeapon;
         }
 
         private void OnRTCanceled(InputAction.CallbackContext context)
         {
-            m_hasRTReleasedInput = true;
+            if (m_isRangedRTInput)
+            {
+                m_player?.PlayerCombatManager?.ReleaseHeldProjectileInput();
+                m_isRangedRTInput = false;
+            }
+            else
+            {
+                m_hasRTReleasedInput = true;
+            }
         }
 
         private void OnLTPerformed(InputAction.CallbackContext context)
@@ -644,6 +684,7 @@ namespace ZZ
 
             m_isLBInputHeld = false;
             m_player?.PlayerCombatManager?.SetBlocking(false);
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
         }
 
         private bool TryBeginSpellInput(bool isRightHand)
@@ -704,6 +745,29 @@ namespace ZZ
         private void OnInteractPerformed(InputAction.CallbackContext context)
         {
             m_hasInteractionInput = true;
+        }
+
+        private void PerformRangedProjectileAction(ProjectileSlot projectileSlot)
+        {
+            if (ResolveAttackWeapon() is not RangedWeaponItem weapon)
+            {
+                return;
+            }
+
+            WeaponItemBasedAction action = projectileSlot == ProjectileSlot.Main
+                ? weapon.RightHandAction
+                : weapon.RightHandHeavyAction;
+            m_player?.PlayerCombatManager?.PerformWeaponBasedAction(
+                action,
+                weapon);
+        }
+
+        private void CancelRangedInputState()
+        {
+            m_isRangedRBInput = false;
+            m_isRangedRTInput = false;
+            m_player?.PlayerCombatManager?.CancelNotchedProjectile(true);
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
         }
 
         private void RemoveExpiredAttackInputs(float currentTime)

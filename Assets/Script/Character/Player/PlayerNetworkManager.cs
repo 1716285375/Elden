@@ -11,6 +11,9 @@ namespace ZZ
         private const int k_NoWeaponID = -1;
         private const int k_NoEquipmentID = -1;
         private const int k_NoSpellID = -1;
+        private const int k_DefaultMainProjectileID = 12;
+        private const int k_DefaultSecondaryProjectileID = 13;
+        private const int k_NoProjectileID = -1;
 
         [Header("Two-Hand Effect")]
         [SerializeField] private StaticCharacterEffect m_twoHandingEffect;
@@ -110,6 +113,41 @@ namespace ZZ
                 false,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_mainProjectileID =
+            new NetworkVariable<int>(
+                k_DefaultMainProjectileID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_secondaryProjectileID =
+            new NetworkVariable<int>(
+                k_DefaultSecondaryProjectileID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentProjectileID =
+            new NetworkVariable<int>(
+                k_NoProjectileID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<ProjectileSlot> m_currentProjectileSlot =
+            new NetworkVariable<ProjectileSlot>(
+                ProjectileSlot.Main,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_hasArrowNotched =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isHoldingArrow =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isAiming =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -180,6 +218,28 @@ namespace ZZ
         /// <summary>Gets whether the active spell reached its full-charge threshold.</summary>
         public NetworkVariable<bool> IsSpellFullyCharged => m_isSpellFullyCharged;
 
+        /// <summary>Gets the owner-selected primary ammunition identifier.</summary>
+        public NetworkVariable<int> MainProjectileID => m_mainProjectileID;
+
+        /// <summary>Gets the owner-selected secondary ammunition identifier.</summary>
+        public NetworkVariable<int> SecondaryProjectileID => m_secondaryProjectileID;
+
+        /// <summary>Gets the ammunition identifier committed to the current shot.</summary>
+        public NetworkVariable<int> CurrentProjectileID => m_currentProjectileID;
+
+        /// <summary>Gets the ammunition slot committed to the current shot.</summary>
+        public NetworkVariable<ProjectileSlot> CurrentProjectileSlot =>
+            m_currentProjectileSlot;
+
+        /// <summary>Gets whether an arrow model is currently attached to the character.</summary>
+        public NetworkVariable<bool> HasArrowNotched => m_hasArrowNotched;
+
+        /// <summary>Gets whether the ranged attack input is still held.</summary>
+        public NetworkVariable<bool> IsHoldingArrow => m_isHoldingArrow;
+
+        /// <summary>Gets whether this player is using first-person free aim.</summary>
+        public NetworkVariable<bool> IsAiming => m_isAiming;
+
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -206,6 +266,12 @@ namespace ZZ
             m_isChargingRightSpell.OnValueChanged += OnChargingSpellStateChanged;
             m_isChargingLeftSpell.OnValueChanged += OnChargingSpellStateChanged;
             m_isSpellFullyCharged.OnValueChanged += OnSpellFullyChargedChanged;
+            m_mainProjectileID.OnValueChanged += OnMainProjectileIDChanged;
+            m_secondaryProjectileID.OnValueChanged +=
+                OnSecondaryProjectileIDChanged;
+            m_hasArrowNotched.OnValueChanged += OnRangedStateChanged;
+            m_isHoldingArrow.OnValueChanged += OnRangedStateChanged;
+            m_isAiming.OnValueChanged += OnRangedStateChanged;
             GetComponent<PlayerBodyManager>()?.ToggleBodyType(m_isMale.Value);
             m_playerInventoryManager?.InitializeRightWeaponFromID(
                 m_currentRightHandWeaponID.Value);
@@ -226,6 +292,10 @@ namespace ZZ
 
             m_playerInventoryManager?.InitializeCurrentSpellFromID(
                 m_currentSpellID.Value);
+            m_playerInventoryManager?.InitializeMainProjectileFromID(
+                m_mainProjectileID.Value);
+            m_playerInventoryManager?.InitializeSecondaryProjectileFromID(
+                m_secondaryProjectileID.Value);
             if (!IsOwner)
             {
                 UpdateRemoteAnimatorController(m_currentWeaponIDBeingUsed.Value);
@@ -234,8 +304,10 @@ namespace ZZ
             RefreshBlockingPresentation();
             RefreshTwoHandingPresentation();
             ApplyChargingSpellPresentation();
+            ApplyRangedPresentation();
 
             ResetOwnedSprintState();
+            ResetOwnedRangedState();
         }
 
         public override void OnNetworkDespawn()
@@ -257,6 +329,16 @@ namespace ZZ
             m_isChargingRightSpell.OnValueChanged -= OnChargingSpellStateChanged;
             m_isChargingLeftSpell.OnValueChanged -= OnChargingSpellStateChanged;
             m_isSpellFullyCharged.OnValueChanged -= OnSpellFullyChargedChanged;
+            m_mainProjectileID.OnValueChanged -= OnMainProjectileIDChanged;
+            m_secondaryProjectileID.OnValueChanged -=
+                OnSecondaryProjectileIDChanged;
+            m_hasArrowNotched.OnValueChanged -= OnRangedStateChanged;
+            m_isHoldingArrow.OnValueChanged -= OnRangedStateChanged;
+            m_isAiming.OnValueChanged -= OnRangedStateChanged;
+            if (IsOwner)
+            {
+                PlayerCamera.Instance?.SetAimMode(false, true);
+            }
             RemoveTwoHandingPresentation(false);
             base.OnNetworkDespawn();
         }
@@ -267,6 +349,147 @@ namespace ZZ
             ResetOwnedSprintState();
             ResetOwnedTwoHandingState();
             ResetOwnedSpellState();
+            ResetOwnedRangedState();
+        }
+
+        /// <summary>Ensures the supplied equipped side owns the two-hand stance.</summary>
+        public bool EnsureTwoHandWeapon(bool isRightHandWeapon)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            bool isRequestedSideActive = m_isTwoHandingWeapon.Value &&
+                (isRightHandWeapon
+                    ? m_isTwoHandingRightWeapon.Value
+                    : m_isTwoHandingLeftWeapon.Value);
+            if (!isRequestedSideActive)
+            {
+                ToggleTwoHandWeapon(isRightHandWeapon);
+            }
+
+            return m_isTwoHandingWeapon.Value &&
+                (isRightHandWeapon
+                    ? m_isTwoHandingRightWeapon.Value
+                    : m_isTwoHandingLeftWeapon.Value);
+        }
+
+        /// <summary>Writes the owner-authoritative first-person aiming condition.</summary>
+        public void SetAimingState(bool isAiming)
+        {
+            if (IsSpawned && IsOwner && m_isAiming.Value != isAiming)
+            {
+                m_isAiming.Value = isAiming;
+            }
+        }
+
+        /// <summary>Commits one ammunition slot and begins its held notch state.</summary>
+        public void SetNotchedProjectileState(
+            int projectileID,
+            ProjectileSlot projectileSlot,
+            bool hasArrowNotched,
+            bool isHoldingArrow)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            m_currentProjectileID.Value = hasArrowNotched
+                ? projectileID
+                : k_NoProjectileID;
+            m_currentProjectileSlot.Value = projectileSlot;
+            m_hasArrowNotched.Value = hasArrowNotched;
+            m_isHoldingArrow.Value = hasArrowNotched && isHoldingArrow;
+        }
+
+        /// <summary>Releases held input while preserving the notched arrow until its event.</summary>
+        public void SetHoldingArrowState(bool isHoldingArrow)
+        {
+            if (IsSpawned &&
+                IsOwner &&
+                m_hasArrowNotched.Value &&
+                m_isHoldingArrow.Value != isHoldingArrow)
+            {
+                m_isHoldingArrow.Value = isHoldingArrow;
+            }
+        }
+
+        /// <summary>Replicates a notch event without continuously synchronizing its model.</summary>
+        [ServerRpc]
+        public void NotifyServerOfNotchProjectileServerRpc(
+            int projectileID,
+            ProjectileSlot projectileSlot,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            {
+                return;
+            }
+
+            PresentNotchProjectileClientRpc(
+                projectileID,
+                projectileSlot,
+                serverRpcParams.Receive.SenderClientId);
+        }
+
+        [ClientRpc]
+        private void PresentNotchProjectileClientRpc(
+            int projectileID,
+            ProjectileSlot projectileSlot,
+            ulong shooterClientID)
+        {
+            if (NetworkManager.Singleton != null &&
+                NetworkManager.Singleton.LocalClientId == shooterClientID)
+            {
+                return;
+            }
+
+            GetComponent<PlayerCombatManager>()
+                ?.PerformNotchingProjectileFromRpc(
+                    projectileID,
+                    projectileSlot);
+        }
+
+        /// <summary>Replicates one projectile release event and its fire-frame orientation.</summary>
+        [ServerRpc]
+        public void NotifyServerOfReleaseProjectileServerRpc(
+            int projectileID,
+            Vector3 aimDirection,
+            float characterYRotation,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            {
+                return;
+            }
+
+            PresentReleaseProjectileClientRpc(
+                projectileID,
+                aimDirection,
+                characterYRotation,
+                serverRpcParams.Receive.SenderClientId);
+        }
+
+        [ClientRpc]
+        private void PresentReleaseProjectileClientRpc(
+            int projectileID,
+            Vector3 aimDirection,
+            float characterYRotation,
+            ulong shooterClientID)
+        {
+            if (NetworkManager.Singleton != null &&
+                NetworkManager.Singleton.LocalClientId == shooterClientID)
+            {
+                return;
+            }
+
+            GetComponent<PlayerCombatManager>()
+                ?.PerformReleaseProjectileFromRpc(
+                    projectileID,
+                    aimDirection,
+                    characterYRotation);
         }
 
         /// <summary>Writes one hand's sustained spell charge only when its value changes.</summary>
@@ -404,6 +627,66 @@ namespace ZZ
             m_isChargingRightSpell.Value = false;
             m_isChargingLeftSpell.Value = false;
             m_isSpellFullyCharged.Value = false;
+        }
+
+        private void ResetOwnedRangedState()
+        {
+            if (!IsOwner || !IsSpawned)
+            {
+                return;
+            }
+
+            m_currentProjectileID.Value = k_NoProjectileID;
+            m_hasArrowNotched.Value = false;
+            m_isHoldingArrow.Value = false;
+            m_isAiming.Value = false;
+        }
+
+        private void OnMainProjectileIDChanged(
+            int previousProjectileID,
+            int currentProjectileID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.InitializeMainProjectileFromID(
+                currentProjectileID);
+        }
+
+        private void OnSecondaryProjectileIDChanged(
+            int previousProjectileID,
+            int currentProjectileID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.InitializeSecondaryProjectileFromID(
+                currentProjectileID);
+        }
+
+        private void OnRangedStateChanged(bool previousValue, bool currentValue)
+        {
+            ApplyRangedPresentation();
+        }
+
+        private void ApplyRangedPresentation()
+        {
+            PlayerManager player = GetComponent<PlayerManager>();
+            player?.PlayerAnimatorManager?.SetRangedWeaponState(
+                m_hasArrowNotched.Value,
+                m_isHoldingArrow.Value,
+                m_isAiming.Value);
+            player?.EquipmentManager?.SetRangedWeaponState(
+                m_hasArrowNotched.Value,
+                m_isHoldingArrow.Value);
+            if (!m_hasArrowNotched.Value)
+            {
+                player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
+            }
+
+            player?.LocomotionManager?.SetCanRun(
+                !m_hasArrowNotched.Value && !m_isAiming.Value);
+
+            if (IsOwner)
+            {
+                PlayerCamera.Instance?.SetAimMode(m_isAiming.Value);
+            }
         }
 
         private void OnCurrentSpellIDChanged(int previousSpellID, int currentSpellID)
