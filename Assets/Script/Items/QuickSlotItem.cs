@@ -8,9 +8,17 @@ namespace ZZ
         [Header("Quick Slot Presentation")]
         [SerializeField] private GameObject m_itemModel;
         [SerializeField] private AnimationClip m_useItemAnimation;
+        [SerializeField] private bool m_isConsumable = true;
 
         public GameObject ItemModel => m_itemModel;
         public AnimationClip UseItemAnimation => m_useItemAnimation;
+        public bool IsConsumable => m_isConsumable;
+
+        /// <summary>Returns the owner-specific amount displayed by equipment and HUD UI.</summary>
+        public virtual int GetCurrentAmount(PlayerManager player)
+        {
+            return 0;
+        }
 
         /// <summary>Attempts to begin or continue this item's owner-authoritative action.</summary>
         public abstract void AttemptToUseItem(PlayerManager player);

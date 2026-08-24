@@ -39,6 +39,10 @@ namespace ZZ
 
         [Header("Quick Slot Item")]
         [SerializeField] private QuickSlotItem m_startingQuickSlotItem;
+        [SerializeField] private QuickSlotItem[] m_quickSlotItemsInQuickSlots =
+            new QuickSlotItem[k_QuickSlotCount];
+        [SerializeField, Range(0, k_QuickSlotCount - 1)]
+        private int m_quickSlotItemIndex;
 
         [Header("Runtime Inventory")]
         [SerializeField] private List<Item> m_itemsInInventory = new();
@@ -92,6 +96,10 @@ namespace ZZ
         /// <summary>Gets the item currently assigned to the gameplay quick slot.</summary>
         public QuickSlotItem CurrentQuickSlotItem => m_currentQuickSlotItem;
 
+        /// <summary>Gets the three equipped gameplay item slots.</summary>
+        public IReadOnlyList<QuickSlotItem> QuickSlotItemsInQuickSlots =>
+            m_quickSlotItemsInQuickSlots;
+
         /// <summary>Gets the item assets collected during the current play session.</summary>
         public IReadOnlyList<Item> ItemsInInventory => m_itemsInInventory;
 
@@ -100,6 +108,9 @@ namespace ZZ
 
         /// <summary>Gets the selected left-hand quick-slot index.</summary>
         public int LeftHandWeaponIndex => m_leftHandWeaponIndex;
+
+        /// <summary>Gets the selected gameplay item slot index.</summary>
+        public int QuickSlotItemIndex => m_quickSlotItemIndex;
 
         /// <summary>Raised after the right-hand runtime weapon and model are refreshed.</summary>
         public event Action<WeaponItem> RightHandWeaponChanged;
@@ -179,6 +190,12 @@ namespace ZZ
                     : null;
             }
 
+            if (TryGetQuickSlotItemIndex(equipmentSlot, out int quickSlotIndex))
+            {
+                EnsureQuickSlotItemArray();
+                return m_quickSlotItemsInQuickSlots[quickSlotIndex];
+            }
+
             return equipmentSlot switch
             {
                 EquipmentSlotType.Head => m_currentHeadEquipment,
@@ -222,6 +239,12 @@ namespace ZZ
                 IsProjectileSlot(equipmentSlot))
             {
                 return EquipProjectileInSlot(equipmentSlot, projectile);
+            }
+
+            if (item is QuickSlotItem quickSlotItem &&
+                TryGetQuickSlotItemIndex(equipmentSlot, out int quickSlotIndex))
+            {
+                return EquipQuickSlotItem(quickSlotIndex, quickSlotItem);
             }
 
             return equipmentSlot switch
@@ -272,6 +295,11 @@ namespace ZZ
                 return UnequipProjectileInSlot(equipmentSlot);
             }
 
+            if (TryGetQuickSlotItemIndex(equipmentSlot, out int quickSlotIndex))
+            {
+                return UnequipQuickSlotItem(quickSlotIndex);
+            }
+
             return equipmentSlot switch
             {
                 EquipmentSlotType.Head => UnequipArmorItem(
@@ -296,7 +324,20 @@ namespace ZZ
             m_player = GetComponent<PlayerManager>();
             m_equipmentManager = GetComponent<PlayerEquipmentManager>();
             m_currentSpell = m_startingSpell;
-            m_currentQuickSlotItem = m_startingQuickSlotItem;
+            EnsureQuickSlotItemArray();
+            if (m_quickSlotItemsInQuickSlots[0] == null &&
+                m_quickSlotItemsInQuickSlots[1] == null &&
+                m_quickSlotItemsInQuickSlots[2] == null)
+            {
+                m_quickSlotItemsInQuickSlots[0] = m_startingQuickSlotItem;
+            }
+
+            m_quickSlotItemIndex = Mathf.Clamp(
+                m_quickSlotItemIndex,
+                0,
+                k_QuickSlotCount - 1);
+            m_currentQuickSlotItem =
+                m_quickSlotItemsInQuickSlots[m_quickSlotItemIndex];
         }
 
         /// <summary>Returns the per-player ammunition copy selected by an input slot.</summary>
@@ -348,8 +389,12 @@ namespace ZZ
         /// <summary>Reconstructs the synchronized gameplay quick slot from its stable ID.</summary>
         public void InitializeCurrentQuickSlotItemFromID(int quickSlotItemID)
         {
-            QuickSlotItem quickSlotItem = WorldItemDatabase.Instance
-                ?.GetQuickSlotItemByID(quickSlotItemID);
+            EnsureQuickSlotItemArray();
+            QuickSlotItem quickSlotItem = quickSlotItemID >= 0
+                ? WorldItemDatabase.Instance?.GetQuickSlotItemByID(
+                    quickSlotItemID)
+                : null;
+            quickSlotItem ??= FindQuickSlotItemByID(quickSlotItemID);
             if (quickSlotItem == null &&
                 m_startingQuickSlotItem?.ItemID == quickSlotItemID)
             {
@@ -357,6 +402,14 @@ namespace ZZ
             }
 
             m_currentQuickSlotItem = quickSlotItem;
+            if (quickSlotItem != null)
+            {
+                SynchronizeQuickSlotItemIndex(
+                    m_quickSlotItemsInQuickSlots,
+                    quickSlotItem.ItemID,
+                    ref m_quickSlotItemIndex);
+            }
+
             CurrentQuickSlotItemChanged?.Invoke(m_currentQuickSlotItem);
         }
 
@@ -549,6 +602,29 @@ namespace ZZ
             }
 
             m_player.PlayerNetworkManager.CurrentLeftHandWeaponID.Value = nextWeapon.ItemID;
+        }
+
+        /// <summary>Cycles the three gameplay item slots with empty-slot semantics.</summary>
+        public void SwitchQuickSlotItem()
+        {
+            if (!CanSwitchQuickSlotItems())
+            {
+                return;
+            }
+
+            EnsureQuickSlotItemArray();
+            QuickSlotItem nextItem = SelectNextQuickSlotItem(
+                m_quickSlotItemsInQuickSlots,
+                m_currentQuickSlotItem,
+                ref m_quickSlotItemIndex);
+            int nextItemID = nextItem?.ItemID ?? -1;
+            if (nextItemID ==
+                m_player.PlayerNetworkManager.CurrentQuickSlotItemID.Value)
+            {
+                return;
+            }
+
+            m_player.PlayerNetworkManager.CurrentQuickSlotItemID.Value = nextItemID;
         }
 
         /// <summary>
@@ -901,6 +977,82 @@ namespace ZZ
                 m_player.PlayerNetworkManager != null;
         }
 
+        private bool CanSwitchQuickSlotItems()
+        {
+            return m_player != null &&
+                m_player.IsSpawned &&
+                m_player.IsOwner &&
+                !m_player.IsDead &&
+                !m_player.IsPerformingAction &&
+                m_player.PlayerCombatManager?.IsUsingItem != true &&
+                PlayerUIManager.Instance?.IsMenuWindowOpen != true &&
+                m_player.PlayerNetworkManager != null;
+        }
+
+        private bool EquipQuickSlotItem(
+            int quickSlotIndex,
+            QuickSlotItem newItem)
+        {
+            EnsureQuickSlotItemArray();
+            QuickSlotItem previousItem =
+                m_quickSlotItemsInQuickSlots[quickSlotIndex];
+            if (previousItem != null)
+            {
+                AddItemToInventory(previousItem);
+            }
+
+            if (!RemoveItemFromInventory(newItem))
+            {
+                RemoveItemFromInventory(previousItem);
+                return false;
+            }
+
+            m_quickSlotItemsInQuickSlots[quickSlotIndex] = newItem;
+            if (quickSlotIndex == m_quickSlotItemIndex)
+            {
+                SetCurrentQuickSlotItemID(newItem.ItemID);
+            }
+
+            return true;
+        }
+
+        private bool UnequipQuickSlotItem(int quickSlotIndex)
+        {
+            EnsureQuickSlotItemArray();
+            QuickSlotItem previousItem =
+                m_quickSlotItemsInQuickSlots[quickSlotIndex];
+            if (previousItem == null || !AddItemToInventory(previousItem))
+            {
+                return false;
+            }
+
+            m_quickSlotItemsInQuickSlots[quickSlotIndex] = null;
+            if (quickSlotIndex == m_quickSlotItemIndex)
+            {
+                SetCurrentQuickSlotItemID(-1);
+            }
+
+            return true;
+        }
+
+        private void SetCurrentQuickSlotItemID(int quickSlotItemID)
+        {
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager?.IsSpawned == true && networkManager.IsOwner)
+            {
+                if (networkManager.CurrentQuickSlotItemID.Value == quickSlotItemID)
+                {
+                    InitializeCurrentQuickSlotItemFromID(quickSlotItemID);
+                    return;
+                }
+
+                networkManager.CurrentQuickSlotItemID.Value = quickSlotItemID;
+                return;
+            }
+
+            InitializeCurrentQuickSlotItemFromID(quickSlotItemID);
+        }
+
         private bool EquipProjectileInSlot(
             EquipmentSlotType equipmentSlot,
             RangedProjectileItem newProjectile)
@@ -995,6 +1147,55 @@ namespace ZZ
         {
             return equipmentSlot == EquipmentSlotType.MainProjectile ||
                 equipmentSlot == EquipmentSlotType.SecondaryProjectile;
+        }
+
+        private static bool TryGetQuickSlotItemIndex(
+            EquipmentSlotType equipmentSlot,
+            out int quickSlotIndex)
+        {
+            int rawSlot = (int)equipmentSlot;
+            quickSlotIndex = rawSlot - (int)EquipmentSlotType.QuickSlot01;
+            return quickSlotIndex >= 0 && quickSlotIndex < k_QuickSlotCount;
+        }
+
+        private void EnsureQuickSlotItemArray()
+        {
+            if (m_quickSlotItemsInQuickSlots == null ||
+                m_quickSlotItemsInQuickSlots.Length != k_QuickSlotCount)
+            {
+                QuickSlotItem[] previousItems = m_quickSlotItemsInQuickSlots;
+                m_quickSlotItemsInQuickSlots =
+                    new QuickSlotItem[k_QuickSlotCount];
+                if (previousItems != null)
+                {
+                    int copyCount = Mathf.Min(
+                        previousItems.Length,
+                        m_quickSlotItemsInQuickSlots.Length);
+                    Array.Copy(
+                        previousItems,
+                        m_quickSlotItemsInQuickSlots,
+                        copyCount);
+                }
+            }
+
+        }
+
+        private QuickSlotItem FindQuickSlotItemByID(int quickSlotItemID)
+        {
+            if (quickSlotItemID < 0)
+            {
+                return null;
+            }
+
+            foreach (QuickSlotItem quickSlotItem in m_quickSlotItemsInQuickSlots)
+            {
+                if (quickSlotItem?.ItemID == quickSlotItemID)
+                {
+                    return quickSlotItem;
+                }
+            }
+
+            return null;
         }
 
         private WeaponItem CreateRuntimeWeapon(int weaponID)
@@ -1132,6 +1333,57 @@ namespace ZZ
             return m_unarmedWeapon;
         }
 
+        private static QuickSlotItem SelectNextQuickSlotItem(
+            QuickSlotItem[] quickSlots,
+            QuickSlotItem currentItem,
+            ref int currentIndex)
+        {
+            int equippedItemCount = 0;
+            QuickSlotItem onlyItem = null;
+            for (int slotIndex = 0; slotIndex < quickSlots.Length; slotIndex++)
+            {
+                if (quickSlots[slotIndex] == null)
+                {
+                    continue;
+                }
+
+                equippedItemCount++;
+                onlyItem = quickSlots[slotIndex];
+            }
+
+            if (equippedItemCount == 0)
+            {
+                currentIndex = 0;
+                return null;
+            }
+
+            if (equippedItemCount == 1)
+            {
+                if (currentItem?.ItemID == onlyItem.ItemID)
+                {
+                    return null;
+                }
+
+                currentIndex = Array.IndexOf(quickSlots, onlyItem);
+                return onlyItem;
+            }
+
+            for (int slotOffset = 1; slotOffset <= quickSlots.Length; slotOffset++)
+            {
+                int slotIndex = (currentIndex + slotOffset) % quickSlots.Length;
+                QuickSlotItem candidate = quickSlots[slotIndex];
+                if (candidate == null)
+                {
+                    continue;
+                }
+
+                currentIndex = slotIndex;
+                return candidate;
+            }
+
+            return null;
+        }
+
         private static int CountUniqueRealWeapons(WeaponItem[] quickSlots)
         {
             int weaponCount = 0;
@@ -1203,6 +1455,21 @@ namespace ZZ
             {
                 WeaponItem weapon = quickSlots[slotIndex];
                 if (weapon != null && weapon.ItemID == weaponID)
+                {
+                    currentIndex = slotIndex;
+                    return;
+                }
+            }
+        }
+
+        private static void SynchronizeQuickSlotItemIndex(
+            QuickSlotItem[] quickSlots,
+            int quickSlotItemID,
+            ref int currentIndex)
+        {
+            for (int slotIndex = 0; slotIndex < quickSlots.Length; slotIndex++)
+            {
+                if (quickSlots[slotIndex]?.ItemID == quickSlotItemID)
                 {
                     currentIndex = slotIndex;
                     return;

@@ -146375,6 +146375,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 10
+  Mind:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
   CurrentHealth:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -146391,6 +146396,16 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   MaxStamina:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  CurrentFocusPoints:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  MaxFocusPoints:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
@@ -146416,6 +146431,26 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   IsAttacking:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsParrying:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsParryable:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsRipostable:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsBeingCriticallyDamaged:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
@@ -146509,6 +146544,12 @@ MonoBehaviour:
   m_startingMainProjectile: {fileID: 11400000, guid: 12e2a22aa45984a4eb04765fae5ff0d8, type: 2}
   m_startingSecondaryProjectile: {fileID: 11400000, guid: c34ca036f196a684a8c35e2baeec8975, type: 2}
   m_startingQuickSlotItem: {fileID: 11400000, guid: 1552265e1ba92d8498a99438f3bf2b9a, type: 2}
+  m_quickSlotItemsInQuickSlots:
+  - {fileID: 11400000, guid: 1552265e1ba92d8498a99438f3bf2b9a, type: 2}
+  - {fileID: 11400000, guid: c0478e237862c6146a51b5f21ec4bd4e, type: 2}
+  - {fileID: 0}
+  m_quickSlotItemIndex: 0
+  m_itemsInInventory: []
 --- !u!114 &6156979858456878683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146522,6 +146563,14 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerCombatManager
   m_currentAttackType: 0
+  m_previousPoiseDamageTaken: 0
+  m_criticalAttackDistanceCheck: 0.7
+  m_criticalAttackHalfAngle: 60
+  m_characterLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_pendingCriticalDamage: 0
+  m_canBeBackstabbed: 1
   m_fullyChargedDuration: 0.8
   m_fullyChargedSpellDuration: 1.5
   m_canBlock: 1
@@ -146558,6 +146607,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerEffectsManager
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
+  m_criticalBloodSplatterVFX: {fileID: 0}
   m_character: {fileID: 0}
   m_staticEffects: []
   m_effectToTest: {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}

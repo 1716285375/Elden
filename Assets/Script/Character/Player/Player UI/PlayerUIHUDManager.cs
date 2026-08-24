@@ -21,6 +21,7 @@ namespace ZZ
 
         private CharacterNetworkManager m_boundNetworkManager;
         private PlayerInventoryManager m_boundInventoryManager;
+        private PlayerNetworkManager m_boundPlayerNetworkManager;
 
         /// <summary>
         /// Updates the local Health presentation from shared character state.
@@ -139,6 +140,16 @@ namespace ZZ
                 OnMainProjectileChanged;
             m_boundInventoryManager.SecondaryProjectileChanged +=
                 OnSecondaryProjectileChanged;
+            m_boundPlayerNetworkManager = inventoryManager
+                .GetComponent<PlayerNetworkManager>();
+            if (m_boundPlayerNetworkManager != null)
+            {
+                m_boundPlayerNetworkManager.RemainingHealthFlasks.OnValueChanged +=
+                    OnQuickSlotItemAmountChanged;
+                m_boundPlayerNetworkManager.RemainingFocusPointFlasks
+                    .OnValueChanged += OnQuickSlotItemAmountChanged;
+            }
+
             RefreshQuickSlots();
         }
 
@@ -156,7 +167,7 @@ namespace ZZ
             m_leftWeaponQuickSlot?.SetItem(null);
             m_rightWeaponQuickSlot?.SetItem(null);
             m_spellQuickSlot?.SetItem(null);
-            m_itemQuickSlot?.SetItem(null);
+            m_itemQuickSlot?.SetQuickSlotItem(null, null);
             m_mainProjectileQuickSlot?.SetProjectile(null);
             m_secondaryProjectileQuickSlot?.SetProjectile(null);
             ToggleProjectileQuickSlotsVisibility(false);
@@ -198,7 +209,9 @@ namespace ZZ
         /// <summary>Updates the gameplay item quick-slot icon from synchronized inventory.</summary>
         public void SetQuickSlotItemQuickSlotIcon(QuickSlotItem quickSlotItem)
         {
-            m_itemQuickSlot?.SetItem(quickSlotItem);
+            PlayerManager player = m_boundInventoryManager
+                ?.GetComponent<PlayerManager>();
+            m_itemQuickSlot?.SetQuickSlotItem(quickSlotItem, player);
         }
 
         /// <summary>Updates the primary ammunition icon and its real-time count.</summary>
@@ -299,6 +312,14 @@ namespace ZZ
             SetQuickSlotItemQuickSlotIcon(quickSlotItem);
         }
 
+        private void OnQuickSlotItemAmountChanged(
+            int previousAmount,
+            int currentAmount)
+        {
+            SetQuickSlotItemQuickSlotIcon(
+                m_boundInventoryManager?.CurrentQuickSlotItem);
+        }
+
         private void OnMainProjectileChanged(RangedProjectileItem projectileItem)
         {
             SetMainProjectileQuickSlotIcon(projectileItem);
@@ -373,6 +394,15 @@ namespace ZZ
                 OnMainProjectileChanged;
             m_boundInventoryManager.SecondaryProjectileChanged -=
                 OnSecondaryProjectileChanged;
+            if (m_boundPlayerNetworkManager != null)
+            {
+                m_boundPlayerNetworkManager.RemainingHealthFlasks.OnValueChanged -=
+                    OnQuickSlotItemAmountChanged;
+                m_boundPlayerNetworkManager.RemainingFocusPointFlasks
+                    .OnValueChanged -= OnQuickSlotItemAmountChanged;
+                m_boundPlayerNetworkManager = null;
+            }
+
             m_boundInventoryManager = null;
         }
 

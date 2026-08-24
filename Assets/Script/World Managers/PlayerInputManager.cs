@@ -33,6 +33,7 @@ namespace ZZ
         private bool m_hasJumpInput;
         private bool m_hasSwitchRightWeaponInput;
         private bool m_hasSwitchLeftWeaponInput;
+        private bool m_hasSwitchQuickSlotItemInput;
         private bool m_hasRBInput;
         private bool m_isRBSpellInput;
         private bool m_isRangedRBInput;
@@ -82,6 +83,8 @@ namespace ZZ
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed +=
                 OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchQuickSlotItem.performed +=
+                OnSwitchQuickSlotItemPerformed;
             m_playerControls.PlayerMovement.RB.started += OnRBStarted;
             m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
             m_playerControls.PlayerMovement.RB.canceled += OnRBCanceled;
@@ -126,6 +129,8 @@ namespace ZZ
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed -=
                 OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchQuickSlotItem.performed -=
+                OnSwitchQuickSlotItemPerformed;
             m_playerControls.PlayerMovement.RB.started -= OnRBStarted;
             m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
             m_playerControls.PlayerMovement.RB.canceled -= OnRBCanceled;
@@ -246,6 +251,7 @@ namespace ZZ
             m_hasJumpInput = false;
             m_hasSwitchRightWeaponInput = false;
             m_hasSwitchLeftWeaponInput = false;
+            m_hasSwitchQuickSlotItemInput = false;
             m_hasRBInput = false;
             m_isRBSpellInput = false;
             m_isRangedRBInput = false;
@@ -346,6 +352,7 @@ namespace ZZ
             HandleDodgeInput();
             HandleJumpInput();
             HandleWeaponSwitchInput();
+            HandleSwitchQuickSlotItemInput();
             HandleInteractionInput();
             HandleQuickSlotItemInput();
             HandleSprinting();
@@ -465,6 +472,17 @@ namespace ZZ
                 m_hasRTReleasedInput = false;
                 m_player?.PlayerCombatManager?.ReleaseChargingHeavyAttack();
             }
+        }
+
+        private void HandleSwitchQuickSlotItemInput()
+        {
+            if (!m_hasSwitchQuickSlotItemInput)
+            {
+                return;
+            }
+
+            m_hasSwitchQuickSlotItemInput = false;
+            m_player?.InventoryManager?.SwitchQuickSlotItem();
         }
 
         private void HandleBlockingInput()
@@ -592,6 +610,12 @@ namespace ZZ
         private void OnSwitchLeftWeaponPerformed(InputAction.CallbackContext context)
         {
             m_hasSwitchLeftWeaponInput = true;
+        }
+
+        private void OnSwitchQuickSlotItemPerformed(
+            InputAction.CallbackContext context)
+        {
+            m_hasSwitchQuickSlotItemInput = true;
         }
 
         private void OnRBPerformed(InputAction.CallbackContext context)

@@ -10,7 +10,7 @@ namespace ZZ
     /// </summary>
     public class PlayerUIEquipmentManager : MonoBehaviour
     {
-        private const int k_EquipmentSlotCount = 12;
+        private const int k_EquipmentSlotCount = 15;
 
         [Header("WINDOWS")]
         [SerializeField] private GameObject m_equipmentMenu;
@@ -86,6 +86,7 @@ namespace ZZ
         public void RefreshEquipmentSlotIcons()
         {
             PlayerInventoryManager inventory = ResolveLocalInventory();
+            PlayerManager player = inventory?.GetComponent<PlayerManager>();
             for (int slotIndex = 0; slotIndex < k_EquipmentSlotCount; slotIndex++)
             {
                 Image slotIcon = GetArrayValue(m_equipmentSlotIcons, slotIndex);
@@ -108,11 +109,14 @@ namespace ZZ
                     continue;
                 }
 
-                RangedProjectileItem projectile = equippedItem as
-                    RangedProjectileItem;
-                bool shouldShowQuantity = shouldShowIcon && projectile != null;
+                int quantity = 0;
+                bool shouldShowQuantity = shouldShowIcon &&
+                    TryGetEquipmentQuantity(
+                        equippedItem,
+                        player,
+                        out quantity);
                 quantityText.text = shouldShowQuantity
-                    ? projectile.CurrentAmmoAmount.ToString()
+                    ? quantity.ToString()
                     : string.Empty;
                 quantityText.gameObject.SetActive(shouldShowQuantity);
             }
@@ -128,6 +132,24 @@ namespace ZZ
         public void LoadSecondaryProjectileEquipment()
         {
             SelectEquipmentSlot((int)EquipmentSlotType.SecondaryProjectile);
+        }
+
+        /// <summary>Opens the inventory filtered for gameplay item slot one.</summary>
+        public void LoadQuickSlot01Equipment()
+        {
+            SelectEquipmentSlot((int)EquipmentSlotType.QuickSlot01);
+        }
+
+        /// <summary>Opens the inventory filtered for gameplay item slot two.</summary>
+        public void LoadQuickSlot02Equipment()
+        {
+            SelectEquipmentSlot((int)EquipmentSlotType.QuickSlot02);
+        }
+
+        /// <summary>Opens the inventory filtered for gameplay item slot three.</summary>
+        public void LoadQuickSlot03Equipment()
+        {
+            SelectEquipmentSlot((int)EquipmentSlotType.QuickSlot03);
         }
 
         /// <summary>Generates only the inventory items compatible with the selected slot.</summary>
@@ -259,6 +281,10 @@ namespace ZZ
                 EquipmentSlotType.MainProjectile or
                     EquipmentSlotType.SecondaryProjectile =>
                         item is RangedProjectileItem,
+                EquipmentSlotType.QuickSlot01 or
+                    EquipmentSlotType.QuickSlot02 or
+                    EquipmentSlotType.QuickSlot03 =>
+                        item is QuickSlotItem,
                 _ => false
             };
         }
@@ -278,6 +304,27 @@ namespace ZZ
             NetworkObject playerObject =
                 NetworkManager.Singleton?.LocalClient?.PlayerObject;
             return playerObject?.GetComponent<PlayerInventoryManager>();
+        }
+
+        private static bool TryGetEquipmentQuantity(
+            Item item,
+            PlayerManager player,
+            out int quantity)
+        {
+            if (item is RangedProjectileItem projectile)
+            {
+                quantity = projectile.CurrentAmmoAmount;
+                return true;
+            }
+
+            if (item is QuickSlotItem quickSlotItem && quickSlotItem.IsConsumable)
+            {
+                quantity = quickSlotItem.GetCurrentAmount(player);
+                return true;
+            }
+
+            quantity = 0;
+            return false;
         }
 
         private static T GetArrayValue<T>(T[] values, int index)

@@ -67,7 +67,7 @@ namespace ZZ.Tests
                     Is.True);
                 Transform slotsGrid = FindTransform(playerUIRoot.transform, "Slots Grid");
                 Assert.That(slotsGrid, Is.Not.Null);
-                Assert.That(slotsGrid.childCount, Is.EqualTo(12));
+                Assert.That(slotsGrid.childCount, Is.EqualTo(15));
                 GameObject inventorySlotPrefab =
                     AssetDatabase.LoadAssetAtPath<GameObject>(
                         k_InventorySlotPrefabPath);
