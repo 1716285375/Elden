@@ -43,6 +43,10 @@ namespace ZZ
             10,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<int> Mind = new NetworkVariable<int>(
+            10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         public NetworkVariable<float> CurrentHealth = new NetworkVariable<float>(
             0f,
             NetworkVariableReadPermission.Everyone,
@@ -56,6 +60,14 @@ namespace ZZ
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
         public NetworkVariable<float> MaxStamina = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> CurrentFocusPoints = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> MaxFocusPoints = new NetworkVariable<float>(
             0f,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
@@ -120,6 +132,10 @@ namespace ZZ
                 MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
             });
             CurrentStamina.SetUpdateTraits(new NetworkVariableUpdateTraits
+            {
+                MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
+            });
+            CurrentFocusPoints.SetUpdateTraits(new NetworkVariableUpdateTraits
             {
                 MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
             });
