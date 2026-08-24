@@ -452,20 +452,26 @@ namespace ZZ
 
             string sceneName = Path.GetFileNameWithoutExtension(scenePath);
             NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager != null &&
+                networkManager.IsListening &&
+                !networkManager.IsServer)
+            {
+                Debug.LogError("Only the server can load a saved Scene.");
+                yield break;
+            }
+
+            PlayerUIManager.Instance?.PlayerUILoadingScreenManager
+                ?.ActivateLoadingScreen();
             if (networkManager != null && networkManager.IsListening)
             {
-                if (!networkManager.IsServer)
-                {
-                    Debug.LogError("Only the server can load a saved Scene.");
-                    yield break;
-                }
-
                 SceneEventProgressStatus status = networkManager.SceneManager.LoadScene(
                     sceneName,
                     LoadSceneMode.Single);
                 if (status != SceneEventProgressStatus.Started)
                 {
                     Debug.LogError($"Could not load {sceneName}: {status}.");
+                    PlayerUIManager.Instance?.PlayerUILoadingScreenManager
+                        ?.DeactivateLoadingScreen(0f);
                 }
 
                 yield break;

@@ -115,6 +115,20 @@ namespace ZZ
             }
         }
 
+        /// <summary>Clears accumulated Health changes and hides the floating bar.</summary>
+        public void ResetCharacterHPBar()
+        {
+            m_networkManager ??= m_character?.CharacterNetworkManager;
+            if (m_networkManager == null)
+            {
+                return;
+            }
+
+            m_characterHPBar?.Initialize(
+                m_networkManager.MaxHealth.Value,
+                m_networkManager.CurrentHealth.Value);
+        }
+
         private void OnMaximumHealthChanged(
             float previousMaximumHealth,
             float maximumHealth)

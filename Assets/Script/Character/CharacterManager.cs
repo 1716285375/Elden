@@ -40,6 +40,11 @@ namespace ZZ
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
         public CharacterStatsManager CharacterStatsManager => m_characterStatsManager;
         public CharacterCombatManager CharacterCombatManager => m_characterCombatManager;
+        /// <summary>Gets the character's cached movement-state controller.</summary>
+        public CharacterLocomotionManager CharacterLocomotionManager =>
+            m_characterLocomotionManager;
+        /// <summary>Gets the character's cached world-space UI controller.</summary>
+        public CharacterUIManager CharacterUIManager => m_characterUIManager;
         /// <summary>Gets the chest-height origin used for lock-on and critical queries.</summary>
         public Transform LockOnTransform => m_lockOnTransform != null
             ? m_lockOnTransform
@@ -195,6 +200,7 @@ namespace ZZ
             m_canMove = true;
             m_canRotate = true;
             m_shouldApplyRootMotion = false;
+            m_characterLocomotionManager?.SetCanRun(true);
             m_characterLocomotionManager?.SetCanRoll(true);
             m_characterCombatManager?.ResetActionState();
             EndJump();

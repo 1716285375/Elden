@@ -19,6 +19,8 @@ namespace ZZ
         private readonly List<AICharacterManager> m_spawnedCharacters = new();
 
         private bool m_hasSpawnedCharacters;
+        private bool m_isPerformingLoadingOperation;
+        private Coroutine m_loadingOperation;
 
         /// <summary>Gets the World AI Manager in the currently loaded gameplay scene.</summary>
         public static WorldAIManager Instance => s_instance;
@@ -30,6 +32,10 @@ namespace ZZ
         /// <summary>Gets every registered spawn point in this gameplay scene.</summary>
         public IReadOnlyList<AICharacterSpawner> CharacterSpawners =>
             m_characterSpawners;
+
+        /// <summary>Gets whether Spawn, Reset, or Despawn work is running across frames.</summary>
+        public bool IsPerformingLoadingOperation =>
+            m_isPerformingLoadingOperation;
 
         /// <summary>Raised on each peer when a newly spawned AI joins the world registry.</summary>
         public event Action<AICharacterManager> AIRegistered;
@@ -96,7 +102,18 @@ namespace ZZ
             m_characterSpawners.Remove(characterSpawner);
         }
 
-        /// <summary>Despawns every living AI and rebuilds the world from its authored spawners.</summary>
+        /// <summary>Spawns every authored AI across fixed-update frames.</summary>
+        public void SpawnAllCharacters()
+        {
+            if (!IsServerReady() || m_hasSpawnedCharacters)
+            {
+                return;
+            }
+
+            StartLoadingOperation(SpawnAllCharactersRoutine());
+        }
+
+        /// <summary>Resets every reusable AI at its authored spawn point.</summary>
         public void ResetAllCharacters()
         {
             if (!IsServerReady())
@@ -107,6 +124,51 @@ namespace ZZ
                 return;
             }
 
+            StartLoadingOperation(ResetAllCharactersRoutine());
+        }
+
+        /// <summary>Despawns every registered AI across fixed-update frames.</summary>
+        public void DespawnAllCharacters()
+        {
+            if (!IsServerReady())
+            {
+                Debug.LogWarning(
+                    "Only the listening server can despawn world AI characters.",
+                    this);
+                return;
+            }
+
+            StartLoadingOperation(DespawnAllCharactersRoutine());
+        }
+
+        private IEnumerator SpawnAllCharactersRoutine()
+        {
+            AICharacterSpawner[] orderedSpawners = GetOrderedSpawners();
+            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
+            {
+                characterSpawner.AttemptToSpawnCharacter();
+                yield return new WaitForFixedUpdate();
+            }
+
+            m_hasSpawnedCharacters = true;
+            FinishLoadingOperation();
+        }
+
+        private IEnumerator ResetAllCharactersRoutine()
+        {
+            AICharacterSpawner[] orderedSpawners = GetOrderedSpawners();
+            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
+            {
+                characterSpawner.ResetCharacter();
+                yield return new WaitForFixedUpdate();
+            }
+
+            m_hasSpawnedCharacters = true;
+            FinishLoadingOperation();
+        }
+
+        private IEnumerator DespawnAllCharactersRoutine()
+        {
             AICharacterManager[] spawnedCharacters = m_spawnedCharacters
                 .Where(character => character != null)
                 .ToArray();
@@ -117,24 +179,18 @@ namespace ZZ
                 {
                     networkObject.Despawn(true);
                 }
+
+                yield return new WaitForFixedUpdate();
             }
 
             m_spawnedCharacters.Clear();
-            AICharacterSpawner[] orderedSpawners = m_characterSpawners
-                .Where(spawner => spawner != null)
-                .OrderBy(spawner => spawner.transform.GetSiblingIndex())
-                .ToArray();
-            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
+            foreach (AICharacterSpawner characterSpawner in GetOrderedSpawners())
             {
                 characterSpawner.ResetSpawnState();
             }
 
-            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
-            {
-                characterSpawner.AttemptToSpawnCharacter();
-            }
-
-            m_hasSpawnedCharacters = true;
+            m_hasSpawnedCharacters = false;
+            FinishLoadingOperation();
         }
 
         private IEnumerator SpawnWhenServerIsReady()
@@ -143,7 +199,7 @@ namespace ZZ
             {
                 if (IsServerReady())
                 {
-                    SpawnAICharacters();
+                    SpawnAllCharacters();
                     yield break;
                 }
 
@@ -151,23 +207,33 @@ namespace ZZ
             }
         }
 
-        private void SpawnAICharacters()
+        private void StartLoadingOperation(IEnumerator loadingOperation)
         {
-            if (m_hasSpawnedCharacters)
+            if (m_loadingOperation != null || m_isPerformingLoadingOperation)
             {
                 return;
             }
 
-            AICharacterSpawner[] orderedSpawners = m_characterSpawners
+            m_isPerformingLoadingOperation = true;
+            Coroutine startedOperation = StartCoroutine(loadingOperation);
+            if (m_isPerformingLoadingOperation)
+            {
+                m_loadingOperation = startedOperation;
+            }
+        }
+
+        private void FinishLoadingOperation()
+        {
+            m_isPerformingLoadingOperation = false;
+            m_loadingOperation = null;
+        }
+
+        private AICharacterSpawner[] GetOrderedSpawners()
+        {
+            return m_characterSpawners
                 .Where(spawner => spawner != null)
                 .OrderBy(spawner => spawner.transform.GetSiblingIndex())
                 .ToArray();
-            foreach (AICharacterSpawner characterSpawner in orderedSpawners)
-            {
-                characterSpawner.AttemptToSpawnCharacter();
-            }
-
-            m_hasSpawnedCharacters = true;
         }
 
         private static bool IsServerReady()
