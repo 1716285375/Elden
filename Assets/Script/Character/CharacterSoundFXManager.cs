@@ -77,5 +77,16 @@ namespace ZZ
         public virtual void PlayBlockingSoundEffect()
         {
         }
+
+        /// <summary>Plays the shared Stance Break impact on every presenting peer.</summary>
+        public virtual void PlayStanceBrokenSoundEffect()
+        {
+            AudioClip stanceBreakSound =
+                WorldSoundFXManager.Instance?.StanceBreakSoundEffect;
+            if (m_audioSource != null && stanceBreakSound != null)
+            {
+                m_audioSource.PlayOneShot(stanceBreakSound);
+            }
+        }
     }
 }

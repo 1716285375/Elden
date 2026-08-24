@@ -81,6 +81,15 @@ namespace ZZ
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsRipostable = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsBeingCriticallyDamaged =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         [FormerlySerializedAs("networkPositionSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkPositionSmoothTime = 0.1f;
@@ -123,6 +132,8 @@ namespace ZZ
                 IsChargingAttack.Value = false;
                 IsBlocking.Value = false;
                 IsAttacking.Value = false;
+                IsRipostable.Value = false;
+                IsBeingCriticallyDamaged.Value = false;
             }
 
             ApplyChargingAttackState(IsChargingAttack.Value);
@@ -147,6 +158,8 @@ namespace ZZ
             SetChargingAttackState(false);
             SetBlockingState(false);
             SetAttackingState(false);
+            IsRipostable.Value = false;
+            IsBeingCriticallyDamaged.Value = false;
         }
 
         private void Update()
@@ -288,6 +301,61 @@ namespace ZZ
 
             m_characterAnimatorManager ??= GetComponentInChildren<CharacterAnimatorManager>(true);
             m_characterAnimatorManager?.PlayTargetActionAnimation(
+                targetAnimation,
+                isPerformingAction,
+                shouldApplyRootMotion,
+                canRotate,
+                canMove);
+        }
+
+        /// <summary>
+        /// Sends an owner-played instant action to the server for remote presentation.
+        /// </summary>
+        [ServerRpc]
+        public void NotifyServerOfInstantActionAnimationServerRpc(
+            CharacterActionAnimation targetAnimation,
+            bool isPerformingAction,
+            bool shouldApplyRootMotion,
+            bool canRotate,
+            bool canMove,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (!CharacterAnimatorManager.IsSupportedInstantActionAnimation(
+                    targetAnimation))
+            {
+                Debug.LogWarning(
+                    $"Rejected unsupported instant action {targetAnimation}.",
+                    this);
+                return;
+            }
+
+            PlayInstantActionAnimationForAllClientsClientRpc(
+                targetAnimation,
+                isPerformingAction,
+                shouldApplyRootMotion,
+                canRotate,
+                canMove,
+                serverRpcParams.Receive.SenderClientId);
+        }
+
+        [ClientRpc]
+        private void PlayInstantActionAnimationForAllClientsClientRpc(
+            CharacterActionAnimation targetAnimation,
+            bool isPerformingAction,
+            bool shouldApplyRootMotion,
+            bool canRotate,
+            bool canMove,
+            ulong senderClientId)
+        {
+            if (NetworkManager.Singleton != null &&
+                senderClientId == NetworkManager.Singleton.LocalClientId)
+            {
+                return;
+            }
+
+            m_characterAnimatorManager ??=
+                GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterAnimatorManager?.PlayTargetActionAnimationInstantly(
                 targetAnimation,
                 isPerformingAction,
                 shouldApplyRootMotion,

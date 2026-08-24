@@ -134,7 +134,10 @@ namespace ZZ
             character.CharacterSoundFXManager?.PlayDamageGrunt();
             IsPoiseBroken = character.CharacterStatsManager == null ||
                 character.CharacterStatsManager.ApplyPoiseDamage(PoiseDamage);
+            character.CharacterCombatManager?.RecordPoiseDamageTaken(
+                PoiseDamage);
             PlayDirectionalBasedDamageAnimation(character, IsPoiseBroken);
+            CalculateStanceDamage(character);
 
             ApplyHealthDamage(character, CalculateDamage(character.CharacterStatsManager));
         }
@@ -253,6 +256,19 @@ namespace ZZ
         {
             return Mathf.Max(0f, damage) *
                 (1f - Mathf.Clamp(absorption, 0f, 100f) / 100f);
+        }
+
+        private void CalculateStanceDamage(CharacterManager character)
+        {
+            if (character is not AICharacterManager aiCharacter ||
+                PoiseDamage <= 0f)
+            {
+                return;
+            }
+
+            AICharacterCombatManager combatManager =
+                aiCharacter.GetComponent<AICharacterCombatManager>();
+            combatManager?.DamageStance(Mathf.RoundToInt(PoiseDamage));
         }
     }
 }
