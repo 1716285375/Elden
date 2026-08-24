@@ -7,18 +7,24 @@ namespace ZZ
     {
         private const string k_BlockedDamageEffectResourcePath =
             "Effects/Take Blocked Damage Effect";
+        private const string k_CriticalDamageEffectResourcePath =
+            "Effects/Take Critical Damage Effect";
 
         private static WorldCharacterEffectsManager s_instance;
 
         [SerializeField] private List<InstantCharacterEffect> m_instantEffects = new();
         [SerializeField] private TakeDamageEffect m_takeDamageEffect;
         [SerializeField] private TakeBlockedDamageEffect m_takeBlockedDamageEffect;
+        [SerializeField] private TakeCriticalDamageEffect m_takeCriticalDamageEffect;
 
         public static WorldCharacterEffectsManager Instance => s_instance;
         public TakeDamageEffect TakeDamageEffect => m_takeDamageEffect;
         public TakeBlockedDamageEffect TakeBlockedDamageEffect =>
             m_takeBlockedDamageEffect ??= Resources.Load<TakeBlockedDamageEffect>(
                 k_BlockedDamageEffectResourcePath);
+        public TakeCriticalDamageEffect TakeCriticalDamageEffect =>
+            m_takeCriticalDamageEffect ??= Resources.Load<TakeCriticalDamageEffect>(
+                k_CriticalDamageEffectResourcePath);
 
         /// <summary>
         /// Gets the authored instant effects in their stable identifier order.

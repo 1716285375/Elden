@@ -12,11 +12,14 @@ namespace ZZ
         [SerializeField] private AudioClip m_rollingSoundFX;
         [SerializeField] private AudioClip m_pickupItemSoundEffect;
         [SerializeField] private AudioClip m_stanceBreakSoundEffect;
+        [SerializeField] private AudioClip m_criticalStrikeSoundEffect;
 
         public static WorldSoundFXManager Instance => s_instance;
         public AudioClip RollingSoundFX => m_rollingSoundFX;
         public AudioClip PickupItemSoundEffect => m_pickupItemSoundEffect;
         public AudioClip StanceBreakSoundEffect => m_stanceBreakSoundEffect;
+        public AudioClip CriticalStrikeSoundEffect =>
+            m_criticalStrikeSoundEffect;
 
         /// <summary>
         /// Selects a non-null clip at random and plays it through the supplied spatial source.

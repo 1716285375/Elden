@@ -24,6 +24,11 @@ namespace ZZ
                 return;
             }
 
+            if (player?.PlayerCombatManager?.AttemptCriticalAttack() == true)
+            {
+                return;
+            }
+
             if (player?.PlayerCombatManager?.TryPerformRunningAttack(weapon) == true)
             {
                 return;

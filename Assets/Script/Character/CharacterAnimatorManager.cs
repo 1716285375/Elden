@@ -42,6 +42,10 @@ namespace ZZ
             Animator.StringToHash("Action Override.Guard_Break_01");
         private static readonly int s_stanceBreakState =
             Animator.StringToHash("Action Override.Stance_Break_01");
+        private static readonly int s_riposteState =
+            Animator.StringToHash("Action Override.Riposte_01");
+        private static readonly int s_ripostedState =
+            Animator.StringToHash("Action Override.Riposted_01");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -377,6 +381,18 @@ namespace ZZ
             m_animator.Play(actionStateHash, actionLayerIndex, 0f);
         }
 
+        /// <summary>Updates the death branch used by Critical victim states.</summary>
+        public void SetDeadState(bool isDead)
+        {
+            m_animator?.SetBool(s_isDeadParameter, isDead);
+        }
+
+        /// <summary>Animation Event: settles pending Critical damage on this character.</summary>
+        public void ApplyCriticalDamage()
+        {
+            m_characterManager?.CharacterCombatManager?.ApplyCriticalDamage();
+        }
+
         /// <summary>
         /// Updates the charge parameter and enters the authored charge pose when charging begins.
         /// </summary>
@@ -576,14 +592,18 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.PassThroughFog ||
                 targetAnimation == CharacterActionAnimation.RestAtSiteOfGrace ||
                 targetAnimation == CharacterActionAnimation.GuardBreak ||
-                targetAnimation == CharacterActionAnimation.StanceBreak;
+                targetAnimation == CharacterActionAnimation.StanceBreak ||
+                targetAnimation == CharacterActionAnimation.Riposte ||
+                targetAnimation == CharacterActionAnimation.Riposted;
         }
 
         /// <summary>Returns whether an action is approved for zero-blend network playback.</summary>
         internal static bool IsSupportedInstantActionAnimation(
             CharacterActionAnimation targetAnimation)
         {
-            return targetAnimation == CharacterActionAnimation.StanceBreak;
+            return targetAnimation == CharacterActionAnimation.StanceBreak ||
+                targetAnimation == CharacterActionAnimation.Riposte ||
+                targetAnimation == CharacterActionAnimation.Riposted;
         }
 
         private int GetAttackStateHash(AttackType attackType)
@@ -778,6 +798,12 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.StanceBreak:
                     actionStateHash = s_stanceBreakState;
+                    return true;
+                case CharacterActionAnimation.Riposte:
+                    actionStateHash = s_riposteState;
+                    return true;
+                case CharacterActionAnimation.Riposted:
+                    actionStateHash = s_ripostedState;
                     return true;
                 default:
                     actionStateHash = 0;

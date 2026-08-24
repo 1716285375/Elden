@@ -138,6 +138,7 @@ namespace ZZ
 
             ApplyChargingAttackState(IsChargingAttack.Value);
             ApplyBlockingState(IsBlocking.Value);
+            m_characterAnimatorManager?.SetDeadState(IsDead.Value);
             CheckHP();
         }
 
@@ -212,7 +213,8 @@ namespace ZZ
                 hasInitializedHealth && CurrentHealth.Value <= 0f;
             if (shouldProcessDeath && !m_characterManager.IsDeathEventRunning)
             {
-                StartCoroutine(m_characterManager.ProcessDeathEvent());
+                StartCoroutine(m_characterManager.ProcessDeathEvent(
+                    IsBeingCriticallyDamaged.Value));
             }
         }
 
@@ -392,6 +394,125 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Reserves one Riposte target on the server and relays its ordered payload.
+        /// </summary>
+        [ServerRpc]
+        public void NotifyServerOfRiposteServerRpc(
+            ulong targetNetworkObjectId,
+            ulong attackerNetworkObjectId,
+            int weaponID,
+            CharacterActionAnimation criticalDamageAnimation,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage,
+            ServerRpcParams serverRpcParams = default)
+        {
+            CharacterManager attacker = ResolveCharacter(
+                attackerNetworkObjectId);
+            CharacterManager target = ResolveCharacter(targetNetworkObjectId);
+            CharacterNetworkManager targetNetworkManager =
+                target?.CharacterNetworkManager;
+            MeleeWeaponItem weapon =
+                WorldItemDatabase.Instance?.GetWeaponByID(weaponID) as
+                    MeleeWeaponItem;
+            Vector3 directionToTarget = target != null && attacker != null
+                ? target.transform.position - attacker.transform.position
+                : Vector3.zero;
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId ||
+                attackerNetworkObjectId != NetworkObjectId ||
+                attacker == null ||
+                target == null ||
+                weapon == null ||
+                attacker.IsDead ||
+                attacker.IsPerformingAction ||
+                attacker.CharacterNetworkManager.CurrentStamina.Value <= 0f ||
+                !WorldUtilityManager.CanDamageCharacter(attacker, target) ||
+                targetNetworkManager == null ||
+                !targetNetworkManager.IsRipostable.Value ||
+                targetNetworkManager.IsBeingCriticallyDamaged.Value ||
+                criticalDamageAnimation != CharacterActionAnimation.Riposted ||
+                directionToTarget.sqrMagnitude > 2.25f ||
+                !CharacterCombatManager.IsWithinCriticalAttackAngle(
+                    attacker.transform.forward,
+                    directionToTarget,
+                    75f))
+            {
+                return;
+            }
+
+            targetNetworkManager.IsBeingCriticallyDamaged.Value = true;
+            targetNetworkManager.IsRipostable.Value = false;
+            float damageModifier = weapon.RiposteAttack01Modifier;
+            NotifyServerOfRiposteClientRpc(
+                targetNetworkObjectId,
+                attackerNetworkObjectId,
+                weaponID,
+                criticalDamageAnimation,
+                Mathf.Clamp(
+                    physicalDamage,
+                    0f,
+                    weapon.PhysicalDamage * damageModifier),
+                Mathf.Clamp(
+                    magicDamage,
+                    0f,
+                    weapon.MagicDamage * damageModifier),
+                Mathf.Clamp(
+                    fireDamage,
+                    0f,
+                    weapon.FireDamage * damageModifier),
+                Mathf.Clamp(
+                    lightningDamage,
+                    0f,
+                    weapon.LightningDamage * damageModifier),
+                Mathf.Clamp(
+                    holyDamage,
+                    0f,
+                    weapon.HolyDamage * damageModifier),
+                0f);
+        }
+
+        [ClientRpc]
+        private void NotifyServerOfRiposteClientRpc(
+            ulong targetNetworkObjectId,
+            ulong attackerNetworkObjectId,
+            int weaponID,
+            CharacterActionAnimation criticalDamageAnimation,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage)
+        {
+            CharacterManager attacker = ResolveCharacter(
+                attackerNetworkObjectId);
+            CharacterManager target = ResolveCharacter(targetNetworkObjectId);
+            MeleeWeaponItem weapon =
+                WorldItemDatabase.Instance?.GetWeaponByID(weaponID) as
+                    MeleeWeaponItem;
+            if (attacker == null || target == null || weapon == null)
+            {
+                return;
+            }
+
+            CharacterCombatManager attackerCombatManager =
+                attacker.CharacterCombatManager;
+            attackerCombatManager?.ProcessRiposteFromServer(
+                target,
+                weapon,
+                criticalDamageAnimation,
+                physicalDamage,
+                magicDamage,
+                fireDamage,
+                lightningDamage,
+                holyDamage,
+                poiseDamage);
+        }
+
+        /// <summary>
         /// Requests character damage from the attacker's owner, authorized and relayed by the server.
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
@@ -550,6 +671,7 @@ namespace ZZ
 
         private void OnIsDeadChanged(bool wasDead, bool isDead)
         {
+            m_characterAnimatorManager?.SetDeadState(isDead);
             if (isDead)
             {
                 CheckHP();

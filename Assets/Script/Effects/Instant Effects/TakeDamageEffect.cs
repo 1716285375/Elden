@@ -79,7 +79,7 @@ namespace ZZ
         /// <summary>
         /// Calculates the combined damage, rounded to an integer with a minimum of one.
         /// </summary>
-        public int CalculateDamage()
+        public virtual int CalculateDamage()
         {
             float combinedDamage = PhysicalDamage +
                 MagicDamage +
@@ -91,7 +91,7 @@ namespace ZZ
         }
 
         /// <summary>Calculates incoming damage after applying armor-only absorption.</summary>
-        public int CalculateDamage(CharacterStatsManager statsManager)
+        public virtual int CalculateDamage(CharacterStatsManager statsManager)
         {
             if (statsManager == null)
             {

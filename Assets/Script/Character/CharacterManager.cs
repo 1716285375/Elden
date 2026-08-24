@@ -12,6 +12,9 @@ namespace ZZ
         [SerializeField] private CharacterAnimatorManager m_characterAnimatorManager;
         [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
 
+        [Header("Critical Attacks")]
+        [SerializeField] private Transform m_lockOnTransform;
+
         [Header("Character UI")]
         [SerializeField] private bool m_hasFloatingHPBar = true;
 
@@ -36,6 +39,10 @@ namespace ZZ
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
         public CharacterStatsManager CharacterStatsManager => m_characterStatsManager;
         public CharacterCombatManager CharacterCombatManager => m_characterCombatManager;
+        /// <summary>Gets the chest-height origin used for lock-on and critical queries.</summary>
+        public Transform LockOnTransform => m_lockOnTransform != null
+            ? m_lockOnTransform
+            : transform;
         /// <summary>
         /// Gets whether the character's ground probe currently detects walkable environment.
         /// </summary>
@@ -79,6 +86,7 @@ namespace ZZ
             m_characterStatsManager = GetComponent<CharacterStatsManager>();
             m_characterCombatManager = GetComponent<CharacterCombatManager>();
             m_characterUIManager = GetComponentInChildren<CharacterUIManager>(true);
+            m_lockOnTransform ??= FindCriticalAnchor();
             m_characterAnimatorManager?.Initialize(m_animator);
         }
 
@@ -266,6 +274,24 @@ namespace ZZ
                     Physics.IgnoreCollision(colliders[indexA], colliders[indexB], true);
                 }
             }
+        }
+
+        private Transform FindCriticalAnchor()
+        {
+            Transform[] descendants = GetComponentsInChildren<Transform>(true);
+            foreach (Transform descendant in descendants)
+            {
+                if (descendant != transform && descendant.name == "Target")
+                {
+                    return descendant;
+                }
+            }
+
+            GameObject anchor = new GameObject("Lock On Transform");
+            Transform anchorTransform = anchor.transform;
+            anchorTransform.SetParent(transform, false);
+            anchorTransform.localPosition = Vector3.up * 1.2f;
+            return anchorTransform;
         }
     }
 }
