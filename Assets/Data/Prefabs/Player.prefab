@@ -146508,6 +146508,7 @@ MonoBehaviour:
   m_startingSpell: {fileID: 11400000, guid: f56b04b88b0fd2a4184f522fc0bd515e, type: 2}
   m_startingMainProjectile: {fileID: 11400000, guid: 12e2a22aa45984a4eb04765fae5ff0d8, type: 2}
   m_startingSecondaryProjectile: {fileID: 11400000, guid: c34ca036f196a684a8c35e2baeec8975, type: 2}
+  m_startingQuickSlotItem: {fileID: 11400000, guid: 1552265e1ba92d8498a99438f3bf2b9a, type: 2}
 --- !u!114 &6156979858456878683
 MonoBehaviour:
   m_ObjectHideFlags: 0

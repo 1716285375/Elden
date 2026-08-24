@@ -19,6 +19,7 @@ namespace ZZ
         [SerializeField] private List<AshOfWar> m_ashesOfWar = new();
         [SerializeField] private List<SpellItem> m_spells = new();
         [SerializeField] private List<RangedProjectileItem> m_projectiles = new();
+        [SerializeField] private List<QuickSlotItem> m_quickSlotItems = new();
 
         [Header("World Pickups")]
         [SerializeField] private GameObject m_creatureDropPickupPrefab;
@@ -39,6 +40,9 @@ namespace ZZ
 
         /// <summary>Gets every ammunition template registered in the item catalog.</summary>
         public IReadOnlyList<RangedProjectileItem> Projectiles => m_projectiles;
+
+        /// <summary>Gets every gameplay quick-slot item registered in the catalog.</summary>
+        public IReadOnlyList<QuickSlotItem> QuickSlotItems => m_quickSlotItems;
 
         /// <summary>Gets the server-spawned pickup presentation used by creature loot.</summary>
         public GameObject CreatureDropPickupPrefab => m_creatureDropPickupPrefab;
@@ -125,10 +129,17 @@ namespace ZZ
             return GetItemByID(itemID, m_projectiles);
         }
 
+        /// <summary>Returns the gameplay quick-slot item assigned to a stable identifier.</summary>
+        public QuickSlotItem GetQuickSlotItemByID(int itemID)
+        {
+            return GetItemByID(itemID, m_quickSlotItems);
+        }
+
         private void AssignItemIDs()
         {
             AppendMissingItems(m_spells);
             AppendMissingItems(m_projectiles);
+            AppendMissingItems(m_quickSlotItems);
             for (int itemIndex = 0; itemIndex < m_items.Count; itemIndex++)
             {
                 m_items[itemIndex]?.AssignItemID(itemIndex);

@@ -36,6 +36,8 @@ namespace ZZ
             Animator.StringToHash("isHoldingArrow");
         private static readonly int s_isAimingParameter =
             Animator.StringToHash("isAiming");
+        private static readonly int s_isChuggingFlaskParameter =
+            Animator.StringToHash("isChuggingFlask");
         private static readonly int s_emptyActionState =
             Animator.StringToHash("Action Override.Empty");
         private static readonly int s_rollForwardState =
@@ -94,6 +96,12 @@ namespace ZZ
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Left_Weapon_01");
+        private static readonly int s_drinkStartState =
+            Animator.StringToHash("Upper Body Override.Drink Start");
+        private static readonly int s_emptyFlaskState =
+            Animator.StringToHash("Upper Body Override.Empty Flask");
+        private static readonly int s_emptyUpperBodyState =
+            Animator.StringToHash("Upper Body Override.Empty");
         private static readonly int s_lightAttack01State =
             Animator.StringToHash("Action Override.Attack_01");
         private static readonly int s_lightAttack02State =
@@ -287,6 +295,24 @@ namespace ZZ
             m_animator.SetBool(s_hasArrowNotchedParameter, hasArrowNotched);
             m_animator.SetBool(s_isHoldingArrowParameter, isHoldingArrow);
             m_animator.SetBool(s_isAimingParameter, isAiming);
+        }
+
+        /// <summary>Applies the replicated request for another authored flask sip.</summary>
+        public void SetFlaskChuggingState(bool isChugging)
+        {
+            m_animator?.SetBool(s_isChuggingFlaskParameter, isChugging);
+        }
+
+        /// <summary>Starts either the normal drink sequence or its empty-flask response.</summary>
+        public void PlayQuickSlotItemAnimation(bool isEmpty)
+        {
+            PlayUpperBodyState(isEmpty ? s_emptyFlaskState : s_drinkStartState);
+        }
+
+        /// <summary>Returns the upper-body action layer to its neutral locomotion state.</summary>
+        public void PlayEmptyUpperBodyAnimation()
+        {
+            PlayUpperBodyState(s_emptyUpperBodyState);
         }
 
         /// <summary>
@@ -743,6 +769,25 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.Backstabbed ||
                 targetAnimation == CharacterActionAnimation.ParryLand ||
                 targetAnimation == CharacterActionAnimation.Parried;
+        }
+
+        private void PlayUpperBodyState(int stateHash)
+        {
+            if (m_animator == null)
+            {
+                return;
+            }
+
+            int layerIndex = m_animator.GetLayerIndex(k_UpperBodyOverrideLayerName);
+            if (layerIndex < 0 || !m_animator.HasState(layerIndex, stateHash))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} is missing a flask upper-body state.",
+                    m_animator);
+                return;
+            }
+
+            m_animator.CrossFade(stateHash, k_ActionTransitionDuration, layerIndex);
         }
 
         private int GetAttackStateHash(AttackType attackType)

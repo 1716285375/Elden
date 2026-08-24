@@ -37,6 +37,9 @@ namespace ZZ
         [SerializeField] private RangedProjectileItem m_startingMainProjectile;
         [SerializeField] private RangedProjectileItem m_startingSecondaryProjectile;
 
+        [Header("Quick Slot Item")]
+        [SerializeField] private QuickSlotItem m_startingQuickSlotItem;
+
         [Header("Runtime Inventory")]
         [SerializeField] private List<Item> m_itemsInInventory = new();
 
@@ -52,6 +55,7 @@ namespace ZZ
         private SpellItem m_currentSpell;
         private RangedProjectileItem m_mainProjectile;
         private RangedProjectileItem m_secondaryProjectile;
+        private QuickSlotItem m_currentQuickSlotItem;
         private int m_rightHandWeaponIndex;
         private int m_leftHandWeaponIndex;
 
@@ -85,6 +89,9 @@ namespace ZZ
         /// <summary>Gets the per-player runtime ammunition in the secondary slot.</summary>
         public RangedProjectileItem SecondaryProjectile => m_secondaryProjectile;
 
+        /// <summary>Gets the item currently assigned to the gameplay quick slot.</summary>
+        public QuickSlotItem CurrentQuickSlotItem => m_currentQuickSlotItem;
+
         /// <summary>Gets the item assets collected during the current play session.</summary>
         public IReadOnlyList<Item> ItemsInInventory => m_itemsInInventory;
 
@@ -102,6 +109,9 @@ namespace ZZ
 
         /// <summary>Raised after synchronized spell selection is reconstructed.</summary>
         public event Action<SpellItem> CurrentSpellChanged;
+
+        /// <summary>Raised after synchronized gameplay quick-slot selection is rebuilt.</summary>
+        public event Action<QuickSlotItem> CurrentQuickSlotItemChanged;
 
         /// <summary>Resolves one currently equipped runtime weapon for animation updates.</summary>
         public WeaponItem GetEquippedWeaponByID(int weaponID)
@@ -267,6 +277,7 @@ namespace ZZ
             m_player = GetComponent<PlayerManager>();
             m_equipmentManager = GetComponent<PlayerEquipmentManager>();
             m_currentSpell = m_startingSpell;
+            m_currentQuickSlotItem = m_startingQuickSlotItem;
         }
 
         /// <summary>Returns the per-player ammunition copy selected by an input slot.</summary>
@@ -299,6 +310,21 @@ namespace ZZ
                 projectileID,
                 currentAmount,
                 m_startingSecondaryProjectile);
+        }
+
+        /// <summary>Reconstructs the synchronized gameplay quick slot from its stable ID.</summary>
+        public void InitializeCurrentQuickSlotItemFromID(int quickSlotItemID)
+        {
+            QuickSlotItem quickSlotItem = WorldItemDatabase.Instance
+                ?.GetQuickSlotItemByID(quickSlotItemID);
+            if (quickSlotItem == null &&
+                m_startingQuickSlotItem?.ItemID == quickSlotItemID)
+            {
+                quickSlotItem = m_startingQuickSlotItem;
+            }
+
+            m_currentQuickSlotItem = quickSlotItem;
+            CurrentQuickSlotItemChanged?.Invoke(m_currentQuickSlotItem);
         }
 
         /// <summary>Reconstructs the synchronized single spell slot from its stable ID.</summary>

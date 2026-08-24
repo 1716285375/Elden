@@ -22,6 +22,7 @@ namespace ZZ
         private CharacterSoundFXManager m_characterSoundFXManager;
         private CharacterStatsManager m_characterStatsManager;
         private CharacterCombatManager m_characterCombatManager;
+        private CharacterLocomotionManager m_characterLocomotionManager;
         private CharacterUIManager m_characterUIManager;
         private bool m_isGrounded = true;
         private bool m_isPerformingAction;
@@ -85,6 +86,7 @@ namespace ZZ
             m_characterNetworkManager = GetComponent<CharacterNetworkManager>();
             m_characterStatsManager = GetComponent<CharacterStatsManager>();
             m_characterCombatManager = GetComponent<CharacterCombatManager>();
+            m_characterLocomotionManager = GetComponent<CharacterLocomotionManager>();
             m_characterUIManager = GetComponentInChildren<CharacterUIManager>(true);
             m_lockOnTransform ??= FindCriticalAnchor();
             m_characterAnimatorManager?.Initialize(m_animator);
@@ -150,10 +152,17 @@ namespace ZZ
                 }
             }
 
+            if (isPerformingAction && this is PlayerManager itemPlayer &&
+                itemPlayer.PlayerCombatManager?.IsUsingItem == true)
+            {
+                itemPlayer.PlayerCombatManager.CancelQuickSlotItemUse();
+            }
+
             m_isPerformingAction = isPerformingAction;
             m_shouldApplyRootMotion = shouldApplyRootMotion;
             m_canRotate = canRotate;
             m_canMove = canMove;
+            m_characterLocomotionManager?.SetCanRoll(!isPerformingAction);
         }
 
         /// <summary>
@@ -186,6 +195,7 @@ namespace ZZ
             m_canMove = true;
             m_canRotate = true;
             m_shouldApplyRootMotion = false;
+            m_characterLocomotionManager?.SetCanRoll(true);
             m_characterCombatManager?.ResetActionState();
             EndJump();
         }

@@ -219,6 +219,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Use Quick Slot Item"",
+                    ""type"": ""Button"",
+                    ""id"": ""c056419b-222c-4f48-ad29-6986dbd34504"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -672,6 +681,28 @@ namespace ZZ
                     ""action"": ""LT"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b4f753f5-9da5-47d4-b5f7-5067262bb640"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Use Quick Slot Item"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ef5c9aee-225e-4e84-849d-d0ff84a0d363"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Use Quick Slot Item"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -913,6 +944,7 @@ namespace ZZ
             m_PlayerMovement_TwoHandRightWeapon = m_PlayerMovement.FindAction("Two Hand Right Weapon", throwIfNotFound: true);
             m_PlayerMovement_TwoHandLeftWeapon = m_PlayerMovement.FindAction("Two Hand Left Weapon", throwIfNotFound: true);
             m_PlayerMovement_LT = m_PlayerMovement.FindAction("LT", throwIfNotFound: true);
+            m_PlayerMovement_UseQuickSlotItem = m_PlayerMovement.FindAction("Use Quick Slot Item", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -1019,6 +1051,7 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_TwoHandRightWeapon;
         private readonly InputAction m_PlayerMovement_TwoHandLeftWeapon;
         private readonly InputAction m_PlayerMovement_LT;
+        private readonly InputAction m_PlayerMovement_UseQuickSlotItem;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -1087,6 +1120,10 @@ namespace ZZ
             /// </summary>
             public InputAction @LT => m_Wrapper.m_PlayerMovement_LT;
             /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/UseQuickSlotItem".
+            /// </summary>
+            public InputAction @UseQuickSlotItem => m_Wrapper.m_PlayerMovement_UseQuickSlotItem;
+            /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
             public InputActionMap Get() { return m_Wrapper.m_PlayerMovement; }
@@ -1154,6 +1191,9 @@ namespace ZZ
                 @LT.started += instance.OnLT;
                 @LT.performed += instance.OnLT;
                 @LT.canceled += instance.OnLT;
+                @UseQuickSlotItem.started += instance.OnUseQuickSlotItem;
+                @UseQuickSlotItem.performed += instance.OnUseQuickSlotItem;
+                @UseQuickSlotItem.canceled += instance.OnUseQuickSlotItem;
             }
 
             /// <summary>
@@ -1207,6 +1247,9 @@ namespace ZZ
                 @LT.started -= instance.OnLT;
                 @LT.performed -= instance.OnLT;
                 @LT.canceled -= instance.OnLT;
+                @UseQuickSlotItem.started -= instance.OnUseQuickSlotItem;
+                @UseQuickSlotItem.performed -= instance.OnUseQuickSlotItem;
+                @UseQuickSlotItem.canceled -= instance.OnUseQuickSlotItem;
             }
 
             /// <summary>
@@ -1607,6 +1650,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnLT(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Use Quick Slot Item" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnUseQuickSlotItem(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

@@ -44,6 +44,7 @@ namespace ZZ
         private bool m_isLBSpellInput;
         private bool m_hasLockOnInput;
         private bool m_hasInteractionInput;
+        private bool m_hasUseQuickSlotItemInput;
         private bool m_isGameplayInputBlocked;
         private bool m_isSprintInputHeld;
         private bool m_isTwoHandInputHeld;
@@ -99,6 +100,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.TwoHandLeftWeapon.performed +=
                 OnTwoHandLeftWeaponPerformed;
             m_playerControls.PlayerMovement.Interact.performed += OnInteractPerformed;
+            m_playerControls.PlayerMovement.UseQuickSlotItem.performed +=
+                OnUseQuickSlotItemPerformed;
             m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
             m_playerControls.PlayerCamera.LockOn.performed += OnLockOnPerformed;
@@ -141,6 +144,8 @@ namespace ZZ
             m_playerControls.PlayerMovement.TwoHandLeftWeapon.performed -=
                 OnTwoHandLeftWeaponPerformed;
             m_playerControls.PlayerMovement.Interact.performed -= OnInteractPerformed;
+            m_playerControls.PlayerMovement.UseQuickSlotItem.performed -=
+                OnUseQuickSlotItemPerformed;
             m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
             m_playerControls.PlayerCamera.LockOn.performed -= OnLockOnPerformed;
@@ -252,6 +257,7 @@ namespace ZZ
             m_isLBSpellInput = false;
             m_hasLockOnInput = false;
             m_hasInteractionInput = false;
+            m_hasUseQuickSlotItemInput = false;
             m_isSprintInputHeld = false;
             m_isTwoHandInputHeld = false;
             m_hasTwoHandRightWeaponInput = false;
@@ -260,6 +266,7 @@ namespace ZZ
             m_player?.PlayerCombatManager?.CancelChargingAttack();
             m_player?.PlayerCombatManager?.CancelChargingSpell();
             m_player?.PlayerCombatManager?.CancelNotchedProjectile(true);
+            m_player?.PlayerCombatManager?.CancelQuickSlotItemUse();
             m_player?.PlayerNetworkManager?.SetAimingState(false);
             m_player?.PlayerCombatManager?.SetBlocking(false);
             ClearAttackInputQueue();
@@ -340,6 +347,7 @@ namespace ZZ
             HandleJumpInput();
             HandleWeaponSwitchInput();
             HandleInteractionInput();
+            HandleQuickSlotItemInput();
             HandleSprinting();
             HandleTwoHandInput();
             HandleLTInput();
@@ -493,6 +501,18 @@ namespace ZZ
 
             m_hasInteractionInput = false;
             m_player?.InteractionManager?.HandleInteractionInput();
+        }
+
+        private void HandleQuickSlotItemInput()
+        {
+            if (!m_hasUseQuickSlotItemInput)
+            {
+                return;
+            }
+
+            m_hasUseQuickSlotItemInput = false;
+            m_player?.InventoryManager?.CurrentQuickSlotItem
+                ?.AttemptToUseItem(m_player);
         }
 
         private void HandleTwoHandInput()
@@ -745,6 +765,11 @@ namespace ZZ
         private void OnInteractPerformed(InputAction.CallbackContext context)
         {
             m_hasInteractionInput = true;
+        }
+
+        private void OnUseQuickSlotItemPerformed(InputAction.CallbackContext context)
+        {
+            m_hasUseQuickSlotItemInput = true;
         }
 
         private void PerformRangedProjectileAction(ProjectileSlot projectileSlot)

@@ -25,6 +25,7 @@ namespace ZZ
         private BodyEquipmentItem m_loadedBodyEquipment;
         private HandEquipmentItem m_loadedHandEquipment;
         private LegEquipmentItem m_loadedLegEquipment;
+        private bool m_areWeaponsHidden;
 
         /// <summary>Gets the weapon manager of the currently loaded right-hand weapon model.</summary>
         public WeaponManager CurrentRightHandWeaponManager { get; private set; }
@@ -34,6 +35,11 @@ namespace ZZ
 
         /// <summary>Gets the weapon manager instantiated in the animation-compatible right hand.</summary>
         public WeaponManager CurrentTwoHandWeaponManager { get; private set; }
+
+        /// <summary>Gets the animation-compatible anchor for a temporary quick-slot model.</summary>
+        public Transform QuickSlotItemParent => m_rightHandSlot != null
+            ? m_rightHandSlot.transform
+            : transform;
 
         protected override void Awake()
         {
@@ -204,6 +210,11 @@ namespace ZZ
         /// </summary>
         public void LoadWeaponsOnBothHands()
         {
+            if (m_areWeaponsHidden)
+            {
+                return;
+            }
+
             PlayerInventoryManager inventoryManager = GetComponent<PlayerInventoryManager>();
             LoadRightWeapon(inventoryManager?.CurrentRightHandWeapon);
             LoadLeftWeapon(inventoryManager?.CurrentLeftHandWeapon);
@@ -214,6 +225,11 @@ namespace ZZ
         /// </summary>
         public void LoadRightWeapon(WeaponItem weapon)
         {
+            if (m_areWeaponsHidden)
+            {
+                return;
+            }
+
             if (IsTwoHanding())
             {
                 RefreshTwoHandingPresentation();
@@ -244,6 +260,11 @@ namespace ZZ
         /// </summary>
         public void LoadLeftWeapon(WeaponItem weapon)
         {
+            if (m_areWeaponsHidden)
+            {
+                return;
+            }
+
             if (IsTwoHanding())
             {
                 RefreshTwoHandingPresentation();
@@ -282,6 +303,11 @@ namespace ZZ
         /// <summary>Presents the right-hand weapon in hand and stores the left-hand model.</summary>
         public void TwoHandRightWeapon()
         {
+            if (m_areWeaponsHidden)
+            {
+                return;
+            }
+
             PlayerInventoryManager inventory = m_player?.InventoryManager;
             if (inventory == null)
             {
@@ -298,6 +324,11 @@ namespace ZZ
         /// <summary>Presents the left weapon in the right hand and stores the right-hand model.</summary>
         public void TwoHandLeftWeapon()
         {
+            if (m_areWeaponsHidden)
+            {
+                return;
+            }
+
             PlayerInventoryManager inventory = m_player?.InventoryManager;
             if (inventory == null)
             {
@@ -314,6 +345,11 @@ namespace ZZ
         /// <summary>Restores both normal hand slots after leaving the two-hand stance.</summary>
         public void UnTwoHandWeapon()
         {
+            if (m_areWeaponsHidden)
+            {
+                return;
+            }
+
             PlayerInventoryManager inventory = m_player?.InventoryManager;
             UnloadAllWeaponSlots();
             CurrentTwoHandWeaponManager = null;
@@ -367,6 +403,11 @@ namespace ZZ
         /// <summary>Replays the synchronized side selection after equipment arrives.</summary>
         public void RefreshTwoHandingPresentation()
         {
+            if (m_areWeaponsHidden)
+            {
+                return;
+            }
+
             PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
             if (networkManager?.IsTwoHandingRightWeapon.Value == true)
             {
@@ -376,6 +417,30 @@ namespace ZZ
             {
                 TwoHandLeftWeapon();
             }
+        }
+
+        /// <summary>Temporarily replaces all weapon models with a quick-slot item.</summary>
+        public void SetWeaponsHidden(bool areWeaponsHidden)
+        {
+            if (m_areWeaponsHidden == areWeaponsHidden)
+            {
+                return;
+            }
+
+            m_areWeaponsHidden = areWeaponsHidden;
+            if (m_areWeaponsHidden)
+            {
+                UnloadAllWeaponSlots();
+                return;
+            }
+
+            if (IsTwoHanding())
+            {
+                RefreshTwoHandingPresentation();
+                return;
+            }
+
+            LoadWeaponsOnBothHands();
         }
 
         /// <summary>

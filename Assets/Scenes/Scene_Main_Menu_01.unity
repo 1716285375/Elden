@@ -1207,6 +1207,8 @@ MonoBehaviour:
   m_pickupItemSoundEffect: {fileID: 8300000, guid: 1bc34465e56b93d48bc40170994aa90c, type: 3}
   m_stanceBreakSoundEffect: {fileID: 8300000, guid: 59eaa40d0c1b485479e9164169b894db, type: 3}
   m_criticalStrikeSoundEffect: {fileID: 8300000, guid: 6536407953006ab44a509be53fe23ace, type: 3}
+  m_flaskRestorationSoundEffect: {fileID: 8300000, guid: 3c1d685d167452c4d8e32380bf918d85, type: 3}
+  m_emptyFlaskSoundEffect: {fileID: 8300000, guid: 94dc98b5e6a6ff64a86a072f488099c5, type: 3}
 --- !u!4 &355002551
 Transform:
   m_ObjectHideFlags: 0
@@ -2341,6 +2343,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 82a80cceb897d9f4da6202ff1cde4ff4, type: 2}
   m_takeDamageEffect: {fileID: 11400000, guid: 799788b7a8c4c6a42a0537d4a4bfc846, type: 2}
   m_takeCriticalDamageEffect: {fileID: 11400000, guid: 82a80cceb897d9f4da6202ff1cde4ff4, type: 2}
+  m_healingFlaskVFX: {fileID: 7046630527272132478, guid: 1058ca6f234a7a142950bc60bb1d9970, type: 3}
+  m_focusFlaskVFX: {fileID: 7501971539574221985, guid: 2515d77588552d040bf5354f9af240cd, type: 3}
 --- !u!4 &499560864
 Transform:
   m_ObjectHideFlags: 0

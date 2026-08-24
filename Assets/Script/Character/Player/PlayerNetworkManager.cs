@@ -14,6 +14,8 @@ namespace ZZ
         private const int k_DefaultMainProjectileID = 12;
         private const int k_DefaultSecondaryProjectileID = 13;
         private const int k_NoProjectileID = -1;
+        private const int k_DefaultQuickSlotItemID = 14;
+        private const int k_DefaultFlaskCount = 3;
 
         [Header("Two-Hand Effect")]
         [SerializeField] private StaticCharacterEffect m_twoHandingEffect;
@@ -148,6 +150,26 @@ namespace ZZ
                 false,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_currentQuickSlotItemID =
+            new NetworkVariable<int>(
+                k_DefaultQuickSlotItemID,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_remainingHealthFlasks =
+            new NetworkVariable<int>(
+                k_DefaultFlaskCount,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> m_remainingFocusPointFlasks =
+            new NetworkVariable<int>(
+                k_DefaultFlaskCount,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isChugging =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -240,6 +262,21 @@ namespace ZZ
         /// <summary>Gets whether this player is using first-person free aim.</summary>
         public NetworkVariable<bool> IsAiming => m_isAiming;
 
+        /// <summary>Gets the owner-selected gameplay quick-slot item identifier.</summary>
+        public NetworkVariable<int> CurrentQuickSlotItemID =>
+            m_currentQuickSlotItemID;
+
+        /// <summary>Gets the synchronized number of Health flask uses.</summary>
+        public NetworkVariable<int> RemainingHealthFlasks =>
+            m_remainingHealthFlasks;
+
+        /// <summary>Gets the synchronized number of Focus Point flask uses.</summary>
+        public NetworkVariable<int> RemainingFocusPointFlasks =>
+            m_remainingFocusPointFlasks;
+
+        /// <summary>Gets whether one additional drink has been requested.</summary>
+        public NetworkVariable<bool> IsChugging => m_isChugging;
+
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -272,6 +309,13 @@ namespace ZZ
             m_hasArrowNotched.OnValueChanged += OnRangedStateChanged;
             m_isHoldingArrow.OnValueChanged += OnRangedStateChanged;
             m_isAiming.OnValueChanged += OnRangedStateChanged;
+            m_currentQuickSlotItemID.OnValueChanged +=
+                OnCurrentQuickSlotItemIDChanged;
+            m_remainingHealthFlasks.OnValueChanged +=
+                OnRemainingHealthFlasksChanged;
+            m_remainingFocusPointFlasks.OnValueChanged +=
+                OnRemainingFocusPointFlasksChanged;
+            m_isChugging.OnValueChanged += OnIsChuggingChanged;
             GetComponent<PlayerBodyManager>()?.ToggleBodyType(m_isMale.Value);
             m_playerInventoryManager?.InitializeRightWeaponFromID(
                 m_currentRightHandWeaponID.Value);
@@ -296,6 +340,8 @@ namespace ZZ
                 m_mainProjectileID.Value);
             m_playerInventoryManager?.InitializeSecondaryProjectileFromID(
                 m_secondaryProjectileID.Value);
+            m_playerInventoryManager?.InitializeCurrentQuickSlotItemFromID(
+                m_currentQuickSlotItemID.Value);
             if (!IsOwner)
             {
                 UpdateRemoteAnimatorController(m_currentWeaponIDBeingUsed.Value);
@@ -305,9 +351,12 @@ namespace ZZ
             RefreshTwoHandingPresentation();
             ApplyChargingSpellPresentation();
             ApplyRangedPresentation();
+            GetComponent<PlayerAnimatorManager>()?.SetFlaskChuggingState(
+                m_isChugging.Value);
 
             ResetOwnedSprintState();
             ResetOwnedRangedState();
+            ResetOwnedQuickSlotState();
         }
 
         public override void OnNetworkDespawn()
@@ -335,6 +384,13 @@ namespace ZZ
             m_hasArrowNotched.OnValueChanged -= OnRangedStateChanged;
             m_isHoldingArrow.OnValueChanged -= OnRangedStateChanged;
             m_isAiming.OnValueChanged -= OnRangedStateChanged;
+            m_currentQuickSlotItemID.OnValueChanged -=
+                OnCurrentQuickSlotItemIDChanged;
+            m_remainingHealthFlasks.OnValueChanged -=
+                OnRemainingHealthFlasksChanged;
+            m_remainingFocusPointFlasks.OnValueChanged -=
+                OnRemainingFocusPointFlasksChanged;
+            m_isChugging.OnValueChanged -= OnIsChuggingChanged;
             if (IsOwner)
             {
                 PlayerCamera.Instance?.SetAimMode(false, true);
@@ -350,6 +406,115 @@ namespace ZZ
             ResetOwnedTwoHandingState();
             ResetOwnedSpellState();
             ResetOwnedRangedState();
+            ResetOwnedQuickSlotState();
+        }
+
+        /// <summary>Returns the synchronized count for one flask category.</summary>
+        public int GetRemainingFlaskCount(bool healthFlask)
+        {
+            return healthFlask
+                ? m_remainingHealthFlasks.Value
+                : m_remainingFocusPointFlasks.Value;
+        }
+
+        /// <summary>Consumes exactly one owner-authoritative flask charge.</summary>
+        public bool TryConsumeFlaskCharge(bool healthFlask)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            NetworkVariable<int> remainingFlasks = healthFlask
+                ? m_remainingHealthFlasks
+                : m_remainingFocusPointFlasks;
+            if (remainingFlasks.Value <= 0)
+            {
+                return false;
+            }
+
+            remainingFlasks.Value = Mathf.Max(0, remainingFlasks.Value - 1);
+            return true;
+        }
+
+        /// <summary>Writes one continuation request for the active flask animation.</summary>
+        public void SetChuggingState(bool isChugging)
+        {
+            if (IsSpawned && IsOwner && m_isChugging.Value != isChugging)
+            {
+                m_isChugging.Value = isChugging;
+            }
+        }
+
+        /// <summary>Replicates weapon visibility while an item occupies the right hand.</summary>
+        [ServerRpc]
+        public void SetWeaponsHiddenServerRpc(
+            bool areWeaponsHidden,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            {
+                return;
+            }
+
+            SetWeaponsHiddenClientRpc(
+                areWeaponsHidden,
+                serverRpcParams.Receive.SenderClientId);
+        }
+
+        [ClientRpc]
+        private void SetWeaponsHiddenClientRpc(
+            bool areWeaponsHidden,
+            ulong itemUserClientID)
+        {
+            if (NetworkManager.Singleton != null &&
+                NetworkManager.Singleton.LocalClientId == itemUserClientID)
+            {
+                return;
+            }
+
+            if (!areWeaponsHidden)
+            {
+                GetComponent<PlayerCombatManager>()?.ResetQuickSlotItemUse();
+            }
+
+            GetComponent<PlayerEquipmentManager>()?.SetWeaponsHidden(
+                areWeaponsHidden);
+        }
+
+        /// <summary>Replicates a quick-slot use event without networking its model.</summary>
+        [ServerRpc]
+        public void NotifyServerOfQuickSlotItemActionServerRpc(
+            int quickSlotItemID,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId ||
+                WorldItemDatabase.Instance?.GetQuickSlotItemByID(
+                    quickSlotItemID) == null)
+            {
+                return;
+            }
+
+            PerformQuickSlotItemActionClientRpc(
+                quickSlotItemID,
+                serverRpcParams.Receive.SenderClientId);
+        }
+
+        [ClientRpc]
+        private void PerformQuickSlotItemActionClientRpc(
+            int quickSlotItemID,
+            ulong itemUserClientID)
+        {
+            if (NetworkManager.Singleton != null &&
+                NetworkManager.Singleton.LocalClientId == itemUserClientID)
+            {
+                return;
+            }
+
+            QuickSlotItem quickSlotItem = WorldItemDatabase.Instance
+                ?.GetQuickSlotItemByID(quickSlotItemID);
+            GetComponent<PlayerCombatManager>()
+                ?.PerformQuickSlotItemActionFromRpc(quickSlotItem);
         }
 
         /// <summary>Ensures the supplied equipped side owns the two-hand stance.</summary>
@@ -640,6 +805,49 @@ namespace ZZ
             m_hasArrowNotched.Value = false;
             m_isHoldingArrow.Value = false;
             m_isAiming.Value = false;
+        }
+
+        private void ResetOwnedQuickSlotState()
+        {
+            if (IsOwner && IsSpawned)
+            {
+                m_isChugging.Value = false;
+            }
+        }
+
+        private void OnCurrentQuickSlotItemIDChanged(
+            int previousQuickSlotItemID,
+            int currentQuickSlotItemID)
+        {
+            m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
+            m_playerInventoryManager?.InitializeCurrentQuickSlotItemFromID(
+                currentQuickSlotItemID);
+        }
+
+        private void OnRemainingHealthFlasksChanged(
+            int previousFlaskCount,
+            int currentFlaskCount)
+        {
+            GetComponent<PlayerCombatManager>()?.HandleRemainingFlasksChanged(
+                true,
+                previousFlaskCount,
+                currentFlaskCount);
+        }
+
+        private void OnRemainingFocusPointFlasksChanged(
+            int previousFlaskCount,
+            int currentFlaskCount)
+        {
+            GetComponent<PlayerCombatManager>()?.HandleRemainingFlasksChanged(
+                false,
+                previousFlaskCount,
+                currentFlaskCount);
+        }
+
+        private void OnIsChuggingChanged(bool previousValue, bool currentValue)
+        {
+            GetComponent<PlayerAnimatorManager>()?.SetFlaskChuggingState(
+                currentValue);
         }
 
         private void OnMainProjectileIDChanged(

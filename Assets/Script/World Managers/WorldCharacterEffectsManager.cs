@@ -17,6 +17,10 @@ namespace ZZ
         [SerializeField] private TakeBlockedDamageEffect m_takeBlockedDamageEffect;
         [SerializeField] private TakeCriticalDamageEffect m_takeCriticalDamageEffect;
 
+        [Header("Quick Slot Effects")]
+        [SerializeField] private GameObject m_healingFlaskVFX;
+        [SerializeField] private GameObject m_focusFlaskVFX;
+
         public static WorldCharacterEffectsManager Instance => s_instance;
         public TakeDamageEffect TakeDamageEffect => m_takeDamageEffect;
         public TakeBlockedDamageEffect TakeBlockedDamageEffect =>
@@ -25,6 +29,10 @@ namespace ZZ
         public TakeCriticalDamageEffect TakeCriticalDamageEffect =>
             m_takeCriticalDamageEffect ??= Resources.Load<TakeCriticalDamageEffect>(
                 k_CriticalDamageEffectResourcePath);
+        public GameObject HealingFlaskVFX => m_healingFlaskVFX;
+        public GameObject FocusFlaskVFX => m_focusFlaskVFX != null
+            ? m_focusFlaskVFX
+            : m_healingFlaskVFX;
 
         /// <summary>
         /// Gets the authored instant effects in their stable identifier order.
