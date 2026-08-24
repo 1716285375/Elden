@@ -693,6 +693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterCombatManager
   m_currentAttackType: 0
   m_previousPoiseDamageTaken: 0
+  m_canBeBackstabbed: 1
   m_leftHandDamageCollider: {fileID: 4895157094311681590}
   m_rightHandDamageCollider: {fileID: 3604112723449808524}
   m_physicalDamage: 25

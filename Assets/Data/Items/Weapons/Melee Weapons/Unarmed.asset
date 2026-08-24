@@ -71,3 +71,4 @@ MonoBehaviour:
   m_rollAttack01StaminaCostMultiplier: 1.15
   m_backStepAttack01StaminaCostMultiplier: 1.2
   m_riposteAttack01Modifier: 3.3
+  m_backstabAttack01Modifier: 2.8

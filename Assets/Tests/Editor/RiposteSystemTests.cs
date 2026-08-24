@@ -90,7 +90,9 @@ namespace ZZ.Tests
                 .Select(childState => childState.state)
                 .Single(state => state.name == "Riposted_01");
             AnimatorStateTransition getUpTransition =
-                ripostedState.transitions.Single();
+                ripostedState.transitions.Single(transition =>
+                    transition.destinationState.name ==
+                    "Riposted_Get_Up_01");
 
             Assert.That(getUpTransition.destinationState.name,
                 Is.EqualTo("Riposted_Get_Up_01"));

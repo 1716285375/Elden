@@ -94,5 +94,22 @@ namespace ZZ
                     return new Vector3(0.1f, 0f, 0.7f);
             }
         }
+
+        /// <summary>Returns the attacker-local Backstab receiver offset.</summary>
+        public static Vector3 GetBackstabPositionBasedOnWeaponClass(
+            WeaponClass weaponClass)
+        {
+            switch (weaponClass)
+            {
+                case WeaponClass.Dagger:
+                    return new Vector3(0.08f, 0f, 0.64f);
+                case WeaponClass.Spear:
+                    return new Vector3(0.12f, 0f, 0.88f);
+                case WeaponClass.Unarmed:
+                    return new Vector3(0f, 0f, 0.68f);
+                default:
+                    return new Vector3(0.12f, 0f, 0.74f);
+            }
+        }
     }
 }
