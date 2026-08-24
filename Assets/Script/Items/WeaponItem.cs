@@ -65,6 +65,8 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_runningAttack01DamageModifier = 1.2f;
         [SerializeField, Min(0f)] private float m_rollAttack01DamageModifier = 1.1f;
         [SerializeField, Min(0f)] private float m_backStepAttack01DamageModifier = 1.15f;
+        [SerializeField, Min(0f)] private float m_lightJumpingAttack01DamageModifier = 1f;
+        [SerializeField, Min(0f)] private float m_heavyJumpingAttack01DamageModifier = 1.8f;
         [SerializeField, Min(0f)] private float m_lightAttack01StaminaCostMultiplier = 1f;
         [SerializeField, Min(0f)] private float m_heavyAttack01StaminaCostMultiplier = 1f;
         [SerializeField, Min(0f)] private float m_chargedAttack01StaminaCostMultiplier = 1.5f;
@@ -192,6 +194,10 @@ namespace ZZ
                     return m_rollAttack01DamageModifier;
                 case AttackType.BackStepAttack01:
                     return m_backStepAttack01DamageModifier;
+                case AttackType.LightJumpingAttack01:
+                    return m_lightJumpingAttack01DamageModifier;
+                case AttackType.HeavyJumpingAttack01:
+                    return m_heavyJumpingAttack01DamageModifier;
                 default:
                     return m_lightAttack01DamageModifier;
             }
@@ -215,6 +221,10 @@ namespace ZZ
                     return m_rollAttack01StaminaCostMultiplier;
                 case AttackType.BackStepAttack01:
                     return m_backStepAttack01StaminaCostMultiplier;
+                case AttackType.HeavyJumpingAttack01:
+                    return m_heavyAttack01StaminaCostMultiplier;
+                case AttackType.LightJumpingAttack01:
+                    return m_lightAttack01StaminaCostMultiplier;
                 default:
                     return m_lightAttack01StaminaCostMultiplier;
             }
