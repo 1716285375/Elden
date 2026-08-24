@@ -10,9 +10,11 @@ namespace ZZ
         private static WorldSoundFXManager s_instance;
 
         [SerializeField] private AudioClip m_rollingSoundFX;
+        [SerializeField] private AudioClip m_pickupItemSoundEffect;
 
         public static WorldSoundFXManager Instance => s_instance;
         public AudioClip RollingSoundFX => m_rollingSoundFX;
+        public AudioClip PickupItemSoundEffect => m_pickupItemSoundEffect;
 
         /// <summary>
         /// Selects a non-null clip at random and plays it through the supplied spatial source.

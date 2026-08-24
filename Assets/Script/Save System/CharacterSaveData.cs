@@ -16,7 +16,8 @@ namespace ZZ
         private const float k_DefaultCurrentStamina = 100f;
         private const int k_AttributeDataVersion = 1;
         private const int k_EquipmentDataVersion = 4;
-        private const int k_CurrentDataVersion = 4;
+        private const int k_WorldLootDataVersion = 5;
+        private const int k_CurrentDataVersion = 5;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -44,6 +45,7 @@ namespace ZZ
         [SerializeField] private bool m_isMale = true;
         [SerializeField] private List<BossSaveData> m_bosses = new();
         [SerializeField] private List<SiteOfGraceSaveData> m_sitesOfGrace = new();
+        [SerializeField] private WorldItemLootDictionary m_worldItemsLooted = new();
 
         public string CharacterName
         {
@@ -183,6 +185,46 @@ namespace ZZ
             set => m_isMale = value;
         }
 
+        /// <summary>Gets whether a fixed world item has already been collected.</summary>
+        public bool IsWorldItemLooted(int worldItemID)
+        {
+            return worldItemID >= 0 &&
+                m_worldItemsLooted != null &&
+                m_worldItemsLooted.TryGetValue(worldItemID, out bool isLooted) &&
+                isLooted;
+        }
+
+        /// <summary>Gets a registered fixed world item's persisted loot state.</summary>
+        public bool TryGetWorldItemLooted(int worldItemID, out bool isLooted)
+        {
+            isLooted = false;
+            return worldItemID >= 0 &&
+                m_worldItemsLooted != null &&
+                m_worldItemsLooted.TryGetValue(worldItemID, out isLooted);
+        }
+
+        /// <summary>Adds or updates one fixed world item's persisted loot state.</summary>
+        public bool SetWorldItemLooted(int worldItemID, bool isLooted)
+        {
+            if (worldItemID < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(worldItemID),
+                    worldItemID,
+                    "World item identifiers cannot be negative.");
+            }
+
+            m_worldItemsLooted ??= new WorldItemLootDictionary();
+            if (m_worldItemsLooted.TryGetValue(worldItemID, out bool currentState) &&
+                currentState == isLooted)
+            {
+                return false;
+            }
+
+            m_worldItemsLooted[worldItemID] = isLooted;
+            return true;
+        }
+
         /// <summary>Gets the saved lifecycle state for a boss, defaulting to dormant.</summary>
         public BossProgressState GetBossProgress(int bossID)
         {
@@ -281,6 +323,11 @@ namespace ZZ
                 m_rightHandWeaponIndex = 0;
                 m_leftHandWeaponIndex = 0;
                 m_isMale = true;
+            }
+
+            if (m_dataVersion < k_WorldLootDataVersion || m_worldItemsLooted == null)
+            {
+                m_worldItemsLooted = new WorldItemLootDictionary();
             }
 
             m_bosses ??= new List<BossSaveData>();

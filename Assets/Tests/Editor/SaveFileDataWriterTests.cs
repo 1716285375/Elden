@@ -144,6 +144,36 @@ namespace ZZ.Tests
             Assert.That(loadedData.RightHandWeaponIndex, Is.EqualTo(0));
             Assert.That(loadedData.LeftHandWeaponIndex, Is.EqualTo(0));
             Assert.That(loadedData.IsMale, Is.True);
+            Assert.That(loadedData.IsWorldItemLooted(0), Is.False);
+        }
+
+        [Test]
+        public void WorldItemLootStateSurvivesSaveRoundTrip()
+        {
+            CharacterSaveData characterData = new CharacterSaveData();
+            characterData.SetWorldItemLooted(0, false);
+            characterData.SetWorldItemLooted(7, true);
+            SaveFileDataWriter writer = new SaveFileDataWriter(
+                m_testDirectory,
+                "CharacterSlot01");
+
+            writer.SaveFile(characterData);
+            CharacterSaveData loadedData = writer.LoadSaveFile();
+
+            Assert.That(loadedData, Is.Not.Null);
+            Assert.That(loadedData.TryGetWorldItemLooted(0, out bool firstState), Is.True);
+            Assert.That(firstState, Is.False);
+            Assert.That(loadedData.IsWorldItemLooted(7), Is.True);
+            Assert.That(loadedData.TryGetWorldItemLooted(99, out _), Is.False);
+        }
+
+        [Test]
+        public void WorldItemLootStateRejectsNegativeIdentifiers()
+        {
+            CharacterSaveData characterData = new CharacterSaveData();
+
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => characterData.SetWorldItemLooted(-1, true));
         }
 
         [Test]

@@ -18,6 +18,7 @@ namespace ZZ.Editor
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_InteractableLayerName = "Interactable";
         private const string k_PlayerLayerName = "Player";
+        private const string k_PopupOrganizerName = "Popup Organizer";
         private const string k_MessagePopupName = "Player Message Popup";
 
         private static readonly Color s_backgroundColor =
@@ -99,8 +100,9 @@ namespace ZZ.Editor
                     throw new InvalidOperationException(
                         "Player UI Manager is missing a TMP font.");
 
+                Transform popupParent = canvas.Find(k_PopupOrganizerName) ?? canvas;
                 RectTransform popup = GetOrCreateRectTransform(
-                    canvas,
+                    popupParent,
                     k_MessagePopupName);
                 ConfigureCenteredRect(
                     popup,
@@ -218,7 +220,9 @@ namespace ZZ.Editor
                     "Player UI Manager prefab is missing.");
             PlayerUIPopUpManager popupManager =
                 GetRequiredComponent<PlayerUIPopUpManager>(root);
-            Transform popup = root.transform.Find($"Player UI/{k_MessagePopupName}");
+            Transform popup = root.transform.Find(
+                $"Player UI/{k_PopupOrganizerName}/{k_MessagePopupName}") ??
+                root.transform.Find($"Player UI/{k_MessagePopupName}");
             TMP_Text messageText = popup?.Find("Message Text")
                 ?.GetComponent<TMP_Text>();
             if (popup == null ||

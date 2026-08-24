@@ -33,6 +33,16 @@ namespace ZZ
             m_audioSource.PlayOneShot(rollingSoundFX);
         }
 
+        /// <summary>Plays the shared item-collection sound before its world object is removed.</summary>
+        public void PlayPickupItemSound()
+        {
+            AudioClip pickupSound = WorldSoundFXManager.Instance?.PickupItemSoundEffect;
+            if (m_audioSource != null && pickupSound != null)
+            {
+                m_audioSource.PlayOneShot(pickupSound);
+            }
+        }
+
         /// <summary>Plays a random whoosh belonging to the weapon opening its hit window.</summary>
         public void PlayWeaponWhoosh(WeaponItem weapon)
         {
