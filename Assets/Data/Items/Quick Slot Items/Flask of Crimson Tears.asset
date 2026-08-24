@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9881e7540b69d545b9cbfc97e68ef7d, type: 3}
+  m_Name: Flask of Crimson Tears
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.FlaskItem
+  m_itemName: Flask of Crimson Tears
+  m_itemIcon: {fileID: 6792779763568305790, guid: cfadb293a8cd0b646ab0d77b5b4c01e9, type: 2}
+  m_itemDescription: A sacred flask that restores Health at the drink success frame.
+  m_itemID: 14
+  m_itemModel: {fileID: 1383299079016199604, guid: 444edd3cff894f244ba43e4f5fd9d0c7, type: 3}
+  m_useItemAnimation: {fileID: 7400000, guid: 95daa1dc3a107aa4fb20736a4cf1602d, type: 2}
+  m_emptyFlaskItemModel: {fileID: 4353431601353277311, guid: 6568a9f42aed5bb4da284b707570a972, type: 3}
+  m_restoresHealth: 1
+  m_flaskRestoration: 55

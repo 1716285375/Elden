@@ -73,6 +73,18 @@ namespace ZZ
                 m_audioSource);
         }
 
+        /// <summary>Plays shared full or empty flask feedback through this character.</summary>
+        public void PlayFlaskSound(bool isEmpty)
+        {
+            AudioClip flaskSound = isEmpty
+                ? WorldSoundFXManager.Instance?.EmptyFlaskSoundEffect
+                : WorldSoundFXManager.Instance?.FlaskRestorationSoundEffect;
+            if (m_audioSource != null && flaskSound != null)
+            {
+                m_audioSource.PlayOneShot(flaskSound);
+            }
+        }
+
         /// <summary>Plays one locally spatialized damage grunt for this character.</summary>
         public void PlayDamageGrunt()
         {

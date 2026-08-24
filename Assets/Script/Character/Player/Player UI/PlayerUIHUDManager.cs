@@ -130,6 +130,8 @@ namespace ZZ
             m_boundInventoryManager.LeftHandWeaponChanged +=
                 OnLeftHandWeaponChanged;
             m_boundInventoryManager.CurrentSpellChanged += OnCurrentSpellChanged;
+            m_boundInventoryManager.CurrentQuickSlotItemChanged +=
+                OnCurrentQuickSlotItemChanged;
             RefreshQuickSlots();
         }
 
@@ -147,6 +149,7 @@ namespace ZZ
             m_leftWeaponQuickSlot?.SetItem(null);
             m_rightWeaponQuickSlot?.SetItem(null);
             m_spellQuickSlot?.SetItem(null);
+            m_itemQuickSlot?.SetItem(null);
         }
 
         /// <summary>
@@ -244,6 +247,17 @@ namespace ZZ
             m_spellQuickSlot?.SetItem(spell);
         }
 
+        private void OnCurrentQuickSlotItemChanged(QuickSlotItem quickSlotItem)
+        {
+            SetQuickSlotItemQuickSlotIcon(quickSlotItem);
+        }
+
+        /// <summary>Updates the gameplay item quick-slot icon from synchronized inventory.</summary>
+        public void SetQuickSlotItemQuickSlotIcon(QuickSlotItem quickSlotItem)
+        {
+            m_itemQuickSlot?.SetItem(quickSlotItem);
+        }
+
         private void RefreshStatBars()
         {
             SetMaxHealthValue(m_boundNetworkManager.MaxHealth.Value);
@@ -262,7 +276,8 @@ namespace ZZ
             m_rightWeaponQuickSlot?.SetItem(
                 m_boundInventoryManager.CurrentRightHandWeapon);
             m_spellQuickSlot?.SetItem(m_boundInventoryManager.CurrentSpell);
-            m_itemQuickSlot?.SetItem(null);
+            SetQuickSlotItemQuickSlotIcon(
+                m_boundInventoryManager.CurrentQuickSlotItem);
         }
 
         private void UnbindCurrentStats()
@@ -295,6 +310,8 @@ namespace ZZ
             m_boundInventoryManager.LeftHandWeaponChanged -=
                 OnLeftHandWeaponChanged;
             m_boundInventoryManager.CurrentSpellChanged -= OnCurrentSpellChanged;
+            m_boundInventoryManager.CurrentQuickSlotItemChanged -=
+                OnCurrentQuickSlotItemChanged;
             m_boundInventoryManager = null;
         }
 

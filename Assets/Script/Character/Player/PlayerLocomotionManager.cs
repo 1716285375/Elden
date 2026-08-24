@@ -104,7 +104,9 @@ namespace ZZ
         /// </summary>
         public void AttemptToPerformJump()
         {
-            if (m_player == null || !m_player.IsOwner)
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                m_player.PlayerCombatManager?.IsUsingItem == true)
             {
                 return;
             }
@@ -155,7 +157,7 @@ namespace ZZ
         /// </summary>
         public void AttemptToPerformDodge()
         {
-            if (m_player == null || !m_player.IsOwner)
+            if (m_player == null || !m_player.IsOwner || !CanRoll)
             {
                 return;
             }

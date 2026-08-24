@@ -85,6 +85,28 @@ namespace ZZ
             SpawnBloodSplatter(criticalVFX, contactPoint, hitDirection, 1.5f);
         }
 
+        /// <summary>Spawns the shared Health or Focus flask feedback on this character.</summary>
+        public void PlayFlaskRestorationVFX(bool restoresHealth)
+        {
+            WorldCharacterEffectsManager worldEffects =
+                WorldCharacterEffectsManager.Instance;
+            GameObject flaskVFX = restoresHealth
+                ? worldEffects?.HealingFlaskVFX
+                : worldEffects?.FocusFlaskVFX;
+            if (flaskVFX == null || m_character == null)
+            {
+                return;
+            }
+
+            Transform anchor = m_character.LockOnTransform;
+            GameObject instance = Instantiate(
+                flaskVFX,
+                anchor.position,
+                Quaternion.identity,
+                m_character.transform);
+            Destroy(instance, 3f);
+        }
+
         /// <summary>
         /// Creates and executes a runtime copy of an authored instant effect.
         /// </summary>

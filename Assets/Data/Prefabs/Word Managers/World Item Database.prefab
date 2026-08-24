@@ -59,6 +59,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: efa5932c0d326c54f8e7d9b353c5d744, type: 2}
   - {fileID: 11400000, guid: 12e2a22aa45984a4eb04765fae5ff0d8, type: 2}
   - {fileID: 11400000, guid: c34ca036f196a684a8c35e2baeec8975, type: 2}
+  - {fileID: 11400000, guid: 1552265e1ba92d8498a99438f3bf2b9a, type: 2}
+  - {fileID: 11400000, guid: c0478e237862c6146a51b5f21ec4bd4e, type: 2}
   m_headEquipment:
   - {fileID: 11400000, guid: 9eb5883dac298d244a43092a6ba95ba4, type: 2}
   m_bodyEquipment:
@@ -74,4 +76,7 @@ MonoBehaviour:
   m_projectiles:
   - {fileID: 11400000, guid: 12e2a22aa45984a4eb04765fae5ff0d8, type: 2}
   - {fileID: 11400000, guid: c34ca036f196a684a8c35e2baeec8975, type: 2}
+  m_quickSlotItems:
+  - {fileID: 11400000, guid: 1552265e1ba92d8498a99438f3bf2b9a, type: 2}
+  - {fileID: 11400000, guid: c0478e237862c6146a51b5f21ec4bd4e, type: 2}
   m_creatureDropPickupPrefab: {fileID: 4996127031911254275, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
