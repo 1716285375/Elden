@@ -925,7 +925,7 @@ namespace ZZ
             CheckHP();
         }
 
-        private void OnIsDeadChanged(bool wasDead, bool isDead)
+        protected virtual void OnIsDeadChanged(bool wasDead, bool isDead)
         {
             m_characterAnimatorManager?.SetDeadState(isDead);
             if (isDead)

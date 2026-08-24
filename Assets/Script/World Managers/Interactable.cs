@@ -43,7 +43,7 @@ namespace ZZ
         }
 
         /// <summary>Returns whether the supplied local player may use this interaction.</summary>
-        public bool CanInteract(PlayerManager player)
+        public virtual bool CanInteract(PlayerManager player)
         {
             return player != null &&
                 player.IsOwner &&

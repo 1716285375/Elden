@@ -18,6 +18,9 @@ namespace ZZ
         [SerializeField] private List<LegEquipmentItem> m_legEquipment = new();
         [SerializeField] private List<AshOfWar> m_ashesOfWar = new();
 
+        [Header("World Pickups")]
+        [SerializeField] private GameObject m_creatureDropPickupPrefab;
+
         /// <summary>Gets the persistent item catalog instance.</summary>
         public static WorldItemDatabase Instance => s_instance;
 
@@ -28,6 +31,9 @@ namespace ZZ
 
         /// <summary>Gets the authored Ashes of War registered in the item catalog.</summary>
         public IReadOnlyList<AshOfWar> AshesOfWar => m_ashesOfWar;
+
+        /// <summary>Gets the server-spawned pickup presentation used by creature loot.</summary>
+        public GameObject CreatureDropPickupPrefab => m_creatureDropPickupPrefab;
 
         private void Awake()
         {
@@ -61,6 +67,12 @@ namespace ZZ
         public WeaponItem GetWeaponByID(int itemID)
         {
             return GetItemByID<WeaponItem>(itemID, null);
+        }
+
+        /// <summary>Returns any registered item assigned to a stable persistent identifier.</summary>
+        public Item GetItemByID(int itemID)
+        {
+            return GetItemByID<Item>(itemID, null);
         }
 
         /// <summary>Returns the head-equipment template assigned to a stable item identifier.</summary>

@@ -20,6 +20,7 @@ namespace ZZ
         ParryMedium = 12,
         ParrySlow = 13,
         ParryLand = 14,
-        Parried = 15
+        Parried = 15,
+        PickupItem = 16
     }
 }
