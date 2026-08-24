@@ -207,8 +207,18 @@ namespace ZZ
                 PlayerNetworkManager.CurrentRightHandWeaponID.Value);
             InventoryManager.InitializeLeftWeaponFromID(
                 PlayerNetworkManager.CurrentLeftHandWeaponID.Value);
+            InventoryManager.InitializeMainProjectileFromID(
+                PlayerNetworkManager.MainProjectileID.Value);
+            InventoryManager.InitializeSecondaryProjectileFromID(
+                PlayerNetworkManager.SecondaryProjectileID.Value);
             PlayerNetworkManager.RefreshTwoHandingPresentation();
             PlayerNetworkManager.RefreshArmorPresentation();
+            if (!IsOwner && PlayerNetworkManager.HasArrowNotched.Value)
+            {
+                PlayerCombatManager?.PerformNotchingProjectileFromRpc(
+                    PlayerNetworkManager.CurrentProjectileID.Value,
+                    PlayerNetworkManager.CurrentProjectileSlot.Value);
+            }
         }
 
         /// <summary>
@@ -237,6 +247,14 @@ namespace ZZ
             currentData.CurrentFocusPoints =
                 CharacterNetworkManager.CurrentFocusPoints.Value;
             currentData.CurrentSpellID = InventoryManager.CurrentSpell?.ItemID ?? -1;
+            currentData.MainProjectileID =
+                InventoryManager.MainProjectile?.ItemID ?? -1;
+            currentData.SecondaryProjectileID =
+                InventoryManager.SecondaryProjectile?.ItemID ?? -1;
+            currentData.MainProjectileAmount =
+                InventoryManager.MainProjectile?.CurrentAmmoAmount ?? 0;
+            currentData.SecondaryProjectileAmount =
+                InventoryManager.SecondaryProjectile?.CurrentAmmoAmount ?? 0;
             currentData.HeadEquipmentID = PlayerNetworkManager.CurrentHeadEquipmentID.Value;
             currentData.BodyEquipmentID = PlayerNetworkManager.CurrentBodyEquipmentID.Value;
             currentData.HandEquipmentID = PlayerNetworkManager.CurrentHandEquipmentID.Value;
@@ -321,6 +339,23 @@ namespace ZZ
                 : -1;
             PlayerNetworkManager.CurrentSpellID.Value = resolvedSpellID;
             InventoryManager.InitializeCurrentSpellFromID(resolvedSpellID);
+            RangedProjectileItem savedMainProjectile = WorldItemDatabase.Instance
+                ?.GetProjectileByID(currentData.MainProjectileID);
+            RangedProjectileItem savedSecondaryProjectile = WorldItemDatabase.Instance
+                ?.GetProjectileByID(currentData.SecondaryProjectileID);
+            int resolvedMainProjectileID = savedMainProjectile?.ItemID ?? -1;
+            int resolvedSecondaryProjectileID =
+                savedSecondaryProjectile?.ItemID ?? -1;
+            PlayerNetworkManager.MainProjectileID.Value =
+                resolvedMainProjectileID;
+            PlayerNetworkManager.SecondaryProjectileID.Value =
+                resolvedSecondaryProjectileID;
+            InventoryManager.InitializeMainProjectileFromID(
+                resolvedMainProjectileID,
+                currentData.MainProjectileAmount);
+            InventoryManager.InitializeSecondaryProjectileFromID(
+                resolvedSecondaryProjectileID,
+                currentData.SecondaryProjectileAmount);
             Vector3 savedPosition = new Vector3(
                 currentData.XPosition,
                 currentData.YPosition,

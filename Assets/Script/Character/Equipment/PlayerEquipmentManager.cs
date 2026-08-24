@@ -407,6 +407,16 @@ namespace ZZ
             GetCurrentWeaponManager()?.CloseDamageCollider();
         }
 
+        /// <summary>Applies bow hold conditions to the currently active weapon model.</summary>
+        public void SetRangedWeaponState(
+            bool hasArrowNotched,
+            bool isHoldingArrow)
+        {
+            GetCurrentWeaponManager()?.SetRangedWeaponState(
+                hasArrowNotched,
+                isHoldingArrow);
+        }
+
         private WeaponManager GetCurrentWeaponManager()
         {
             if (IsTwoHanding())

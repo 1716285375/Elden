@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3f437adc3d9004589128f372c03115, type: 3}
+  m_Name: Longbow
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.RangedWeaponItem
+  m_itemName: Longbow
+  m_itemIcon: {fileID: 0}
+  m_itemDescription: A two-handed bow compatible with Arrow-class ammunition.
+  m_itemID: 11
+  m_itemWeight: 0
+  m_weaponModel: {fileID: 7364217939783419758, guid: e2cdb377f3433ca4f9d800d791630d6a, type: 3}
+  m_isUnarmed: 0
+  m_weaponModelType: 0
+  m_weaponClass: 5
+  m_weaponAnimator: {fileID: 22100000, guid: 7533fa8375efdeb47a17d1ef7dcbbbc2, type: 2}
+  m_weaponPivotPosition: {x: 0, y: 0, z: 0}
+  m_weaponPivotRotation: {x: 0, y: 0, z: 0}
+  m_weaponPivotScale: {x: 1, y: 1, z: 1}
+  m_physicalDamage: 0
+  m_magicDamage: 0
+  m_fireDamage: 0
+  m_lightningDamage: 0
+  m_holyDamage: 0
+  m_strengthRequirement: 0
+  m_dexterityRequirement: 0
+  m_intelligenceRequirement: 0
+  m_faithRequirement: 0
+  m_baseStaminaCost: 10
+  m_basePoiseDamage: 5
+  m_blockingPhysicalAbsorption: 0
+  m_blockingMagicAbsorption: 0
+  m_blockingFireAbsorption: 0
+  m_blockingLightningAbsorption: 0
+  m_blockingHolyAbsorption: 0
+  m_blockingStability: 0
+  m_whooshes: []
+  m_blockingSoundEffects: []
+  m_rightHandAction: {fileID: 11400000, guid: d41f3d6a05d05d742bc46d537524944f, type: 2}
+  m_rightHandHeavyAction: {fileID: 11400000, guid: c6c5c5b0c8fcdd44e90ca937128c8ac2, type: 2}
+  m_rightHandChargedAction: {fileID: 0}
+  m_twoHandRightAction: {fileID: 11400000, guid: d41f3d6a05d05d742bc46d537524944f, type: 2}
+  m_twoHandRightHeavyAction: {fileID: 11400000, guid: c6c5c5b0c8fcdd44e90ca937128c8ac2, type: 2}
+  m_leftHandAction: {fileID: 11400000, guid: 5563b1aa61a1e314d85634cecad56211, type: 2}
+  m_ashOfWarAction: {fileID: 0}
+  m_lightAttack01DamageModifier: 1
+  m_heavyAttack01DamageModifier: 1
+  m_chargedAttack01DamageModifier: 1.75
+  m_runningAttack01DamageModifier: 1.2
+  m_rollAttack01DamageModifier: 1.1
+  m_backStepAttack01DamageModifier: 1.15
+  m_lightJumpingAttack01DamageModifier: 1
+  m_heavyJumpingAttack01DamageModifier: 1.8
+  m_lightAttack01StaminaCostMultiplier: 1
+  m_heavyAttack01StaminaCostMultiplier: 1
+  m_chargedAttack01StaminaCostMultiplier: 1.5
+  m_runningAttack01StaminaCostMultiplier: 1.25
+  m_rollAttack01StaminaCostMultiplier: 1.15
+  m_backStepAttack01StaminaCostMultiplier: 1.2
+  m_projectileClass: 0
+  m_drawSoundEffects: []
+  m_releaseSoundEffects: []

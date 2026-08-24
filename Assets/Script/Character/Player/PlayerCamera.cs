@@ -29,6 +29,12 @@ namespace ZZ
         [SerializeField] private float m_maximumPivot = 60f;
         [SerializeField, Min(0f)] private float m_lockOnRotationSpeed = 12f;
 
+        [Header("Aim Settings")]
+        [SerializeField, Min(1f)] private float m_standardFieldOfView = 60f;
+        [SerializeField, Min(1f)] private float m_aimFieldOfView = 40f;
+        [SerializeField, Min(0.01f)] private float m_standardNearClipPlane = 0.3f;
+        [SerializeField, Min(0.01f)] private float m_aimNearClipPlane = 1.3f;
+
         [Header("Collision Settings")]
         [FormerlySerializedAs("cameraCollisionRadius")]
         [SerializeField, Min(0.01f)] private float m_cameraCollisionRadius = 0.2f;
@@ -46,10 +52,15 @@ namespace ZZ
         private float m_upAndDownLookAngle;
         private float m_cameraZPosition;
         private float m_targetCameraZPosition;
+        private Vector3 m_standardPivotLocalPosition;
+        private Vector3 m_standardCameraLocalPosition;
+        private bool m_isAiming;
 
         public Camera CameraObject => m_cameraObject;
         public Vector3 CameraForward => m_cameraObject != null ? m_cameraObject.transform.forward : transform.forward;
         public Vector3 CameraRight => m_cameraObject != null ? m_cameraObject.transform.right : transform.right;
+        /// <summary>Gets the normalized center-screen direction used for ranged aim.</summary>
+        public Vector3 AimDirection { get; private set; } = Vector3.forward;
 
 #if UNITY_EDITOR
         public void ConfigureRig(Transform pivot, Camera mainCamera)
@@ -83,8 +94,16 @@ namespace ZZ
 
             if (m_cameraObject != null)
             {
+                m_standardCameraLocalPosition =
+                    m_cameraObject.transform.localPosition;
                 m_cameraZPosition = m_cameraObject.transform.localPosition.z;
                 m_targetCameraZPosition = m_cameraZPosition;
+            }
+
+            if (m_cameraPivotTransform != null)
+            {
+                m_standardPivotLocalPosition =
+                    m_cameraPivotTransform.localPosition;
             }
         }
 
@@ -126,6 +145,9 @@ namespace ZZ
                 m_cameraObject.transform.localPosition = m_cameraObjectPosition;
                 m_targetCameraZPosition = m_cameraZPosition;
             }
+
+
+            SetAimMode(false, true);
         }
 
         public void ClearPlayer(PlayerManager localPlayer)
@@ -146,17 +168,115 @@ namespace ZZ
             m_playerInputManager ??= PlayerInputManager.Instance;
 
             FollowPlayer();
-            HandleRotations();
-            HandleCollisions();
+            if (m_isAiming)
+            {
+                HandleAimRotations();
+            }
+            else
+            {
+                HandleRotations();
+                HandleCollisions();
+            }
+
+            AimDirection = m_cameraObject.transform.forward.normalized;
         }
 
         private void FollowPlayer()
         {
+            Vector3 targetPosition = m_isAiming
+                ? m_player.LockOnTransform.position
+                : m_player.transform.position;
             transform.position = Vector3.SmoothDamp(
                 transform.position,
-                m_player.transform.position,
+                targetPosition,
                 ref m_cameraVelocity,
                 m_cameraSmoothTime);
+        }
+
+        /// <summary>Switches the local camera between third-person and center-origin aim.</summary>
+        public void SetAimMode(bool isAiming, bool forceRefresh = false)
+        {
+            if (!forceRefresh && m_isAiming == isAiming)
+            {
+                return;
+            }
+
+            m_isAiming = isAiming;
+            m_cameraVelocity = Vector3.zero;
+            ResetAimRotations();
+            if (m_cameraPivotTransform != null)
+            {
+                m_cameraPivotTransform.localPosition = isAiming
+                    ? Vector3.zero
+                    : m_standardPivotLocalPosition;
+            }
+
+            if (m_cameraObject != null)
+            {
+                m_cameraObject.transform.localPosition = isAiming
+                    ? Vector3.zero
+                    : m_standardCameraLocalPosition;
+                m_cameraObject.transform.localRotation = Quaternion.identity;
+                m_cameraObject.fieldOfView = isAiming
+                    ? m_aimFieldOfView
+                    : m_standardFieldOfView;
+                m_cameraObject.nearClipPlane = isAiming
+                    ? m_aimNearClipPlane
+                    : m_standardNearClipPlane;
+                m_targetCameraZPosition = isAiming
+                    ? 0f
+                    : m_cameraZPosition;
+                AimDirection = m_cameraObject.transform.forward.normalized;
+            }
+
+            PlayerUIManager.Instance?.PlayerUIHUDManager
+                ?.SetCrosshairVisible(isAiming);
+        }
+
+        private void HandleAimRotations()
+        {
+            if (m_playerInputManager == null)
+            {
+                return;
+            }
+
+            m_leftAndRightLookAngle += m_playerInputManager.CameraHorizontalInput
+                * m_leftAndRightRotationSpeed
+                * Time.deltaTime;
+            m_upAndDownLookAngle -= m_playerInputManager.CameraVerticalInput
+                * m_upAndDownRotationSpeed
+                * Time.deltaTime;
+            m_upAndDownLookAngle = Mathf.Clamp(
+                m_upAndDownLookAngle,
+                m_minimumPivot,
+                m_maximumPivot);
+            transform.rotation = Quaternion.Euler(
+                0f,
+                m_leftAndRightLookAngle,
+                0f);
+            m_cameraPivotTransform.localRotation = Quaternion.Euler(
+                m_upAndDownLookAngle,
+                0f,
+                0f);
+        }
+
+        private void ResetAimRotations()
+        {
+            float playerYaw = m_player != null
+                ? m_player.transform.eulerAngles.y
+                : transform.eulerAngles.y;
+            m_leftAndRightLookAngle = playerYaw;
+            m_upAndDownLookAngle = 0f;
+            transform.rotation = Quaternion.Euler(0f, playerYaw, 0f);
+            if (m_cameraPivotTransform != null)
+            {
+                m_cameraPivotTransform.localRotation = Quaternion.identity;
+            }
+
+            if (m_cameraObject != null)
+            {
+                m_cameraObject.transform.localRotation = Quaternion.identity;
+            }
         }
 
         private void HandleRotations()
@@ -257,6 +377,9 @@ namespace ZZ
             {
                 s_instance = null;
             }
+
+            PlayerUIManager.Instance?.PlayerUIHUDManager
+                ?.SetCrosshairVisible(false);
         }
     }
 }

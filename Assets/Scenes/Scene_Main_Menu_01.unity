@@ -602,6 +602,11 @@ MonoBehaviour:
   m_upAndDownRotationSpeed: 220
   m_minimumPivot: -30
   m_maximumPivot: 60
+  m_lockOnRotationSpeed: 12
+  m_standardFieldOfView: 60
+  m_aimFieldOfView: 40
+  m_standardNearClipPlane: 0.3
+  m_aimNearClipPlane: 1.3
   m_cameraCollisionRadius: 0.2
   m_cameraCollisionSmoothSpeed: 10
   m_collideWithLayers:
@@ -6657,6 +6662,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ce46975f3a3c844478af9193aea3e541, type: 2}
   - {fileID: 11400000, guid: f48816d9e0c231a4a9179ec378a172a3, type: 2}
   - {fileID: 11400000, guid: 5bb894ee600f6144b90f860ceb0792d2, type: 2}
+  - {fileID: 11400000, guid: d41f3d6a05d05d742bc46d537524944f, type: 2}
+  - {fileID: 11400000, guid: c6c5c5b0c8fcdd44e90ca937128c8ac2, type: 2}
+  - {fileID: 11400000, guid: 5563b1aa61a1e314d85634cecad56211, type: 2}
 --- !u!1 &1645924063
 GameObject:
   m_ObjectHideFlags: 0

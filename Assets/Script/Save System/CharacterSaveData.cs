@@ -20,7 +20,8 @@ namespace ZZ
         private const int k_EquipmentDataVersion = 4;
         private const int k_WorldLootDataVersion = 5;
         private const int k_FocusPointsDataVersion = 6;
-        private const int k_CurrentDataVersion = 6;
+        private const int k_ProjectileDataVersion = 7;
+        private const int k_CurrentDataVersion = 7;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -37,6 +38,10 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
             k_DefaultCurrentFocusPoints;
         [SerializeField] private int m_currentSpellID = k_DefaultSpellID;
+        [SerializeField] private int m_mainProjectileID = 12;
+        [SerializeField] private int m_secondaryProjectileID = 13;
+        [SerializeField, Min(0)] private int m_mainProjectileAmount = 30;
+        [SerializeField, Min(0)] private int m_secondaryProjectileAmount = 30;
         [SerializeField] private int m_headEquipmentID = -1;
         [SerializeField] private int m_bodyEquipmentID = -1;
         [SerializeField] private int m_handEquipmentID = -1;
@@ -130,6 +135,30 @@ namespace ZZ
         {
             get => m_currentSpellID;
             set => m_currentSpellID = Mathf.Max(-1, value);
+        }
+
+        public int MainProjectileID
+        {
+            get => m_mainProjectileID;
+            set => m_mainProjectileID = Mathf.Max(-1, value);
+        }
+
+        public int SecondaryProjectileID
+        {
+            get => m_secondaryProjectileID;
+            set => m_secondaryProjectileID = Mathf.Max(-1, value);
+        }
+
+        public int MainProjectileAmount
+        {
+            get => m_mainProjectileAmount;
+            set => m_mainProjectileAmount = Mathf.Max(0, value);
+        }
+
+        public int SecondaryProjectileAmount
+        {
+            get => m_secondaryProjectileAmount;
+            set => m_secondaryProjectileAmount = Mathf.Max(0, value);
         }
 
         public int HeadEquipmentID
@@ -360,6 +389,14 @@ namespace ZZ
                 m_mind = k_DefaultAttributeLevel;
                 m_currentFocusPoints = k_DefaultCurrentFocusPoints;
                 m_currentSpellID = k_DefaultSpellID;
+            }
+
+            if (m_dataVersion < k_ProjectileDataVersion)
+            {
+                m_mainProjectileID = 12;
+                m_secondaryProjectileID = 13;
+                m_mainProjectileAmount = 30;
+                m_secondaryProjectileAmount = 30;
             }
 
             m_bosses ??= new List<BossSaveData>();

@@ -7,6 +7,7 @@ namespace ZZ
         Dagger,
         StraightSword,
         Spear,
-        Shield
+        Shield,
+        Bow
     }
 }

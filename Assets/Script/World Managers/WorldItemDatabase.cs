@@ -18,6 +18,7 @@ namespace ZZ
         [SerializeField] private List<LegEquipmentItem> m_legEquipment = new();
         [SerializeField] private List<AshOfWar> m_ashesOfWar = new();
         [SerializeField] private List<SpellItem> m_spells = new();
+        [SerializeField] private List<RangedProjectileItem> m_projectiles = new();
 
         [Header("World Pickups")]
         [SerializeField] private GameObject m_creatureDropPickupPrefab;
@@ -35,6 +36,9 @@ namespace ZZ
 
         /// <summary>Gets the authored spells registered in the global item catalog.</summary>
         public IReadOnlyList<SpellItem> Spells => m_spells;
+
+        /// <summary>Gets every ammunition template registered in the item catalog.</summary>
+        public IReadOnlyList<RangedProjectileItem> Projectiles => m_projectiles;
 
         /// <summary>Gets the server-spawned pickup presentation used by creature loot.</summary>
         public GameObject CreatureDropPickupPrefab => m_creatureDropPickupPrefab;
@@ -115,9 +119,16 @@ namespace ZZ
             return GetItemByID(itemID, m_spells);
         }
 
+        /// <summary>Returns the ammunition template assigned to a stable item identifier.</summary>
+        public RangedProjectileItem GetProjectileByID(int itemID)
+        {
+            return GetItemByID(itemID, m_projectiles);
+        }
+
         private void AssignItemIDs()
         {
             AppendMissingItems(m_spells);
+            AppendMissingItems(m_projectiles);
             for (int itemIndex = 0; itemIndex < m_items.Count; itemIndex++)
             {
                 m_items[itemIndex]?.AssignItemID(itemIndex);

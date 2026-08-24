@@ -24,6 +24,7 @@ namespace ZZ
 
         private float m_inAirTimer;
         private bool m_hasSetFallingVelocity;
+        private bool m_canRun = true;
 
         /// <summary>
         /// Gets the uninterrupted time in seconds since the ground probe lost contact.
@@ -34,7 +35,15 @@ namespace ZZ
         /// Gets the currently integrated vertical movement velocity.
         /// </summary>
         public float VerticalVelocity => m_verticalVelocity.y;
+        /// <summary>Gets whether the current action permits run-speed movement.</summary>
+        public bool CanRun => m_canRun;
         protected float GravityForce => m_gravityForce;
+
+        /// <summary>Restricts movement to walking without disabling directional control.</summary>
+        public void SetCanRun(bool canRun)
+        {
+            m_canRun = canRun;
+        }
 
         protected virtual void Awake()
         {
