@@ -57,16 +57,21 @@ namespace ZZ
                 return;
             }
 
+            PlayerUILoadingScreenManager loadingScreenManager =
+                PlayerUIManager.Instance?.PlayerUILoadingScreenManager;
+            loadingScreenManager?.ActivateLoadingScreen();
             SiteOfGraceInteractable siteOfGrace =
                 WorldObjectManager.Instance?.GetSiteOfGraceByID(siteOfGraceID);
             if (siteOfGrace == null ||
                 !siteOfGrace.IsActivated ||
                 !siteOfGrace.TeleportLocalPlayer())
             {
+                loadingScreenManager?.DeactivateLoadingScreen(0f);
                 return;
             }
 
             PlayerUIManager.Instance?.CloseAllMenuWindows();
+            loadingScreenManager?.DeactivateLoadingScreen();
         }
 
         /// <summary>Shows unlocked destinations and selects the first valid button.</summary>

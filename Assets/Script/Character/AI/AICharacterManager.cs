@@ -173,6 +173,65 @@ namespace ZZ
             }
         }
 
+        /// <inheritdoc />
+        public override void ReviveCharacter()
+        {
+            base.ReviveCharacter();
+            if (m_bodyCollider != null)
+            {
+                m_bodyCollider.enabled = true;
+            }
+
+            if (IsServer && m_navMeshAgent != null)
+            {
+                m_navMeshAgent.enabled = true;
+            }
+
+            m_stateMachine?.ChangeState(AICharacterStateId.Idle);
+        }
+
+        /// <summary>Restores one reusable server-owned AI at its authored origin.</summary>
+        public bool ResetAtSpawnPoint(
+            Vector3 spawnPosition,
+            Quaternion spawnRotation)
+        {
+            if (!IsSpawned ||
+                !IsServer ||
+                m_aiNetworkManager == null ||
+                !m_aiNetworkManager.IsOwner)
+            {
+                return false;
+            }
+
+            bool wasDead = IsDead;
+            CloseAttackDamageColliders();
+            ClearTarget();
+            m_nextDetectionTime = 0f;
+            m_nextAttackTime = 0f;
+            m_nextPivotTime = 0f;
+            m_aiNetworkManager.CurrentHealth.Value = Mathf.Max(
+                0f,
+                m_aiNetworkManager.MaxHealth.Value);
+            if (wasDead)
+            {
+                m_aiNetworkManager.IsDead.Value = false;
+                ReviveCharacter();
+            }
+            else
+            {
+                ResetActionFlags();
+            }
+
+            SetInvulnerable(false);
+            m_bossCharacter?.CompleteEncounter();
+            WarpToSpawnPoint(spawnPosition, spawnRotation);
+            m_stateMachine.ChangeState(AICharacterStateId.Idle);
+            m_aiNetworkManager.NetworkPosition.Value = transform.position;
+            m_aiNetworkManager.NetworkRotation.Value = transform.rotation;
+            CharacterUIManager?.ResetCharacterHPBar();
+            return true;
+        }
+
         /// <summary>Connects this server-spawned AI to its authored scene spawner.</summary>
         public void SetOriginSpawner(AICharacterSpawner originSpawner)
         {
@@ -493,6 +552,29 @@ namespace ZZ
             {
                 m_navMeshAgent.Warp(hit.position);
             }
+        }
+
+        private void WarpToSpawnPoint(
+            Vector3 spawnPosition,
+            Quaternion spawnRotation)
+        {
+            if (m_navMeshAgent != null && !m_navMeshAgent.enabled)
+            {
+                m_navMeshAgent.enabled = true;
+            }
+
+            if (CanUseNavMeshAgent())
+            {
+                m_navMeshAgent.Warp(spawnPosition);
+                m_navMeshAgent.isStopped = true;
+                m_navMeshAgent.ResetPath();
+            }
+            else
+            {
+                transform.position = spawnPosition;
+            }
+
+            transform.rotation = spawnRotation;
         }
 
         private bool CanUseNavMeshAgent()

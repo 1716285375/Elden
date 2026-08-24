@@ -24,6 +24,8 @@ namespace ZZ
             m_playerUISiteOfGraceManager;
         [SerializeField] private PlayerUITeleportLocationManager
             m_playerUITeleportLocationManager;
+        [SerializeField] private PlayerUILoadingScreenManager
+            m_playerUILoadingScreenManager;
         [SerializeField] private GameObject m_menuEventSystem;
 
         private bool m_isMenuWindowOpen;
@@ -64,6 +66,10 @@ namespace ZZ
         public PlayerUITeleportLocationManager PlayerUITeleportLocationManager =>
             m_playerUITeleportLocationManager;
 
+        /// <summary>Gets the persistent world-transition loading-screen controller.</summary>
+        public PlayerUILoadingScreenManager PlayerUILoadingScreenManager =>
+            m_playerUILoadingScreenManager;
+
         /// <summary>Gets whether any modal player menu currently owns UI input.</summary>
         public bool IsMenuWindowOpen => m_isMenuWindowOpen;
 
@@ -91,6 +97,8 @@ namespace ZZ
                     GetComponentInChildren<PlayerUISiteOfGraceManager>(true);
                 m_playerUITeleportLocationManager ??=
                     GetComponentInChildren<PlayerUITeleportLocationManager>(true);
+                m_playerUILoadingScreenManager ??=
+                    GetComponentInChildren<PlayerUILoadingScreenManager>(true);
             }
             else
             {

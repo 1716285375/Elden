@@ -131,6 +131,41 @@ namespace ZZ
             SetSpawnMarkerVisible(true);
         }
 
+        /// <summary>Restores the cached reusable AI to this authored spawn point.</summary>
+        public bool ResetCharacter()
+        {
+            NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager == null ||
+                !networkManager.IsListening ||
+                !networkManager.IsServer ||
+                m_instantiatedCharacter == null ||
+                !m_instantiatedCharacter.IsSpawned)
+            {
+                return false;
+            }
+
+            if (IsBoss &&
+                WorldSaveGameManager.Instance?.GetBossProgress(m_bossID) ==
+                    BossProgressState.Defeated)
+            {
+                return false;
+            }
+
+            Vector3 spawnPosition = transform.position;
+            if (NavMesh.SamplePosition(
+                    spawnPosition,
+                    out NavMeshHit hit,
+                    k_NavMeshSampleDistance,
+                    NavMesh.AllAreas))
+            {
+                spawnPosition = hit.position;
+            }
+
+            return m_instantiatedCharacter.ResetAtSpawnPoint(
+                spawnPosition,
+                transform.rotation);
+        }
+
         /// <summary>Persists the first transition into an active boss encounter.</summary>
         public void MarkBossAwakened()
         {
