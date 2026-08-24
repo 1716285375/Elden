@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Watcher Sweep
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
   m_attackType: 1
+  m_isParryable: 0
   m_minimumRange: 1.15
   m_maximumRange: 3.25
   m_selectionWeight: 2

@@ -16,6 +16,7 @@ namespace ZZ
         [SerializeField] private List<BodyEquipmentItem> m_bodyEquipment = new();
         [SerializeField] private List<HandEquipmentItem> m_handEquipment = new();
         [SerializeField] private List<LegEquipmentItem> m_legEquipment = new();
+        [SerializeField] private List<AshOfWar> m_ashesOfWar = new();
 
         /// <summary>Gets the persistent item catalog instance.</summary>
         public static WorldItemDatabase Instance => s_instance;
@@ -24,6 +25,9 @@ namespace ZZ
         /// Gets the authored item catalog in stable network identifier order.
         /// </summary>
         public IReadOnlyList<Item> Items => m_items;
+
+        /// <summary>Gets the authored Ashes of War registered in the item catalog.</summary>
+        public IReadOnlyList<AshOfWar> AshesOfWar => m_ashesOfWar;
 
         private void Awake()
         {
@@ -81,6 +85,12 @@ namespace ZZ
         public LegEquipmentItem GetLegEquipmentByID(int itemID)
         {
             return GetItemByID(itemID, m_legEquipment);
+        }
+
+        /// <summary>Returns the Ash of War assigned to a stable item identifier.</summary>
+        public AshOfWar GetAshOfWarByID(int itemID)
+        {
+            return GetItemByID(itemID, m_ashesOfWar);
         }
 
         private void AssignItemIDs()

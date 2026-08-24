@@ -50,6 +50,16 @@ namespace ZZ
             Animator.StringToHash("Action Override.Backstab_01");
         private static readonly int s_backstabbedState =
             Animator.StringToHash("Action Override.Backstabbed_01");
+        private static readonly int s_parryFastState =
+            Animator.StringToHash("Action Override.Parry_Fast_01");
+        private static readonly int s_parryMediumState =
+            Animator.StringToHash("Action Override.Parry_Medium_01");
+        private static readonly int s_parrySlowState =
+            Animator.StringToHash("Action Override.Parry_Slow_01");
+        private static readonly int s_parryLandState =
+            Animator.StringToHash("Action Override.Parry_Land_01");
+        private static readonly int s_parriedState =
+            Animator.StringToHash("Action Override.Parried_01");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -397,6 +407,36 @@ namespace ZZ
             m_characterManager?.CharacterCombatManager?.ApplyCriticalDamage();
         }
 
+        /// <summary>Animation Event: opens the owner's active Parry window.</summary>
+        public void EnableIsParrying()
+        {
+            m_characterManager?.CharacterCombatManager?.EnableIsParrying();
+        }
+
+        /// <summary>Animation Event: closes the owner's active Parry window.</summary>
+        public void DisableIsParrying()
+        {
+            m_characterManager?.CharacterCombatManager?.DisableIsParrying();
+        }
+
+        /// <summary>Animation Event: marks the owner's current attack as Parryable.</summary>
+        public void EnableIsParryable()
+        {
+            m_characterManager?.CharacterCombatManager?.EnableIsParryable();
+        }
+
+        /// <summary>Animation Event: closes the owner's Parryable attack window.</summary>
+        public void DisableIsParryable()
+        {
+            m_characterManager?.CharacterCombatManager?.DisableIsParryable();
+        }
+
+        /// <summary>Animation Event: opens the owner's finite Riposte window.</summary>
+        public void EnableIsRipostable()
+        {
+            m_characterManager?.CharacterCombatManager?.EnableIsRipostable();
+        }
+
         /// <summary>
         /// Updates the charge parameter and enters the authored charge pose when charging begins.
         /// </summary>
@@ -600,7 +640,12 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.Riposte ||
                 targetAnimation == CharacterActionAnimation.Riposted ||
                 targetAnimation == CharacterActionAnimation.Backstab ||
-                targetAnimation == CharacterActionAnimation.Backstabbed;
+                targetAnimation == CharacterActionAnimation.Backstabbed ||
+                targetAnimation == CharacterActionAnimation.ParryFast ||
+                targetAnimation == CharacterActionAnimation.ParryMedium ||
+                targetAnimation == CharacterActionAnimation.ParrySlow ||
+                targetAnimation == CharacterActionAnimation.ParryLand ||
+                targetAnimation == CharacterActionAnimation.Parried;
         }
 
         /// <summary>Returns whether an action is approved for zero-blend network playback.</summary>
@@ -611,7 +656,9 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.Riposte ||
                 targetAnimation == CharacterActionAnimation.Riposted ||
                 targetAnimation == CharacterActionAnimation.Backstab ||
-                targetAnimation == CharacterActionAnimation.Backstabbed;
+                targetAnimation == CharacterActionAnimation.Backstabbed ||
+                targetAnimation == CharacterActionAnimation.ParryLand ||
+                targetAnimation == CharacterActionAnimation.Parried;
         }
 
         private int GetAttackStateHash(AttackType attackType)
@@ -818,6 +865,21 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.Backstabbed:
                     actionStateHash = s_backstabbedState;
+                    return true;
+                case CharacterActionAnimation.ParryFast:
+                    actionStateHash = s_parryFastState;
+                    return true;
+                case CharacterActionAnimation.ParryMedium:
+                    actionStateHash = s_parryMediumState;
+                    return true;
+                case CharacterActionAnimation.ParrySlow:
+                    actionStateHash = s_parrySlowState;
+                    return true;
+                case CharacterActionAnimation.ParryLand:
+                    actionStateHash = s_parryLandState;
+                    return true;
+                case CharacterActionAnimation.Parried:
+                    actionStateHash = s_parriedState;
                     return true;
                 default:
                     actionStateHash = 0;

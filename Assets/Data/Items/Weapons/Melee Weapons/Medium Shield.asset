@@ -52,6 +52,7 @@ MonoBehaviour:
   m_twoHandRightAction: {fileID: 11400000, guid: ce46975f3a3c844478af9193aea3e541, type: 2}
   m_twoHandRightHeavyAction: {fileID: 11400000, guid: f48816d9e0c231a4a9179ec378a172a3, type: 2}
   m_leftHandAction: {fileID: 11400000, guid: 4d97d5a4924ec52488cc540afb61ae31, type: 2}
+  m_ashOfWarAction: {fileID: 11400000, guid: efd7f47b2b576de4ca5c5a18b9ba494a, type: 2}
   m_lightAttack01DamageModifier: 1
   m_heavyAttack01DamageModifier: 1
   m_chargedAttack01DamageModifier: 1.75

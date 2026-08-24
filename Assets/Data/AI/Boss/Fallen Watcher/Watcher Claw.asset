@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Watcher Claw
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
   m_attackType: 0
+  m_isParryable: 1
   m_minimumRange: 0.6
   m_maximumRange: 2.35
   m_selectionWeight: 3

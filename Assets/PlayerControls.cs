@@ -210,6 +210,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LT"",
+                    ""type"": ""Button"",
+                    ""id"": ""634f5a17-8bbb-4bf7-9de8-5eb36426f39b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -641,6 +650,28 @@ namespace ZZ
                     ""action"": ""Two Hand Left Weapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c39c91f9-5bad-41d7-ab6b-b83e0b63673d"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""LT"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65b918be-8854-4a96-a1da-44ccf6d034ff"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""LT"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -881,6 +912,7 @@ namespace ZZ
             m_PlayerMovement_TwoHandWeapon = m_PlayerMovement.FindAction("Two Hand Weapon", throwIfNotFound: true);
             m_PlayerMovement_TwoHandRightWeapon = m_PlayerMovement.FindAction("Two Hand Right Weapon", throwIfNotFound: true);
             m_PlayerMovement_TwoHandLeftWeapon = m_PlayerMovement.FindAction("Two Hand Left Weapon", throwIfNotFound: true);
+            m_PlayerMovement_LT = m_PlayerMovement.FindAction("LT", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -986,6 +1018,7 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_TwoHandWeapon;
         private readonly InputAction m_PlayerMovement_TwoHandRightWeapon;
         private readonly InputAction m_PlayerMovement_TwoHandLeftWeapon;
+        private readonly InputAction m_PlayerMovement_LT;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -1049,6 +1082,10 @@ namespace ZZ
             /// Provides access to the underlying input action "PlayerMovement/TwoHandLeftWeapon".
             /// </summary>
             public InputAction @TwoHandLeftWeapon => m_Wrapper.m_PlayerMovement_TwoHandLeftWeapon;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/LT".
+            /// </summary>
+            public InputAction @LT => m_Wrapper.m_PlayerMovement_LT;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1114,6 +1151,9 @@ namespace ZZ
                 @TwoHandLeftWeapon.started += instance.OnTwoHandLeftWeapon;
                 @TwoHandLeftWeapon.performed += instance.OnTwoHandLeftWeapon;
                 @TwoHandLeftWeapon.canceled += instance.OnTwoHandLeftWeapon;
+                @LT.started += instance.OnLT;
+                @LT.performed += instance.OnLT;
+                @LT.canceled += instance.OnLT;
             }
 
             /// <summary>
@@ -1164,6 +1204,9 @@ namespace ZZ
                 @TwoHandLeftWeapon.started -= instance.OnTwoHandLeftWeapon;
                 @TwoHandLeftWeapon.performed -= instance.OnTwoHandLeftWeapon;
                 @TwoHandLeftWeapon.canceled -= instance.OnTwoHandLeftWeapon;
+                @LT.started -= instance.OnLT;
+                @LT.performed -= instance.OnLT;
+                @LT.canceled -= instance.OnLT;
             }
 
             /// <summary>
@@ -1557,6 +1600,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnTwoHandLeftWeapon(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "LT" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnLT(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

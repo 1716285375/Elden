@@ -9,6 +9,24 @@ namespace ZZ
     {
         private AICharacterCombatManager m_combatManager;
 
+        /// <inheritdoc />
+        protected override bool CheckForParry(CharacterManager damageTarget)
+        {
+            if (!CanParryDamageTarget(damageTarget))
+            {
+                return false;
+            }
+
+            m_combatManager ??= GetComponentInParent<AICharacterCombatManager>();
+            if (m_combatManager != null &&
+                !m_combatManager.TryRegisterDamageTarget(damageTarget))
+            {
+                return true;
+            }
+
+            return ProcessSuccessfulParry(damageTarget);
+        }
+
         protected override void Damage(
             CharacterManager target,
             Vector3 contactPoint,

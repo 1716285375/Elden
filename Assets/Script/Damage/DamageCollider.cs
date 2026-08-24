@@ -53,6 +53,19 @@ namespace ZZ
                 return;
             }
 
+            if (!WorldUtilityManager.CanDamageCharacter(
+                    m_characterCausingDamage,
+                    target) ||
+                target.IsInvulnerable)
+            {
+                return;
+            }
+
+            if (CheckForParry(target))
+            {
+                return;
+            }
+
             Vector3 contactPoint = other.ClosestPointOnBounds(transform.position);
             bool wasBlocked = CheckForBlock(target);
             if (!wasBlocked)
@@ -61,6 +74,56 @@ namespace ZZ
             }
 
             Damage(target, contactPoint, wasBlocked);
+        }
+
+        /// <summary>
+        /// Resolves Parry before Block and Damage for this collider type.
+        /// Custom collider types override this method so shared hit registries can participate.
+        /// </summary>
+        protected virtual bool CheckForParry(CharacterManager damageTarget)
+        {
+            return CanParryDamageTarget(damageTarget) &&
+                ProcessSuccessfulParry(damageTarget);
+        }
+
+        /// <summary>Returns whether both replicated Parry flags form a valid pair.</summary>
+        protected bool CanParryDamageTarget(CharacterManager damageTarget)
+        {
+            CharacterNetworkManager attackerNetworkManager =
+                m_characterCausingDamage?.CharacterNetworkManager;
+            CharacterNetworkManager targetNetworkManager =
+                damageTarget?.CharacterNetworkManager;
+            return damageTarget != null &&
+                !m_charactersDamaged.Contains(damageTarget) &&
+                attackerNetworkManager?.IsParryable.Value == true &&
+                targetNetworkManager?.IsParrying.Value == true;
+        }
+
+        /// <summary>Consumes this hit and dispatches the validated Parry request.</summary>
+        protected bool ProcessSuccessfulParry(CharacterManager damageTarget)
+        {
+            if (damageTarget == null ||
+                m_charactersDamaged.Contains(damageTarget))
+            {
+                return false;
+            }
+
+            m_charactersDamaged.Add(damageTarget);
+            CharacterNetworkManager targetNetworkManager =
+                damageTarget.CharacterNetworkManager;
+            if (m_characterCausingDamage != null &&
+                m_characterCausingDamage.IsSpawned &&
+                damageTarget.IsSpawned &&
+                targetNetworkManager != null)
+            {
+                targetNetworkManager.RequestParry(
+                    m_characterCausingDamage.NetworkObjectId);
+                return true;
+            }
+
+            m_characterCausingDamage?.CharacterCombatManager
+                ?.ProcessParryFromServer(damageTarget);
+            return true;
         }
 
         /// <summary>

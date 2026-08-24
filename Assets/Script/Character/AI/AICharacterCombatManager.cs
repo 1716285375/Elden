@@ -16,6 +16,7 @@ namespace ZZ
         [Header("Attack Damage")]
         [SerializeField, Min(0f)] private float m_physicalDamage = 25f;
         [SerializeField, Min(0f)] private float m_poiseDamage = 15f;
+        [SerializeField] private bool m_defaultAttackIsParryable = true;
 
         [Header("Stance")]
         [SerializeField, Min(1)] private int m_maximumStance = 80;
@@ -103,6 +104,8 @@ namespace ZZ
             AttackType attackType = bossAttack != null
                 ? bossAttack.AttackType
                 : AttackType.LightAttack01;
+            m_aiCharacter.CharacterNetworkManager?.SetParryableState(
+                bossAttack?.IsParryable ?? m_defaultAttackIsParryable);
             ReplicateAttack(attackType);
             m_aiCharacter.CharacterNetworkManager
                 ?.NotifyServerOfAttackActionServerRpc(attackType);
@@ -145,6 +148,12 @@ namespace ZZ
         {
             m_leftHandDamageCollider?.CloseDamageCollider();
             m_rightHandDamageCollider?.CloseDamageCollider();
+        }
+
+        /// <inheritdoc />
+        public override void CloseAllDamageColliders()
+        {
+            CloseDamageColliders();
         }
 
         internal bool TryRegisterDamageTarget(CharacterManager target)
