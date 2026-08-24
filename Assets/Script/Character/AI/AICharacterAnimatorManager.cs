@@ -102,6 +102,19 @@ namespace ZZ
             m_aiCharacter?.SetCanRotate(false);
         }
 
+        /// <summary>Animation Event: opens the owning AI's finite Riposte window.</summary>
+        public void EnableIsRipostable()
+        {
+            m_combatManager?.EnableIsRipostable();
+        }
+
+        /// <summary>Animation Event: plays the replicated Stance Break impact.</summary>
+        public void PlayStanceBrokenSoundEffect()
+        {
+            m_aiCharacter?.CharacterSoundFXManager
+                ?.PlayStanceBrokenSoundEffect();
+        }
+
         /// <summary>Receives the shared combo event; AI attacks do not queue combos.</summary>
         public void EnableCanDoCombo()
         {

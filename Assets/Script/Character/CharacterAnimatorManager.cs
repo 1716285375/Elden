@@ -40,6 +40,8 @@ namespace ZZ
             Animator.StringToHash("Action Override.Rest At Site Of Grace");
         private static readonly int s_guardBreakState =
             Animator.StringToHash("Action Override.Guard_Break_01");
+        private static readonly int s_stanceBreakState =
+            Animator.StringToHash("Action Override.Stance_Break_01");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -340,6 +342,42 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Applies an action state and immediately enters its animation without a blend.
+        /// </summary>
+        public void PlayTargetActionAnimationInstantly(
+            CharacterActionAnimation targetAnimation,
+            bool isPerformingAction,
+            bool shouldApplyRootMotion = false,
+            bool canRotate = false,
+            bool canMove = false)
+        {
+            if (m_animator == null || m_characterManager == null)
+            {
+                return;
+            }
+
+            int actionLayerIndex = m_animator.GetLayerIndex(
+                k_ActionOverrideLayerName);
+            if (actionLayerIndex < 0 ||
+                !TryGetActionStateHash(targetAnimation, out int actionStateHash) ||
+                !m_animator.HasState(actionLayerIndex, actionStateHash))
+            {
+                Debug.LogError(
+                    $"Animator {m_animator.name} does not contain instant action " +
+                    $"{targetAnimation}.",
+                    m_animator);
+                return;
+            }
+
+            m_characterManager.SetActionState(
+                isPerformingAction,
+                shouldApplyRootMotion,
+                canRotate,
+                canMove);
+            m_animator.Play(actionStateHash, actionLayerIndex, 0f);
+        }
+
+        /// <summary>
         /// Updates the charge parameter and enters the authored charge pose when charging begins.
         /// </summary>
         public void SetChargingAttackState(bool isChargingAttack)
@@ -537,7 +575,15 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.Death ||
                 targetAnimation == CharacterActionAnimation.PassThroughFog ||
                 targetAnimation == CharacterActionAnimation.RestAtSiteOfGrace ||
-                targetAnimation == CharacterActionAnimation.GuardBreak;
+                targetAnimation == CharacterActionAnimation.GuardBreak ||
+                targetAnimation == CharacterActionAnimation.StanceBreak;
+        }
+
+        /// <summary>Returns whether an action is approved for zero-blend network playback.</summary>
+        internal static bool IsSupportedInstantActionAnimation(
+            CharacterActionAnimation targetAnimation)
+        {
+            return targetAnimation == CharacterActionAnimation.StanceBreak;
         }
 
         private int GetAttackStateHash(AttackType attackType)
@@ -729,6 +775,9 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.GuardBreak:
                     actionStateHash = s_guardBreakState;
+                    return true;
+                case CharacterActionAnimation.StanceBreak:
+                    actionStateHash = s_stanceBreakState;
                     return true;
                 default:
                     actionStateHash = 0;

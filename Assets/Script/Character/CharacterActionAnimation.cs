@@ -10,6 +10,7 @@ namespace ZZ
         Death = 2,
         PassThroughFog = 3,
         RestAtSiteOfGrace = 4,
-        GuardBreak = 5
+        GuardBreak = 5,
+        StanceBreak = 6
     }
 }

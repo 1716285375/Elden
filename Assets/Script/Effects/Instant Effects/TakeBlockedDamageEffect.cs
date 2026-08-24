@@ -8,11 +8,6 @@ namespace ZZ
         menuName = "ZZ/Character Effects/Instant/Take Blocked Damage")]
     public class TakeBlockedDamageEffect : TakeDamageEffect
     {
-        private const float k_LightPoiseThreshold = 10f;
-        private const float k_MediumPoiseThreshold = 30f;
-        private const float k_HeavyPoiseThreshold = 70f;
-        private const float k_ColossalPoiseThreshold = 120f;
-
         [SerializeField] private AudioClip[] m_blockSounds =
             System.Array.Empty<AudioClip>();
 
@@ -70,7 +65,8 @@ namespace ZZ
                     runtimeEffect.BlockingStability);
             runtimeEffect.WasBlocked = true;
             runtimeEffect.DamageIntensity =
-                GetDamageIntensityBasedOnPoiseDamage(runtimeEffect.PoiseDamage);
+                WorldUtilityManager.GetDamageIntensityBasedOnPoiseDamage(
+                    runtimeEffect.PoiseDamage);
             return runtimeEffect;
         }
 
@@ -94,24 +90,8 @@ namespace ZZ
         public static DamageIntensity GetDamageIntensityBasedOnPoiseDamage(
             float poiseDamage)
         {
-            if (poiseDamage >= k_ColossalPoiseThreshold)
-            {
-                return DamageIntensity.Colossal;
-            }
-
-            if (poiseDamage >= k_HeavyPoiseThreshold)
-            {
-                return DamageIntensity.Heavy;
-            }
-
-            if (poiseDamage >= k_MediumPoiseThreshold)
-            {
-                return DamageIntensity.Medium;
-            }
-
-            return poiseDamage >= k_LightPoiseThreshold
-                ? DamageIntensity.Light
-                : DamageIntensity.Ping;
+            return WorldUtilityManager.GetDamageIntensityBasedOnPoiseDamage(
+                poiseDamage);
         }
 
         /// <inheritdoc />
@@ -129,7 +109,9 @@ namespace ZZ
             }
 
             WasBlocked = true;
-            DamageIntensity = GetDamageIntensityBasedOnPoiseDamage(PoiseDamage);
+            DamageIntensity =
+                WorldUtilityManager.GetDamageIntensityBasedOnPoiseDamage(
+                    PoiseDamage);
             character.CharacterSoundFXManager?.PlayBlockingSoundEffect();
             ApplyHealthDamage(character, CalculateBlockedDamage());
             character.CharacterStatsManager?.ApplyBlockingStaminaDamage(

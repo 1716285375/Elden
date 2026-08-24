@@ -17,17 +17,68 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_physicalDamage = 25f;
         [SerializeField, Min(0f)] private float m_poiseDamage = 15f;
 
+        [Header("Stance")]
+        [SerializeField, Min(1)] private int m_maximumStance = 80;
+        [SerializeField] private bool m_ignoreStanceBreak;
+        [SerializeField, Min(0)] private int m_stanceRegeneratedPerSecond = 15;
+        [SerializeField, Min(0f)] private float
+            m_defaultTimeUntilStanceRegenerationBegins = 3f;
+
         private readonly HashSet<CharacterManager> m_charactersDamaged = new();
 
         private AICharacterManager m_aiCharacter;
         private BossAttackData m_currentBossAttack;
+        private int m_currentStance;
+        private float m_stanceRegenerationTimer;
+        private float m_stanceTickTimer;
+
+        public int MaximumStance => m_maximumStance;
+        public int CurrentStance => m_currentStance;
+        public float StanceRegenerationTimer => m_stanceRegenerationTimer;
+        public bool IgnoreStanceBreak => m_ignoreStanceBreak;
 
         protected override void Awake()
         {
             base.Awake();
             m_aiCharacter = GetComponent<AICharacterManager>();
+            m_currentStance = Mathf.Max(1, m_maximumStance);
             ConfigureDamageColliders();
             CloseDamageColliders();
+        }
+
+        private void FixedUpdate()
+        {
+            if (m_aiCharacter == null ||
+                !m_aiCharacter.IsOwner ||
+                m_aiCharacter.IsDead)
+            {
+                return;
+            }
+
+            HandleStanceBreak();
+            RegenerateStance(Time.fixedDeltaTime);
+        }
+
+        /// <summary>Applies owner-authoritative Stance damage and resets its recovery delay.</summary>
+        public void DamageStance(int stanceDamage)
+        {
+            if (m_aiCharacter == null ||
+                !m_aiCharacter.IsOwner ||
+                stanceDamage <= 0)
+            {
+                return;
+            }
+
+            m_stanceRegenerationTimer =
+                m_defaultTimeUntilStanceRegenerationBegins;
+            m_stanceTickTimer = 0f;
+            m_currentStance -= stanceDamage;
+        }
+
+        /// <summary>Allows authored transitions to consume a break without playing it.</summary>
+        public void SetIgnoreStanceBreak(bool shouldIgnoreStanceBreak)
+        {
+            m_ignoreStanceBreak = shouldIgnoreStanceBreak;
         }
 
         /// <summary>Starts the predicted server attack and replicates it to clients.</summary>
@@ -104,6 +155,78 @@ namespace ZZ
                 target != m_aiCharacter &&
                 !target.IsDead &&
                 m_charactersDamaged.Add(target);
+        }
+
+        private void HandleStanceBreak()
+        {
+            if (m_currentStance > 0)
+            {
+                return;
+            }
+
+            CharacterNetworkManager networkManager =
+                m_aiCharacter.CharacterNetworkManager;
+            DamageIntensity previousDamageIntensity =
+                WorldUtilityManager.GetDamageIntensityBasedOnPoiseDamage(
+                    PreviousPoiseDamageTaken);
+            if (previousDamageIntensity == DamageIntensity.Colossal ||
+                networkManager?.IsBeingCriticallyDamaged.Value == true)
+            {
+                m_currentStance = 1;
+                return;
+            }
+
+            m_currentStance = Mathf.Max(1, m_maximumStance);
+            m_stanceRegenerationTimer = 0f;
+            m_stanceTickTimer = 0f;
+            if (m_ignoreStanceBreak)
+            {
+                return;
+            }
+
+            m_aiCharacter.CloseAttackDamageColliders();
+            m_aiCharacter.StopMoving();
+            m_aiCharacter.CharacterAnimatorManager
+                ?.PlayTargetActionAnimationInstantly(
+                    CharacterActionAnimation.StanceBreak,
+                    true);
+            if (m_aiCharacter.IsSpawned)
+            {
+                networkManager?.NotifyServerOfInstantActionAnimationServerRpc(
+                    CharacterActionAnimation.StanceBreak,
+                    true,
+                    false,
+                    false,
+                    false);
+            }
+        }
+
+        private void RegenerateStance(float deltaTime)
+        {
+            if (m_currentStance >= m_maximumStance)
+            {
+                m_currentStance = m_maximumStance;
+                m_stanceRegenerationTimer = 0f;
+                m_stanceTickTimer = 0f;
+                return;
+            }
+
+            if (m_stanceRegenerationTimer > 0f)
+            {
+                m_stanceRegenerationTimer = Mathf.Max(
+                    0f,
+                    m_stanceRegenerationTimer - deltaTime);
+                return;
+            }
+
+            m_stanceTickTimer += deltaTime;
+            while (m_stanceTickTimer >= 1f)
+            {
+                m_stanceTickTimer -= 1f;
+                m_currentStance = Mathf.Min(
+                    m_maximumStance,
+                    m_currentStance + m_stanceRegeneratedPerSecond);
+            }
         }
 
         private void ConfigureDamageColliders()
