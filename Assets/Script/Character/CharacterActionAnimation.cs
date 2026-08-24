@@ -11,6 +11,8 @@ namespace ZZ
         PassThroughFog = 3,
         RestAtSiteOfGrace = 4,
         GuardBreak = 5,
-        StanceBreak = 6
+        StanceBreak = 6,
+        Riposte = 7,
+        Riposted = 8
     }
 }

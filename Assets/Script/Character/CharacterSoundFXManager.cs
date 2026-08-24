@@ -88,5 +88,16 @@ namespace ZZ
                 m_audioSource.PlayOneShot(stanceBreakSound);
             }
         }
+
+        /// <summary>Plays the shared Critical Strike impact at the victim.</summary>
+        public virtual void PlayCriticalStrikeSoundEffect()
+        {
+            AudioClip criticalStrikeSound =
+                WorldSoundFXManager.Instance?.CriticalStrikeSoundEffect;
+            if (m_audioSource != null && criticalStrikeSound != null)
+            {
+                m_audioSource.PlayOneShot(criticalStrikeSound);
+            }
+        }
     }
 }

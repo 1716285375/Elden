@@ -14,6 +14,26 @@ namespace ZZ
 
         public static WorldUtilityManager Instance => s_instance;
 
+        private void Awake()
+        {
+            if (s_instance != null && s_instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            s_instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            if (s_instance == this)
+            {
+                s_instance = null;
+            }
+        }
+
         /// <summary>Classifies a hit using the shared EP55 poise-damage thresholds.</summary>
         public static DamageIntensity GetDamageIntensityBasedOnPoiseDamage(
             float poiseDamage)
@@ -38,23 +58,40 @@ namespace ZZ
                 : DamageIntensity.Ping;
         }
 
-        private void Awake()
+        /// <summary>Returns whether two character archetypes are hostile damage peers.</summary>
+        public static bool CanDamageCharacter(
+            CharacterManager attacker,
+            CharacterManager target)
         {
-            if (s_instance != null && s_instance != this)
+            if (attacker == null ||
+                target == null ||
+                attacker == target ||
+                target.IsDead)
             {
-                Destroy(gameObject);
-                return;
+                return false;
             }
 
-            s_instance = this;
-            DontDestroyOnLoad(gameObject);
+            bool samePlayerFaction = attacker is PlayerManager &&
+                target is PlayerManager;
+            bool sameAIFaction = attacker is AICharacterManager &&
+                target is AICharacterManager;
+            return !samePlayerFaction && !sameAIFaction;
         }
 
-        private void OnDestroy()
+        /// <summary>Returns the target-local Riposte receiver offset for a weapon class.</summary>
+        public static Vector3 GetRipostingPositionBasedOnWeaponClass(
+            WeaponClass weaponClass)
         {
-            if (s_instance == this)
+            switch (weaponClass)
             {
-                s_instance = null;
+                case WeaponClass.Dagger:
+                    return new Vector3(0.08f, 0f, 0.58f);
+                case WeaponClass.Spear:
+                    return new Vector3(0.1f, 0f, 0.9f);
+                case WeaponClass.Unarmed:
+                    return new Vector3(0f, 0f, 0.65f);
+                default:
+                    return new Vector3(0.1f, 0f, 0.7f);
             }
         }
     }

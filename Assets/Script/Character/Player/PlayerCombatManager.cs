@@ -310,6 +310,60 @@ namespace ZZ
             PlayerInputManager.Instance?.ClearAttackInputQueue();
         }
 
+        /// <inheritdoc />
+        public override bool AttemptRiposte(CharacterManager targetCharacter)
+        {
+            CharacterNetworkManager targetNetworkManager =
+                targetCharacter?.CharacterNetworkManager;
+            MeleeWeaponItem riposteWeapon =
+                m_player?.InventoryManager?.CurrentRightHandWeapon as
+                    MeleeWeaponItem;
+            WeaponManager weaponManager =
+                m_player?.EquipmentManager?.CurrentRightHandWeaponManager;
+            if (targetCharacter == null ||
+                targetNetworkManager == null ||
+                !targetNetworkManager.IsRipostable.Value ||
+                targetNetworkManager.IsBeingCriticallyDamaged.Value ||
+                riposteWeapon == null ||
+                weaponManager?.MeleeDamageCollider == null)
+            {
+                return false;
+            }
+
+            float damageModifier = riposteWeapon.RiposteAttack01Modifier;
+            CharacterNetworkManager attackerNetworkManager =
+                m_player.CharacterNetworkManager;
+            if (attackerNetworkManager == null ||
+                !attackerNetworkManager.IsSpawned ||
+                !targetNetworkManager.IsSpawned)
+            {
+                ProcessRiposteFromServer(
+                    targetCharacter,
+                    riposteWeapon,
+                    CharacterActionAnimation.Riposted,
+                    riposteWeapon.PhysicalDamage * damageModifier,
+                    riposteWeapon.MagicDamage * damageModifier,
+                    riposteWeapon.FireDamage * damageModifier,
+                    riposteWeapon.LightningDamage * damageModifier,
+                    riposteWeapon.HolyDamage * damageModifier,
+                    0f);
+                return true;
+            }
+
+            attackerNetworkManager.NotifyServerOfRiposteServerRpc(
+                targetCharacter.NetworkObjectId,
+                m_player.NetworkObjectId,
+                riposteWeapon.ItemID,
+                CharacterActionAnimation.Riposted,
+                riposteWeapon.PhysicalDamage * damageModifier,
+                riposteWeapon.MagicDamage * damageModifier,
+                riposteWeapon.FireDamage * damageModifier,
+                riposteWeapon.LightningDamage * damageModifier,
+                riposteWeapon.HolyDamage * damageModifier,
+                0f);
+            return true;
+        }
+
         /// <summary>
         /// Consumes the stamina cost of the current attack on the locally owned player.
         /// Called from an attack animation event.

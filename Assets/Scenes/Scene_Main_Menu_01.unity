@@ -1201,6 +1201,7 @@ MonoBehaviour:
   m_rollingSoundFX: {fileID: 8300000, guid: 439af5d91c2670549bcdc9f9dedab078, type: 3}
   m_pickupItemSoundEffect: {fileID: 8300000, guid: 1bc34465e56b93d48bc40170994aa90c, type: 3}
   m_stanceBreakSoundEffect: {fileID: 8300000, guid: 59eaa40d0c1b485479e9164169b894db, type: 3}
+  m_criticalStrikeSoundEffect: {fileID: 8300000, guid: 6536407953006ab44a509be53fe23ace, type: 3}
 --- !u!4 &355002551
 Transform:
   m_ObjectHideFlags: 0
@@ -2332,7 +2333,9 @@ MonoBehaviour:
   m_instantEffects:
   - {fileID: 11400000, guid: 100de519bbeb046448631ab0efda3ce9, type: 2}
   - {fileID: 11400000, guid: 799788b7a8c4c6a42a0537d4a4bfc846, type: 2}
+  - {fileID: 11400000, guid: 82a80cceb897d9f4da6202ff1cde4ff4, type: 2}
   m_takeDamageEffect: {fileID: 11400000, guid: 799788b7a8c4c6a42a0537d4a4bfc846, type: 2}
+  m_takeCriticalDamageEffect: {fileID: 11400000, guid: 82a80cceb897d9f4da6202ff1cde4ff4, type: 2}
 --- !u!4 &499560864
 Transform:
   m_ObjectHideFlags: 0

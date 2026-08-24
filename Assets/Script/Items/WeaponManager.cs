@@ -14,6 +14,10 @@ namespace ZZ
         /// <summary>Gets the per-character runtime weapon item driving this model.</summary>
         public WeaponItem Weapon { get; private set; }
 
+        /// <summary>Gets the melee hitbox supplied by the equipped runtime model.</summary>
+        public MeleeWeaponDamageCollider MeleeDamageCollider =>
+            m_meleeDamageCollider;
+
         private void Awake()
         {
             m_meleeDamageCollider ??=

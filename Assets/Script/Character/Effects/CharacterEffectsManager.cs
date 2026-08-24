@@ -8,6 +8,7 @@ namespace ZZ
     {
         [Header("Visual Effects")]
         [SerializeField] private GameObject m_bloodSplatterVFX;
+        [SerializeField] private GameObject m_criticalBloodSplatterVFX;
 
         [SerializeField] private CharacterManager m_character;
 
@@ -31,15 +32,18 @@ namespace ZZ
         /// </summary>
         public void PlayBloodSplatterVFX(Vector3 contactPoint, Vector3 hitDirection)
         {
-            if (m_bloodSplatterVFX == null)
-            {
-                return;
-            }
+            SpawnBloodSplatter(m_bloodSplatterVFX, contactPoint, hitDirection, 1f);
+        }
 
-            Quaternion rotation = hitDirection.sqrMagnitude > 0.0001f
-                ? Quaternion.LookRotation(hitDirection)
-                : Quaternion.identity;
-            Instantiate(m_bloodSplatterVFX, contactPoint, rotation);
+        /// <summary>Spawns an emphasized blood burst at a critical hit frame.</summary>
+        public void PlayCriticalBloodSplatterVFX(
+            Vector3 contactPoint,
+            Vector3 hitDirection)
+        {
+            GameObject criticalVFX = m_criticalBloodSplatterVFX != null
+                ? m_criticalBloodSplatterVFX
+                : m_bloodSplatterVFX;
+            SpawnBloodSplatter(criticalVFX, contactPoint, hitDirection, 1.5f);
         }
 
         /// <summary>
@@ -178,6 +182,24 @@ namespace ZZ
             {
                 DestroyImmediate(runtimeEffect);
             }
+        }
+
+        private static void SpawnBloodSplatter(
+            GameObject bloodVFX,
+            Vector3 contactPoint,
+            Vector3 hitDirection,
+            float scaleMultiplier)
+        {
+            if (bloodVFX == null)
+            {
+                return;
+            }
+
+            Quaternion rotation = hitDirection.sqrMagnitude > 0.0001f
+                ? Quaternion.LookRotation(hitDirection)
+                : Quaternion.identity;
+            GameObject instance = Instantiate(bloodVFX, contactPoint, rotation);
+            instance.transform.localScale *= Mathf.Max(0f, scaleMultiplier);
         }
     }
 }
