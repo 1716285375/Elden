@@ -356,6 +356,9 @@ namespace ZZ
                 return;
             }
 
+            m_player.InventoryManager?.NotifyProjectileAmountChanged(
+                projectileSlot);
+
             Vector3 releaseDirection = ResolveProjectileReleaseDirection();
             float characterYRotation = m_player.transform.eulerAngles.y;
             SpawnProjectile(projectile, releaseDirection, true);

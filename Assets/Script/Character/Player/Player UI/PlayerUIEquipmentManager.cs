@@ -1,4 +1,5 @@
 using Unity.Netcode;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,7 @@ namespace ZZ
     /// </summary>
     public class PlayerUIEquipmentManager : MonoBehaviour
     {
-        private const int k_EquipmentSlotCount = 10;
+        private const int k_EquipmentSlotCount = 12;
 
         [Header("WINDOWS")]
         [SerializeField] private GameObject m_equipmentMenu;
@@ -20,6 +21,8 @@ namespace ZZ
             new Image[k_EquipmentSlotCount];
         [SerializeField] private Button[] m_equipmentSlotButtons =
             new Button[k_EquipmentSlotCount];
+        [SerializeField] private TMP_Text[] m_equipmentSlotQuantityTexts =
+            new TMP_Text[k_EquipmentSlotCount];
 
         [Header("EQUIPMENT INVENTORY")]
         [SerializeField] private RectTransform m_equipmentInventoryContent;
@@ -79,7 +82,7 @@ namespace ZZ
             LoadEquipmentInventory();
         }
 
-        /// <summary>Refreshes all six weapon and four armor slot icons.</summary>
+        /// <summary>Refreshes all weapon, armor, and ammunition slot icons.</summary>
         public void RefreshEquipmentSlotIcons()
         {
             PlayerInventoryManager inventory = ResolveLocalInventory();
@@ -97,7 +100,34 @@ namespace ZZ
                     (!(equippedItem is WeaponItem weapon) || !weapon.IsUnarmed);
                 slotIcon.sprite = shouldShowIcon ? equippedItem.ItemIcon : null;
                 slotIcon.enabled = shouldShowIcon;
+                TMP_Text quantityText = GetArrayValue(
+                    m_equipmentSlotQuantityTexts,
+                    slotIndex);
+                if (quantityText == null)
+                {
+                    continue;
+                }
+
+                RangedProjectileItem projectile = equippedItem as
+                    RangedProjectileItem;
+                bool shouldShowQuantity = shouldShowIcon && projectile != null;
+                quantityText.text = shouldShowQuantity
+                    ? projectile.CurrentAmmoAmount.ToString()
+                    : string.Empty;
+                quantityText.gameObject.SetActive(shouldShowQuantity);
             }
+        }
+
+        /// <summary>Opens the inventory filtered for the primary ammunition slot.</summary>
+        public void LoadMainProjectileEquipment()
+        {
+            SelectEquipmentSlot((int)EquipmentSlotType.MainProjectile);
+        }
+
+        /// <summary>Opens the inventory filtered for the secondary ammunition slot.</summary>
+        public void LoadSecondaryProjectileEquipment()
+        {
+            SelectEquipmentSlot((int)EquipmentSlotType.SecondaryProjectile);
         }
 
         /// <summary>Generates only the inventory items compatible with the selected slot.</summary>
@@ -226,6 +256,9 @@ namespace ZZ
                 EquipmentSlotType.Body => item is BodyEquipmentItem,
                 EquipmentSlotType.Leg => item is LegEquipmentItem,
                 EquipmentSlotType.Hand => item is HandEquipmentItem,
+                EquipmentSlotType.MainProjectile or
+                    EquipmentSlotType.SecondaryProjectile =>
+                        item is RangedProjectileItem,
                 _ => false
             };
         }
