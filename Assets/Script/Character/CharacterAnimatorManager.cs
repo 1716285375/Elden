@@ -104,6 +104,10 @@ namespace ZZ
             Animator.StringToHash("Action Override.MainCore_RollAttack01");
         private static readonly int s_backStepAttack01State =
             Animator.StringToHash("Action Override.MainCore_BackStepAttack01");
+        private static readonly int s_lightJumpingAttack01State =
+            Animator.StringToHash("Action Override.MainJumpLightAttack");
+        private static readonly int s_heavyJumpingAttack01State =
+            Animator.StringToHash("Action Override.MainJumpHeavyStart");
         private static readonly int s_twoHandLightAttack01State =
             Animator.StringToHash("Action Override.TwoHand_Attack_Light_01");
         private static readonly int s_twoHandLightAttack02State =
@@ -124,6 +128,10 @@ namespace ZZ
             Animator.StringToHash("Action Override.TwoHand_RollAttack01");
         private static readonly int s_twoHandBackStepAttack01State =
             Animator.StringToHash("Action Override.TwoHand_BackStepAttack01");
+        private static readonly int s_twoHandLightJumpingAttack01State =
+            Animator.StringToHash("Action Override.TwoHandJumpLightAttack");
+        private static readonly int s_twoHandHeavyJumpingAttack01State =
+            Animator.StringToHash("Action Override.TwoHandJumpHeavyStart");
 
         [SerializeField] private Animator m_animator;
 
@@ -736,6 +744,10 @@ namespace ZZ
                     return s_rollAttack01State;
                 case AttackType.BackStepAttack01:
                     return s_backStepAttack01State;
+                case AttackType.LightJumpingAttack01:
+                    return s_lightJumpingAttack01State;
+                case AttackType.HeavyJumpingAttack01:
+                    return s_heavyJumpingAttack01State;
                 default:
                     return s_lightAttack01State;
             }
@@ -761,6 +773,10 @@ namespace ZZ
                     return s_twoHandRollAttack01State;
                 case AttackType.BackStepAttack01:
                     return s_twoHandBackStepAttack01State;
+                case AttackType.LightJumpingAttack01:
+                    return s_twoHandLightJumpingAttack01State;
+                case AttackType.HeavyJumpingAttack01:
+                    return s_twoHandHeavyJumpingAttack01State;
                 default:
                     return s_twoHandLightAttack01State;
             }

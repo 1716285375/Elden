@@ -13,6 +13,23 @@ namespace ZZ
         /// <inheritdoc />
         public override void AttemptToPerformAction(PlayerManager player, WeaponItem weapon)
         {
+            JumpAttackContext jumpContext = ResolveJumpAttackContext(
+                player?.IsGrounded == true,
+                player?.IsJumping == true);
+            if (jumpContext == JumpAttackContext.Airborne)
+            {
+                TryPerformJumpingAttack(
+                    player,
+                    weapon,
+                    AttackType.LightJumpingAttack01);
+                return;
+            }
+
+            if (jumpContext == JumpAttackContext.Takeoff)
+            {
+                return;
+            }
+
             if (player?.IsPerformingAction == true)
             {
                 if (player.PlayerCombatManager?.TryPerformCommittedAttack(weapon) == true)
@@ -39,11 +56,7 @@ namespace ZZ
                 return;
             }
 
-            player.PlayerCombatManager?.DisableCanCombo();
-            player.PlayerNetworkManager?.SetCharacterActionHand(
-                player.PlayerNetworkManager.IsTwoHandingLeftWeapon.Value == false);
-            player.PlayerCombatManager?.ReplicateAttack(m_attackType, weapon);
-            player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(m_attackType);
+            PerformAttack(player, weapon, m_attackType);
         }
     }
 }
