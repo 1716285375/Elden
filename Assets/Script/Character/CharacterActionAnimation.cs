@@ -13,6 +13,8 @@ namespace ZZ
         GuardBreak = 5,
         StanceBreak = 6,
         Riposte = 7,
-        Riposted = 8
+        Riposted = 8,
+        Backstab = 9,
+        Backstabbed = 10
     }
 }

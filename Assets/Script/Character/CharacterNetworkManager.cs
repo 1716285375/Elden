@@ -421,6 +421,7 @@ namespace ZZ
             Vector3 directionToTarget = target != null && attacker != null
                 ? target.transform.position - attacker.transform.position
                 : Vector3.zero;
+            Vector3 directionToAttacker = -directionToTarget;
             if (serverRpcParams.Receive.SenderClientId != OwnerClientId ||
                 attackerNetworkObjectId != NetworkObjectId ||
                 attacker == null ||
@@ -438,6 +439,10 @@ namespace ZZ
                 !CharacterCombatManager.IsWithinCriticalAttackAngle(
                     attacker.transform.forward,
                     directionToTarget,
+                    75f) ||
+                !CharacterCombatManager.IsWithinCriticalAttackAngle(
+                    target.transform.forward,
+                    directionToAttacker,
                     75f))
             {
                 return;
@@ -501,6 +506,131 @@ namespace ZZ
             CharacterCombatManager attackerCombatManager =
                 attacker.CharacterCombatManager;
             attackerCombatManager?.ProcessRiposteFromServer(
+                target,
+                weapon,
+                criticalDamageAnimation,
+                physicalDamage,
+                magicDamage,
+                fireDamage,
+                lightningDamage,
+                holyDamage,
+                poiseDamage);
+        }
+
+        /// <summary>
+        /// Reserves one rear Critical target and relays the ordered Backstab payload.
+        /// </summary>
+        [ServerRpc]
+        public void NotifyTheServerOfBackstabServerRpc(
+            ulong targetNetworkObjectId,
+            ulong attackerNetworkObjectId,
+            int weaponID,
+            CharacterActionAnimation criticalDamageAnimation,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage,
+            ServerRpcParams serverRpcParams = default)
+        {
+            CharacterManager attacker = ResolveCharacter(
+                attackerNetworkObjectId);
+            CharacterManager target = ResolveCharacter(targetNetworkObjectId);
+            CharacterNetworkManager targetNetworkManager =
+                target?.CharacterNetworkManager;
+            CharacterCombatManager targetCombatManager =
+                target?.CharacterCombatManager;
+            MeleeWeaponItem weapon =
+                WorldItemDatabase.Instance?.GetWeaponByID(weaponID) as
+                    MeleeWeaponItem;
+            Vector3 directionToTarget = target != null && attacker != null
+                ? target.transform.position - attacker.transform.position
+                : Vector3.zero;
+            Vector3 directionToAttacker = -directionToTarget;
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId ||
+                attackerNetworkObjectId != NetworkObjectId ||
+                attacker == null ||
+                target == null ||
+                weapon == null ||
+                attacker.IsDead ||
+                attacker.IsPerformingAction ||
+                attacker.CharacterNetworkManager.CurrentStamina.Value <= 0f ||
+                !WorldUtilityManager.CanDamageCharacter(attacker, target) ||
+                targetNetworkManager == null ||
+                targetCombatManager?.CanBeBackstabbed != true ||
+                targetNetworkManager.IsBeingCriticallyDamaged.Value ||
+                criticalDamageAnimation !=
+                    CharacterActionAnimation.Backstabbed ||
+                directionToTarget.sqrMagnitude > 2.25f ||
+                !CharacterCombatManager.IsWithinCriticalAttackAngle(
+                    attacker.transform.forward,
+                    directionToTarget,
+                    75f) ||
+                !CharacterCombatManager.IsWithinBackstabAngle(
+                    target.transform.forward,
+                    directionToAttacker,
+                    145f))
+            {
+                return;
+            }
+
+            targetNetworkManager.IsBeingCriticallyDamaged.Value = true;
+            targetNetworkManager.IsRipostable.Value = false;
+            float damageModifier = weapon.BackstabAttack01Modifier;
+            NotifyTheServerOfBackstabClientRpc(
+                targetNetworkObjectId,
+                attackerNetworkObjectId,
+                weaponID,
+                criticalDamageAnimation,
+                Mathf.Clamp(
+                    physicalDamage,
+                    0f,
+                    weapon.PhysicalDamage * damageModifier),
+                Mathf.Clamp(
+                    magicDamage,
+                    0f,
+                    weapon.MagicDamage * damageModifier),
+                Mathf.Clamp(
+                    fireDamage,
+                    0f,
+                    weapon.FireDamage * damageModifier),
+                Mathf.Clamp(
+                    lightningDamage,
+                    0f,
+                    weapon.LightningDamage * damageModifier),
+                Mathf.Clamp(
+                    holyDamage,
+                    0f,
+                    weapon.HolyDamage * damageModifier),
+                0f);
+        }
+
+        [ClientRpc]
+        private void NotifyTheServerOfBackstabClientRpc(
+            ulong targetNetworkObjectId,
+            ulong attackerNetworkObjectId,
+            int weaponID,
+            CharacterActionAnimation criticalDamageAnimation,
+            float physicalDamage,
+            float magicDamage,
+            float fireDamage,
+            float lightningDamage,
+            float holyDamage,
+            float poiseDamage)
+        {
+            CharacterManager attacker = ResolveCharacter(
+                attackerNetworkObjectId);
+            CharacterManager target = ResolveCharacter(targetNetworkObjectId);
+            MeleeWeaponItem weapon =
+                WorldItemDatabase.Instance?.GetWeaponByID(weaponID) as
+                    MeleeWeaponItem;
+            if (attacker == null || target == null || weapon == null)
+            {
+                return;
+            }
+
+            attacker.CharacterCombatManager?.ProcessBackstabFromServer(
                 target,
                 weapon,
                 criticalDamageAnimation,

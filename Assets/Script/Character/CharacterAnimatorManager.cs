@@ -46,6 +46,10 @@ namespace ZZ
             Animator.StringToHash("Action Override.Riposte_01");
         private static readonly int s_ripostedState =
             Animator.StringToHash("Action Override.Riposted_01");
+        private static readonly int s_backstabState =
+            Animator.StringToHash("Action Override.Backstab_01");
+        private static readonly int s_backstabbedState =
+            Animator.StringToHash("Action Override.Backstabbed_01");
         private static readonly int s_swapRightWeaponState =
             Animator.StringToHash("Upper Body Override.Swap_Right_Weapon_01");
         private static readonly int s_swapLeftWeaponState =
@@ -594,7 +598,9 @@ namespace ZZ
                 targetAnimation == CharacterActionAnimation.GuardBreak ||
                 targetAnimation == CharacterActionAnimation.StanceBreak ||
                 targetAnimation == CharacterActionAnimation.Riposte ||
-                targetAnimation == CharacterActionAnimation.Riposted;
+                targetAnimation == CharacterActionAnimation.Riposted ||
+                targetAnimation == CharacterActionAnimation.Backstab ||
+                targetAnimation == CharacterActionAnimation.Backstabbed;
         }
 
         /// <summary>Returns whether an action is approved for zero-blend network playback.</summary>
@@ -603,7 +609,9 @@ namespace ZZ
         {
             return targetAnimation == CharacterActionAnimation.StanceBreak ||
                 targetAnimation == CharacterActionAnimation.Riposte ||
-                targetAnimation == CharacterActionAnimation.Riposted;
+                targetAnimation == CharacterActionAnimation.Riposted ||
+                targetAnimation == CharacterActionAnimation.Backstab ||
+                targetAnimation == CharacterActionAnimation.Backstabbed;
         }
 
         private int GetAttackStateHash(AttackType attackType)
@@ -804,6 +812,12 @@ namespace ZZ
                     return true;
                 case CharacterActionAnimation.Riposted:
                     actionStateHash = s_ripostedState;
+                    return true;
+                case CharacterActionAnimation.Backstab:
+                    actionStateHash = s_backstabState;
+                    return true;
+                case CharacterActionAnimation.Backstabbed:
+                    actionStateHash = s_backstabbedState;
                     return true;
                 default:
                     actionStateHash = 0;
