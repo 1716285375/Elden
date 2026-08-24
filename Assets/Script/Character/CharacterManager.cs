@@ -134,6 +134,16 @@ namespace ZZ
             bool canRotate,
             bool canMove)
         {
+            if (isPerformingAction && m_isPerformingAction)
+            {
+                m_characterEffectsManager?.DestroyAllCurrentActionEffects();
+                if (this is PlayerManager player &&
+                    player.PlayerCombatManager?.IsHoldingSpellInput == true)
+                {
+                    player.PlayerCombatManager.CancelChargingSpell();
+                }
+            }
+
             m_isPerformingAction = isPerformingAction;
             m_shouldApplyRootMotion = shouldApplyRootMotion;
             m_canRotate = canRotate;
@@ -159,6 +169,7 @@ namespace ZZ
         /// </summary>
         public void ResetActionFlags()
         {
+            m_characterEffectsManager?.DestroyAllCurrentActionEffects();
             m_isPerformingAction = false;
             m_canMove = true;
             m_canRotate = true;

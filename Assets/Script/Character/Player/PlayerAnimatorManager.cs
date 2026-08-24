@@ -46,6 +46,43 @@ namespace ZZ
             m_player?.PlayerCombatManager?.DrainStaminaBasedOnAttack();
         }
 
+        /// <summary>Animation Event: creates the equipped spell's warm-up effect.</summary>
+        public void InstantiateSpellWarmUpEffects()
+        {
+            m_player?.PlayerCombatManager?.InstantiateSpellWarmUpEffects();
+        }
+
+        /// <summary>Animation Event: releases the equipped spell on this peer.</summary>
+        public void InstantiateSpell()
+        {
+            m_player?.PlayerCombatManager?.InstantiateCurrentSpell();
+        }
+
+        /// <summary>Animation Event: clears charge state and transient spell effects.</summary>
+        public void CompleteSpellCast()
+        {
+            m_player?.PlayerCombatManager?.CompleteSpellCast();
+        }
+
+        /// <summary>Receives the warm-up event already authored in the source spell clips.</summary>
+        public void EnableSpellWarmUpFX()
+        {
+            InstantiateSpellWarmUpEffects();
+        }
+
+        /// <summary>Receives the release event already authored in the source spell clips.</summary>
+        public void EnableSpellReleaseFX()
+        {
+            InstantiateSpell();
+        }
+
+        /// <summary>
+        /// Receives the authored release-sound event. The release prefab owns spatial audio.
+        /// </summary>
+        public void PlayReleaseSpellSoundSFX()
+        {
+        }
+
         /// <summary>Allows rotation again during an attack's recovery window.</summary>
         public void EnableCanRotate()
         {

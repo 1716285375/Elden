@@ -21,6 +21,12 @@ namespace ZZ
         ParrySlow = 13,
         ParryLand = 14,
         Parried = 15,
-        PickupItem = 16
+        PickupItem = 16,
+        ChargeSpellRight = 17,
+        ChargeSpellLeft = 18,
+        ReleaseSpellRight = 19,
+        ReleaseSpellLeft = 20,
+        ReleaseFullChargeSpellRight = 21,
+        ReleaseFullChargeSpellLeft = 22
     }
 }

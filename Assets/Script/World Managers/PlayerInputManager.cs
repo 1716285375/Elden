@@ -34,10 +34,12 @@ namespace ZZ
         private bool m_hasSwitchRightWeaponInput;
         private bool m_hasSwitchLeftWeaponInput;
         private bool m_hasRBInput;
+        private bool m_isRBSpellInput;
         private bool m_hasRTStartedInput;
         private bool m_hasRTReleasedInput;
         private bool m_hasLTInput;
         private bool m_isLBInputHeld;
+        private bool m_isLBSpellInput;
         private bool m_hasLockOnInput;
         private bool m_hasInteractionInput;
         private bool m_isGameplayInputBlocked;
@@ -77,10 +79,13 @@ namespace ZZ
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed +=
                 OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.RB.started += OnRBStarted;
             m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
+            m_playerControls.PlayerMovement.RB.canceled += OnRBCanceled;
             m_playerControls.PlayerMovement.RT.started += OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled += OnRTCanceled;
             m_playerControls.PlayerMovement.LT.performed += OnLTPerformed;
+            m_playerControls.PlayerMovement.LB.started += OnLBStarted;
             m_playerControls.PlayerMovement.LB.performed += OnLBPerformed;
             m_playerControls.PlayerMovement.LB.canceled += OnLBCanceled;
             m_playerControls.PlayerMovement.TwoHandWeapon.performed +=
@@ -116,10 +121,13 @@ namespace ZZ
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed -=
                 OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.RB.started -= OnRBStarted;
             m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
+            m_playerControls.PlayerMovement.RB.canceled -= OnRBCanceled;
             m_playerControls.PlayerMovement.RT.started -= OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled -= OnRTCanceled;
             m_playerControls.PlayerMovement.LT.performed -= OnLTPerformed;
+            m_playerControls.PlayerMovement.LB.started -= OnLBStarted;
             m_playerControls.PlayerMovement.LB.performed -= OnLBPerformed;
             m_playerControls.PlayerMovement.LB.canceled -= OnLBCanceled;
             m_playerControls.PlayerMovement.TwoHandWeapon.performed -=
@@ -232,10 +240,12 @@ namespace ZZ
             m_hasSwitchRightWeaponInput = false;
             m_hasSwitchLeftWeaponInput = false;
             m_hasRBInput = false;
+            m_isRBSpellInput = false;
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
             m_hasLTInput = false;
             m_isLBInputHeld = false;
+            m_isLBSpellInput = false;
             m_hasLockOnInput = false;
             m_hasInteractionInput = false;
             m_isSprintInputHeld = false;
@@ -244,6 +254,7 @@ namespace ZZ
             m_hasTwoHandLeftWeaponInput = false;
             m_player?.LocomotionManager?.HandleSprinting(false);
             m_player?.PlayerCombatManager?.CancelChargingAttack();
+            m_player?.PlayerCombatManager?.CancelChargingSpell();
             m_player?.PlayerCombatManager?.SetBlocking(false);
             ClearAttackInputQueue();
             IsMovementInputEnabled = false;
@@ -437,7 +448,7 @@ namespace ZZ
 
         private void HandleBlockingInput()
         {
-            if (!m_isLBInputHeld)
+            if (!m_isLBInputHeld || m_isLBSpellInput)
             {
                 return;
             }
@@ -552,7 +563,28 @@ namespace ZZ
 
         private void OnRBPerformed(InputAction.CallbackContext context)
         {
+            if (m_isRBSpellInput)
+            {
+                return;
+            }
+
             m_hasRBInput = true;
+        }
+
+        private void OnRBStarted(InputAction.CallbackContext context)
+        {
+            m_isRBSpellInput = TryBeginSpellInput(true);
+        }
+
+        private void OnRBCanceled(InputAction.CallbackContext context)
+        {
+            if (!m_isRBSpellInput)
+            {
+                return;
+            }
+
+            m_isRBSpellInput = false;
+            m_player?.PlayerCombatManager?.ReleaseChargingSpell(true);
         }
 
         private void OnRTStarted(InputAction.CallbackContext context)
@@ -588,13 +620,58 @@ namespace ZZ
 
         private void OnLBPerformed(InputAction.CallbackContext context)
         {
+            if (m_isLBSpellInput)
+            {
+                return;
+            }
+
             m_isLBInputHeld = true;
+        }
+
+        private void OnLBStarted(InputAction.CallbackContext context)
+        {
+            m_isLBSpellInput = TryBeginSpellInput(false);
+            m_isLBInputHeld = !m_isLBSpellInput;
         }
 
         private void OnLBCanceled(InputAction.CallbackContext context)
         {
+            if (m_isLBSpellInput)
+            {
+                m_isLBSpellInput = false;
+                m_player?.PlayerCombatManager?.ReleaseChargingSpell(false);
+            }
+
             m_isLBInputHeld = false;
             m_player?.PlayerCombatManager?.SetBlocking(false);
+        }
+
+        private bool TryBeginSpellInput(bool isRightHand)
+        {
+            if (m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true)
+            {
+                return false;
+            }
+
+            WeaponItem weapon = isRightHand
+                ? m_player?.InventoryManager?.CurrentRightHandWeapon
+                : m_player?.InventoryManager?.CurrentLeftHandWeapon;
+            if (weapon is not CasterWeaponItem)
+            {
+                return false;
+            }
+
+            WeaponItemBasedAction action = isRightHand
+                ? weapon.RightHandAction
+                : weapon.LeftHandAction;
+            if (action is not CastIncantationAction)
+            {
+                return false;
+            }
+
+            m_player.PlayerNetworkManager.SetCharacterActionHand(isRightHand);
+            m_player.PlayerCombatManager?.PerformWeaponBasedAction(action, weapon);
+            return m_player.PlayerCombatManager?.IsChargingSpell == true;
         }
 
         private void OnTwoHandWeaponPerformed(InputAction.CallbackContext context)

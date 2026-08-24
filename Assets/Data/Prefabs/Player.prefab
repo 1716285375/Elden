@@ -146463,15 +146463,16 @@ MonoBehaviour:
   m_weaponsInRightHandSlots:
   - {fileID: 11400000, guid: 56fe0958176792a498531c0014699ac9, type: 2}
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
-  - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
+  - {fileID: 11400000, guid: a59c54d06240ad24ba8e34a9339a0e0e, type: 2}
   m_weaponsInLeftHandSlots:
   - {fileID: 11400000, guid: eb73d2281cada864897040f53529cda4, type: 2}
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
-  - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
+  - {fileID: 11400000, guid: a59c54d06240ad24ba8e34a9339a0e0e, type: 2}
   m_startingHeadEquipment: {fileID: 11400000, guid: 9eb5883dac298d244a43092a6ba95ba4, type: 2}
   m_startingBodyEquipment: {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
   m_startingHandEquipment: {fileID: 11400000, guid: c716ad1e012c1c646869a44bf306ef64, type: 2}
   m_startingLegEquipment: {fileID: 11400000, guid: 99582e7697fa6fc45babca5ec0372dfb, type: 2}
+  m_startingSpell: {fileID: 11400000, guid: f56b04b88b0fd2a4184f522fc0bd515e, type: 2}
 --- !u!114 &6156979858456878683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146486,6 +146487,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerCombatManager
   m_currentAttackType: 0
   m_fullyChargedDuration: 0.8
+  m_fullyChargedSpellDuration: 1.5
   m_canBlock: 1
 --- !u!114 &6368077256085200356
 MonoBehaviour:

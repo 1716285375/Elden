@@ -30,6 +30,9 @@ namespace ZZ
         [SerializeField] private HandEquipmentItem m_startingHandEquipment;
         [SerializeField] private LegEquipmentItem m_startingLegEquipment;
 
+        [Header("Spell Slot")]
+        [SerializeField] private SpellItem m_startingSpell;
+
         [Header("Runtime Inventory")]
         [SerializeField] private List<Item> m_itemsInInventory = new();
 
@@ -42,6 +45,7 @@ namespace ZZ
         private BodyEquipmentItem m_currentBodyEquipment;
         private HandEquipmentItem m_currentHandEquipment;
         private LegEquipmentItem m_currentLegEquipment;
+        private SpellItem m_currentSpell;
         private int m_rightHandWeaponIndex;
         private int m_leftHandWeaponIndex;
 
@@ -66,6 +70,9 @@ namespace ZZ
         /// <summary>Gets the runtime armor copy currently equipped in the leg slot.</summary>
         public LegEquipmentItem CurrentLegEquipment => m_currentLegEquipment;
 
+        /// <summary>Gets the spell currently occupying the player's single spell slot.</summary>
+        public SpellItem CurrentSpell => m_currentSpell;
+
         /// <summary>Gets the item assets collected during the current play session.</summary>
         public IReadOnlyList<Item> ItemsInInventory => m_itemsInInventory;
 
@@ -80,6 +87,9 @@ namespace ZZ
 
         /// <summary>Raised after the left-hand runtime weapon and model are refreshed.</summary>
         public event Action<WeaponItem> LeftHandWeaponChanged;
+
+        /// <summary>Raised after synchronized spell selection is reconstructed.</summary>
+        public event Action<SpellItem> CurrentSpellChanged;
 
         /// <summary>Resolves one currently equipped runtime weapon for animation updates.</summary>
         public WeaponItem GetEquippedWeaponByID(int weaponID)
@@ -244,6 +254,39 @@ namespace ZZ
             base.Awake();
             m_player = GetComponent<PlayerManager>();
             m_equipmentManager = GetComponent<PlayerEquipmentManager>();
+            m_currentSpell = m_startingSpell;
+        }
+
+        /// <summary>Reconstructs the synchronized single spell slot from its stable ID.</summary>
+        public void InitializeCurrentSpellFromID(int spellID)
+        {
+            SpellItem spell = WorldItemDatabase.Instance?.GetSpellByID(spellID);
+            if (spell == null && m_startingSpell?.ItemID == spellID)
+            {
+                spell = m_startingSpell;
+            }
+
+            m_currentSpell = spell;
+            CurrentSpellChanged?.Invoke(m_currentSpell);
+        }
+
+        /// <summary>Writes a new spell selection through owner-authoritative network state.</summary>
+        public bool EquipCurrentSpell(SpellItem spell)
+        {
+            if (spell == null || m_player?.PlayerNetworkManager == null)
+            {
+                return false;
+            }
+
+            if (m_player.PlayerNetworkManager.IsSpawned && m_player.IsOwner)
+            {
+                m_player.PlayerNetworkManager.CurrentSpellID.Value = spell.ItemID;
+                return true;
+            }
+
+            m_currentSpell = spell;
+            CurrentSpellChanged?.Invoke(m_currentSpell);
+            return true;
         }
 
         private void OnDestroy()

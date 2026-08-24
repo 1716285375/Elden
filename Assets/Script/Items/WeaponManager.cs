@@ -18,10 +18,15 @@ namespace ZZ
         public MeleeWeaponDamageCollider MeleeDamageCollider =>
             m_meleeDamageCollider;
 
+        /// <summary>Gets the authored spell origin embedded in this weapon model.</summary>
+        public SpellInstantiationLocation SpellInstantiationLocation { get; private set; }
+
         private void Awake()
         {
             m_meleeDamageCollider ??=
                 GetComponentInChildren<MeleeWeaponDamageCollider>(true);
+            SpellInstantiationLocation ??=
+                GetComponentInChildren<SpellInstantiationLocation>(true);
             m_meleeDamageCollider?.CloseDamageCollider();
         }
 
@@ -31,6 +36,8 @@ namespace ZZ
         public void Initialize(CharacterManager weaponOwner, WeaponItem weapon)
         {
             Weapon = weapon;
+            SpellInstantiationLocation ??=
+                GetComponentInChildren<SpellInstantiationLocation>(true);
             m_meleeDamageCollider ??=
                 GetComponentInChildren<MeleeWeaponDamageCollider>(true);
             if (m_meleeDamageCollider == null || weapon == null)

@@ -55,7 +55,7 @@ namespace ZZ
         [SerializeField] private WeaponItemBasedAction m_rightHandChargedAction;
         [SerializeField] private WeaponItemBasedAction m_twoHandRightAction;
         [SerializeField] private WeaponItemBasedAction m_twoHandRightHeavyAction;
-        [SerializeField] private OffHandMeleeAction m_leftHandAction;
+        [SerializeField] private WeaponItemBasedAction m_leftHandAction;
         [SerializeField] private AshOfWar m_ashOfWarAction;
 
         [Header("Attack Modifiers")]
@@ -169,7 +169,7 @@ namespace ZZ
         public WeaponItemBasedAction TwoHandRightHeavyAction => m_twoHandRightHeavyAction;
 
         /// <summary>Gets the sustained action bound to the left bumper.</summary>
-        public OffHandMeleeAction LeftHandAction => m_leftHandAction;
+        public WeaponItemBasedAction LeftHandAction => m_leftHandAction;
 
         /// <summary>Gets the special action equipped on this weapon.</summary>
         public AshOfWar AshOfWarAction => m_ashOfWarAction;

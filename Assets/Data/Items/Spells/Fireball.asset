@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcf3d3bbf0f05e4a9216b6fa85ca7bd, type: 3}
+  m_Name: Fireball
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.FireballSpell
+  m_itemName: Fireball
+  m_itemIcon: {fileID: 21300000, guid: a1c1983ae4a92234a8c5883090f249d1, type: 3}
+  m_itemDescription: Conjures a homing ball of flame. Hold the catalyst input for
+    full charge.
+  m_itemID: 10
+  m_spellClass: 0
+  m_spellSlotsUsed: 1
+  m_fullChargeModifier: 1.4
+  m_spellWarmUpEffect: {fileID: 6249949662890084357, guid: 48be85055b6b3bd448fd746f8d17f2b5, type: 3}
+  m_spellReleaseEffect: {fileID: 5548827477355850168, guid: a385652aa523a5d4ab911ef414781070, type: 3}
+  m_spellFullyChargedEffect: {fileID: 4147613305936680986, guid: 211a9db1fad0bab4fb0279aac97fbd57, type: 3}
+  m_fireballPrefab: {fileID: 4730829970213690812, guid: ba03a23a2171dcd4ab77782a02b39640, type: 3}
+  m_fireDamage: 150
+  m_poiseDamage: 10
