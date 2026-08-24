@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91c4e400c7d95f8499b748d3b1009b3f, type: 3}
+  m_Name: Parry Slow
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.ParryAshOfWar
+  m_itemName: Parry (Slow)
+  m_itemIcon: {fileID: 21300000, guid: 5c6eb0f112197a140b8e306b96ec7bf2, type: 3}
+  m_itemDescription: Deflect an incoming parryable attack with a measured shield
+    motion.
+  m_itemID: 8
+  m_focusPointsCost: 0
+  m_staminaCost: 12
+  m_usableWeaponClasses: 04000000
+  m_parrySpeed: 2

@@ -81,6 +81,14 @@ namespace ZZ
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsParrying = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsParryable = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         public NetworkVariable<bool> IsRipostable = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -100,6 +108,7 @@ namespace ZZ
         private CharacterManager m_characterManager;
         private CharacterCombatManager m_characterCombatManager;
         private Vector3 m_networkPositionVelocity;
+        private bool m_hasResolvedCurrentParry;
 
         private void Awake()
         {
@@ -119,10 +128,12 @@ namespace ZZ
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            m_hasResolvedCurrentParry = false;
             CurrentHealth.OnValueChanged += OnCurrentHealthChanged;
             IsDead.OnValueChanged += OnIsDeadChanged;
             IsChargingAttack.OnValueChanged += OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged += OnIsBlockingChanged;
+            IsParrying.OnValueChanged += OnIsParryingChanged;
 
             if (IsOwner)
             {
@@ -132,6 +143,8 @@ namespace ZZ
                 IsChargingAttack.Value = false;
                 IsBlocking.Value = false;
                 IsAttacking.Value = false;
+                IsParrying.Value = false;
+                IsParryable.Value = false;
                 IsRipostable.Value = false;
                 IsBeingCriticallyDamaged.Value = false;
             }
@@ -144,10 +157,12 @@ namespace ZZ
 
         public override void OnNetworkDespawn()
         {
+            m_hasResolvedCurrentParry = false;
             CurrentHealth.OnValueChanged -= OnCurrentHealthChanged;
             IsDead.OnValueChanged -= OnIsDeadChanged;
             IsChargingAttack.OnValueChanged -= OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged -= OnIsBlockingChanged;
+            IsParrying.OnValueChanged -= OnIsParryingChanged;
             ApplyChargingAttackState(false);
             ApplyBlockingState(false);
             base.OnNetworkDespawn();
@@ -159,6 +174,8 @@ namespace ZZ
             SetChargingAttackState(false);
             SetBlockingState(false);
             SetAttackingState(false);
+            SetParryingState(false);
+            SetParryableState(false);
             IsRipostable.Value = false;
             IsBeingCriticallyDamaged.Value = false;
         }
@@ -251,6 +268,32 @@ namespace ZZ
             }
 
             IsAttacking.Value = isAttacking;
+        }
+
+        /// <summary>Writes whether the owner is currently inside Parry active frames.</summary>
+        public void SetParryingState(bool isParrying)
+        {
+            if (!IsSpawned ||
+                !IsOwner ||
+                IsParrying.Value == isParrying)
+            {
+                return;
+            }
+
+            IsParrying.Value = isParrying;
+        }
+
+        /// <summary>Writes whether the owner's active attack accepts a Parry.</summary>
+        public void SetParryableState(bool isParryable)
+        {
+            if (!IsSpawned ||
+                !IsOwner ||
+                IsParryable.Value == isParryable)
+            {
+                return;
+            }
+
+            IsParryable.Value = isParryable;
         }
 
         /// <summary>Reapplies late-join blocking data after replicated equipment is ready.</summary>
@@ -391,6 +434,89 @@ namespace ZZ
 
             m_characterCombatManager ??= GetComponent<CharacterCombatManager>();
             m_characterCombatManager?.ReplicateAttack(attackType);
+        }
+
+        /// <summary>
+        /// Routes a collision-confirmed Parry through the server authority.
+        /// Server-owned AI colliders resolve immediately; client callers use the RPC.
+        /// </summary>
+        public void RequestParry(ulong parriedCharacterNetworkObjectId)
+        {
+            if (!IsSpawned)
+            {
+                return;
+            }
+
+            if (IsServer)
+            {
+                ProcessParryRequest(parriedCharacterNetworkObjectId);
+                return;
+            }
+
+            NotifyServerOfParryServerRpc(parriedCharacterNetworkObjectId);
+        }
+
+        /// <summary>Asks the server to validate one collision-confirmed Parry.</summary>
+        [ServerRpc(RequireOwnership = false)]
+        public void NotifyServerOfParryServerRpc(
+            ulong parriedCharacterNetworkObjectId,
+            ServerRpcParams serverRpcParams = default)
+        {
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            {
+                return;
+            }
+
+            ProcessParryRequest(parriedCharacterNetworkObjectId);
+        }
+
+        private void ProcessParryRequest(
+            ulong parriedCharacterNetworkObjectId)
+        {
+            CharacterManager parryingCharacter = m_characterManager;
+            CharacterManager parriedCharacter = ResolveCharacter(
+                parriedCharacterNetworkObjectId);
+            CharacterNetworkManager parriedNetworkManager =
+                parriedCharacter?.CharacterNetworkManager;
+            if (m_hasResolvedCurrentParry ||
+                parryingCharacter == null ||
+                parriedCharacter == null ||
+                parriedNetworkManager == null ||
+                parryingCharacter.IsDead ||
+                parriedCharacter.IsDead ||
+                parryingCharacter.IsInvulnerable ||
+                !IsParrying.Value ||
+                !parriedNetworkManager.IsParryable.Value ||
+                parriedNetworkManager.IsBeingCriticallyDamaged.Value ||
+                !WorldUtilityManager.CanDamageCharacter(
+                    parriedCharacter,
+                    parryingCharacter) ||
+                (parriedCharacter.transform.position -
+                    parryingCharacter.transform.position).sqrMagnitude > 16f)
+            {
+                return;
+            }
+
+            m_hasResolvedCurrentParry = true;
+            parriedCharacter.CharacterCombatManager
+                ?.CloseAllDamageColliders();
+            parriedNetworkManager.SetParryableState(false);
+            ProcessParryClientRpc(
+                parriedCharacterNetworkObjectId,
+                NetworkObjectId);
+        }
+
+        [ClientRpc]
+        private void ProcessParryClientRpc(
+            ulong parriedCharacterNetworkObjectId,
+            ulong parryingCharacterNetworkObjectId)
+        {
+            CharacterManager parriedCharacter = ResolveCharacter(
+                parriedCharacterNetworkObjectId);
+            CharacterManager parryingCharacter = ResolveCharacter(
+                parryingCharacterNetworkObjectId);
+            parriedCharacter?.CharacterCombatManager
+                ?.ProcessParryFromServer(parryingCharacter);
         }
 
         /// <summary>
@@ -824,6 +950,14 @@ namespace ZZ
         private void OnIsBlockingChanged(bool wasBlocking, bool isBlocking)
         {
             ApplyBlockingState(isBlocking);
+        }
+
+        private void OnIsParryingChanged(bool wasParrying, bool isParrying)
+        {
+            if (!isParrying)
+            {
+                m_hasResolvedCurrentParry = false;
+            }
         }
 
         private void ApplyChargingAttackState(bool isChargingAttack)

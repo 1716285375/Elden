@@ -12,6 +12,7 @@ namespace ZZ
     {
         [Header("Presentation")]
         [SerializeField] private AttackType m_attackType = AttackType.LightAttack01;
+        [SerializeField] private bool m_isParryable = true;
 
         [Header("Selection")]
         [SerializeField, Min(0f)] private float m_minimumRange;
@@ -28,6 +29,7 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_poiseDamage = 15f;
 
         public AttackType AttackType => m_attackType;
+        public bool IsParryable => m_isParryable;
         public float MinimumRange => m_minimumRange;
         public float MaximumRange => m_maximumRange;
         public float SelectionWeight => m_selectionWeight;

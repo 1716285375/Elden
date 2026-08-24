@@ -5,5 +5,10 @@ namespace ZZ
     /// </summary>
     public class MeleeWeaponDamageCollider : DamageCollider
     {
+        /// <inheritdoc />
+        protected override bool CheckForParry(CharacterManager damageTarget)
+        {
+            return base.CheckForParry(damageTarget);
+        }
     }
 }

@@ -53,6 +53,21 @@ namespace ZZ
             weaponAction.AttemptToPerformAction(m_player, weapon);
         }
 
+        /// <summary>Executes the Ash of War selected for the current hand state.</summary>
+        public void AttemptToPerformAshOfWar()
+        {
+            WeaponItem weapon = SelectWeaponToPerformAshOfWar();
+            weapon?.AshOfWarAction?.AttemptToPerformAction(m_player);
+        }
+
+        /// <summary>
+        /// Selects the left-hand weapon for EP74 while preserving one extension boundary.
+        /// </summary>
+        public WeaponItem SelectWeaponToPerformAshOfWar()
+        {
+            return m_player?.InventoryManager?.CurrentLeftHandWeapon;
+        }
+
         /// <summary>Starts or ends owner-authoritative blocking with the off-hand weapon.</summary>
         public bool SetBlocking(bool isBlocking, WeaponItem blockingWeapon = null)
         {
@@ -308,6 +323,19 @@ namespace ZZ
             DisableCanCombo();
             DisableCanPerformCommittedAttack();
             PlayerInputManager.Instance?.ClearAttackInputQueue();
+        }
+
+        /// <inheritdoc />
+        public override void CloseAllDamageColliders()
+        {
+            PlayerEquipmentManager equipmentManager =
+                m_player?.EquipmentManager;
+            equipmentManager?.CurrentRightHandWeaponManager
+                ?.CloseDamageCollider();
+            equipmentManager?.CurrentLeftHandWeaponManager
+                ?.CloseDamageCollider();
+            equipmentManager?.CurrentTwoHandWeaponManager
+                ?.CloseDamageCollider();
         }
 
         /// <inheritdoc />

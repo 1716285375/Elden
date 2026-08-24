@@ -15,6 +15,11 @@ namespace ZZ
         Riposte = 7,
         Riposted = 8,
         Backstab = 9,
-        Backstabbed = 10
+        Backstabbed = 10,
+        ParryFast = 11,
+        ParryMedium = 12,
+        ParrySlow = 13,
+        ParryLand = 14,
+        Parried = 15
     }
 }

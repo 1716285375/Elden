@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Watcher Frenzy
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
   m_attackType: 3
+  m_isParryable: 1
   m_minimumRange: 0.45
   m_maximumRange: 2.75
   m_selectionWeight: 3.5

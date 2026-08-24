@@ -36,6 +36,7 @@ namespace ZZ
         private bool m_hasRBInput;
         private bool m_hasRTStartedInput;
         private bool m_hasRTReleasedInput;
+        private bool m_hasLTInput;
         private bool m_isLBInputHeld;
         private bool m_hasLockOnInput;
         private bool m_hasInteractionInput;
@@ -79,6 +80,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
             m_playerControls.PlayerMovement.RT.started += OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled += OnRTCanceled;
+            m_playerControls.PlayerMovement.LT.performed += OnLTPerformed;
             m_playerControls.PlayerMovement.LB.performed += OnLBPerformed;
             m_playerControls.PlayerMovement.LB.canceled += OnLBCanceled;
             m_playerControls.PlayerMovement.TwoHandWeapon.performed +=
@@ -117,6 +119,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
             m_playerControls.PlayerMovement.RT.started -= OnRTStarted;
             m_playerControls.PlayerMovement.RT.canceled -= OnRTCanceled;
+            m_playerControls.PlayerMovement.LT.performed -= OnLTPerformed;
             m_playerControls.PlayerMovement.LB.performed -= OnLBPerformed;
             m_playerControls.PlayerMovement.LB.canceled -= OnLBCanceled;
             m_playerControls.PlayerMovement.TwoHandWeapon.performed -=
@@ -231,6 +234,7 @@ namespace ZZ
             m_hasRBInput = false;
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
+            m_hasLTInput = false;
             m_isLBInputHeld = false;
             m_hasLockOnInput = false;
             m_hasInteractionInput = false;
@@ -321,6 +325,7 @@ namespace ZZ
             HandleInteractionInput();
             HandleSprinting();
             HandleTwoHandInput();
+            HandleLTInput();
             HandleBlockingInput();
             HandleAttackInput();
         }
@@ -443,6 +448,18 @@ namespace ZZ
                 weapon);
         }
 
+        private void HandleLTInput()
+        {
+            if (!m_hasLTInput)
+            {
+                return;
+            }
+
+            m_hasLTInput = false;
+            m_isLBInputHeld = false;
+            m_player?.PlayerCombatManager?.AttemptToPerformAshOfWar();
+        }
+
         private void HandleInteractionInput()
         {
             if (!m_hasInteractionInput)
@@ -562,6 +579,11 @@ namespace ZZ
         private void OnRTCanceled(InputAction.CallbackContext context)
         {
             m_hasRTReleasedInput = true;
+        }
+
+        private void OnLTPerformed(InputAction.CallbackContext context)
+        {
+            m_hasLTInput = true;
         }
 
         private void OnLBPerformed(InputAction.CallbackContext context)

@@ -95,6 +95,30 @@ namespace ZZ
             networkManager.IsRipostable.Value = true;
         }
 
+        /// <summary>Animation Event: opens this owner's active Parry frames.</summary>
+        public void EnableIsParrying()
+        {
+            Character?.CharacterNetworkManager?.SetParryingState(true);
+        }
+
+        /// <summary>Animation Event: closes this owner's active Parry frames.</summary>
+        public void DisableIsParrying()
+        {
+            Character?.CharacterNetworkManager?.SetParryingState(false);
+        }
+
+        /// <summary>Animation Event: marks the owner's current attack as Parryable.</summary>
+        public void EnableIsParryable()
+        {
+            Character?.CharacterNetworkManager?.SetParryableState(true);
+        }
+
+        /// <summary>Animation Event: closes the owner's Parryable attack frames.</summary>
+        public void DisableIsParryable()
+        {
+            Character?.CharacterNetworkManager?.SetParryableState(false);
+        }
+
         /// <summary>
         /// Searches directly in front of the owner, preferring Riposte over Backstab.
         /// </summary>
@@ -327,6 +351,57 @@ namespace ZZ
             }
         }
 
+        /// <summary>
+        /// Interrupts this character's attack and presents both sides of a validated Parry.
+        /// </summary>
+        public void ProcessParryFromServer(CharacterManager parryingCharacter)
+        {
+            if (Character == null || parryingCharacter == null)
+            {
+                return;
+            }
+
+            CloseAllDamageColliders();
+            if (Character is AICharacterManager aiCharacter)
+            {
+                aiCharacter.StopMoving();
+            }
+
+            if (Character.IsOwner)
+            {
+                CharacterNetworkManager networkManager =
+                    Character.CharacterNetworkManager;
+                networkManager?.SetAttackingState(false);
+                networkManager?.SetParryableState(false);
+                if (networkManager != null && networkManager.IsSpawned)
+                {
+                    networkManager.IsRipostable.Value = false;
+                }
+            }
+
+            if (parryingCharacter.IsOwner)
+            {
+                parryingCharacter.CharacterNetworkManager
+                    ?.SetParryingState(false);
+            }
+
+            parryingCharacter.CharacterAnimatorManager
+                ?.PlayTargetActionAnimationInstantly(
+                    CharacterActionAnimation.ParryLand,
+                    true);
+            Character.CharacterAnimatorManager
+                ?.PlayTargetActionAnimationInstantly(
+                    CharacterActionAnimation.Parried,
+                    true);
+        }
+
+        /// <summary>
+        /// Closes every attack collider owned by this character type.
+        /// </summary>
+        public virtual void CloseAllDamageColliders()
+        {
+        }
+
         /// <summary>Moves the attacking owner into the target-authored receiver pose.</summary>
         public IEnumerator ForceMoveEnemyCharacterToRipostePosition(
             CharacterManager targetCharacter,
@@ -480,7 +555,10 @@ namespace ZZ
         public virtual void ResetActionState()
         {
             Character?.CharacterNetworkManager?.SetAttackingState(false);
+            Character?.CharacterNetworkManager?.SetParryingState(false);
+            Character?.CharacterNetworkManager?.SetParryableState(false);
             Character?.SetInvulnerable(false);
+            CloseAllDamageColliders();
             m_pendingCriticalDamage = 0;
             m_pendingCriticalDamageSource = null;
             CharacterNetworkManager networkManager =
