@@ -113,6 +113,12 @@ namespace ZZ
         /// <summary>Raised after synchronized gameplay quick-slot selection is rebuilt.</summary>
         public event Action<QuickSlotItem> CurrentQuickSlotItemChanged;
 
+        /// <summary>Raised after the primary ammunition item or amount changes.</summary>
+        public event Action<RangedProjectileItem> MainProjectileChanged;
+
+        /// <summary>Raised after the secondary ammunition item or amount changes.</summary>
+        public event Action<RangedProjectileItem> SecondaryProjectileChanged;
+
         /// <summary>Resolves one currently equipped runtime weapon for animation updates.</summary>
         public WeaponItem GetEquippedWeaponByID(int weaponID)
         {
@@ -179,6 +185,8 @@ namespace ZZ
                 EquipmentSlotType.Body => m_currentBodyEquipment,
                 EquipmentSlotType.Leg => m_currentLegEquipment,
                 EquipmentSlotType.Hand => m_currentHandEquipment,
+                EquipmentSlotType.MainProjectile => m_mainProjectile,
+                EquipmentSlotType.SecondaryProjectile => m_secondaryProjectile,
                 _ => null
             };
         }
@@ -208,6 +216,12 @@ namespace ZZ
                         slotIndex,
                         isRightHand,
                         weapon);
+            }
+
+            if (item is RangedProjectileItem projectile &&
+                IsProjectileSlot(equipmentSlot))
+            {
+                return EquipProjectileInSlot(equipmentSlot, projectile);
             }
 
             return equipmentSlot switch
@@ -251,6 +265,11 @@ namespace ZZ
                     weaponSlots,
                     slotIndex,
                     isRightHand);
+            }
+
+            if (IsProjectileSlot(equipmentSlot))
+            {
+                return UnequipProjectileInSlot(equipmentSlot);
             }
 
             return equipmentSlot switch
@@ -298,6 +317,7 @@ namespace ZZ
                 projectileID,
                 currentAmount,
                 m_startingMainProjectile);
+            MainProjectileChanged?.Invoke(m_mainProjectile);
         }
 
         /// <summary>Reconstructs the secondary ammunition slot from replicated state.</summary>
@@ -310,6 +330,19 @@ namespace ZZ
                 projectileID,
                 currentAmount,
                 m_startingSecondaryProjectile);
+            SecondaryProjectileChanged?.Invoke(m_secondaryProjectile);
+        }
+
+        /// <summary>Notifies local UI after one equipped ammunition stack changes.</summary>
+        public void NotifyProjectileAmountChanged(ProjectileSlot projectileSlot)
+        {
+            if (projectileSlot == ProjectileSlot.Main)
+            {
+                MainProjectileChanged?.Invoke(m_mainProjectile);
+                return;
+            }
+
+            SecondaryProjectileChanged?.Invoke(m_secondaryProjectile);
         }
 
         /// <summary>Reconstructs the synchronized gameplay quick slot from its stable ID.</summary>
@@ -370,6 +403,10 @@ namespace ZZ
             DestroyRuntimeItem(m_currentLegEquipment);
             DestroyRuntimeItem(m_mainProjectile);
             DestroyRuntimeItem(m_secondaryProjectile);
+            foreach (Item item in m_itemsInInventory)
+            {
+                DestroyRuntimeItem(item);
+            }
         }
 
         /// <summary>Returns the stable item ID saved for one right-hand quick slot.</summary>
@@ -859,7 +896,105 @@ namespace ZZ
                 m_player.IsSpawned &&
                 m_player.IsOwner &&
                 !m_player.IsDead &&
+                !m_player.IsPerformingAction &&
+                m_player.PlayerCombatManager?.IsUsingItem != true &&
                 m_player.PlayerNetworkManager != null;
+        }
+
+        private bool EquipProjectileInSlot(
+            EquipmentSlotType equipmentSlot,
+            RangedProjectileItem newProjectile)
+        {
+            RangedProjectileItem currentProjectile = equipmentSlot ==
+                    EquipmentSlotType.MainProjectile
+                ? m_mainProjectile
+                : m_secondaryProjectile;
+            RangedProjectileItem returnedProjectile =
+                CreateInventoryProjectileCopy(currentProjectile);
+            if (returnedProjectile != null)
+            {
+                AddItemToInventory(returnedProjectile);
+            }
+
+            if (!RemoveItemFromInventory(newProjectile))
+            {
+                RemoveItemFromInventory(returnedProjectile);
+                DestroyRuntimeItem(returnedProjectile);
+                return false;
+            }
+
+            int currentAmount = newProjectile.CurrentAmmoAmount;
+            SetProjectileID(equipmentSlot, newProjectile.ItemID, currentAmount);
+            DestroyRuntimeItem(newProjectile);
+            return true;
+        }
+
+        private bool UnequipProjectileInSlot(EquipmentSlotType equipmentSlot)
+        {
+            RangedProjectileItem currentProjectile = equipmentSlot ==
+                    EquipmentSlotType.MainProjectile
+                ? m_mainProjectile
+                : m_secondaryProjectile;
+            RangedProjectileItem returnedProjectile =
+                CreateInventoryProjectileCopy(currentProjectile);
+            if (returnedProjectile == null ||
+                !AddItemToInventory(returnedProjectile))
+            {
+                DestroyRuntimeItem(returnedProjectile);
+                return false;
+            }
+
+            SetProjectileID(equipmentSlot, -1, 0);
+            return true;
+        }
+
+        private void SetProjectileID(
+            EquipmentSlotType equipmentSlot,
+            int projectileID,
+            int currentAmount)
+        {
+            bool isMainProjectile = equipmentSlot ==
+                EquipmentSlotType.MainProjectile;
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager?.IsSpawned == true && networkManager.IsOwner)
+            {
+                if (isMainProjectile)
+                {
+                    networkManager.MainProjectileID.Value = projectileID;
+                }
+                else
+                {
+                    networkManager.SecondaryProjectileID.Value = projectileID;
+                }
+            }
+
+            if (isMainProjectile)
+            {
+                InitializeMainProjectileFromID(projectileID, currentAmount);
+                return;
+            }
+
+            InitializeSecondaryProjectileFromID(projectileID, currentAmount);
+        }
+
+        private static RangedProjectileItem CreateInventoryProjectileCopy(
+            RangedProjectileItem projectile)
+        {
+            if (projectile == null)
+            {
+                return null;
+            }
+
+            RangedProjectileItem runtimeProjectile = Instantiate(projectile);
+            runtimeProjectile.name = $"{projectile.name} (Inventory Runtime)";
+            runtimeProjectile.hideFlags = HideFlags.DontSave;
+            return runtimeProjectile;
+        }
+
+        private static bool IsProjectileSlot(EquipmentSlotType equipmentSlot)
+        {
+            return equipmentSlot == EquipmentSlotType.MainProjectile ||
+                equipmentSlot == EquipmentSlotType.SecondaryProjectile;
         }
 
         private WeaponItem CreateRuntimeWeapon(int weaponID)

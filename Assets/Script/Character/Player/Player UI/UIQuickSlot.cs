@@ -27,16 +27,28 @@ namespace ZZ
         }
 
         /// <summary>Shows a stack count greater than one and hides it otherwise.</summary>
-        public void SetQuantity(int quantity)
+        public void SetQuantity(int quantity, bool alwaysShow = false)
         {
             if (m_quantityText == null)
             {
                 return;
             }
 
-            bool shouldShowQuantity = quantity > 1;
+            bool shouldShowQuantity = alwaysShow
+                ? quantity >= 0
+                : quantity > 1;
             m_quantityText.gameObject.SetActive(shouldShowQuantity);
             m_quantityText.text = shouldShowQuantity ? quantity.ToString() : string.Empty;
+        }
+
+        /// <summary>Updates an ammunition icon and always shows its non-negative count.</summary>
+        public void SetProjectile(RangedProjectileItem projectile)
+        {
+            bool hasIcon = projectile?.ItemIcon != null;
+            SetItem(hasIcon ? projectile : null);
+            SetQuantity(
+                hasIcon ? projectile.CurrentAmmoAmount : -1,
+                hasIcon);
         }
 
         /// <summary>Controls the reserved selection highlight.</summary>

@@ -857,6 +857,12 @@ namespace ZZ
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.InitializeMainProjectileFromID(
                 currentProjectileID);
+            if (IsOwner)
+            {
+                PlayerUIManager.Instance?.PlayerUIHUDManager
+                    ?.SetMainProjectileQuickSlotIcon(
+                        m_playerInventoryManager?.MainProjectile);
+            }
         }
 
         private void OnSecondaryProjectileIDChanged(
@@ -866,6 +872,12 @@ namespace ZZ
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.InitializeSecondaryProjectileFromID(
                 currentProjectileID);
+            if (IsOwner)
+            {
+                PlayerUIManager.Instance?.PlayerUIHUDManager
+                    ?.SetSecondaryProjectileQuickSlotIcon(
+                        m_playerInventoryManager?.SecondaryProjectile);
+            }
         }
 
         private void OnRangedStateChanged(bool previousValue, bool currentValue)
@@ -949,6 +961,7 @@ namespace ZZ
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.EquipRightWeaponFromID(currentWeaponID);
             RefreshChangedTwoHandWeapon(currentWeaponID, true);
+            RefreshOwnedProjectileQuickSlotVisibility();
         }
 
         private void OnLeftHandWeaponIDChanged(int previousWeaponID, int currentWeaponID)
@@ -956,6 +969,21 @@ namespace ZZ
             m_playerInventoryManager ??= GetComponent<PlayerInventoryManager>();
             m_playerInventoryManager?.EquipLeftWeaponFromID(currentWeaponID);
             RefreshChangedTwoHandWeapon(currentWeaponID, false);
+            RefreshOwnedProjectileQuickSlotVisibility();
+        }
+
+        private void RefreshOwnedProjectileQuickSlotVisibility()
+        {
+            if (!IsOwner || m_playerInventoryManager == null)
+            {
+                return;
+            }
+
+            PlayerUIManager.Instance?.PlayerUIHUDManager
+                ?.ToggleProjectileQuickSlotsVisibility(
+                    PlayerUIHUDManager.ShouldShowProjectileQuickSlots(
+                        m_playerInventoryManager.CurrentRightHandWeapon,
+                        m_playerInventoryManager.CurrentLeftHandWeapon));
         }
 
         private void OnHeadEquipmentIDChanged(int previousItemID, int currentItemID)

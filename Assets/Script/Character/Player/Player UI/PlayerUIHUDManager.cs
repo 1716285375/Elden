@@ -12,6 +12,9 @@ namespace ZZ
         [SerializeField] private UIQuickSlot m_rightWeaponQuickSlot;
         [SerializeField] private UIQuickSlot m_spellQuickSlot;
         [SerializeField] private UIQuickSlot m_itemQuickSlot;
+        [SerializeField] private UIQuickSlot m_mainProjectileQuickSlot;
+        [SerializeField] private UIQuickSlot m_secondaryProjectileQuickSlot;
+        [SerializeField] private GameObject m_projectileQuickSlotsGameObject;
         [SerializeField] private GameObject m_crosshair;
         [SerializeField] private CanvasGroup[] m_hudCanvasGroups =
             System.Array.Empty<CanvasGroup>();
@@ -132,6 +135,10 @@ namespace ZZ
             m_boundInventoryManager.CurrentSpellChanged += OnCurrentSpellChanged;
             m_boundInventoryManager.CurrentQuickSlotItemChanged +=
                 OnCurrentQuickSlotItemChanged;
+            m_boundInventoryManager.MainProjectileChanged +=
+                OnMainProjectileChanged;
+            m_boundInventoryManager.SecondaryProjectileChanged +=
+                OnSecondaryProjectileChanged;
             RefreshQuickSlots();
         }
 
@@ -150,6 +157,9 @@ namespace ZZ
             m_rightWeaponQuickSlot?.SetItem(null);
             m_spellQuickSlot?.SetItem(null);
             m_itemQuickSlot?.SetItem(null);
+            m_mainProjectileQuickSlot?.SetProjectile(null);
+            m_secondaryProjectileQuickSlot?.SetProjectile(null);
+            ToggleProjectileQuickSlotsVisibility(false);
         }
 
         /// <summary>
@@ -183,6 +193,41 @@ namespace ZZ
         public void SetCrosshairVisible(bool isVisible)
         {
             m_crosshair?.SetActive(isVisible);
+        }
+
+        /// <summary>Updates the gameplay item quick-slot icon from synchronized inventory.</summary>
+        public void SetQuickSlotItemQuickSlotIcon(QuickSlotItem quickSlotItem)
+        {
+            m_itemQuickSlot?.SetItem(quickSlotItem);
+        }
+
+        /// <summary>Updates the primary ammunition icon and its real-time count.</summary>
+        public void SetMainProjectileQuickSlotIcon(
+            RangedProjectileItem projectileItem)
+        {
+            m_mainProjectileQuickSlot?.SetProjectile(projectileItem);
+        }
+
+        /// <summary>Updates the secondary ammunition icon and its real-time count.</summary>
+        public void SetSecondaryProjectileQuickSlotIcon(
+            RangedProjectileItem projectileItem)
+        {
+            m_secondaryProjectileQuickSlot?.SetProjectile(projectileItem);
+        }
+
+        /// <summary>Shows ammunition context only while either hand equips a Bow.</summary>
+        public void ToggleProjectileQuickSlotsVisibility(bool isVisible)
+        {
+            m_projectileQuickSlotsGameObject?.SetActive(isVisible);
+        }
+
+        /// <summary>Returns whether the local weapon context requires ammunition HUD.</summary>
+        public static bool ShouldShowProjectileQuickSlots(
+            WeaponItem rightHandWeapon,
+            WeaponItem leftHandWeapon)
+        {
+            return rightHandWeapon?.WeaponClass == WeaponClass.Bow ||
+                leftHandWeapon?.WeaponClass == WeaponClass.Bow;
         }
 
         private void OnCurrentHealthChanged(float previousHealth, float currentHealth)
@@ -235,11 +280,13 @@ namespace ZZ
         private void OnRightHandWeaponChanged(WeaponItem weapon)
         {
             m_rightWeaponQuickSlot?.SetItem(weapon);
+            RefreshProjectileQuickSlotVisibility();
         }
 
         private void OnLeftHandWeaponChanged(WeaponItem weapon)
         {
             m_leftWeaponQuickSlot?.SetItem(weapon);
+            RefreshProjectileQuickSlotVisibility();
         }
 
         private void OnCurrentSpellChanged(SpellItem spell)
@@ -252,10 +299,15 @@ namespace ZZ
             SetQuickSlotItemQuickSlotIcon(quickSlotItem);
         }
 
-        /// <summary>Updates the gameplay item quick-slot icon from synchronized inventory.</summary>
-        public void SetQuickSlotItemQuickSlotIcon(QuickSlotItem quickSlotItem)
+        private void OnMainProjectileChanged(RangedProjectileItem projectileItem)
         {
-            m_itemQuickSlot?.SetItem(quickSlotItem);
+            SetMainProjectileQuickSlotIcon(projectileItem);
+        }
+
+        private void OnSecondaryProjectileChanged(
+            RangedProjectileItem projectileItem)
+        {
+            SetSecondaryProjectileQuickSlotIcon(projectileItem);
         }
 
         private void RefreshStatBars()
@@ -278,6 +330,11 @@ namespace ZZ
             m_spellQuickSlot?.SetItem(m_boundInventoryManager.CurrentSpell);
             SetQuickSlotItemQuickSlotIcon(
                 m_boundInventoryManager.CurrentQuickSlotItem);
+            SetMainProjectileQuickSlotIcon(
+                m_boundInventoryManager.MainProjectile);
+            SetSecondaryProjectileQuickSlotIcon(
+                m_boundInventoryManager.SecondaryProjectile);
+            RefreshProjectileQuickSlotVisibility();
         }
 
         private void UnbindCurrentStats()
@@ -312,7 +369,19 @@ namespace ZZ
             m_boundInventoryManager.CurrentSpellChanged -= OnCurrentSpellChanged;
             m_boundInventoryManager.CurrentQuickSlotItemChanged -=
                 OnCurrentQuickSlotItemChanged;
+            m_boundInventoryManager.MainProjectileChanged -=
+                OnMainProjectileChanged;
+            m_boundInventoryManager.SecondaryProjectileChanged -=
+                OnSecondaryProjectileChanged;
             m_boundInventoryManager = null;
+        }
+
+        private void RefreshProjectileQuickSlotVisibility()
+        {
+            ToggleProjectileQuickSlotsVisibility(
+                ShouldShowProjectileQuickSlots(
+                    m_boundInventoryManager?.CurrentRightHandWeapon,
+                    m_boundInventoryManager?.CurrentLeftHandWeapon));
         }
 
         private static void RefreshStatBarLayout(UIStatBar statBar)

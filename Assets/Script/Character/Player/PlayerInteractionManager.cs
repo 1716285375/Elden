@@ -115,6 +115,11 @@ namespace ZZ
         /// <summary>Uses the first eligible interaction and applies its one-shot policy.</summary>
         public void HandleInteractionInput()
         {
+            if (m_player?.PlayerCombatManager?.IsUsingItem == true)
+            {
+                return;
+            }
+
             CloseAllPopUpWindows();
             CheckForInteractable();
             Interactable interactable = m_activeInteractable;
