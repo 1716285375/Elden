@@ -127,6 +127,118 @@ namespace ZZ
             return item != null && m_itemsInInventory.Remove(item);
         }
 
+        /// <summary>Gets the item currently occupying one Character Menu equipment slot.</summary>
+        public Item GetEquipmentSlotItem(EquipmentSlotType equipmentSlot)
+        {
+            if (TryGetWeaponSlot(
+                    equipmentSlot,
+                    out WeaponItem[] weaponSlots,
+                    out int slotIndex,
+                    out _))
+            {
+                return slotIndex < weaponSlots.Length
+                    ? weaponSlots[slotIndex]
+                    : null;
+            }
+
+            return equipmentSlot switch
+            {
+                EquipmentSlotType.Head => m_currentHeadEquipment,
+                EquipmentSlotType.Body => m_currentBodyEquipment,
+                EquipmentSlotType.Leg => m_currentLegEquipment,
+                EquipmentSlotType.Hand => m_currentHandEquipment,
+                _ => null
+            };
+        }
+
+        /// <summary>
+        /// Transfers one compatible inventory item into an equipment slot and synchronizes it.
+        /// </summary>
+        public bool EquipItemInSlot(EquipmentSlotType equipmentSlot, Item item)
+        {
+            m_itemsInInventory ??= new List<Item>();
+            m_itemsInInventory.RemoveAll(candidate => candidate == null);
+            if (item == null || !m_itemsInInventory.Contains(item))
+            {
+                return false;
+            }
+
+            if (TryGetWeaponSlot(
+                    equipmentSlot,
+                    out WeaponItem[] weaponSlots,
+                    out int slotIndex,
+                    out bool isRightHand))
+            {
+                return item is WeaponItem weapon &&
+                    !weapon.IsUnarmed &&
+                    EquipWeaponInSlot(
+                        weaponSlots,
+                        slotIndex,
+                        isRightHand,
+                        weapon);
+            }
+
+            return equipmentSlot switch
+            {
+                EquipmentSlotType.Head when item is HeadEquipmentItem head =>
+                    EquipArmorItem(
+                        m_currentHeadEquipment,
+                        head,
+                        SetHeadEquipmentID),
+                EquipmentSlotType.Body when item is BodyEquipmentItem body =>
+                    EquipArmorItem(
+                        m_currentBodyEquipment,
+                        body,
+                        SetBodyEquipmentID),
+                EquipmentSlotType.Leg when item is LegEquipmentItem leg =>
+                    EquipArmorItem(
+                        m_currentLegEquipment,
+                        leg,
+                        SetLegEquipmentID),
+                EquipmentSlotType.Hand when item is HandEquipmentItem hand =>
+                    EquipArmorItem(
+                        m_currentHandEquipment,
+                        hand,
+                        SetHandEquipmentID),
+                _ => false
+            };
+        }
+
+        /// <summary>
+        /// Returns one equipped item to inventory and restores Unarmed or null for its slot.
+        /// </summary>
+        public bool UnequipItemInSlot(EquipmentSlotType equipmentSlot)
+        {
+            if (TryGetWeaponSlot(
+                    equipmentSlot,
+                    out WeaponItem[] weaponSlots,
+                    out int slotIndex,
+                    out bool isRightHand))
+            {
+                return UnequipWeaponInSlot(
+                    weaponSlots,
+                    slotIndex,
+                    isRightHand);
+            }
+
+            return equipmentSlot switch
+            {
+                EquipmentSlotType.Head => UnequipArmorItem(
+                    m_currentHeadEquipment,
+                    SetHeadEquipmentID),
+                EquipmentSlotType.Body => UnequipArmorItem(
+                    m_currentBodyEquipment,
+                    SetBodyEquipmentID),
+                EquipmentSlotType.Leg => UnequipArmorItem(
+                    m_currentLegEquipment,
+                    SetLegEquipmentID),
+                EquipmentSlotType.Hand => UnequipArmorItem(
+                    m_currentHandEquipment,
+                    SetHandEquipmentID),
+                _ => false
+            };
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -363,6 +475,267 @@ namespace ZZ
             RefreshTwoHandPointer(runtimeWeapon, false);
             LeftHandWeaponChanged?.Invoke(runtimeWeapon);
             return true;
+        }
+
+        private bool EquipWeaponInSlot(
+            WeaponItem[] weaponSlots,
+            int slotIndex,
+            bool isRightHand,
+            WeaponItem weapon)
+        {
+            if (weaponSlots == null ||
+                slotIndex < 0 ||
+                slotIndex >= weaponSlots.Length)
+            {
+                return false;
+            }
+
+            WeaponItem previousWeapon = weaponSlots[slotIndex];
+            if (previousWeapon != null && !previousWeapon.IsUnarmed)
+            {
+                AddItemToInventory(previousWeapon);
+            }
+
+            weaponSlots[slotIndex] = weapon;
+            if (!RemoveItemFromInventory(weapon))
+            {
+                weaponSlots[slotIndex] = previousWeapon;
+                RemoveItemFromInventory(previousWeapon);
+                return false;
+            }
+
+            int selectedIndex = isRightHand
+                ? m_rightHandWeaponIndex
+                : m_leftHandWeaponIndex;
+            if (slotIndex == selectedIndex)
+            {
+                SetEquippedWeaponID(isRightHand, weapon.ItemID);
+            }
+
+            return true;
+        }
+
+        private bool UnequipWeaponInSlot(
+            WeaponItem[] weaponSlots,
+            int slotIndex,
+            bool isRightHand)
+        {
+            if (weaponSlots == null ||
+                slotIndex < 0 ||
+                slotIndex >= weaponSlots.Length)
+            {
+                return false;
+            }
+
+            WeaponItem previousWeapon = weaponSlots[slotIndex];
+            if (previousWeapon == null || previousWeapon.IsUnarmed)
+            {
+                return false;
+            }
+
+            AddItemToInventory(previousWeapon);
+            weaponSlots[slotIndex] = m_unarmedWeapon;
+            int selectedIndex = isRightHand
+                ? m_rightHandWeaponIndex
+                : m_leftHandWeaponIndex;
+            if (slotIndex == selectedIndex)
+            {
+                SetEquippedWeaponID(
+                    isRightHand,
+                    m_unarmedWeapon?.ItemID ?? 0);
+            }
+
+            return true;
+        }
+
+        private bool EquipArmorItem<T>(
+            T previousEquipment,
+            T newEquipment,
+            Action<int> setEquipmentID)
+            where T : ArmorItem
+        {
+            Item previousTemplate = ResolveInventoryTemplate(previousEquipment);
+            if (previousEquipment != null && previousTemplate == null)
+            {
+                Debug.LogWarning(
+                    $"Could not return equipped item {previousEquipment.ItemID} to inventory.",
+                    this);
+                return false;
+            }
+
+            if (previousTemplate != null)
+            {
+                AddItemToInventory(previousTemplate);
+            }
+
+            if (!RemoveItemFromInventory(newEquipment))
+            {
+                RemoveItemFromInventory(previousTemplate);
+                return false;
+            }
+
+            setEquipmentID(newEquipment.ItemID);
+            return true;
+        }
+
+        private bool UnequipArmorItem<T>(
+            T currentEquipment,
+            Action<int> setEquipmentID)
+            where T : ArmorItem
+        {
+            if (currentEquipment == null)
+            {
+                return false;
+            }
+
+            Item template = ResolveInventoryTemplate(currentEquipment);
+            if (template == null || !AddItemToInventory(template))
+            {
+                return false;
+            }
+
+            setEquipmentID(-1);
+            return true;
+        }
+
+        private Item ResolveInventoryTemplate(Item runtimeItem)
+        {
+            if (runtimeItem == null)
+            {
+                return null;
+            }
+
+            WorldItemDatabase database = WorldItemDatabase.Instance;
+            return runtimeItem switch
+            {
+                WeaponItem => ResolveWeaponTemplate(runtimeItem.ItemID),
+                HeadEquipmentItem =>
+                    database?.GetHeadEquipmentByID(runtimeItem.ItemID) ??
+                    GetMatchingFallback(m_startingHeadEquipment, runtimeItem.ItemID),
+                BodyEquipmentItem =>
+                    database?.GetBodyEquipmentByID(runtimeItem.ItemID) ??
+                    GetMatchingFallback(m_startingBodyEquipment, runtimeItem.ItemID),
+                LegEquipmentItem =>
+                    database?.GetLegEquipmentByID(runtimeItem.ItemID) ??
+                    GetMatchingFallback(m_startingLegEquipment, runtimeItem.ItemID),
+                HandEquipmentItem =>
+                    database?.GetHandEquipmentByID(runtimeItem.ItemID) ??
+                    GetMatchingFallback(m_startingHandEquipment, runtimeItem.ItemID),
+                _ => null
+            };
+        }
+
+        private void SetEquippedWeaponID(bool isRightHand, int weaponID)
+        {
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager?.IsSpawned == true && networkManager.IsOwner)
+            {
+                if (isRightHand)
+                {
+                    networkManager.CurrentRightHandWeaponID.Value = weaponID;
+                }
+                else
+                {
+                    networkManager.CurrentLeftHandWeaponID.Value = weaponID;
+                }
+
+                return;
+            }
+
+            if (isRightHand)
+            {
+                EquipRightWeaponFromID(weaponID);
+            }
+            else
+            {
+                EquipLeftWeaponFromID(weaponID);
+            }
+        }
+
+        private void SetHeadEquipmentID(int itemID)
+        {
+            SetArmorEquipmentID(
+                itemID,
+                network => network.CurrentHeadEquipmentID.Value = itemID,
+                EquipHeadEquipmentFromID);
+        }
+
+        private void SetBodyEquipmentID(int itemID)
+        {
+            SetArmorEquipmentID(
+                itemID,
+                network => network.CurrentBodyEquipmentID.Value = itemID,
+                EquipBodyEquipmentFromID);
+        }
+
+        private void SetLegEquipmentID(int itemID)
+        {
+            SetArmorEquipmentID(
+                itemID,
+                network => network.CurrentLegEquipmentID.Value = itemID,
+                EquipLegEquipmentFromID);
+        }
+
+        private void SetHandEquipmentID(int itemID)
+        {
+            SetArmorEquipmentID(
+                itemID,
+                network => network.CurrentHandEquipmentID.Value = itemID,
+                EquipHandEquipmentFromID);
+        }
+
+        private void SetArmorEquipmentID(
+            int itemID,
+            Action<PlayerNetworkManager> setNetworkID,
+            Action<int> applyLocally)
+        {
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager?.IsSpawned == true && networkManager.IsOwner)
+            {
+                setNetworkID(networkManager);
+                return;
+            }
+
+            applyLocally(itemID);
+        }
+
+        private bool TryGetWeaponSlot(
+            EquipmentSlotType equipmentSlot,
+            out WeaponItem[] weaponSlots,
+            out int slotIndex,
+            out bool isRightHand)
+        {
+            int rawSlot = (int)equipmentSlot;
+            if (rawSlot >= (int)EquipmentSlotType.RightWeapon01 &&
+                rawSlot <= (int)EquipmentSlotType.RightWeapon03)
+            {
+                weaponSlots = m_weaponsInRightHandSlots;
+                slotIndex = rawSlot - (int)EquipmentSlotType.RightWeapon01;
+                isRightHand = true;
+                return true;
+            }
+
+            if (rawSlot >= (int)EquipmentSlotType.LeftWeapon01 &&
+                rawSlot <= (int)EquipmentSlotType.LeftWeapon03)
+            {
+                weaponSlots = m_weaponsInLeftHandSlots;
+                slotIndex = rawSlot - (int)EquipmentSlotType.LeftWeapon01;
+                isRightHand = false;
+                return true;
+            }
+
+            weaponSlots = null;
+            slotIndex = -1;
+            isRightHand = false;
+            return false;
+        }
+
+        private static T GetMatchingFallback<T>(T fallback, int itemID)
+            where T : Item
+        {
+            return fallback != null && fallback.ItemID == itemID
+                ? fallback
+                : null;
         }
 
         private bool CanSwitchWeapons()

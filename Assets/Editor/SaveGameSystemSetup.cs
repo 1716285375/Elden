@@ -216,7 +216,7 @@ namespace ZZ.Editor
                     saveGameManager,
                     "m_feedbackText",
                     feedback.GetComponent<TMP_Text>());
-                SetObjectReference(saveGameManager, "m_menuEventSystem", menuEventSystem);
+                SetObjectReference(playerUIManager, "m_menuEventSystem", menuEventSystem);
                 SetObjectReference(
                     playerUIManager,
                     "m_playerUISaveGameManager",
@@ -1129,9 +1129,6 @@ namespace ZZ.Editor
                 SerializedObject serializedPlayerUI = playerUIManager != null
                     ? new SerializedObject(playerUIManager)
                     : null;
-                SerializedObject serializedSaveMenu = saveGameManager != null
-                    ? new SerializedObject(saveGameManager)
-                    : null;
 
                 if (playerUIManager == null ||
                     saveGameManager == null ||
@@ -1147,9 +1144,9 @@ namespace ZZ.Editor
                     returnButton.navigation.mode != Navigation.Mode.Explicit ||
                     serializedPlayerUI.FindProperty("m_playerUISaveGameManager")
                         ?.objectReferenceValue != saveGameManager ||
-                    serializedSaveMenu.FindProperty("m_saveGameMenu")
-                        ?.objectReferenceValue != saveMenu ||
-                    serializedSaveMenu.FindProperty("m_menuEventSystem")
+                    new SerializedObject(saveGameManager)
+                        .FindProperty("m_saveGameMenu")?.objectReferenceValue != saveMenu ||
+                    serializedPlayerUI.FindProperty("m_menuEventSystem")
                         ?.objectReferenceValue != menuEventSystem)
                 {
                     throw new InvalidOperationException(
@@ -1167,17 +1164,18 @@ namespace ZZ.Editor
             InputActionAsset inputActions = AssetDatabase.LoadAssetAtPath<InputActionAsset>(
                 k_PlayerControlsPath);
             InputAction deleteAction = inputActions?.FindActionMap("UI")?.FindAction("Delete");
-            InputAction toggleSaveMenuAction =
-                inputActions?.FindActionMap("UI")?.FindAction("Toggle Save Menu");
+            InputAction openCharacterMenuAction = inputActions
+                ?.FindActionMap("UI")
+                ?.FindAction("Open Character Menu");
             if (deleteAction == null ||
                 !HasBinding(deleteAction, "<Gamepad>/buttonWest") ||
                 !HasBinding(deleteAction, "<Keyboard>/delete") ||
-                toggleSaveMenuAction == null ||
-                !HasBinding(toggleSaveMenuAction, "<Gamepad>/start") ||
-                !HasBinding(toggleSaveMenuAction, "<Keyboard>/escape"))
+                openCharacterMenuAction == null ||
+                !HasBinding(openCharacterMenuAction, "<Gamepad>/start") ||
+                !HasBinding(openCharacterMenuAction, "<Keyboard>/escape"))
             {
                 throw new InvalidOperationException(
-                    "PlayerControls must support title deletion and keyboard/controller Save Menu input.");
+                    "PlayerControls must support title deletion and keyboard/controller menu input.");
             }
         }
 

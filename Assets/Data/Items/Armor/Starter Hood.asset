@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Starter Hood
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.HeadEquipmentItem
   m_itemName: Starter Hood
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 21300000, guid: 9542041f6b79eb749a3d3c6d53ff4d3e, type: 3}
   m_itemDescription: A dependable starter hood fitted to a wandering warrior.
   m_itemID: 4
   m_itemWeight: 2.5

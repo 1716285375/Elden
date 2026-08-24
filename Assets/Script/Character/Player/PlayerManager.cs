@@ -159,6 +159,7 @@ namespace ZZ
                 }
 
                 PlayerUIManager playerUIManager = PlayerUIManager.Instance;
+                playerUIManager?.SetMenuInputBlocked(true);
                 playerUIManager?.PlayerUISaveGameManager?.SetDeathInputBlocked(true);
                 PlayerInputManager.Instance?.BlockGameplayInput();
                 m_isDeathInputBlocked = true;
@@ -334,8 +335,10 @@ namespace ZZ
                 return;
             }
 
-            PlayerUIManager.Instance?.PlayerUISaveGameManager?.SetDeathInputBlocked(false);
-            PlayerUIManager.Instance?.PlayerUIPopUpManager?.HideYouDiedPopup();
+            PlayerUIManager playerUIManager = PlayerUIManager.Instance;
+            playerUIManager?.SetMenuInputBlocked(false);
+            playerUIManager?.PlayerUISaveGameManager?.SetDeathInputBlocked(false);
+            playerUIManager?.PlayerUIPopUpManager?.HideYouDiedPopup();
             PlayerInputManager.Instance?.UnblockGameplayInput();
             m_isDeathInputBlocked = false;
         }

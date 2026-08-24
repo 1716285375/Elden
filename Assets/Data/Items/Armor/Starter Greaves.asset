@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Starter Greaves
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.LegEquipmentItem
   m_itemName: Starter Greaves
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 21300000, guid: a36f626544d95c14ea210384f8c1eae6, type: 3}
   m_itemDescription: A dependable starter greaves fitted to a wandering warrior.
   m_itemID: 7
   m_itemWeight: 5

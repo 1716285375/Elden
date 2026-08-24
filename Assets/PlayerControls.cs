@@ -728,9 +728,27 @@ namespace ZZ
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Toggle Save Menu"",
+                    ""name"": ""Open Character Menu"",
                     ""type"": ""Button"",
-                    ""id"": ""8a6ac046-35ea-4c52-9e13-acde00f5da2e"",
+                    ""id"": ""431b06d2-999b-4af6-8ccf-562da955f94f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Close Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""57a6421b-c297-4af6-8f53-0dcaf1dc93fd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Unequip Item"",
+                    ""type"": ""Button"",
+                    ""id"": ""b9433be7-b2e4-4189-9371-9c04e9eddb5e"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -761,24 +779,57 @@ namespace ZZ
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""Gamepad Menu Button"",
-                    ""id"": ""76a9e93b-1acb-4ba4-9d13-acde00f5da2e"",
+                    ""name"": """",
+                    ""id"": ""2193280b-6938-46fd-8f62-ae927ed87c54"",
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Toggle Save Menu"",
+                    ""action"": ""Open Character Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""Keyboard Escape"",
-                    ""id"": ""72332148-c050-4520-9d13-acde00f5da2e"",
+                    ""name"": """",
+                    ""id"": ""23366941-54e4-4e20-8821-4385ae4dd150"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Toggle Save Menu"",
+                    ""action"": ""Open Character Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4d4ad2a2-c937-4fb5-a6ee-3f16ff695de2"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Close Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""75f36284-fc13-4e90-9815-0ec1db0303e8"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Unequip Item"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c0f084e9-dedb-4fdc-a3cb-5b254ab690bf"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Unequip Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -837,7 +888,9 @@ namespace ZZ
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Delete = m_UI.FindAction("Delete", throwIfNotFound: true);
-            m_UI_ToggleSaveMenu = m_UI.FindAction("Toggle Save Menu", throwIfNotFound: true);
+            m_UI_OpenCharacterMenu = m_UI.FindAction("Open Character Menu", throwIfNotFound: true);
+            m_UI_CloseMenu = m_UI.FindAction("Close Menu", throwIfNotFound: true);
+            m_UI_UnequipItem = m_UI.FindAction("Unequip Item", throwIfNotFound: true);
         }
 
         ~@PlayerControls()
@@ -1256,7 +1309,9 @@ namespace ZZ
         private readonly InputActionMap m_UI;
         private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
         private readonly InputAction m_UI_Delete;
-        private readonly InputAction m_UI_ToggleSaveMenu;
+        private readonly InputAction m_UI_OpenCharacterMenu;
+        private readonly InputAction m_UI_CloseMenu;
+        private readonly InputAction m_UI_UnequipItem;
         /// <summary>
         /// Provides access to input actions defined in input action map "UI".
         /// </summary>
@@ -1273,9 +1328,17 @@ namespace ZZ
             /// </summary>
             public InputAction @Delete => m_Wrapper.m_UI_Delete;
             /// <summary>
-            /// Provides access to the underlying input action "UI/ToggleSaveMenu".
+            /// Provides access to the underlying input action "UI/OpenCharacterMenu".
             /// </summary>
-            public InputAction @ToggleSaveMenu => m_Wrapper.m_UI_ToggleSaveMenu;
+            public InputAction @OpenCharacterMenu => m_Wrapper.m_UI_OpenCharacterMenu;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/CloseMenu".
+            /// </summary>
+            public InputAction @CloseMenu => m_Wrapper.m_UI_CloseMenu;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/UnequipItem".
+            /// </summary>
+            public InputAction @UnequipItem => m_Wrapper.m_UI_UnequipItem;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1305,9 +1368,15 @@ namespace ZZ
                 @Delete.started += instance.OnDelete;
                 @Delete.performed += instance.OnDelete;
                 @Delete.canceled += instance.OnDelete;
-                @ToggleSaveMenu.started += instance.OnToggleSaveMenu;
-                @ToggleSaveMenu.performed += instance.OnToggleSaveMenu;
-                @ToggleSaveMenu.canceled += instance.OnToggleSaveMenu;
+                @OpenCharacterMenu.started += instance.OnOpenCharacterMenu;
+                @OpenCharacterMenu.performed += instance.OnOpenCharacterMenu;
+                @OpenCharacterMenu.canceled += instance.OnOpenCharacterMenu;
+                @CloseMenu.started += instance.OnCloseMenu;
+                @CloseMenu.performed += instance.OnCloseMenu;
+                @CloseMenu.canceled += instance.OnCloseMenu;
+                @UnequipItem.started += instance.OnUnequipItem;
+                @UnequipItem.performed += instance.OnUnequipItem;
+                @UnequipItem.canceled += instance.OnUnequipItem;
             }
 
             /// <summary>
@@ -1322,9 +1391,15 @@ namespace ZZ
                 @Delete.started -= instance.OnDelete;
                 @Delete.performed -= instance.OnDelete;
                 @Delete.canceled -= instance.OnDelete;
-                @ToggleSaveMenu.started -= instance.OnToggleSaveMenu;
-                @ToggleSaveMenu.performed -= instance.OnToggleSaveMenu;
-                @ToggleSaveMenu.canceled -= instance.OnToggleSaveMenu;
+                @OpenCharacterMenu.started -= instance.OnOpenCharacterMenu;
+                @OpenCharacterMenu.performed -= instance.OnOpenCharacterMenu;
+                @OpenCharacterMenu.canceled -= instance.OnOpenCharacterMenu;
+                @CloseMenu.started -= instance.OnCloseMenu;
+                @CloseMenu.performed -= instance.OnCloseMenu;
+                @CloseMenu.canceled -= instance.OnCloseMenu;
+                @UnequipItem.started -= instance.OnUnequipItem;
+                @UnequipItem.performed -= instance.OnUnequipItem;
+                @UnequipItem.canceled -= instance.OnUnequipItem;
             }
 
             /// <summary>
@@ -1520,12 +1595,26 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnDelete(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "Toggle Save Menu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "Open Character Menu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnToggleSaveMenu(InputAction.CallbackContext context);
+            void OnOpenCharacterMenu(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Close Menu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnCloseMenu(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Unequip Item" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnUnequipItem(InputAction.CallbackContext context);
         }
     }
 }

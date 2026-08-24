@@ -11,6 +11,8 @@ namespace ZZ
         [SerializeField] private UIQuickSlot m_rightWeaponQuickSlot;
         [SerializeField] private UIQuickSlot m_spellQuickSlot;
         [SerializeField] private UIQuickSlot m_itemQuickSlot;
+        [SerializeField] private CanvasGroup[] m_hudCanvasGroups =
+            System.Array.Empty<CanvasGroup>();
 
         private CharacterNetworkManager m_boundNetworkManager;
         private PlayerInventoryManager m_boundInventoryManager;
@@ -140,6 +142,18 @@ namespace ZZ
             }
         }
 
+        /// <summary>Hides gameplay HUD groups while preserving their runtime bindings.</summary>
+        public void HideHUD()
+        {
+            SetHUDVisibility(false);
+        }
+
+        /// <summary>Restores gameplay HUD groups after every modal menu closes.</summary>
+        public void ShowHUD()
+        {
+            SetHUDVisibility(true);
+        }
+
         private void OnCurrentHealthChanged(float previousHealth, float currentHealth)
         {
             SetNewHealthValue(currentHealth);
@@ -235,6 +249,26 @@ namespace ZZ
             bool wasActive = statBarObject.activeSelf;
             statBarObject.SetActive(false);
             statBarObject.SetActive(wasActive);
+        }
+
+        private void SetHUDVisibility(bool isVisible)
+        {
+            if (m_hudCanvasGroups == null)
+            {
+                return;
+            }
+
+            foreach (CanvasGroup canvasGroup in m_hudCanvasGroups)
+            {
+                if (canvasGroup == null)
+                {
+                    continue;
+                }
+
+                canvasGroup.alpha = isVisible ? 1f : 0f;
+                canvasGroup.interactable = isVisible;
+                canvasGroup.blocksRaycasts = isVisible;
+            }
         }
     }
 }
