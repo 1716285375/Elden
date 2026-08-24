@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Starter Gauntlets
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.HandEquipmentItem
   m_itemName: Starter Gauntlets
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 21300000, guid: 17cedaf9728271c4c8e3f310474dc283, type: 3}
   m_itemDescription: A dependable starter gauntlets fitted to a wandering warrior.
   m_itemID: 6
   m_itemWeight: 3.5

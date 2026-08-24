@@ -307,6 +307,11 @@ namespace ZZ
 
         private void HandleAllInputs()
         {
+            if (PlayerUIManager.Instance?.IsMenuWindowOpen == true)
+            {
+                return;
+            }
+
             HandleCameraMovementInput();
             HandleLockOnInput();
             HandlePlayerMovementInput();

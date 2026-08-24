@@ -640,9 +640,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Toggle Save Menu",
+                    "name": "Open Character Menu",
                     "type": "Button",
-                    "id": "8a6ac046-35ea-4c52-9e13-acde00f5da2e",
+                    "id": "431b06d2-999b-4af6-8ccf-562da955f94f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Close Menu",
+                    "type": "Button",
+                    "id": "57a6421b-c297-4af6-8f53-0dcaf1dc93fd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Unequip Item",
+                    "type": "Button",
+                    "id": "b9433be7-b2e4-4189-9371-9c04e9eddb5e",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -673,24 +691,57 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "Gamepad Menu Button",
-                    "id": "76a9e93b-1acb-4ba4-9d13-acde00f5da2e",
+                    "name": "",
+                    "id": "2193280b-6938-46fd-8f62-ae927ed87c54",
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Toggle Save Menu",
+                    "action": "Open Character Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "Keyboard Escape",
-                    "id": "72332148-c050-4520-9d13-acde00f5da2e",
+                    "name": "",
+                    "id": "23366941-54e4-4e20-8821-4385ae4dd150",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Toggle Save Menu",
+                    "action": "Open Character Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d4ad2a2-c937-4fb5-a6ee-3f16ff695de2",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Close Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "75f36284-fc13-4e90-9815-0ec1db0303e8",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Unequip Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c0f084e9-dedb-4fdc-a3cb-5b254ab690bf",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Unequip Item",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
