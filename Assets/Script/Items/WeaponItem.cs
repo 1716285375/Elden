@@ -177,6 +177,14 @@ namespace ZZ
         public AshOfWar AshOfWarAction => m_ashOfWarAction;
 
         /// <summary>
+        /// Applies per-instance saved Ash of War state to a runtime weapon copy.
+        /// </summary>
+        public void SetAshOfWar(AshOfWar ashOfWar)
+        {
+            m_ashOfWarAction = ashOfWar;
+        }
+
+        /// <summary>
         /// Returns the damage multiplier applied to the supplied attack type.
         /// </summary>
         public float GetAttackDamageModifier(AttackType attackType)

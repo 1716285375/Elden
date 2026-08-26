@@ -135,6 +135,93 @@ namespace ZZ
             return GetItemByID(itemID, m_quickSlotItems);
         }
 
+        /// <summary>
+        /// Rebuilds one private weapon instance, including its saved Ash of War.
+        /// Invalid identifiers resolve to a private Unarmed fallback.
+        /// </summary>
+        public WeaponItem GetWeaponFromSerializedData(SerializableWeapon data)
+        {
+            WeaponItem template = data != null
+                ? GetWeaponByID(data.ItemID)
+                : null;
+            bool resolvedSavedWeapon = template != null;
+            template ??= GetUnarmedWeaponTemplate();
+            WeaponItem runtimeWeapon = CreateRuntimeItem(template, "Weapon");
+            if (runtimeWeapon == null)
+            {
+                Debug.LogError(
+                    "WorldItemDatabase does not contain an Unarmed weapon fallback.",
+                    this);
+                return null;
+            }
+
+            if (resolvedSavedWeapon)
+            {
+                runtimeWeapon.SetAshOfWar(
+                    data.AshOfWarID >= 0
+                        ? GetAshOfWarByID(data.AshOfWarID)
+                        : null);
+            }
+
+            return runtimeWeapon;
+        }
+
+        /// <summary>Rebuilds one private ammunition stack from saved state.</summary>
+        public RangedProjectileItem GetProjectileFromSerializedData(
+            SerializableRangeProjectile data)
+        {
+            if (data == null || data.ItemID < 0)
+            {
+                return null;
+            }
+
+            RangedProjectileItem runtimeProjectile = CreateRuntimeItem(
+                GetProjectileByID(data.ItemID),
+                "Projectile");
+            runtimeProjectile?.SetCurrentAmmoAmount(data.ItemAmount);
+            return runtimeProjectile;
+        }
+
+        /// <summary>Rebuilds one private gameplay quick-slot item from saved state.</summary>
+        public QuickSlotItem GetQuickSlotItemFromSerializedData(
+            SerializableQuickSlotItem data)
+        {
+            if (data == null || data.ItemID < 0)
+            {
+                return null;
+            }
+
+            QuickSlotItem runtimeItem = CreateRuntimeItem(
+                GetQuickSlotItemByID(data.ItemID),
+                "Quick Slot Item");
+            runtimeItem?.SetCurrentAmount(data.ItemAmount);
+            return runtimeItem;
+        }
+
+        /// <summary>Rebuilds a private head-equipment inventory item.</summary>
+        public HeadEquipmentItem GetRuntimeHeadEquipmentByID(int itemID)
+        {
+            return CreateRuntimeItem(GetHeadEquipmentByID(itemID), "Head Equipment");
+        }
+
+        /// <summary>Rebuilds a private body-equipment inventory item.</summary>
+        public BodyEquipmentItem GetRuntimeBodyEquipmentByID(int itemID)
+        {
+            return CreateRuntimeItem(GetBodyEquipmentByID(itemID), "Body Equipment");
+        }
+
+        /// <summary>Rebuilds a private hand-equipment inventory item.</summary>
+        public HandEquipmentItem GetRuntimeHandEquipmentByID(int itemID)
+        {
+            return CreateRuntimeItem(GetHandEquipmentByID(itemID), "Hand Equipment");
+        }
+
+        /// <summary>Rebuilds a private leg-equipment inventory item.</summary>
+        public LegEquipmentItem GetRuntimeLegEquipmentByID(int itemID)
+        {
+            return CreateRuntimeItem(GetLegEquipmentByID(itemID), "Leg Equipment");
+        }
+
         private void AssignItemIDs()
         {
             AppendMissingItems(m_spells);
@@ -176,6 +263,33 @@ namespace ZZ
             }
 
             return typedItems == null || typedItems.Contains(item) ? item : null;
+        }
+
+        private WeaponItem GetUnarmedWeaponTemplate()
+        {
+            foreach (Item item in m_items)
+            {
+                if (item is WeaponItem weapon && weapon.IsUnarmed)
+                {
+                    return weapon;
+                }
+            }
+
+            return null;
+        }
+
+        private static T CreateRuntimeItem<T>(T template, string itemType)
+            where T : Item
+        {
+            if (template == null)
+            {
+                return null;
+            }
+
+            T runtimeItem = Instantiate(template);
+            runtimeItem.name = $"{template.name} ({itemType} Runtime)";
+            runtimeItem.hideFlags = HideFlags.DontSave;
+            return runtimeItem;
         }
     }
 }

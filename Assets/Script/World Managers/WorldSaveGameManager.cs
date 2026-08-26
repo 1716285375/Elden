@@ -175,6 +175,36 @@ namespace ZZ
             }
         }
 
+        /// <summary>Converts one runtime weapon instance into persistent state.</summary>
+        public static SerializableWeapon GetSerializableWeaponFromWeaponItem(
+            WeaponItem weapon)
+        {
+            return new SerializableWeapon(
+                weapon?.ItemID ?? -1,
+                weapon?.AshOfWarAction?.ItemID ?? -1);
+        }
+
+        /// <summary>Converts one runtime ammunition stack into persistent state.</summary>
+        public static SerializableRangeProjectile
+            GetSerializableProjectileFromProjectileItem(
+                RangedProjectileItem projectile)
+        {
+            return new SerializableRangeProjectile(
+                projectile?.ItemID ?? -1,
+                projectile?.CurrentAmmoAmount ?? 0);
+        }
+
+        /// <summary>Converts one runtime quick-slot item into persistent state.</summary>
+        public static SerializableQuickSlotItem
+            GetSerializableQuickSlotItemFromQuickSlotItem(
+                QuickSlotItem quickSlotItem,
+                PlayerManager player)
+        {
+            return new SerializableQuickSlotItem(
+                quickSlotItem?.ItemID ?? -1,
+                quickSlotItem?.GetCurrentAmount(player) ?? 0);
+        }
+
         /// <summary>
         /// Preserves the existing title-screen entry point for creating a new character.
         /// </summary>

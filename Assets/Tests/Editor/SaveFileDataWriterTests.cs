@@ -112,7 +112,13 @@ namespace ZZ.Tests
             Assert.That(characterData.CurrentHealth, Is.EqualTo(150f));
             Assert.That(characterData.CurrentStamina, Is.EqualTo(100f));
             Assert.That(characterData.CurrentFocusPoints, Is.EqualTo(100f));
+            Assert.That(characterData.CurrentHealthFlasksRemaining, Is.EqualTo(3));
+            Assert.That(characterData.CurrentFocusPointFlasksRemaining, Is.EqualTo(1));
             Assert.That(characterData.CurrentSpellID, Is.EqualTo(10));
+            Assert.That(characterData.MainProjectile.ItemID, Is.EqualTo(12));
+            Assert.That(characterData.MainProjectile.ItemAmount, Is.EqualTo(30));
+            Assert.That(characterData.QuickSlotItem01.ItemID, Is.EqualTo(14));
+            Assert.That(characterData.QuickSlotItem02.ItemID, Is.EqualTo(15));
             Assert.That(characterData.HeadEquipmentID, Is.EqualTo(-1));
             Assert.That(characterData.BodyEquipmentID, Is.EqualTo(-1));
             Assert.That(characterData.HandEquipmentID, Is.EqualTo(-1));

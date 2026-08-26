@@ -390,7 +390,10 @@ namespace ZZ
         public void InitializeCurrentQuickSlotItemFromID(int quickSlotItemID)
         {
             EnsureQuickSlotItemArray();
-            QuickSlotItem quickSlotItem = quickSlotItemID >= 0
+            QuickSlotItem quickSlotItem = m_player?.IsOwner == true
+                ? ResolveOwnedQuickSlotItem(quickSlotItemID)
+                : null;
+            quickSlotItem ??= quickSlotItemID >= 0
                 ? WorldItemDatabase.Instance?.GetQuickSlotItemByID(
                     quickSlotItemID)
                 : null;
@@ -456,6 +459,14 @@ namespace ZZ
             DestroyRuntimeItem(m_currentLegEquipment);
             DestroyRuntimeItem(m_mainProjectile);
             DestroyRuntimeItem(m_secondaryProjectile);
+            DestroyRuntimeItems(m_weaponsInRightHandSlots);
+            DestroyRuntimeItems(m_weaponsInLeftHandSlots);
+            DestroyRuntimeItems(m_quickSlotItemsInQuickSlots);
+            if (m_itemsInInventory == null)
+            {
+                return;
+            }
+
             foreach (Item item in m_itemsInInventory)
             {
                 DestroyRuntimeItem(item);
@@ -468,10 +479,31 @@ namespace ZZ
             return GetQuickSlotItemID(m_weaponsInRightHandSlots, slotIndex);
         }
 
+        /// <summary>Returns one right-hand runtime weapon slot.</summary>
+        public WeaponItem GetRightHandQuickSlotItem(int slotIndex)
+        {
+            return GetQuickSlotItem(m_weaponsInRightHandSlots, slotIndex);
+        }
+
         /// <summary>Returns the stable item ID saved for one left-hand quick slot.</summary>
         public int GetLeftHandQuickSlotItemID(int slotIndex)
         {
             return GetQuickSlotItemID(m_weaponsInLeftHandSlots, slotIndex);
+        }
+
+        /// <summary>Returns one left-hand runtime weapon slot.</summary>
+        public WeaponItem GetLeftHandQuickSlotItem(int slotIndex)
+        {
+            return GetQuickSlotItem(m_weaponsInLeftHandSlots, slotIndex);
+        }
+
+        /// <summary>Returns one gameplay quick-slot runtime item.</summary>
+        public QuickSlotItem GetQuickSlotItem(int slotIndex)
+        {
+            EnsureQuickSlotItemArray();
+            return slotIndex >= 0 && slotIndex < m_quickSlotItemsInQuickSlots.Length
+                ? m_quickSlotItemsInQuickSlots[slotIndex]
+                : null;
         }
 
         /// <summary>Restores all weapon quick slots, selected indices, and equipped weapons.</summary>
@@ -481,8 +513,24 @@ namespace ZZ
             int rightHandIndex,
             int leftHandIndex)
         {
-            RestoreQuickSlots(m_weaponsInRightHandSlots, rightHandItemIDs);
-            RestoreQuickSlots(m_weaponsInLeftHandSlots, leftHandItemIDs);
+            RestoreWeaponLoadout(
+                ConvertWeaponIDs(rightHandItemIDs),
+                ConvertWeaponIDs(leftHandItemIDs),
+                rightHandIndex,
+                leftHandIndex);
+        }
+
+        /// <summary>
+        /// Restores private weapon slots and selects the saved owner instances.
+        /// </summary>
+        public void RestoreWeaponLoadout(
+            SerializableWeapon[] rightHandWeapons,
+            SerializableWeapon[] leftHandWeapons,
+            int rightHandIndex,
+            int leftHandIndex)
+        {
+            RestoreQuickSlots(m_weaponsInRightHandSlots, rightHandWeapons);
+            RestoreQuickSlots(m_weaponsInLeftHandSlots, leftHandWeapons);
             m_rightHandWeaponIndex = Mathf.Clamp(rightHandIndex, 0, k_QuickSlotCount - 1);
             m_leftHandWeaponIndex = Mathf.Clamp(leftHandIndex, 0, k_QuickSlotCount - 1);
 
@@ -495,6 +543,107 @@ namespace ZZ
                 GetQuickSlotItemID(m_weaponsInRightHandSlots, m_rightHandWeaponIndex);
             m_player.PlayerNetworkManager.CurrentLeftHandWeaponID.Value =
                 GetQuickSlotItemID(m_weaponsInLeftHandSlots, m_leftHandWeaponIndex);
+            InitializeRightWeaponFromID(
+                m_player.PlayerNetworkManager.CurrentRightHandWeaponID.Value);
+            InitializeLeftWeaponFromID(
+                m_player.PlayerNetworkManager.CurrentLeftHandWeaponID.Value);
+        }
+
+        /// <summary>Restores both private ammunition instances and their network IDs.</summary>
+        public void RestoreProjectileLoadout(
+            SerializableRangeProjectile mainProjectile,
+            SerializableRangeProjectile secondaryProjectile)
+        {
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager != null && m_player.IsOwner)
+            {
+                networkManager.MainProjectileID.Value =
+                    mainProjectile?.ItemID ?? -1;
+                networkManager.SecondaryProjectileID.Value =
+                    secondaryProjectile?.ItemID ?? -1;
+            }
+
+            ReplaceRuntimeProjectileFromSerializedData(
+                ref m_mainProjectile,
+                mainProjectile);
+            ReplaceRuntimeProjectileFromSerializedData(
+                ref m_secondaryProjectile,
+                secondaryProjectile);
+            MainProjectileChanged?.Invoke(m_mainProjectile);
+            SecondaryProjectileChanged?.Invoke(m_secondaryProjectile);
+        }
+
+        /// <summary>
+        /// Restores all gameplay quick slots before selecting and publishing the current item.
+        /// </summary>
+        public void RestoreQuickSlotLoadout(
+            SerializableQuickSlotItem[] quickSlotItems,
+            int quickSlotItemIndex)
+        {
+            EnsureQuickSlotItemArray();
+            WorldItemDatabase database = WorldItemDatabase.Instance;
+            for (int slotIndex = 0; slotIndex < k_QuickSlotCount; slotIndex++)
+            {
+                DestroyRuntimeItem(m_quickSlotItemsInQuickSlots[slotIndex]);
+                SerializableQuickSlotItem savedItem =
+                    quickSlotItems != null && slotIndex < quickSlotItems.Length
+                        ? quickSlotItems[slotIndex]
+                        : null;
+                m_quickSlotItemsInQuickSlots[slotIndex] =
+                    database?.GetQuickSlotItemFromSerializedData(savedItem);
+            }
+
+            m_quickSlotItemIndex = Mathf.Clamp(
+                quickSlotItemIndex,
+                0,
+                k_QuickSlotCount - 1);
+            int currentItemID = m_quickSlotItemsInQuickSlots[
+                m_quickSlotItemIndex]?.ItemID ?? -1;
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager != null && m_player.IsOwner)
+            {
+                networkManager.CurrentQuickSlotItemID.Value = currentItemID;
+            }
+
+            InitializeCurrentQuickSlotItemFromID(currentItemID);
+        }
+
+        /// <summary>Clears and reconstructs the complete unequipped runtime inventory.</summary>
+        public void RestoreInventory(CharacterSaveData saveData)
+        {
+            ClearRuntimeInventory();
+            if (saveData == null || WorldItemDatabase.Instance == null)
+            {
+                return;
+            }
+
+            WorldItemDatabase database = WorldItemDatabase.Instance;
+            AddRuntimeItems(saveData.WeaponsInInventory,
+                database.GetWeaponFromSerializedData);
+            AddRuntimeItems(saveData.ProjectilesInInventory,
+                database.GetProjectileFromSerializedData);
+            AddRuntimeItems(saveData.QuickSlotItemsInInventory,
+                database.GetQuickSlotItemFromSerializedData);
+            AddRuntimeItems(saveData.HeadEquipmentInInventory,
+                database.GetRuntimeHeadEquipmentByID);
+            AddRuntimeItems(saveData.BodyEquipmentInInventory,
+                database.GetRuntimeBodyEquipmentByID);
+            AddRuntimeItems(saveData.HandEquipmentInInventory,
+                database.GetRuntimeHandEquipmentByID);
+            AddRuntimeItems(saveData.LegEquipmentInInventory,
+                database.GetRuntimeLegEquipmentByID);
+        }
+
+        /// <summary>Destroys every owned inventory instance and empties the list.</summary>
+        public void ClearRuntimeInventory()
+        {
+            m_itemsInInventory ??= new List<Item>();
+            foreach (Item item in m_itemsInInventory)
+            {
+                DestroyRuntimeItem(item);
+            }
+
+            m_itemsInInventory.Clear();
         }
 
         /// <summary>Reconstructs the initial armor presentation from synchronized IDs.</summary>
@@ -671,7 +820,7 @@ namespace ZZ
 
         private bool TryEquipRightWeaponFromID(int weaponID)
         {
-            WeaponItem runtimeWeapon = CreateRuntimeWeapon(weaponID);
+            WeaponItem runtimeWeapon = CreateRuntimeWeapon(weaponID, true);
             if (runtimeWeapon == null)
             {
                 return false;
@@ -691,7 +840,7 @@ namespace ZZ
 
         private bool TryEquipLeftWeaponFromID(int weaponID)
         {
-            WeaponItem runtimeWeapon = CreateRuntimeWeapon(weaponID);
+            WeaponItem runtimeWeapon = CreateRuntimeWeapon(weaponID, false);
             if (runtimeWeapon == null)
             {
                 return false;
@@ -1202,9 +1351,25 @@ namespace ZZ
             return null;
         }
 
-        private WeaponItem CreateRuntimeWeapon(int weaponID)
+        private QuickSlotItem ResolveOwnedQuickSlotItem(int quickSlotItemID)
         {
-            WeaponItem template = ResolveWeaponTemplate(weaponID) ?? m_unarmedWeapon;
+            if (m_quickSlotItemIndex >= 0 &&
+                m_quickSlotItemIndex < m_quickSlotItemsInQuickSlots.Length &&
+                m_quickSlotItemsInQuickSlots[m_quickSlotItemIndex]?.ItemID ==
+                    quickSlotItemID)
+            {
+                return m_quickSlotItemsInQuickSlots[m_quickSlotItemIndex];
+            }
+
+            return FindQuickSlotItemByID(quickSlotItemID);
+        }
+
+        private WeaponItem CreateRuntimeWeapon(int weaponID, bool isRightHand)
+        {
+            WeaponItem template = ResolveOwnedWeaponSlot(
+                weaponID,
+                isRightHand) ?? ResolveWeaponTemplate(weaponID) ??
+                m_unarmedWeapon;
             if (template == null)
             {
                 Debug.LogError(
@@ -1217,6 +1382,32 @@ namespace ZZ
             runtimeWeapon.name = $"{template.name} (Runtime)";
             runtimeWeapon.hideFlags = HideFlags.DontSave;
             return runtimeWeapon;
+        }
+
+        private WeaponItem ResolveOwnedWeaponSlot(
+            int weaponID,
+            bool isRightHand)
+        {
+            if (m_player?.IsOwner != true)
+            {
+                return null;
+            }
+
+            WeaponItem[] weaponSlots = isRightHand
+                ? m_weaponsInRightHandSlots
+                : m_weaponsInLeftHandSlots;
+            int weaponIndex = isRightHand
+                ? m_rightHandWeaponIndex
+                : m_leftHandWeaponIndex;
+            if (weaponSlots != null &&
+                weaponIndex >= 0 &&
+                weaponIndex < weaponSlots.Length &&
+                weaponSlots[weaponIndex]?.ItemID == weaponID)
+            {
+                return weaponSlots[weaponIndex];
+            }
+
+            return FindWeaponByID(weaponSlots, weaponID);
         }
 
         private WeaponItem ResolveWeaponTemplate(int weaponID)
@@ -1489,14 +1680,47 @@ namespace ZZ
             }
         }
 
-        private void RestoreQuickSlots(WeaponItem[] quickSlots, int[] itemIDs)
+        private SerializableWeapon[] ConvertWeaponIDs(int[] itemIDs)
         {
+            SerializableWeapon[] savedWeapons =
+                new SerializableWeapon[k_QuickSlotCount];
             for (int slotIndex = 0; slotIndex < k_QuickSlotCount; slotIndex++)
             {
                 int itemID = itemIDs != null && slotIndex < itemIDs.Length
                     ? itemIDs[slotIndex]
                     : m_unarmedWeapon?.ItemID ?? 0;
-                quickSlots[slotIndex] = ResolveWeaponTemplate(itemID) ?? m_unarmedWeapon;
+                WeaponItem template = ResolveWeaponTemplate(itemID) ??
+                    m_unarmedWeapon;
+                savedWeapons[slotIndex] = WorldSaveGameManager
+                    .GetSerializableWeaponFromWeaponItem(template);
+            }
+
+            return savedWeapons;
+        }
+
+        private void RestoreQuickSlots(
+            WeaponItem[] quickSlots,
+            SerializableWeapon[] savedWeapons)
+        {
+            WorldItemDatabase database = WorldItemDatabase.Instance;
+            for (int slotIndex = 0; slotIndex < k_QuickSlotCount; slotIndex++)
+            {
+                DestroyRuntimeItem(quickSlots[slotIndex]);
+                SerializableWeapon savedWeapon = savedWeapons != null &&
+                    slotIndex < savedWeapons.Length
+                        ? savedWeapons[slotIndex]
+                        : null;
+                WeaponItem runtimeWeapon =
+                    database?.GetWeaponFromSerializedData(savedWeapon);
+                if (runtimeWeapon == null && m_unarmedWeapon != null)
+                {
+                    runtimeWeapon = Instantiate(m_unarmedWeapon);
+                    runtimeWeapon.name =
+                        $"{m_unarmedWeapon.name} (Weapon Runtime)";
+                    runtimeWeapon.hideFlags = HideFlags.DontSave;
+                }
+
+                quickSlots[slotIndex] = runtimeWeapon;
             }
         }
 
@@ -1510,11 +1734,69 @@ namespace ZZ
             return quickSlots[slotIndex]?.ItemID ?? 0;
         }
 
+        private static WeaponItem GetQuickSlotItem(
+            WeaponItem[] quickSlots,
+            int slotIndex)
+        {
+            if (quickSlots == null ||
+                slotIndex < 0 ||
+                slotIndex >= quickSlots.Length)
+            {
+                return null;
+            }
+
+            return quickSlots[slotIndex];
+        }
+
+        private void ReplaceRuntimeProjectileFromSerializedData(
+            ref RangedProjectileItem currentProjectile,
+            SerializableRangeProjectile savedProjectile)
+        {
+            RangedProjectileItem previousProjectile = currentProjectile;
+            currentProjectile = WorldItemDatabase.Instance
+                ?.GetProjectileFromSerializedData(savedProjectile);
+            DestroyRuntimeItem(previousProjectile);
+        }
+
+        private void AddRuntimeItems<TData, TItem>(
+            IEnumerable<TData> savedItems,
+            Func<TData, TItem> createRuntimeItem)
+            where TItem : Item
+        {
+            if (savedItems == null || createRuntimeItem == null)
+            {
+                return;
+            }
+
+            foreach (TData savedItem in savedItems)
+            {
+                TItem runtimeItem = createRuntimeItem(savedItem);
+                if (runtimeItem != null)
+                {
+                    AddItemToInventory(runtimeItem);
+                }
+            }
+        }
+
         private static void DestroyRuntimeItem(Item item)
         {
             if (item != null && (item.hideFlags & HideFlags.DontSave) != 0)
             {
                 Destroy(item);
+            }
+        }
+
+        private static void DestroyRuntimeItems<T>(IEnumerable<T> items)
+            where T : Item
+        {
+            if (items == null)
+            {
+                return;
+            }
+
+            foreach (T item in items)
+            {
+                DestroyRuntimeItem(item);
             }
         }
 
