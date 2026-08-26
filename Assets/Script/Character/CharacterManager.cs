@@ -12,6 +12,9 @@ namespace ZZ
         [SerializeField] private CharacterAnimatorManager m_characterAnimatorManager;
         [SerializeField] private CharacterNetworkManager m_characterNetworkManager;
 
+        [Header("Faction")]
+        [SerializeField] private CharacterGroup m_characterGroup;
+
         [Header("Critical Attacks")]
         [SerializeField] private Transform m_lockOnTransform;
 
@@ -40,6 +43,8 @@ namespace ZZ
         public CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
         public CharacterStatsManager CharacterStatsManager => m_characterStatsManager;
         public CharacterCombatManager CharacterCombatManager => m_characterCombatManager;
+        /// <summary>Gets the faction used by damage and reward eligibility rules.</summary>
+        public CharacterGroup CharacterGroup => m_characterGroup;
         /// <summary>Gets the character's cached movement-state controller.</summary>
         public CharacterLocomotionManager CharacterLocomotionManager =>
             m_characterLocomotionManager;

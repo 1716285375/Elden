@@ -246,6 +246,7 @@ namespace ZZ
 
             int damage = m_pendingCriticalDamage;
             m_pendingCriticalDamage = 0;
+            CharacterManager damageSource = m_pendingCriticalDamageSource;
             Vector3 hitDirection = m_pendingCriticalDamageSource != null
                 ? (Character.transform.position -
                     m_pendingCriticalDamageSource.transform.position).normalized
@@ -259,6 +260,12 @@ namespace ZZ
             if (!Character.IsOwner)
             {
                 return;
+            }
+
+            if (this is AICharacterCombatManager aiCombatManager)
+            {
+                aiCombatManager.RecordRuneRewardCandidate(
+                    damageSource as PlayerManager);
             }
 
             CharacterNetworkManager networkManager =

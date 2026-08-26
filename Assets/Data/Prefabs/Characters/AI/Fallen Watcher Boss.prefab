@@ -189,6 +189,31 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 10
+  Mind:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  Strength:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  Dexterity:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  Intelligence:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  Faith:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
   CurrentHealth:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -205,6 +230,16 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   MaxStamina:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  CurrentFocusPoints:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  MaxFocusPoints:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
@@ -230,6 +265,16 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   IsAttacking:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsParrying:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsParryable:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
@@ -265,11 +310,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterCombatManager
   m_currentAttackType: 0
   m_previousPoiseDamageTaken: 0
+  m_criticalAttackDistanceCheck: 0.7
+  m_criticalAttackHalfAngle: 60
+  m_characterLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_pendingCriticalDamage: 0
   m_canBeBackstabbed: 0
   m_leftHandDamageCollider: {fileID: 4370972032069321056}
   m_rightHandDamageCollider: {fileID: 9202134972856085035}
   m_physicalDamage: 25
   m_poiseDamage: 15
+  m_defaultAttackIsParryable: 1
   m_maximumStance: 150
   m_ignoreStanceBreak: 0
   m_stanceRegeneratedPerSecond: 25
@@ -298,6 +350,7 @@ MonoBehaviour:
   m_poiseResetTimer: 0
   m_strengthLevel: 10
   m_strengthModifier: 0
+  m_runesDroppedOnDeath: 5000
   m_blockingPhysicalAbsorption: 85
   m_blockingMagicAbsorption: 40
   m_blockingFireAbsorption: 35
@@ -326,6 +379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterEffectsManager
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
+  m_criticalBloodSplatterVFX: {fileID: 0}
   m_character: {fileID: 0}
   m_staticEffects: []
 --- !u!114 &4286986041506688607
@@ -344,6 +398,8 @@ MonoBehaviour:
   m_animator: {fileID: 1530318522751898554}
   m_characterAnimatorManager: {fileID: 30343454688366691}
   m_characterNetworkManager: {fileID: 4892175029703522127}
+  m_characterGroup: 1
+  m_lockOnTransform: {fileID: 0}
   m_hasFloatingHPBar: 0
   m_detectionRadius: 32
   m_loseTargetRadius: 42

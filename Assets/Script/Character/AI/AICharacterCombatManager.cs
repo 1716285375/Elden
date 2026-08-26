@@ -32,11 +32,15 @@ namespace ZZ
         private int m_currentStance;
         private float m_stanceRegenerationTimer;
         private float m_stanceTickTimer;
+        private PlayerManager m_runeRewardCandidate;
 
         public int MaximumStance => m_maximumStance;
         public int CurrentStance => m_currentStance;
         public float StanceRegenerationTimer => m_stanceRegenerationTimer;
         public bool IgnoreStanceBreak => m_ignoreStanceBreak;
+
+        /// <summary>Gets the last player whose owner-authoritative hit damaged this AI.</summary>
+        public PlayerManager RuneRewardCandidate => m_runeRewardCandidate;
 
         protected override void Awake()
         {
@@ -156,6 +160,58 @@ namespace ZZ
             CloseDamageColliders();
         }
 
+        /// <summary>Records the player eligible for a Rune award if this hit causes death.</summary>
+        public void RecordRuneRewardCandidate(PlayerManager player)
+        {
+            if (m_aiCharacter != null && m_aiCharacter.IsOwner && player != null)
+            {
+                m_runeRewardCandidate = player;
+            }
+        }
+
+        /// <summary>Clears stale kill credit when this AI is revived or reused.</summary>
+        public void ClearRuneRewardCandidate()
+        {
+            m_runeRewardCandidate = null;
+        }
+
+        /// <summary>Awards this AI's configured Rune value to its locally owned killer.</summary>
+        public void AwardRunesOnDeath(PlayerManager player)
+        {
+            int baseReward = m_aiCharacter?.CharacterStatsManager
+                ?.RunesDroppedOnDeath ?? 0;
+            AwardRunesOnDeath(player, baseReward);
+        }
+
+        /// <summary>Awards a server-authorized Rune value on the killer's owning peer.</summary>
+        public void AwardRunesOnDeath(PlayerManager player, int baseReward)
+        {
+            if (player == null ||
+                player.IsSpawned && !player.IsOwner ||
+                m_aiCharacter == null ||
+                !CanAwardRunes(
+                    m_aiCharacter.CharacterGroup,
+                    player.CharacterGroup))
+            {
+                return;
+            }
+
+            float runeGainModifier = GetRuneGainModifier(player);
+            int finalReward = Mathf.Clamp(
+                Mathf.RoundToInt(Mathf.Max(0, baseReward) * runeGainModifier),
+                0,
+                int.MaxValue);
+            player.PlayerStatsManager?.AddRunes(finalReward);
+        }
+
+        /// <summary>Returns whether different factions form a valid Rune reward pair.</summary>
+        public static bool CanAwardRunes(
+            CharacterGroup defeatedGroup,
+            CharacterGroup playerGroup)
+        {
+            return defeatedGroup != playerGroup;
+        }
+
         internal bool TryRegisterDamageTarget(CharacterManager target)
         {
             return m_aiCharacter != null &&
@@ -242,6 +298,11 @@ namespace ZZ
         {
             ConfigureDamageCollider(m_leftHandDamageCollider);
             ConfigureDamageCollider(m_rightHandDamageCollider);
+        }
+
+        private static float GetRuneGainModifier(PlayerManager player)
+        {
+            return player != null ? 1f : 0f;
         }
 
         private void ConfigureDamageCollider(AIDamageCollider damageCollider)

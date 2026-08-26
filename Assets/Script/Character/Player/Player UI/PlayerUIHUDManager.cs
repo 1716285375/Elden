@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,6 +7,8 @@ namespace ZZ
 {
     public class PlayerUIHUDManager : MonoBehaviour
     {
+        private const float k_RuneMergeDelay = 2.5f;
+
         [SerializeField] private UIStatBar m_healthBar;
         [SerializeField] private UIStatBar m_staminaBar;
         [SerializeField] private UIStatBar m_focusPointsBar;
@@ -16,12 +20,27 @@ namespace ZZ
         [SerializeField] private UIQuickSlot m_secondaryProjectileQuickSlot;
         [SerializeField] private GameObject m_projectileQuickSlotsGameObject;
         [SerializeField] private GameObject m_crosshair;
+        [SerializeField] private TMP_Text m_runesCountText;
+        [SerializeField] private TMP_Text m_runesToAddText;
         [SerializeField] private CanvasGroup[] m_hudCanvasGroups =
             System.Array.Empty<CanvasGroup>();
 
         private CharacterNetworkManager m_boundNetworkManager;
         private PlayerInventoryManager m_boundInventoryManager;
         private PlayerNetworkManager m_boundPlayerNetworkManager;
+        private Coroutine m_waitThenAddRunesCoroutine;
+        private int m_pendingRunesToAdd;
+        private int m_displayedRunes;
+
+        /// <summary>Gets the Rune amount waiting to merge into the displayed balance.</summary>
+        public int PendingRunesToAdd => m_pendingRunesToAdd;
+
+        private void OnDisable()
+        {
+            StopRuneMergeCoroutine();
+            m_pendingRunesToAdd = 0;
+            SetPendingRuneText(0);
+        }
 
         /// <summary>
         /// Updates the local Health presentation from shared character state.
@@ -68,6 +87,46 @@ namespace ZZ
         {
             m_focusPointsBar?.SetMaxStat(maximumFocusPoints);
             RefreshHUD();
+        }
+
+        /// <summary>Shows a newly earned Rune amount and restarts the merge delay.</summary>
+        public void SetRunesCount(int runesToAdd)
+        {
+            if (runesToAdd <= 0)
+            {
+                return;
+            }
+
+            m_pendingRunesToAdd = CalculatePendingRuneTotal(
+                m_pendingRunesToAdd,
+                runesToAdd);
+            SetPendingRuneText(m_pendingRunesToAdd);
+            StopRuneMergeCoroutine();
+            if (isActiveAndEnabled)
+            {
+                m_waitThenAddRunesCoroutine = StartCoroutine(
+                    WaitThenUpdateRuneCount());
+            }
+        }
+
+        /// <summary>Sets the visible Rune balance without showing an earned amount.</summary>
+        public void SetRuneCountImmediately(int runeCount)
+        {
+            StopRuneMergeCoroutine();
+            m_pendingRunesToAdd = 0;
+            m_displayedRunes = Mathf.Max(0, runeCount);
+            SetRuneCountText(m_displayedRunes);
+            SetPendingRuneText(0);
+        }
+
+        /// <summary>Returns an overflow-safe pending Rune total for consecutive kills.</summary>
+        public static int CalculatePendingRuneTotal(
+            int pendingRunes,
+            int runesToAdd)
+        {
+            long total = (long)Mathf.Max(0, pendingRunes) +
+                Mathf.Max(0, runesToAdd);
+            return total >= int.MaxValue ? int.MaxValue : (int)total;
         }
 
         /// <summary>
@@ -445,6 +504,55 @@ namespace ZZ
                 canvasGroup.interactable = isVisible;
                 canvasGroup.blocksRaycasts = isVisible;
             }
+        }
+
+        private IEnumerator WaitThenUpdateRuneCount()
+        {
+            yield return new WaitForSecondsRealtime(k_RuneMergeDelay);
+
+            PlayerManager localPlayer = PlayerUIManager.Instance?.LocalPlayer;
+            int currentRunes = localPlayer?.PlayerStatsManager != null
+                ? localPlayer.PlayerStatsManager.Runes
+                : CalculatePendingRuneTotal(
+                    m_displayedRunes,
+                    m_pendingRunesToAdd);
+            m_displayedRunes = currentRunes;
+            SetRuneCountText(currentRunes);
+            m_pendingRunesToAdd = 0;
+            SetPendingRuneText(0);
+            m_waitThenAddRunesCoroutine = null;
+        }
+
+        private void StopRuneMergeCoroutine()
+        {
+            if (m_waitThenAddRunesCoroutine == null)
+            {
+                return;
+            }
+
+            StopCoroutine(m_waitThenAddRunesCoroutine);
+            m_waitThenAddRunesCoroutine = null;
+        }
+
+        private void SetRuneCountText(int runeCount)
+        {
+            if (m_runesCountText != null)
+            {
+                m_runesCountText.text = Mathf.Max(0, runeCount).ToString();
+            }
+        }
+
+        private void SetPendingRuneText(int pendingRunes)
+        {
+            if (m_runesToAddText == null)
+            {
+                return;
+            }
+
+            m_runesToAddText.text = pendingRunes > 0
+                ? $"+ {pendingRunes}"
+                : string.Empty;
+            m_runesToAddText.gameObject.SetActive(pendingRunes > 0);
         }
     }
 }

@@ -37,6 +37,9 @@ namespace ZZ
         public static PlayerUIManager Instance => s_instance;
         public PlayerUIHUDManager PlayerUIHUDManager => m_playerUIHUDManager;
 
+        /// <summary>Gets the locally owned player cached for persistent UI consumers.</summary>
+        public PlayerManager LocalPlayer { get; private set; }
+
         /// <summary>Gets the persistent Boss encounter HUD.</summary>
         public PlayerUIBossHealthBar PlayerUIBossHealthBar => m_playerUIBossHealthBar;
 
@@ -148,6 +151,24 @@ namespace ZZ
             if (isBlocked)
             {
                 CloseAllMenuWindows();
+            }
+        }
+
+        /// <summary>Caches the locally owned player for HUD and menu data access.</summary>
+        public void BindLocalPlayer(PlayerManager player)
+        {
+            if (player != null && (!player.IsSpawned || player.IsOwner))
+            {
+                LocalPlayer = player;
+            }
+        }
+
+        /// <summary>Clears the cached player only when the same owner is leaving.</summary>
+        public void UnbindLocalPlayer(PlayerManager player)
+        {
+            if (LocalPlayer == player)
+            {
+                LocalPlayer = null;
             }
         }
 

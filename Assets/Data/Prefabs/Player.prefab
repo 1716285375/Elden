@@ -146380,6 +146380,26 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 10
+  Strength:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  Dexterity:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  Intelligence:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
+  Faith:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 10
   CurrentHealth:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -146487,6 +146507,7 @@ MonoBehaviour:
   m_poiseResetTimer: 0
   m_strengthLevel: 10
   m_strengthModifier: 0
+  m_runesDroppedOnDeath: 0
   m_blockingPhysicalAbsorption: 85
   m_blockingMagicAbsorption: 40
   m_blockingFireAbsorption: 35
@@ -146502,6 +146523,7 @@ MonoBehaviour:
   m_armorRobustness: 0
   m_armorFocus: 0
   m_armorVitality: 0
+  m_runes: 0
 --- !u!114 &2654529294512128537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146590,6 +146612,7 @@ MonoBehaviour:
   m_animator: {fileID: 0}
   m_characterAnimatorManager: {fileID: 0}
   m_characterNetworkManager: {fileID: 0}
+  m_characterGroup: 0
   m_lockOnTransform: {fileID: 7520643900993098255}
   m_hasFloatingHPBar: 1
   m_playerAnimatorManager: {fileID: 0}
@@ -146658,6 +146681,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerBodyManager
   m_modularCharacterRoot: {fileID: 770009729322371199}
+  m_hairObjects: []
 --- !u!1 &6601330394149136004
 GameObject:
   m_ObjectHideFlags: 0
