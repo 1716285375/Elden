@@ -128,7 +128,7 @@ namespace ZZ.Tests
                     "RemainingHealthFlasks"), Is.EqualTo(3));
                 Assert.That(GetNetworkVariableValue<int>(
                     network,
-                    "RemainingFocusPointFlasks"), Is.EqualTo(3));
+                    "RemainingFocusPointFlasks"), Is.EqualTo(1));
                 Assert.That(GetNetworkVariableValue<bool>(
                     network,
                     "IsChugging"), Is.False);

@@ -9,6 +9,7 @@ namespace ZZ
         [SerializeField] private GameObject m_itemModel;
         [SerializeField] private AnimationClip m_useItemAnimation;
         [SerializeField] private bool m_isConsumable = true;
+        [SerializeField, Min(0)] private int m_currentAmount;
 
         public GameObject ItemModel => m_itemModel;
         public AnimationClip UseItemAnimation => m_useItemAnimation;
@@ -17,7 +18,13 @@ namespace ZZ
         /// <summary>Returns the owner-specific amount displayed by equipment and HUD UI.</summary>
         public virtual int GetCurrentAmount(PlayerManager player)
         {
-            return 0;
+            return m_currentAmount;
+        }
+
+        /// <summary>Restores per-instance quantity for non-Flask quick-slot items.</summary>
+        public virtual void SetCurrentAmount(int currentAmount)
+        {
+            m_currentAmount = Mathf.Max(0, currentAmount);
         }
 
         /// <summary>Attempts to begin or continue this item's owner-authoritative action.</summary>

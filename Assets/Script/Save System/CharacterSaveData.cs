@@ -21,7 +21,8 @@ namespace ZZ
         private const int k_WorldLootDataVersion = 5;
         private const int k_FocusPointsDataVersion = 6;
         private const int k_ProjectileDataVersion = 7;
-        private const int k_CurrentDataVersion = 7;
+        private const int k_ComplexItemDataVersion = 8;
+        private const int k_CurrentDataVersion = 8;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -37,7 +38,47 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
             k_DefaultCurrentFocusPoints;
+        [SerializeField, Min(0)] private int m_currentHealthFlasksRemaining = 3;
+        [SerializeField, Min(0)] private int m_currentFocusPointFlasksRemaining = 1;
         [SerializeField] private int m_currentSpellID = k_DefaultSpellID;
+
+        [Header("Complex Equipment State")]
+        [SerializeField] private SerializableWeapon m_rightHandWeaponSlot01 =
+            new(1, -1);
+        [SerializeField] private SerializableWeapon m_rightHandWeaponSlot02 =
+            new(2, -1);
+        [SerializeField] private SerializableWeapon m_rightHandWeaponSlot03 =
+            new(0, -1);
+        [SerializeField] private SerializableWeapon m_leftHandWeaponSlot01 =
+            new(3, 8);
+        [SerializeField] private SerializableWeapon m_leftHandWeaponSlot02 =
+            new(2, -1);
+        [SerializeField] private SerializableWeapon m_leftHandWeaponSlot03 =
+            new(0, -1);
+        [SerializeField] private SerializableRangeProjectile m_mainProjectile =
+            new(12, 30);
+        [SerializeField] private SerializableRangeProjectile m_secondaryProjectile =
+            new(13, 30);
+        [SerializeField] private SerializableQuickSlotItem m_quickSlotItem01 =
+            new(14, 3);
+        [SerializeField] private SerializableQuickSlotItem m_quickSlotItem02 =
+            new(15, 1);
+        [SerializeField] private SerializableQuickSlotItem m_quickSlotItem03 =
+            new(-1, 0);
+        [SerializeField, Range(0, 2)] private int m_quickSlotItemIndex;
+
+        [Header("Runtime Inventory State")]
+        [SerializeField] private List<SerializableWeapon> m_weaponsInInventory = new();
+        [SerializeField] private List<SerializableRangeProjectile>
+            m_projectilesInInventory = new();
+        [SerializeField] private List<SerializableQuickSlotItem>
+            m_quickSlotItemsInInventory = new();
+        [SerializeField] private List<int> m_headEquipmentInInventory = new();
+        [SerializeField] private List<int> m_bodyEquipmentInInventory = new();
+        [SerializeField] private List<int> m_handEquipmentInInventory = new();
+        [SerializeField] private List<int> m_legEquipmentInInventory = new();
+
+        // Retained solely so version-7 and earlier JSON can be migrated safely.
         [SerializeField] private int m_mainProjectileID = 12;
         [SerializeField] private int m_secondaryProjectileID = 13;
         [SerializeField, Min(0)] private int m_mainProjectileAmount = 30;
@@ -137,28 +178,172 @@ namespace ZZ
             set => m_currentSpellID = Mathf.Max(-1, value);
         }
 
+        /// <summary>Gets or sets the owner's remaining Health Flask uses.</summary>
+        public int CurrentHealthFlasksRemaining
+        {
+            get => m_currentHealthFlasksRemaining;
+            set => m_currentHealthFlasksRemaining = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the owner's remaining Focus Point Flask uses.</summary>
+        public int CurrentFocusPointFlasksRemaining
+        {
+            get => m_currentFocusPointFlasksRemaining;
+            set => m_currentFocusPointFlasksRemaining = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the first serialized right-hand weapon.</summary>
+        public SerializableWeapon RightHandWeaponSlot01
+        {
+            get => m_rightHandWeaponSlot01 ??= new SerializableWeapon(0, -1);
+            set => m_rightHandWeaponSlot01 = value ?? new SerializableWeapon(0, -1);
+        }
+
+        /// <summary>Gets or sets the second serialized right-hand weapon.</summary>
+        public SerializableWeapon RightHandWeaponSlot02
+        {
+            get => m_rightHandWeaponSlot02 ??= new SerializableWeapon(0, -1);
+            set => m_rightHandWeaponSlot02 = value ?? new SerializableWeapon(0, -1);
+        }
+
+        /// <summary>Gets or sets the third serialized right-hand weapon.</summary>
+        public SerializableWeapon RightHandWeaponSlot03
+        {
+            get => m_rightHandWeaponSlot03 ??= new SerializableWeapon(0, -1);
+            set => m_rightHandWeaponSlot03 = value ?? new SerializableWeapon(0, -1);
+        }
+
+        /// <summary>Gets or sets the first serialized left-hand weapon.</summary>
+        public SerializableWeapon LeftHandWeaponSlot01
+        {
+            get => m_leftHandWeaponSlot01 ??= new SerializableWeapon(0, -1);
+            set => m_leftHandWeaponSlot01 = value ?? new SerializableWeapon(0, -1);
+        }
+
+        /// <summary>Gets or sets the second serialized left-hand weapon.</summary>
+        public SerializableWeapon LeftHandWeaponSlot02
+        {
+            get => m_leftHandWeaponSlot02 ??= new SerializableWeapon(0, -1);
+            set => m_leftHandWeaponSlot02 = value ?? new SerializableWeapon(0, -1);
+        }
+
+        /// <summary>Gets or sets the third serialized left-hand weapon.</summary>
+        public SerializableWeapon LeftHandWeaponSlot03
+        {
+            get => m_leftHandWeaponSlot03 ??= new SerializableWeapon(0, -1);
+            set => m_leftHandWeaponSlot03 = value ?? new SerializableWeapon(0, -1);
+        }
+
+        /// <summary>Gets or sets primary ammunition instance state.</summary>
+        public SerializableRangeProjectile MainProjectile
+        {
+            get => m_mainProjectile ??= new SerializableRangeProjectile(-1, 0);
+            set => m_mainProjectile = value ?? new SerializableRangeProjectile(-1, 0);
+        }
+
+        /// <summary>Gets or sets secondary ammunition instance state.</summary>
+        public SerializableRangeProjectile SecondaryProjectile
+        {
+            get => m_secondaryProjectile ??= new SerializableRangeProjectile(-1, 0);
+            set => m_secondaryProjectile = value ?? new SerializableRangeProjectile(-1, 0);
+        }
+
+        /// <summary>Gets or sets the first gameplay quick-slot item.</summary>
+        public SerializableQuickSlotItem QuickSlotItem01
+        {
+            get => m_quickSlotItem01 ??= new SerializableQuickSlotItem(-1, 0);
+            set => m_quickSlotItem01 = value ?? new SerializableQuickSlotItem(-1, 0);
+        }
+
+        /// <summary>Gets or sets the second gameplay quick-slot item.</summary>
+        public SerializableQuickSlotItem QuickSlotItem02
+        {
+            get => m_quickSlotItem02 ??= new SerializableQuickSlotItem(-1, 0);
+            set => m_quickSlotItem02 = value ?? new SerializableQuickSlotItem(-1, 0);
+        }
+
+        /// <summary>Gets or sets the third gameplay quick-slot item.</summary>
+        public SerializableQuickSlotItem QuickSlotItem03
+        {
+            get => m_quickSlotItem03 ??= new SerializableQuickSlotItem(-1, 0);
+            set => m_quickSlotItem03 = value ?? new SerializableQuickSlotItem(-1, 0);
+        }
+
+        /// <summary>Gets or sets the selected gameplay quick-slot index.</summary>
+        public int QuickSlotItemIndex
+        {
+            get => m_quickSlotItemIndex;
+            set => m_quickSlotItemIndex = Mathf.Clamp(value, 0, 2);
+        }
+
+        /// <summary>Gets saved unequipped weapon instances.</summary>
+        public List<SerializableWeapon> WeaponsInInventory =>
+            m_weaponsInInventory ??= new List<SerializableWeapon>();
+
+        /// <summary>Gets saved unequipped ammunition stacks.</summary>
+        public List<SerializableRangeProjectile> ProjectilesInInventory =>
+            m_projectilesInInventory ??=
+                new List<SerializableRangeProjectile>();
+
+        /// <summary>Gets saved unequipped gameplay quick-slot items.</summary>
+        public List<SerializableQuickSlotItem> QuickSlotItemsInInventory =>
+            m_quickSlotItemsInInventory ??=
+                new List<SerializableQuickSlotItem>();
+
+        /// <summary>Gets saved unequipped head-equipment identifiers.</summary>
+        public List<int> HeadEquipmentInInventory =>
+            m_headEquipmentInInventory ??= new List<int>();
+
+        /// <summary>Gets saved unequipped body-equipment identifiers.</summary>
+        public List<int> BodyEquipmentInInventory =>
+            m_bodyEquipmentInInventory ??= new List<int>();
+
+        /// <summary>Gets saved unequipped hand-equipment identifiers.</summary>
+        public List<int> HandEquipmentInInventory =>
+            m_handEquipmentInInventory ??= new List<int>();
+
+        /// <summary>Gets saved unequipped leg-equipment identifiers.</summary>
+        public List<int> LegEquipmentInInventory =>
+            m_legEquipmentInInventory ??= new List<int>();
+
         public int MainProjectileID
         {
-            get => m_mainProjectileID;
-            set => m_mainProjectileID = Mathf.Max(-1, value);
+            get => MainProjectile.ItemID;
+            set
+            {
+                m_mainProjectileID = Mathf.Max(-1, value);
+                MainProjectile.ItemID = value;
+            }
         }
 
         public int SecondaryProjectileID
         {
-            get => m_secondaryProjectileID;
-            set => m_secondaryProjectileID = Mathf.Max(-1, value);
+            get => SecondaryProjectile.ItemID;
+            set
+            {
+                m_secondaryProjectileID = Mathf.Max(-1, value);
+                SecondaryProjectile.ItemID = value;
+            }
         }
 
         public int MainProjectileAmount
         {
-            get => m_mainProjectileAmount;
-            set => m_mainProjectileAmount = Mathf.Max(0, value);
+            get => MainProjectile.ItemAmount;
+            set
+            {
+                m_mainProjectileAmount = Mathf.Max(0, value);
+                MainProjectile.ItemAmount = value;
+            }
         }
 
         public int SecondaryProjectileAmount
         {
-            get => m_secondaryProjectileAmount;
-            set => m_secondaryProjectileAmount = Mathf.Max(0, value);
+            get => SecondaryProjectile.ItemAmount;
+            set
+            {
+                m_secondaryProjectileAmount = Mathf.Max(0, value);
+                SecondaryProjectile.ItemAmount = value;
+            }
         }
 
         public int HeadEquipmentID
@@ -187,38 +372,62 @@ namespace ZZ
 
         public int RightHandWeaponSlot01ID
         {
-            get => m_rightHandWeaponSlot01ID;
-            set => m_rightHandWeaponSlot01ID = Mathf.Max(0, value);
+            get => RightHandWeaponSlot01.ItemID;
+            set
+            {
+                m_rightHandWeaponSlot01ID = Mathf.Max(0, value);
+                RightHandWeaponSlot01.ItemID = Mathf.Max(0, value);
+            }
         }
 
         public int RightHandWeaponSlot02ID
         {
-            get => m_rightHandWeaponSlot02ID;
-            set => m_rightHandWeaponSlot02ID = Mathf.Max(0, value);
+            get => RightHandWeaponSlot02.ItemID;
+            set
+            {
+                m_rightHandWeaponSlot02ID = Mathf.Max(0, value);
+                RightHandWeaponSlot02.ItemID = Mathf.Max(0, value);
+            }
         }
 
         public int RightHandWeaponSlot03ID
         {
-            get => m_rightHandWeaponSlot03ID;
-            set => m_rightHandWeaponSlot03ID = Mathf.Max(0, value);
+            get => RightHandWeaponSlot03.ItemID;
+            set
+            {
+                m_rightHandWeaponSlot03ID = Mathf.Max(0, value);
+                RightHandWeaponSlot03.ItemID = Mathf.Max(0, value);
+            }
         }
 
         public int LeftHandWeaponSlot01ID
         {
-            get => m_leftHandWeaponSlot01ID;
-            set => m_leftHandWeaponSlot01ID = Mathf.Max(0, value);
+            get => LeftHandWeaponSlot01.ItemID;
+            set
+            {
+                m_leftHandWeaponSlot01ID = Mathf.Max(0, value);
+                LeftHandWeaponSlot01.ItemID = Mathf.Max(0, value);
+            }
         }
 
         public int LeftHandWeaponSlot02ID
         {
-            get => m_leftHandWeaponSlot02ID;
-            set => m_leftHandWeaponSlot02ID = Mathf.Max(0, value);
+            get => LeftHandWeaponSlot02.ItemID;
+            set
+            {
+                m_leftHandWeaponSlot02ID = Mathf.Max(0, value);
+                LeftHandWeaponSlot02.ItemID = Mathf.Max(0, value);
+            }
         }
 
         public int LeftHandWeaponSlot03ID
         {
-            get => m_leftHandWeaponSlot03ID;
-            set => m_leftHandWeaponSlot03ID = Mathf.Max(0, value);
+            get => LeftHandWeaponSlot03.ItemID;
+            set
+            {
+                m_leftHandWeaponSlot03ID = Mathf.Max(0, value);
+                LeftHandWeaponSlot03.ItemID = Mathf.Max(0, value);
+            }
         }
 
         public int RightHandWeaponIndex
@@ -237,6 +446,18 @@ namespace ZZ
         {
             get => m_isMale;
             set => m_isMale = value;
+        }
+
+        /// <summary>Clears every classified inventory list before a new save pass.</summary>
+        public void ClearInventoryData()
+        {
+            WeaponsInInventory.Clear();
+            ProjectilesInInventory.Clear();
+            QuickSlotItemsInInventory.Clear();
+            HeadEquipmentInInventory.Clear();
+            BodyEquipmentInInventory.Clear();
+            HandEquipmentInInventory.Clear();
+            LegEquipmentInInventory.Clear();
         }
 
         /// <summary>Gets whether a fixed world item has already been collected.</summary>
@@ -399,9 +620,66 @@ namespace ZZ
                 m_secondaryProjectileAmount = 30;
             }
 
+            if (m_dataVersion < k_ComplexItemDataVersion)
+            {
+                m_currentHealthFlasksRemaining = 3;
+                m_currentFocusPointFlasksRemaining = 1;
+                m_rightHandWeaponSlot01 = CreateLegacyWeapon(
+                    m_rightHandWeaponSlot01ID);
+                m_rightHandWeaponSlot02 = CreateLegacyWeapon(
+                    m_rightHandWeaponSlot02ID);
+                m_rightHandWeaponSlot03 = CreateLegacyWeapon(
+                    m_rightHandWeaponSlot03ID);
+                m_leftHandWeaponSlot01 = CreateLegacyWeapon(
+                    m_leftHandWeaponSlot01ID);
+                m_leftHandWeaponSlot02 = CreateLegacyWeapon(
+                    m_leftHandWeaponSlot02ID);
+                m_leftHandWeaponSlot03 = CreateLegacyWeapon(
+                    m_leftHandWeaponSlot03ID);
+                m_mainProjectile = new SerializableRangeProjectile(
+                    m_mainProjectileID,
+                    m_mainProjectileAmount);
+                m_secondaryProjectile = new SerializableRangeProjectile(
+                    m_secondaryProjectileID,
+                    m_secondaryProjectileAmount);
+                m_quickSlotItem01 = new SerializableQuickSlotItem(14, 3);
+                m_quickSlotItem02 = new SerializableQuickSlotItem(15, 1);
+                m_quickSlotItem03 = new SerializableQuickSlotItem(-1, 0);
+                m_quickSlotItemIndex = 0;
+            }
+
             m_bosses ??= new List<BossSaveData>();
             m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
+            m_rightHandWeaponSlot01 ??= CreateLegacyWeapon(1);
+            m_rightHandWeaponSlot02 ??= CreateLegacyWeapon(2);
+            m_rightHandWeaponSlot03 ??= CreateLegacyWeapon(0);
+            m_leftHandWeaponSlot01 ??= CreateLegacyWeapon(3);
+            m_leftHandWeaponSlot02 ??= CreateLegacyWeapon(2);
+            m_leftHandWeaponSlot03 ??= CreateLegacyWeapon(0);
+            m_mainProjectile ??= new SerializableRangeProjectile(-1, 0);
+            m_secondaryProjectile ??= new SerializableRangeProjectile(-1, 0);
+            m_quickSlotItem01 ??= new SerializableQuickSlotItem(-1, 0);
+            m_quickSlotItem02 ??= new SerializableQuickSlotItem(-1, 0);
+            m_quickSlotItem03 ??= new SerializableQuickSlotItem(-1, 0);
+            m_weaponsInInventory ??= new List<SerializableWeapon>();
+            m_projectilesInInventory ??=
+                new List<SerializableRangeProjectile>();
+            m_quickSlotItemsInInventory ??=
+                new List<SerializableQuickSlotItem>();
+            m_headEquipmentInInventory ??= new List<int>();
+            m_bodyEquipmentInInventory ??= new List<int>();
+            m_handEquipmentInInventory ??= new List<int>();
+            m_legEquipmentInInventory ??= new List<int>();
             m_dataVersion = k_CurrentDataVersion;
+        }
+
+        private static SerializableWeapon CreateLegacyWeapon(int itemID)
+        {
+            const int mediumShieldItemID = 3;
+            const int parryAshOfWarItemID = 8;
+            return new SerializableWeapon(
+                itemID,
+                itemID == mediumShieldItemID ? parryAshOfWarItemID : -1);
         }
 
         private BossSaveData FindBossData(int bossID)

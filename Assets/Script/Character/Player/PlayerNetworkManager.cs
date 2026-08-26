@@ -15,7 +15,8 @@ namespace ZZ
         private const int k_DefaultSecondaryProjectileID = 13;
         private const int k_NoProjectileID = -1;
         private const int k_DefaultQuickSlotItemID = 14;
-        private const int k_DefaultFlaskCount = 3;
+        private const int k_DefaultHealthFlaskCount = 3;
+        private const int k_DefaultFocusPointFlaskCount = 1;
 
         [Header("Two-Hand Effect")]
         [SerializeField] private StaticCharacterEffect m_twoHandingEffect;
@@ -157,12 +158,12 @@ namespace ZZ
                 NetworkVariableWritePermission.Owner);
         private readonly NetworkVariable<int> m_remainingHealthFlasks =
             new NetworkVariable<int>(
-                k_DefaultFlaskCount,
+                k_DefaultHealthFlaskCount,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
         private readonly NetworkVariable<int> m_remainingFocusPointFlasks =
             new NetworkVariable<int>(
-                k_DefaultFlaskCount,
+                k_DefaultFocusPointFlaskCount,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
         private readonly NetworkVariable<bool> m_isChugging =

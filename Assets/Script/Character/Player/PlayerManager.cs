@@ -246,33 +246,55 @@ namespace ZZ
             currentData.CurrentStamina = CharacterNetworkManager.CurrentStamina.Value;
             currentData.CurrentFocusPoints =
                 CharacterNetworkManager.CurrentFocusPoints.Value;
+            currentData.CurrentHealthFlasksRemaining =
+                PlayerNetworkManager.RemainingHealthFlasks.Value;
+            currentData.CurrentFocusPointFlasksRemaining =
+                PlayerNetworkManager.RemainingFocusPointFlasks.Value;
             currentData.CurrentSpellID = InventoryManager.CurrentSpell?.ItemID ?? -1;
-            currentData.MainProjectileID =
-                InventoryManager.MainProjectile?.ItemID ?? -1;
-            currentData.SecondaryProjectileID =
-                InventoryManager.SecondaryProjectile?.ItemID ?? -1;
-            currentData.MainProjectileAmount =
-                InventoryManager.MainProjectile?.CurrentAmmoAmount ?? 0;
-            currentData.SecondaryProjectileAmount =
-                InventoryManager.SecondaryProjectile?.CurrentAmmoAmount ?? 0;
+            currentData.MainProjectile = WorldSaveGameManager
+                .GetSerializableProjectileFromProjectileItem(
+                    InventoryManager.MainProjectile);
+            currentData.SecondaryProjectile = WorldSaveGameManager
+                .GetSerializableProjectileFromProjectileItem(
+                    InventoryManager.SecondaryProjectile);
             currentData.HeadEquipmentID = PlayerNetworkManager.CurrentHeadEquipmentID.Value;
             currentData.BodyEquipmentID = PlayerNetworkManager.CurrentBodyEquipmentID.Value;
             currentData.HandEquipmentID = PlayerNetworkManager.CurrentHandEquipmentID.Value;
             currentData.LegEquipmentID = PlayerNetworkManager.CurrentLegEquipmentID.Value;
-            currentData.RightHandWeaponSlot01ID =
-                InventoryManager.GetRightHandQuickSlotItemID(0);
-            currentData.RightHandWeaponSlot02ID =
-                InventoryManager.GetRightHandQuickSlotItemID(1);
-            currentData.RightHandWeaponSlot03ID =
-                InventoryManager.GetRightHandQuickSlotItemID(2);
-            currentData.LeftHandWeaponSlot01ID =
-                InventoryManager.GetLeftHandQuickSlotItemID(0);
-            currentData.LeftHandWeaponSlot02ID =
-                InventoryManager.GetLeftHandQuickSlotItemID(1);
-            currentData.LeftHandWeaponSlot03ID =
-                InventoryManager.GetLeftHandQuickSlotItemID(2);
+            currentData.RightHandWeaponSlot01 = WorldSaveGameManager
+                .GetSerializableWeaponFromWeaponItem(
+                    InventoryManager.GetRightHandQuickSlotItem(0));
+            currentData.RightHandWeaponSlot02 = WorldSaveGameManager
+                .GetSerializableWeaponFromWeaponItem(
+                    InventoryManager.GetRightHandQuickSlotItem(1));
+            currentData.RightHandWeaponSlot03 = WorldSaveGameManager
+                .GetSerializableWeaponFromWeaponItem(
+                    InventoryManager.GetRightHandQuickSlotItem(2));
+            currentData.LeftHandWeaponSlot01 = WorldSaveGameManager
+                .GetSerializableWeaponFromWeaponItem(
+                    InventoryManager.GetLeftHandQuickSlotItem(0));
+            currentData.LeftHandWeaponSlot02 = WorldSaveGameManager
+                .GetSerializableWeaponFromWeaponItem(
+                    InventoryManager.GetLeftHandQuickSlotItem(1));
+            currentData.LeftHandWeaponSlot03 = WorldSaveGameManager
+                .GetSerializableWeaponFromWeaponItem(
+                    InventoryManager.GetLeftHandQuickSlotItem(2));
             currentData.RightHandWeaponIndex = InventoryManager.RightHandWeaponIndex;
             currentData.LeftHandWeaponIndex = InventoryManager.LeftHandWeaponIndex;
+            currentData.QuickSlotItem01 = WorldSaveGameManager
+                .GetSerializableQuickSlotItemFromQuickSlotItem(
+                    InventoryManager.GetQuickSlotItem(0),
+                    this);
+            currentData.QuickSlotItem02 = WorldSaveGameManager
+                .GetSerializableQuickSlotItemFromQuickSlotItem(
+                    InventoryManager.GetQuickSlotItem(1),
+                    this);
+            currentData.QuickSlotItem03 = WorldSaveGameManager
+                .GetSerializableQuickSlotItemFromQuickSlotItem(
+                    InventoryManager.GetQuickSlotItem(2),
+                    this);
+            currentData.QuickSlotItemIndex = InventoryManager.QuickSlotItemIndex;
+            SaveInventoryData(currentData);
             currentData.IsMale = PlayerNetworkManager.IsMale.Value;
         }
 
@@ -309,6 +331,11 @@ namespace ZZ
             PlayerNetworkManager.CharacterName.Value =
                 new FixedString64Bytes(currentData.CharacterName);
             PlayerNetworkManager.IsMale.Value = currentData.IsMale;
+            InventoryManager.RestoreInventory(currentData);
+            PlayerNetworkManager.RemainingHealthFlasks.Value =
+                currentData.CurrentHealthFlasksRemaining;
+            PlayerNetworkManager.RemainingFocusPointFlasks.Value =
+                currentData.CurrentFocusPointFlasksRemaining;
             PlayerNetworkManager.CurrentHeadEquipmentID.Value =
                 currentData.HeadEquipmentID;
             PlayerNetworkManager.CurrentBodyEquipmentID.Value =
@@ -320,15 +347,15 @@ namespace ZZ
             InventoryManager.RestoreWeaponLoadout(
                 new[]
                 {
-                    currentData.RightHandWeaponSlot01ID,
-                    currentData.RightHandWeaponSlot02ID,
-                    currentData.RightHandWeaponSlot03ID
+                    currentData.RightHandWeaponSlot01,
+                    currentData.RightHandWeaponSlot02,
+                    currentData.RightHandWeaponSlot03
                 },
                 new[]
                 {
-                    currentData.LeftHandWeaponSlot01ID,
-                    currentData.LeftHandWeaponSlot02ID,
-                    currentData.LeftHandWeaponSlot03ID
+                    currentData.LeftHandWeaponSlot01,
+                    currentData.LeftHandWeaponSlot02,
+                    currentData.LeftHandWeaponSlot03
                 },
                 currentData.RightHandWeaponIndex,
                 currentData.LeftHandWeaponIndex);
@@ -339,23 +366,25 @@ namespace ZZ
                 : -1;
             PlayerNetworkManager.CurrentSpellID.Value = resolvedSpellID;
             InventoryManager.InitializeCurrentSpellFromID(resolvedSpellID);
-            RangedProjectileItem savedMainProjectile = WorldItemDatabase.Instance
-                ?.GetProjectileByID(currentData.MainProjectileID);
-            RangedProjectileItem savedSecondaryProjectile = WorldItemDatabase.Instance
-                ?.GetProjectileByID(currentData.SecondaryProjectileID);
-            int resolvedMainProjectileID = savedMainProjectile?.ItemID ?? -1;
-            int resolvedSecondaryProjectileID =
-                savedSecondaryProjectile?.ItemID ?? -1;
-            PlayerNetworkManager.MainProjectileID.Value =
-                resolvedMainProjectileID;
-            PlayerNetworkManager.SecondaryProjectileID.Value =
-                resolvedSecondaryProjectileID;
-            InventoryManager.InitializeMainProjectileFromID(
-                resolvedMainProjectileID,
-                currentData.MainProjectileAmount);
-            InventoryManager.InitializeSecondaryProjectileFromID(
-                resolvedSecondaryProjectileID,
-                currentData.SecondaryProjectileAmount);
+            InventoryManager.RestoreProjectileLoadout(
+                currentData.MainProjectile,
+                currentData.SecondaryProjectile);
+            InventoryManager.RestoreQuickSlotLoadout(
+                new[]
+                {
+                    currentData.QuickSlotItem01,
+                    currentData.QuickSlotItem02,
+                    currentData.QuickSlotItem03
+                },
+                currentData.QuickSlotItemIndex);
+            PlayerUIHUDManager hudManager = PlayerUIManager.Instance
+                ?.PlayerUIHUDManager;
+            hudManager?.SetQuickSlotItemQuickSlotIcon(
+                InventoryManager.CurrentQuickSlotItem);
+            hudManager?.SetMainProjectileQuickSlotIcon(
+                InventoryManager.MainProjectile);
+            hudManager?.SetSecondaryProjectileQuickSlotIcon(
+                InventoryManager.SecondaryProjectile);
             Vector3 savedPosition = new Vector3(
                 currentData.XPosition,
                 currentData.YPosition,
@@ -364,6 +393,50 @@ namespace ZZ
             CharacterNetworkManager.NetworkPosition.Value = transform.position;
             CharacterNetworkManager.NetworkRotation.Value = transform.rotation;
             PlayerCamera.Instance?.SnapToPlayerAndResetRotation(this);
+        }
+
+        private void SaveInventoryData(CharacterSaveData currentData)
+        {
+            currentData.ClearInventoryData();
+            foreach (Item item in InventoryManager.ItemsInInventory)
+            {
+                switch (item)
+                {
+                    case WeaponItem weapon:
+                        currentData.WeaponsInInventory.Add(WorldSaveGameManager
+                            .GetSerializableWeaponFromWeaponItem(weapon));
+                        break;
+                    case RangedProjectileItem projectile:
+                        currentData.ProjectilesInInventory.Add(
+                            WorldSaveGameManager
+                                .GetSerializableProjectileFromProjectileItem(
+                                    projectile));
+                        break;
+                    case QuickSlotItem quickSlotItem:
+                        currentData.QuickSlotItemsInInventory.Add(
+                            WorldSaveGameManager
+                                .GetSerializableQuickSlotItemFromQuickSlotItem(
+                                    quickSlotItem,
+                                    this));
+                        break;
+                    case HeadEquipmentItem headEquipment:
+                        currentData.HeadEquipmentInInventory.Add(
+                            headEquipment.ItemID);
+                        break;
+                    case BodyEquipmentItem bodyEquipment:
+                        currentData.BodyEquipmentInInventory.Add(
+                            bodyEquipment.ItemID);
+                        break;
+                    case HandEquipmentItem handEquipment:
+                        currentData.HandEquipmentInInventory.Add(
+                            handEquipment.ItemID);
+                        break;
+                    case LegEquipmentItem legEquipment:
+                        currentData.LegEquipmentInInventory.Add(
+                            legEquipment.ItemID);
+                        break;
+                }
+            }
         }
 
         private void BindLocalPlayerSystems()
