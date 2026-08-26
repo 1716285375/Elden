@@ -2,8 +2,13 @@ namespace ZZ
 {
     public class PlayerStatsManager : CharacterStatsManager
     {
+        [UnityEngine.SerializeField, UnityEngine.Min(0)] private int m_runes;
+
         private PlayerManager m_player;
         private PlayerUIHUDManager m_boundHUD;
+
+        /// <summary>Gets this local player's private Rune balance.</summary>
+        public int Runes => UnityEngine.Mathf.Max(0, m_runes);
 
         protected override void Awake()
         {
@@ -54,6 +59,28 @@ namespace ZZ
             UnbindLocalHUD();
             m_boundHUD = playerHUD;
             m_boundHUD.BindStats(CharacterNetworkManager);
+            m_boundHUD.SetRuneCountImmediately(Runes);
+        }
+
+        /// <summary>Adds a positive Rune reward and starts the HUD pending presentation.</summary>
+        public void AddRunes(int runesToAdd)
+        {
+            if (runesToAdd <= 0 || IsSpawned && !IsOwner)
+            {
+                return;
+            }
+
+            m_runes = CalculateRuneTotal(m_runes, runesToAdd);
+            PlayerUIManager.Instance?.PlayerUIHUDManager?.SetRunesCount(
+                runesToAdd);
+        }
+
+        /// <summary>Returns a non-negative, overflow-safe Rune balance.</summary>
+        public static int CalculateRuneTotal(int currentRunes, int runesToAdd)
+        {
+            long total = (long)UnityEngine.Mathf.Max(0, currentRunes) +
+                UnityEngine.Mathf.Max(0, runesToAdd);
+            return total >= int.MaxValue ? int.MaxValue : (int)total;
         }
 
         /// <summary>

@@ -29,6 +29,9 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_strengthLevel = 10;
         [SerializeField] private int m_strengthModifier;
 
+        [Header("Rewards")]
+        [SerializeField, Min(0)] private int m_runesDroppedOnDeath;
+
         [Header("Blocking Absorption")]
         [SerializeField, Range(0f, 100f)] private float m_blockingPhysicalAbsorption = 85f;
         [SerializeField, Range(0f, 100f)] private float m_blockingMagicAbsorption = 40f;
@@ -144,6 +147,9 @@ namespace ZZ
 
         /// <summary>Gets base Strength plus every active additive modifier.</summary>
         public int TotalStrength => Mathf.Max(0, StrengthLevel + m_strengthModifier);
+
+        /// <summary>Gets the base Rune reward granted when this character dies.</summary>
+        public int RunesDroppedOnDeath => Mathf.Max(0, m_runesDroppedOnDeath);
 
         protected virtual void Awake()
         {

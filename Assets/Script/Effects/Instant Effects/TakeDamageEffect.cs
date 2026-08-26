@@ -164,6 +164,14 @@ namespace ZZ
             float remainingHealth = Mathf.Max(
                 0f,
                 currentHealth - Mathf.Max(0, damage));
+            if (damage > 0 &&
+                character.CharacterCombatManager is
+                    AICharacterCombatManager aiCombatManager)
+            {
+                aiCombatManager.RecordRuneRewardCandidate(
+                    CharacterCausingDamage as PlayerManager);
+            }
+
             networkManager.CurrentHealth.Value = remainingHealth;
         }
 
