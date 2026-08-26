@@ -26,6 +26,7 @@ namespace ZZ
         private HandEquipmentItem m_loadedHandEquipment;
         private LegEquipmentItem m_loadedLegEquipment;
         private bool m_areWeaponsHidden;
+        private bool m_isHeadEquipmentPresentationHidden;
 
         /// <summary>Gets the weapon manager of the currently loaded right-hand weapon model.</summary>
         public WeaponManager CurrentRightHandWeaponManager { get; private set; }
@@ -198,6 +199,38 @@ namespace ZZ
             ReloadArmorItem(m_loadedBodyEquipment);
             ReloadArmorItem(m_loadedHandEquipment);
             ReloadArmorItem(m_loadedLegEquipment);
+            if (m_loadedHeadEquipment != null)
+            {
+                m_playerBodyManager?.ApplyHeadEquipmentType(
+                    m_loadedHeadEquipment.HeadEquipmentType);
+            }
+
+            if (m_isHeadEquipmentPresentationHidden)
+            {
+                ApplyHeadEquipmentPresentationHidden();
+            }
+        }
+
+        /// <summary>
+        /// Temporarily hides equipped head models for appearance editing without changing inventory.
+        /// </summary>
+        public void SetHeadEquipmentPresentationHidden(bool isHidden)
+        {
+            if (m_isHeadEquipmentPresentationHidden == isHidden)
+            {
+                return;
+            }
+
+            m_isHeadEquipmentPresentationHidden = isHidden;
+            if (isHidden)
+            {
+                ApplyHeadEquipmentPresentationHidden();
+                return;
+            }
+
+            DisableArmorModelType(EquipmentModelType.HeadCovering);
+            ReloadArmorItem(m_loadedHeadEquipment);
+            m_playerBodyManager?.ResetHeadFeatures();
             if (m_loadedHeadEquipment != null)
             {
                 m_playerBodyManager?.ApplyHeadEquipmentType(
@@ -592,6 +625,12 @@ namespace ZZ
             {
                 model.SetActive(false);
             }
+        }
+
+        private void ApplyHeadEquipmentPresentationHidden()
+        {
+            DisableArmorModelType(EquipmentModelType.HeadCovering);
+            m_playerBodyManager?.ResetHeadFeatures();
         }
 
         private void RestoreDefaultArmorModel(EquipmentModelType modelType)

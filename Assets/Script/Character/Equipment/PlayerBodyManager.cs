@@ -17,12 +17,12 @@ namespace ZZ
         private const string k_FacialHairGroupName = "Male_02_FacialHair";
 
         [SerializeField] private Transform m_modularCharacterRoot;
+        [SerializeField] private GameObject[] m_hairObjects = Array.Empty<GameObject>();
 
         private Transform m_maleParts;
         private Transform m_femaleParts;
         private GameObject m_defaultMaleHead;
         private GameObject m_defaultFemaleHead;
-        private GameObject m_defaultHair;
         private GameObject m_defaultFacialHair;
         private GameObject[] m_defaultMaleBody = Array.Empty<GameObject>();
         private GameObject[] m_defaultFemaleBody = Array.Empty<GameObject>();
@@ -31,12 +31,24 @@ namespace ZZ
         private GameObject[] m_defaultMaleLegs = Array.Empty<GameObject>();
         private GameObject[] m_defaultFemaleLegs = Array.Empty<GameObject>();
         private bool m_isMale = true;
+        private bool m_isHairVisible = true;
+        private int m_hairstyleID;
+        private Color32 m_hairColor = new(79, 53, 35, 255);
 
         /// <summary>Gets the root containing all embedded modular character meshes.</summary>
         public Transform ModularCharacterRoot => m_modularCharacterRoot;
 
         /// <summary>Gets whether the male body hierarchy is currently selected.</summary>
         public bool IsMale => m_isMale;
+
+        /// <summary>Gets the currently selected hairstyle, where zero represents bald.</summary>
+        public int HairstyleID => m_hairstyleID;
+
+        /// <summary>Gets the selected hair tint stored with byte-accurate channels.</summary>
+        public Color32 HairColor => m_hairColor;
+
+        /// <summary>Gets the number of selectable hairstyles including bald.</summary>
+        public int HairstyleCount => m_hairObjects?.Length ?? 0;
 
         private void Awake()
         {
@@ -63,7 +75,7 @@ namespace ZZ
                 FindDescendant(m_modularCharacterRoot, k_MaleHeadGroupName));
             m_defaultFemaleHead = FindDefaultChild(
                 FindDescendant(m_modularCharacterRoot, k_FemaleHeadGroupName));
-            m_defaultHair = FindDefaultChild(
+            InitializeHairObjects(
                 FindDescendant(m_modularCharacterRoot, k_HairGroupName));
             m_defaultFacialHair = FindDefaultChild(
                 FindDescendant(m_modularCharacterRoot, k_FacialHairGroupName));
@@ -137,6 +149,8 @@ namespace ZZ
                 case HeadEquipmentType.FaceCover:
                     EnableFacialHair(false);
                     break;
+                default:
+                    break;
             }
         }
 
@@ -147,10 +161,30 @@ namespace ZZ
             m_defaultFemaleHead?.SetActive(isEnabled && !m_isMale);
         }
 
-        /// <summary>Enables or disables the shared default hair mesh.</summary>
+        /// <summary>Enables or disables the selected hairstyle without changing its selection.</summary>
         public void EnableHair(bool isEnabled)
         {
-            m_defaultHair?.SetActive(isEnabled);
+            m_isHairVisible = isEnabled;
+            RefreshHairPresentation();
+        }
+
+        /// <summary>Selects a hairstyle and refreshes its replicated presentation.</summary>
+        public void SetHairstyle(int hairstyleID)
+        {
+            int maximumIndex = Mathf.Max(0, HairstyleCount - 1);
+            m_hairstyleID = Mathf.Clamp(hairstyleID, 0, maximumIndex);
+            RefreshHairPresentation();
+        }
+
+        /// <summary>Applies byte color channels to every renderer in the active hairstyle.</summary>
+        public void SetHairColor(int red, int green, int blue)
+        {
+            m_hairColor = new Color32(
+                (byte)Mathf.Clamp(red, 0, 255),
+                (byte)Mathf.Clamp(green, 0, 255),
+                (byte)Mathf.Clamp(blue, 0, 255),
+                255);
+            ApplyHairColor();
         }
 
         /// <summary>Enables or disables the male default facial-hair mesh.</summary>
@@ -240,6 +274,99 @@ namespace ZZ
             }
 
             return defaultModels;
+        }
+
+        private void InitializeHairObjects(Transform hairGroup)
+        {
+            if (m_hairObjects != null && m_hairObjects.Length > 1)
+            {
+                return;
+            }
+
+            if (hairGroup == null)
+            {
+                m_hairObjects = new GameObject[] { null };
+                return;
+            }
+
+            m_hairObjects = new GameObject[hairGroup.childCount + 1];
+            for (int childIndex = 0; childIndex < hairGroup.childCount; childIndex++)
+            {
+                m_hairObjects[childIndex + 1] = hairGroup.GetChild(childIndex).gameObject;
+            }
+        }
+
+        private void RefreshHairPresentation()
+        {
+            if (m_hairObjects == null)
+            {
+                return;
+            }
+
+            for (int hairstyleIndex = 0;
+                 hairstyleIndex < m_hairObjects.Length;
+                 hairstyleIndex++)
+            {
+                GameObject hairObject = m_hairObjects[hairstyleIndex];
+                hairObject?.SetActive(
+                    m_isHairVisible &&
+                    hairstyleIndex > 0 &&
+                    hairstyleIndex == m_hairstyleID);
+            }
+
+            ApplyHairColor();
+        }
+
+        private void ApplyHairColor()
+        {
+            if (m_hairObjects == null ||
+                m_hairstyleID <= 0 ||
+                m_hairstyleID >= m_hairObjects.Length ||
+                m_hairObjects[m_hairstyleID] == null)
+            {
+                return;
+            }
+
+            foreach (Renderer hairRenderer in
+                     m_hairObjects[m_hairstyleID].GetComponentsInChildren<Renderer>(true))
+            {
+                Material sharedMaterial = hairRenderer.sharedMaterial;
+                if (sharedMaterial == null)
+                {
+                    continue;
+                }
+
+                string colorProperty = GetHairColorProperty(sharedMaterial);
+                if (string.IsNullOrEmpty(colorProperty))
+                {
+                    continue;
+                }
+
+                MaterialPropertyBlock propertyBlock = new();
+                hairRenderer.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor(colorProperty, m_hairColor);
+                hairRenderer.SetPropertyBlock(propertyBlock);
+            }
+        }
+
+        private static string GetHairColorProperty(Material material)
+        {
+            if (material.HasProperty("_BaseColor"))
+            {
+                return "_BaseColor";
+            }
+
+            if (material.HasProperty("_Color"))
+            {
+                return "_Color";
+            }
+
+            if (material.HasProperty("_Base_Color"))
+            {
+                return "_Base_Color";
+            }
+
+            return string.Empty;
         }
 
         private void SetBodyTypeModelsActive(

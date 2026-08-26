@@ -22,7 +22,8 @@ namespace ZZ
         private const int k_FocusPointsDataVersion = 6;
         private const int k_ProjectileDataVersion = 7;
         private const int k_ComplexItemDataVersion = 8;
-        private const int k_CurrentDataVersion = 8;
+        private const int k_CharacterCreationDataVersion = 9;
+        private const int k_CurrentDataVersion = 9;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -34,6 +35,10 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_vitality = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_endurance = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_mind = k_DefaultAttributeLevel;
+        [SerializeField, Min(0)] private int m_strength = k_DefaultAttributeLevel;
+        [SerializeField, Min(0)] private int m_dexterity = k_DefaultAttributeLevel;
+        [SerializeField, Min(0)] private int m_intelligence = k_DefaultAttributeLevel;
+        [SerializeField, Min(0)] private int m_faith = k_DefaultAttributeLevel;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
@@ -96,6 +101,10 @@ namespace ZZ
         [SerializeField, Range(0, 2)] private int m_rightHandWeaponIndex;
         [SerializeField, Range(0, 2)] private int m_leftHandWeaponIndex;
         [SerializeField] private bool m_isMale = true;
+        [SerializeField, Min(0)] private int m_hairstyleID;
+        [SerializeField, Range(0, 255)] private int m_hairColorRed = 79;
+        [SerializeField, Range(0, 255)] private int m_hairColorGreen = 53;
+        [SerializeField, Range(0, 255)] private int m_hairColorBlue = 35;
         [SerializeField] private List<BossSaveData> m_bosses = new();
         [SerializeField] private List<SiteOfGraceSaveData> m_sitesOfGrace = new();
         [SerializeField] private WorldItemLootDictionary m_worldItemsLooted = new();
@@ -152,6 +161,34 @@ namespace ZZ
         {
             get => m_mind;
             set => m_mind = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the saved Strength attribute.</summary>
+        public int Strength
+        {
+            get => m_strength;
+            set => m_strength = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the saved Dexterity attribute.</summary>
+        public int Dexterity
+        {
+            get => m_dexterity;
+            set => m_dexterity = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the saved Intelligence attribute.</summary>
+        public int Intelligence
+        {
+            get => m_intelligence;
+            set => m_intelligence = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the saved Faith attribute.</summary>
+        public int Faith
+        {
+            get => m_faith;
+            set => m_faith = Mathf.Max(0, value);
         }
 
         public float CurrentHealth
@@ -448,6 +485,34 @@ namespace ZZ
             set => m_isMale = value;
         }
 
+        /// <summary>Gets or sets the saved hairstyle index.</summary>
+        public int HairstyleID
+        {
+            get => m_hairstyleID;
+            set => m_hairstyleID = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the saved red hair channel.</summary>
+        public int HairColorRed
+        {
+            get => m_hairColorRed;
+            set => m_hairColorRed = Mathf.Clamp(value, 0, 255);
+        }
+
+        /// <summary>Gets or sets the saved green hair channel.</summary>
+        public int HairColorGreen
+        {
+            get => m_hairColorGreen;
+            set => m_hairColorGreen = Mathf.Clamp(value, 0, 255);
+        }
+
+        /// <summary>Gets or sets the saved blue hair channel.</summary>
+        public int HairColorBlue
+        {
+            get => m_hairColorBlue;
+            set => m_hairColorBlue = Mathf.Clamp(value, 0, 255);
+        }
+
         /// <summary>Clears every classified inventory list before a new save pass.</summary>
         public void ClearInventoryData()
         {
@@ -646,6 +711,18 @@ namespace ZZ
                 m_quickSlotItem02 = new SerializableQuickSlotItem(15, 1);
                 m_quickSlotItem03 = new SerializableQuickSlotItem(-1, 0);
                 m_quickSlotItemIndex = 0;
+            }
+
+            if (m_dataVersion < k_CharacterCreationDataVersion)
+            {
+                m_strength = k_DefaultAttributeLevel;
+                m_dexterity = k_DefaultAttributeLevel;
+                m_intelligence = k_DefaultAttributeLevel;
+                m_faith = k_DefaultAttributeLevel;
+                m_hairstyleID = 0;
+                m_hairColorRed = 79;
+                m_hairColorGreen = 53;
+                m_hairColorBlue = 35;
             }
 
             m_bosses ??= new List<BossSaveData>();
