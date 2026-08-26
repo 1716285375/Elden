@@ -213,32 +213,64 @@ namespace ZZ
             return NewGame();
         }
 
+        /// <summary>Returns whether at least one of the ten fixed character slots is free.</summary>
+        public bool HasFreeCharacterSlot()
+        {
+            return TryFindFreeCharacterSlot(out _, out _);
+        }
+
         /// <summary>
         /// Creates starting character data in the first free slot and loads the world.
         /// </summary>
         public bool NewGame()
         {
-            for (int slotNumber = 1; slotNumber <= 10; slotNumber++)
+            return NewGame(new CharacterSaveData
             {
-                CharacterSlot slot = (CharacterSlot)slotNumber;
-                SaveFileDataWriter writer = CreateWriter(slot);
-                if (writer.CheckToSeeIfFileExists())
-                {
-                    continue;
-                }
+                CharacterName = "Unnamed",
+                SceneIndex = m_startingSceneIndex
+            });
+        }
 
-                m_currentCharacterSlotBeingUsed = slot;
-                m_currentCharacterData = new CharacterSaveData
-                {
-                    CharacterName = "Unnamed",
-                    SceneIndex = m_startingSceneIndex
-                };
-                m_shouldApplyLoadedCharacterData = false;
-                StartCoroutine(LoadScene(m_startingSceneIndex));
-                return true;
+        /// <summary>
+        /// Reserves the first free slot with a complete creation snapshot before loading the world.
+        /// </summary>
+        public bool NewGame(CharacterSaveData startingCharacterData)
+        {
+            if (startingCharacterData == null ||
+                !TryFindFreeCharacterSlot(
+                    out CharacterSlot freeSlot,
+                    out SaveFileDataWriter writer))
+            {
+                return false;
             }
 
-            return false;
+            startingCharacterData.CharacterName = string.IsNullOrWhiteSpace(
+                startingCharacterData.CharacterName)
+                    ? "Unnamed"
+                    : startingCharacterData.CharacterName.Trim();
+            startingCharacterData.SceneIndex = m_startingSceneIndex;
+
+            try
+            {
+                writer.SaveFile(startingCharacterData);
+            }
+            catch (IOException exception)
+            {
+                Debug.LogError($"Could not create {freeSlot}: {exception.Message}");
+                return false;
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                Debug.LogError($"Could not create {freeSlot}: {exception.Message}");
+                return false;
+            }
+
+            m_currentCharacterSlotBeingUsed = freeSlot;
+            m_currentCharacterData = startingCharacterData;
+            SetCharacterDataForSlot(freeSlot, startingCharacterData);
+            m_shouldApplyLoadedCharacterData = true;
+            StartCoroutine(LoadScene(m_startingSceneIndex));
+            return true;
         }
 
         /// <summary>
@@ -469,6 +501,29 @@ namespace ZZ
             }
 
             return new SaveFileDataWriter(Application.persistentDataPath, fileName);
+        }
+
+        private bool TryFindFreeCharacterSlot(
+            out CharacterSlot freeSlot,
+            out SaveFileDataWriter writer)
+        {
+            for (int slotNumber = 1; slotNumber <= 10; slotNumber++)
+            {
+                CharacterSlot candidateSlot = (CharacterSlot)slotNumber;
+                SaveFileDataWriter candidateWriter = CreateWriter(candidateSlot);
+                if (candidateWriter.CheckToSeeIfFileExists())
+                {
+                    continue;
+                }
+
+                freeSlot = candidateSlot;
+                writer = candidateWriter;
+                return true;
+            }
+
+            freeSlot = CharacterSlot.NoSlot;
+            writer = null;
+            return false;
         }
 
         private IEnumerator LoadScene(int sceneIndex)

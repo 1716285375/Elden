@@ -51,6 +51,7 @@ namespace ZZ
         private bool m_isTwoHandInputHeld;
         private bool m_hasTwoHandRightWeaponInput;
         private bool m_hasTwoHandLeftWeaponInput;
+        private bool m_isMenuCameraInputEnabled;
 
         private void Awake()
         {
@@ -278,7 +279,30 @@ namespace ZZ
             ClearAttackInputQueue();
             IsMovementInputEnabled = false;
             m_playerControls?.PlayerMovement.Disable();
-            m_playerControls?.PlayerCamera.Disable();
+            if (!m_isMenuCameraInputEnabled)
+            {
+                m_playerControls?.PlayerCamera.Disable();
+            }
+        }
+
+        /// <summary>Enables look input for a title-screen preview without enabling gameplay.</summary>
+        public void EnableMenuCameraInput()
+        {
+            m_isMenuCameraInputEnabled = true;
+            m_playerControls?.PlayerCamera.Enable();
+        }
+
+        /// <summary>Releases title-screen look input and clears its final camera delta.</summary>
+        public void DisableMenuCameraInput()
+        {
+            m_isMenuCameraInputEnabled = false;
+            CameraInput = Vector2.zero;
+            CameraVerticalInput = 0f;
+            CameraHorizontalInput = 0f;
+            if (!IsMovementInputEnabled)
+            {
+                m_playerControls?.PlayerCamera.Disable();
+            }
         }
 
         /// <summary>

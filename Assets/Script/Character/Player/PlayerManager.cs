@@ -233,6 +233,47 @@ namespace ZZ
                 return;
             }
 
+            PopulateCharacterSaveData(currentData);
+        }
+
+        /// <summary>Builds an independent save snapshot for the title-screen creation flow.</summary>
+        public CharacterSaveData CreateCharacterSaveData()
+        {
+            if (!IsOwner)
+            {
+                return null;
+            }
+
+            CharacterSaveData characterSaveData = new();
+            PopulateCharacterSaveData(characterSaveData);
+            return characterSaveData;
+        }
+
+        /// <summary>Applies one starting class to owner attributes and equipment.</summary>
+        public void ApplyCharacterClass(CharacterClass characterClass)
+        {
+            if (!IsOwner || characterClass == null)
+            {
+                return;
+            }
+
+            CharacterNetworkManager.Vitality.Value = characterClass.Vitality;
+            CharacterNetworkManager.Endurance.Value = characterClass.Endurance;
+            CharacterNetworkManager.Mind.Value = characterClass.Mind;
+            CharacterNetworkManager.Strength.Value = characterClass.Strength;
+            CharacterNetworkManager.Dexterity.Value = characterClass.Dexterity;
+            CharacterNetworkManager.Intelligence.Value = characterClass.Intelligence;
+            CharacterNetworkManager.Faith.Value = characterClass.Faith;
+            PlayerStatsManager.SetNewMaxHealthValue();
+            PlayerStatsManager.SetNewMaxStaminaValue();
+            PlayerStatsManager.SetNewMaxFocusPointsValue();
+            InventoryManager.ApplyCharacterClassEquipment(characterClass);
+            ApplyStartingFlaskAmounts(characterClass);
+        }
+
+        private void PopulateCharacterSaveData(CharacterSaveData currentData)
+        {
+
             Vector3 position = transform.position;
             currentData.CharacterName = PlayerNetworkManager.CharacterName.Value.ToString();
             currentData.XPosition = position.x;
@@ -242,6 +283,10 @@ namespace ZZ
             currentData.Vitality = CharacterNetworkManager.Vitality.Value;
             currentData.Endurance = CharacterNetworkManager.Endurance.Value;
             currentData.Mind = CharacterNetworkManager.Mind.Value;
+            currentData.Strength = CharacterNetworkManager.Strength.Value;
+            currentData.Dexterity = CharacterNetworkManager.Dexterity.Value;
+            currentData.Intelligence = CharacterNetworkManager.Intelligence.Value;
+            currentData.Faith = CharacterNetworkManager.Faith.Value;
             currentData.CurrentHealth = CharacterNetworkManager.CurrentHealth.Value;
             currentData.CurrentStamina = CharacterNetworkManager.CurrentStamina.Value;
             currentData.CurrentFocusPoints =
@@ -296,6 +341,10 @@ namespace ZZ
             currentData.QuickSlotItemIndex = InventoryManager.QuickSlotItemIndex;
             SaveInventoryData(currentData);
             currentData.IsMale = PlayerNetworkManager.IsMale.Value;
+            currentData.HairstyleID = PlayerNetworkManager.HairstyleID.Value;
+            currentData.HairColorRed = PlayerNetworkManager.HairColorRed.Value;
+            currentData.HairColorGreen = PlayerNetworkManager.HairColorGreen.Value;
+            currentData.HairColorBlue = PlayerNetworkManager.HairColorBlue.Value;
         }
 
         /// <summary>
@@ -313,6 +362,10 @@ namespace ZZ
             CharacterNetworkManager.Vitality.Value = currentData.Vitality;
             CharacterNetworkManager.Endurance.Value = currentData.Endurance;
             CharacterNetworkManager.Mind.Value = currentData.Mind;
+            CharacterNetworkManager.Strength.Value = currentData.Strength;
+            CharacterNetworkManager.Dexterity.Value = currentData.Dexterity;
+            CharacterNetworkManager.Intelligence.Value = currentData.Intelligence;
+            CharacterNetworkManager.Faith.Value = currentData.Faith;
             PlayerStatsManager.SetNewMaxHealthValue();
             PlayerStatsManager.SetNewMaxStaminaValue();
             PlayerStatsManager.SetNewMaxFocusPointsValue();
@@ -331,6 +384,10 @@ namespace ZZ
             PlayerNetworkManager.CharacterName.Value =
                 new FixedString64Bytes(currentData.CharacterName);
             PlayerNetworkManager.IsMale.Value = currentData.IsMale;
+            PlayerNetworkManager.HairstyleID.Value = currentData.HairstyleID;
+            PlayerNetworkManager.HairColorRed.Value = currentData.HairColorRed;
+            PlayerNetworkManager.HairColorGreen.Value = currentData.HairColorGreen;
+            PlayerNetworkManager.HairColorBlue.Value = currentData.HairColorBlue;
             InventoryManager.RestoreInventory(currentData);
             PlayerNetworkManager.RemainingHealthFlasks.Value =
                 currentData.CurrentHealthFlasksRemaining;
@@ -393,6 +450,35 @@ namespace ZZ
             CharacterNetworkManager.NetworkPosition.Value = transform.position;
             CharacterNetworkManager.NetworkRotation.Value = transform.rotation;
             PlayerCamera.Instance?.SnapToPlayerAndResetRotation(this);
+        }
+
+        private void ApplyStartingFlaskAmounts(CharacterClass characterClass)
+        {
+            int healthFlasks = 0;
+            int focusPointFlasks = 0;
+            QuickSlotItem[] quickSlotItems = characterClass.QuickSlotItems;
+            if (quickSlotItems != null)
+            {
+                for (int slotIndex = 0; slotIndex < quickSlotItems.Length; slotIndex++)
+                {
+                    if (quickSlotItems[slotIndex] is not FlaskItem flaskItem)
+                    {
+                        continue;
+                    }
+
+                    if (flaskItem.RestoresHealth)
+                    {
+                        healthFlasks += characterClass.GetQuickSlotItemAmount(slotIndex);
+                    }
+                    else
+                    {
+                        focusPointFlasks += characterClass.GetQuickSlotItemAmount(slotIndex);
+                    }
+                }
+            }
+
+            PlayerNetworkManager.RemainingHealthFlasks.Value = healthFlasks;
+            PlayerNetworkManager.RemainingFocusPointFlasks.Value = focusPointFlasks;
         }
 
         private void SaveInventoryData(CharacterSaveData currentData)

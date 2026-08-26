@@ -10,6 +10,11 @@ namespace ZZ
         [SerializeField] private GameObject m_pressStartMenu;
         [SerializeField] private GameObject m_mainMenu;
         [SerializeField] private GameObject m_loadGameMenu;
+        [SerializeField] private TitleScreenCharacterCreationManager
+            m_characterCreationManager;
+
+        [Header("CHARACTER CLASSES")]
+        [SerializeField] private CharacterClass[] m_startingClasses;
 
         [Header("POPUPS")]
         [SerializeField] private GameObject m_noFreeCharacterSlotsPopup;
@@ -24,6 +29,33 @@ namespace ZZ
         [SerializeField] private UICharacterSaveSlot[] m_characterSaveSlots;
 
         private CharacterSlot m_currentSelectedSlot = CharacterSlot.NoSlot;
+
+        /// <summary>Gets the authored classes displayed by character creation.</summary>
+        public CharacterClass[] StartingClasses
+        {
+            get
+            {
+                EnsureDefaultStartingClasses();
+                return m_startingClasses;
+            }
+        }
+
+        private void Awake()
+        {
+            if (m_characterCreationManager == null)
+            {
+                m_characterCreationManager =
+                    GetComponent<TitleScreenCharacterCreationManager>();
+            }
+
+            if (m_characterCreationManager == null)
+            {
+                m_characterCreationManager =
+                    gameObject.AddComponent<TitleScreenCharacterCreationManager>();
+            }
+
+            m_characterCreationManager.ConfigureRuntime(this, m_newGameButton);
+        }
 
         /// <summary>
         /// Starts the host used by the title screen without changing menu state.
@@ -49,7 +81,7 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Creates a character in the first free slot or displays the full-slots warning.
+        /// Opens character creation when a slot is free or displays the capacity warning.
         /// </summary>
         public void StartNewGame()
         {
@@ -58,10 +90,22 @@ namespace ZZ
                 return;
             }
 
-            if (!WorldSaveGameManager.Instance.NewGame())
+            if (!WorldSaveGameManager.Instance.HasFreeCharacterSlot())
             {
                 DisplayNoFreeCharacterSlotsPopup();
+                return;
             }
+
+            m_mainMenu?.SetActive(false);
+            m_characterCreationManager?.OpenCharacterCreation();
+        }
+
+        /// <summary>Closes character creation and restores title-menu controller focus.</summary>
+        public void ReturnFromCharacterCreation()
+        {
+            m_characterCreationManager?.CloseCharacterCreation();
+            m_mainMenu?.SetActive(true);
+            m_newGameButton?.Select();
         }
 
         /// <summary>
@@ -260,6 +304,76 @@ namespace ZZ
 
             m_currentSelectedSlot = CharacterSlot.NoSlot;
             m_loadGameReturnButton?.Select();
+        }
+
+        private void EnsureDefaultStartingClasses()
+        {
+            if (m_startingClasses != null && m_startingClasses.Length > 0)
+            {
+                return;
+            }
+
+            WorldItemDatabase database = WorldItemDatabase.Instance;
+            if (database == null)
+            {
+                return;
+            }
+
+            WeaponItem unarmed = database.GetWeaponByID(0);
+            QuickSlotItem crimsonFlask = database.GetQuickSlotItemByID(14);
+            QuickSlotItem ceruleanFlask = database.GetQuickSlotItemByID(15);
+            m_startingClasses = new[]
+            {
+                new CharacterClass(
+                    "Knight",
+                    12,
+                    11,
+                    10,
+                    14,
+                    10,
+                    8,
+                    9,
+                    new[]
+                    {
+                        database.GetWeaponByID(1),
+                        database.GetWeaponByID(2),
+                        unarmed
+                    },
+                    new[]
+                    {
+                        database.GetWeaponByID(3),
+                        unarmed,
+                        unarmed
+                    },
+                    database.GetHeadEquipmentByID(4),
+                    database.GetBodyEquipmentByID(5),
+                    database.GetHandEquipmentByID(6),
+                    database.GetLegEquipmentByID(7),
+                    new[] { crimsonFlask, ceruleanFlask, null },
+                    new[] { 3, 1, 0 }),
+                new CharacterClass(
+                    "Ranger",
+                    10,
+                    12,
+                    11,
+                    10,
+                    15,
+                    9,
+                    8,
+                    new[]
+                    {
+                        database.GetWeaponByID(11),
+                        database.GetWeaponByID(1),
+                        unarmed
+                    },
+                    new[] { unarmed, unarmed, unarmed },
+                    null,
+                    database.GetBodyEquipmentByID(5),
+                    database.GetHandEquipmentByID(6),
+                    database.GetLegEquipmentByID(7),
+                    new[] { crimsonFlask, ceruleanFlask, null },
+                    new[] { 3, 1, 0 })
+            };
         }
     }
 }

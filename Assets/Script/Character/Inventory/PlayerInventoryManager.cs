@@ -608,6 +608,58 @@ namespace ZZ
             InitializeCurrentQuickSlotItemFromID(currentItemID);
         }
 
+        /// <summary>
+        /// Replaces every starting equipment slot from a class definition and clears stale slots.
+        /// </summary>
+        public void ApplyCharacterClassEquipment(CharacterClass characterClass)
+        {
+            if (characterClass == null)
+            {
+                return;
+            }
+
+            RestoreWeaponLoadout(
+                CreateStartingWeapons(characterClass.RightHandWeapons),
+                CreateStartingWeapons(characterClass.LeftHandWeapons),
+                0,
+                0);
+
+            PlayerNetworkManager networkManager = m_player?.PlayerNetworkManager;
+            if (networkManager != null && m_player.IsOwner)
+            {
+                networkManager.CurrentHeadEquipmentID.Value =
+                    characterClass.HeadEquipment?.ItemID ?? -1;
+                networkManager.CurrentBodyEquipmentID.Value =
+                    characterClass.BodyEquipment?.ItemID ?? -1;
+                networkManager.CurrentHandEquipmentID.Value =
+                    characterClass.HandEquipment?.ItemID ?? -1;
+                networkManager.CurrentLegEquipmentID.Value =
+                    characterClass.LegEquipment?.ItemID ?? -1;
+            }
+
+            InitializeArmorFromIDs(
+                characterClass.HeadEquipment?.ItemID ?? -1,
+                characterClass.BodyEquipment?.ItemID ?? -1,
+                characterClass.HandEquipment?.ItemID ?? -1,
+                characterClass.LegEquipment?.ItemID ?? -1);
+
+            QuickSlotItem[] quickSlotItems = characterClass.QuickSlotItems;
+            SerializableQuickSlotItem[] startingQuickSlots =
+                new SerializableQuickSlotItem[k_QuickSlotCount];
+            for (int slotIndex = 0; slotIndex < k_QuickSlotCount; slotIndex++)
+            {
+                QuickSlotItem quickSlotItem =
+                    quickSlotItems != null && slotIndex < quickSlotItems.Length
+                        ? quickSlotItems[slotIndex]
+                        : null;
+                startingQuickSlots[slotIndex] = new SerializableQuickSlotItem(
+                    quickSlotItem?.ItemID ?? -1,
+                    characterClass.GetQuickSlotItemAmount(slotIndex));
+            }
+
+            RestoreQuickSlotLoadout(startingQuickSlots, 0);
+        }
+
         /// <summary>Clears and reconstructs the complete unequipped runtime inventory.</summary>
         public void RestoreInventory(CharacterSaveData saveData)
         {
@@ -632,6 +684,22 @@ namespace ZZ
                 database.GetRuntimeHandEquipmentByID);
             AddRuntimeItems(saveData.LegEquipmentInInventory,
                 database.GetRuntimeLegEquipmentByID);
+        }
+
+        private static SerializableWeapon[] CreateStartingWeapons(WeaponItem[] weapons)
+        {
+            SerializableWeapon[] startingWeapons =
+                new SerializableWeapon[k_QuickSlotCount];
+            for (int slotIndex = 0; slotIndex < k_QuickSlotCount; slotIndex++)
+            {
+                WeaponItem weapon = weapons != null && slotIndex < weapons.Length
+                    ? weapons[slotIndex]
+                    : null;
+                startingWeapons[slotIndex] = WorldSaveGameManager
+                    .GetSerializableWeaponFromWeaponItem(weapon);
+            }
+
+            return startingWeapons;
         }
 
         /// <summary>Destroys every owned inventory instance and empties the list.</summary>

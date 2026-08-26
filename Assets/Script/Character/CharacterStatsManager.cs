@@ -133,7 +133,11 @@ namespace ZZ
         public float PoiseResetTimer => Mathf.Max(0f, m_poiseResetTimer);
 
         /// <summary>Gets the persistent base Strength level.</summary>
-        public int StrengthLevel => Mathf.Max(0, m_strengthLevel);
+        public int StrengthLevel => Mathf.Max(
+            0,
+            m_characterNetworkManager != null
+                ? m_characterNetworkManager.Strength.Value
+                : m_strengthLevel);
 
         /// <summary>Gets the additive Strength supplied by persistent effects.</summary>
         public int StrengthModifier => m_strengthModifier;

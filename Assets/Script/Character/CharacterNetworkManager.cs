@@ -47,6 +47,26 @@ namespace ZZ
             10,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        /// <summary>Gets owner-written Strength replicated to every peer.</summary>
+        public NetworkVariable<int> Strength = new NetworkVariable<int>(
+            10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        /// <summary>Gets owner-written Dexterity replicated to every peer.</summary>
+        public NetworkVariable<int> Dexterity = new NetworkVariable<int>(
+            10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        /// <summary>Gets owner-written Intelligence replicated to every peer.</summary>
+        public NetworkVariable<int> Intelligence = new NetworkVariable<int>(
+            10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        /// <summary>Gets owner-written Faith replicated to every peer.</summary>
+        public NetworkVariable<int> Faith = new NetworkVariable<int>(
+            10,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         public NetworkVariable<float> CurrentHealth = new NetworkVariable<float>(
             0f,
             NetworkVariableReadPermission.Everyone,
