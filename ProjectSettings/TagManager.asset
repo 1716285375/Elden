@@ -18,8 +18,8 @@ TagManager:
   - Damageable Character
   - Interactable
   - Projectile
-  - 
-  - 
+  - Beacon
+  - BeaconDetector
   - 
   - 
   - 

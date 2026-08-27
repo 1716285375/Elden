@@ -26,6 +26,7 @@ namespace ZZ
             m_defaultTimeUntilStanceRegenerationBegins = 3f;
 
         private readonly HashSet<CharacterManager> m_charactersDamaged = new();
+        private readonly List<PlayerManager> m_playersWithinActivationRange = new();
 
         private AICharacterManager m_aiCharacter;
         private BossAttackData m_currentBossAttack;
@@ -39,8 +40,44 @@ namespace ZZ
         public float StanceRegenerationTimer => m_stanceRegenerationTimer;
         public bool IgnoreStanceBreak => m_ignoreStanceBreak;
 
+        /// <summary>Gets the number of valid players currently keeping this AI active.</summary>
+        public int PlayersWithinActivationRangeCount
+        {
+            get
+            {
+                PruneMissingPlayersWithinActivationRange();
+                return m_playersWithinActivationRange.Count;
+            }
+        }
+
         /// <summary>Gets the last player whose owner-authoritative hit damaged this AI.</summary>
         public PlayerManager RuneRewardCandidate => m_runeRewardCandidate;
+
+        /// <summary>Adds one player to the activation range without duplicates.</summary>
+        public bool AddPlayerToPlayersWithinRange(PlayerManager player)
+        {
+            PruneMissingPlayersWithinActivationRange();
+            if (player == null || m_playersWithinActivationRange.Contains(player))
+            {
+                return false;
+            }
+
+            m_playersWithinActivationRange.Add(player);
+            return true;
+        }
+
+        /// <summary>Removes one player and prunes peers that left the session.</summary>
+        public bool RemovePlayerFromPlayersWithinRange(PlayerManager player)
+        {
+            PruneMissingPlayersWithinActivationRange();
+            return player != null && m_playersWithinActivationRange.Remove(player);
+        }
+
+        /// <summary>Clears every transient player activation reference.</summary>
+        public void ClearPlayersWithinActivationRange()
+        {
+            m_playersWithinActivationRange.Clear();
+        }
 
         protected override void Awake()
         {
@@ -311,6 +348,19 @@ namespace ZZ
         {
             ConfigureDamageCollider(m_leftHandDamageCollider);
             ConfigureDamageCollider(m_rightHandDamageCollider);
+        }
+
+        private void PruneMissingPlayersWithinActivationRange()
+        {
+            for (int index = m_playersWithinActivationRange.Count - 1;
+                index >= 0;
+                index--)
+            {
+                if (m_playersWithinActivationRange[index] == null)
+                {
+                    m_playersWithinActivationRange.RemoveAt(index);
+                }
+            }
         }
 
         private static float GetRuneGainModifier(PlayerManager player)

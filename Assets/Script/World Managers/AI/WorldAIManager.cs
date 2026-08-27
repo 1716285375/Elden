@@ -15,6 +15,9 @@ namespace ZZ
     {
         private static WorldAIManager s_instance;
 
+        [Header("Activation")]
+        [SerializeField] private AIActivationBeacon m_aiActivationBeaconPrefab;
+
         private readonly List<AICharacterSpawner> m_characterSpawners = new();
         private readonly List<AICharacterManager> m_spawnedCharacters = new();
         private readonly List<AIPatrolPath> m_patrolPaths = new();
@@ -36,6 +39,10 @@ namespace ZZ
 
         /// <summary>Gets the registered patrol paths in the active gameplay scene.</summary>
         public IReadOnlyList<AIPatrolPath> PatrolPaths => m_patrolPaths;
+
+        /// <summary>Gets the shared server-side beacon template used by every AI.</summary>
+        public AIActivationBeacon AIActivationBeaconPrefab =>
+            m_aiActivationBeaconPrefab;
 
         /// <summary>Gets whether Spawn, Reset, or Despawn work is running across frames.</summary>
         public bool IsPerformingLoadingOperation =>
