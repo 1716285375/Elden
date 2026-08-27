@@ -16,6 +16,7 @@ MonoBehaviour:
   m_itemIcon: {fileID: 21300000, guid: acb985449c8a0dd42a22de227338e719, type: 3}
   m_itemDescription: Bare hands used when no weapon is equipped.
   m_itemID: 0
+  m_itemWeight: 0
   m_weaponModel: {fileID: 3537712414218709070, guid: d48a6a0d322049b40915032c1af83c84, type: 3}
   m_isUnarmed: 1
   m_weaponModelType: 0
@@ -58,6 +59,7 @@ MonoBehaviour:
   m_twoHandRightAction: {fileID: 0}
   m_twoHandRightHeavyAction: {fileID: 0}
   m_leftHandAction: {fileID: 11400000, guid: 4d97d5a4924ec52488cc540afb61ae31, type: 2}
+  m_ashOfWarAction: {fileID: 0}
   m_lightAttack01DamageModifier: 1
   m_heavyAttack01DamageModifier: 1.25
   m_chargedAttack01DamageModifier: 1.75
@@ -66,6 +68,12 @@ MonoBehaviour:
   m_backStepAttack01DamageModifier: 1.15
   m_lightJumpingAttack01DamageModifier: 1
   m_heavyJumpingAttack01DamageModifier: 1.8
+  m_dualAttack01DamageModifier: 0.77
+  m_dualAttack02DamageModifier: 0.77
+  m_dualJumpAttackDamageModifier: 0.77
+  m_dualRunAttackDamageModifier: 0.77
+  m_dualRollAttackDamageModifier: 0.77
+  m_dualBackstepAttackDamageModifier: 0.77
   m_lightAttack01StaminaCostMultiplier: 1
   m_heavyAttack01StaminaCostMultiplier: 1.25
   m_chargedAttack01StaminaCostMultiplier: 1.5

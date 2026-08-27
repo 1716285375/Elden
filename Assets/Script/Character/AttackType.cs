@@ -15,6 +15,12 @@ namespace ZZ
         RollAttack01 = 7,
         BackStepAttack01 = 8,
         LightJumpingAttack01 = 9,
-        HeavyJumpingAttack01 = 10
+        HeavyJumpingAttack01 = 10,
+        DualAttack01 = 11,
+        DualAttack02 = 12,
+        DualJumpAttack = 13,
+        DualRunAttack = 14,
+        DualRollAttack = 15,
+        DualBackstepAttack = 16
     }
 }

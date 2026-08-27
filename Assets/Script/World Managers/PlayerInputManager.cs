@@ -41,6 +41,7 @@ namespace ZZ
         private bool m_hasRTStartedInput;
         private bool m_hasRTReleasedInput;
         private bool m_hasLTInput;
+        private bool m_hasLBInput;
         private bool m_isLBInputHeld;
         private bool m_isLBSpellInput;
         private bool m_hasLockOnInput;
@@ -260,6 +261,7 @@ namespace ZZ
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
             m_hasLTInput = false;
+            m_hasLBInput = false;
             m_isLBInputHeld = false;
             m_isLBSpellInput = false;
             m_hasLockOnInput = false;
@@ -516,8 +518,24 @@ namespace ZZ
                 return;
             }
 
+            PlayerCombatManager combatManager = m_player?.PlayerCombatManager;
+            if (combatManager?.CanUsePowerStance() == true)
+            {
+                if (!m_hasLBInput)
+                {
+                    return;
+                }
+
+                m_hasLBInput = false;
+                WeaponItem offHandWeapon =
+                    m_player.InventoryManager?.CurrentLeftHandWeapon;
+                combatManager.PerformPowerStanceLeftHandAction(offHandWeapon);
+                return;
+            }
+
+            m_hasLBInput = false;
             WeaponItem weapon = ResolveBlockingWeapon();
-            m_player?.PlayerCombatManager?.PerformWeaponBasedAction(
+            combatManager?.PerformWeaponBasedAction(
                 weapon?.LeftHandAction,
                 weapon);
         }
@@ -530,6 +548,7 @@ namespace ZZ
             }
 
             m_hasLTInput = false;
+            m_hasLBInput = false;
             m_isLBInputHeld = false;
             m_player?.PlayerCombatManager?.AttemptToPerformAshOfWar();
         }
@@ -575,6 +594,7 @@ namespace ZZ
             if (m_hasTwoHandLeftWeaponInput)
             {
                 m_hasTwoHandLeftWeaponInput = false;
+                m_hasLBInput = false;
                 m_isLBInputHeld = false;
                 m_player.PlayerCombatManager?.SetBlocking(false);
                 m_player.PlayerNetworkManager.ToggleTwoHandWeapon(false);
@@ -733,12 +753,14 @@ namespace ZZ
                 return;
             }
 
+            m_hasLBInput = true;
             m_isLBInputHeld = true;
         }
 
         private void OnLBStarted(InputAction.CallbackContext context)
         {
             m_isLBSpellInput = TryBeginSpellInput(false);
+            m_hasLBInput = !m_isLBSpellInput;
             m_isLBInputHeld = !m_isLBSpellInput;
         }
 
@@ -750,6 +772,7 @@ namespace ZZ
                 m_player?.PlayerCombatManager?.ReleaseChargingSpell(false);
             }
 
+            m_hasLBInput = false;
             m_isLBInputHeld = false;
             m_player?.PlayerCombatManager?.SetBlocking(false);
             m_player?.PlayerNetworkManager?.SetAimingState(false);
