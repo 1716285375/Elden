@@ -7,6 +7,8 @@ namespace ZZ
     /// </summary>
     public class AICharacterAnimatorManager : CharacterAnimatorManager
     {
+        private const string k_ActionLayerName = "Action Override";
+
         private static readonly int s_pivotLeftTrigger =
             Animator.StringToHash("PivotLeft");
         private static readonly int s_pivotRightTrigger =
@@ -22,6 +24,22 @@ namespace ZZ
             base.Awake();
             m_aiCharacter = GetComponentInParent<AICharacterManager>();
             m_combatManager = GetComponentInParent<AICharacterCombatManager>();
+            if (CharacterAnimator != null)
+            {
+                CharacterAnimator.keepAnimatorStateOnDisable = true;
+            }
+        }
+
+        /// <summary>Immediately presents the configured persistent sleeping state.</summary>
+        public void PlaySleepingAnimation(string stateName)
+        {
+            PlayIdleBehaviorAnimation(stateName, 0f);
+        }
+
+        /// <summary>Blends through the configured waking state before locomotion resumes.</summary>
+        public void PlayWakingAnimation(string stateName)
+        {
+            PlayIdleBehaviorAnimation(stateName, 0.1f);
         }
 
         /// <summary>Triggers a locally presented pivot selected by the server.</summary>
@@ -113,6 +131,37 @@ namespace ZZ
         public void EnableCanDoCombo()
         {
             // Authored undead clips share player events, but AI attacks are single-step.
+        }
+
+        private void PlayIdleBehaviorAnimation(
+            string stateName,
+            float transitionDuration)
+        {
+            if (CharacterAnimator == null ||
+                m_aiCharacter == null ||
+                string.IsNullOrWhiteSpace(stateName))
+            {
+                return;
+            }
+
+            int actionLayerIndex = CharacterAnimator.GetLayerIndex(
+                k_ActionLayerName);
+            int stateHash = Animator.StringToHash(
+                $"{k_ActionLayerName}.{stateName}");
+            if (actionLayerIndex < 0 ||
+                !CharacterAnimator.HasState(actionLayerIndex, stateHash))
+            {
+                Debug.LogWarning(
+                    $"Animator {CharacterAnimator.name} is missing AI state {stateName}.",
+                    CharacterAnimator);
+                return;
+            }
+
+            m_aiCharacter.SetActionState(true, false, false, false);
+            CharacterAnimator.CrossFade(
+                stateHash,
+                transitionDuration,
+                actionLayerIndex);
         }
     }
 }

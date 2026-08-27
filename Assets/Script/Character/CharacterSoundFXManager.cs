@@ -12,6 +12,10 @@ namespace ZZ
         [SerializeField] private AudioClip[] m_damageGrunts =
             System.Array.Empty<AudioClip>();
 
+        [Header("Movement Sounds")]
+        [SerializeField] private AudioClip[] m_footstepSounds =
+            System.Array.Empty<AudioClip>();
+
         protected AudioSource CharacterAudioSource => m_audioSource;
 
         protected virtual void Awake()
@@ -90,6 +94,14 @@ namespace ZZ
         {
             WorldSoundFXManager.Instance?.PlaySoundEffect(
                 m_damageGrunts,
+                m_audioSource);
+        }
+
+        /// <summary>Plays one authored footstep without producing an AI stimulus.</summary>
+        public virtual void PlayFootstepSoundEffect()
+        {
+            WorldSoundFXManager.Instance?.PlaySoundEffect(
+                m_footstepSounds,
                 m_audioSource);
         }
 

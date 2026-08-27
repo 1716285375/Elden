@@ -14,6 +14,12 @@ namespace ZZ
         [Header("Character")]
         [SerializeField] private GameObject m_characterGameObject;
 
+        [Header("Idle Behavior")]
+        [SerializeField, Min(0)] private int m_patrolPathID;
+        [SerializeField] private bool m_repeatPatrol;
+        [SerializeField] private bool m_isSleeping;
+        [SerializeField] private bool m_willInvestigateSound = true;
+
         [Header("Boss Persistence")]
         [SerializeField, Min(0)] private int m_bossID;
 
@@ -28,6 +34,15 @@ namespace ZZ
 
         /// <summary>Gets whether this spawn point represents a persistent boss.</summary>
         public bool IsBoss => m_bossID > 0;
+
+        /// <summary>Gets the scene patrol route requested by this spawn point.</summary>
+        public int PatrolPathID => m_patrolPathID;
+
+        /// <summary>Gets whether the spawned AI begins in its sleeping behavior.</summary>
+        public bool IsSleeping => m_isSleeping;
+
+        /// <summary>Gets whether the spawned AI responds to sound stimuli.</summary>
+        public bool WillInvestigateSound => m_willInvestigateSound;
 
         private void Awake()
         {
@@ -99,6 +114,14 @@ namespace ZZ
                 transform.rotation);
             AICharacterManager character = instance.GetComponent<AICharacterManager>();
             character.SetOriginSpawner(this);
+            AIPatrolPath patrolPath = m_patrolPathID > 0
+                ? WorldAIManager.Instance?.GetAIPatrolPathByID(m_patrolPathID)
+                : null;
+            character.ConfigureIdleBehavior(
+                patrolPath,
+                m_repeatPatrol,
+                m_isSleeping,
+                m_willInvestigateSound);
             instance.GetComponent<NetworkObject>().Spawn(true);
 
             m_instantiatedCharacter = character;

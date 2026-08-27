@@ -5,6 +5,11 @@ namespace ZZ
         internal override AICharacterStateId StateId =>
             AICharacterStateId.PursueTarget;
 
+        internal override void Enter(AICharacterManager character)
+        {
+            character.SetNavigationEnabled(true);
+        }
+
         internal override AICharacterStateId Tick(
             AICharacterManager character,
             float deltaTime)
@@ -13,6 +18,12 @@ namespace ZZ
             {
                 character.ClearTarget();
                 return AICharacterStateId.Idle;
+            }
+
+            if (character.IsPerformingAction && !character.CanMove)
+            {
+                character.StopMoving();
+                return StateId;
             }
 
             if (character.IsTargetWithinCombatRange)

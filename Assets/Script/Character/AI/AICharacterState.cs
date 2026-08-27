@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace ZZ
 {
     /// <summary>
@@ -17,6 +19,21 @@ namespace ZZ
 
         internal virtual void Exit(AICharacterManager character)
         {
+        }
+
+        /// <summary>
+        /// Resolves a complete NavMesh path, sampling near the requested point when it is unreachable.
+        /// </summary>
+        protected static bool IsDestinationReachable(
+            AICharacterManager character,
+            Vector3 requestedDestination,
+            out Vector3 reachableDestination)
+        {
+            reachableDestination = requestedDestination;
+            return character != null &&
+                character.TryResolveReachableDestination(
+                    requestedDestination,
+                    out reachableDestination);
         }
     }
 }
