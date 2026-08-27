@@ -129,6 +129,13 @@ namespace ZZ
                         saveData?.LastSiteOfGraceRestedAt ?? 0);
                 respawnSite?.TeleportLocalPlayer();
 
+                WorldAIManager worldAIManager = WorldAIManager.Instance;
+                worldAIManager?.ResetAllCharacters();
+                while (worldAIManager?.IsPerformingLoadingOperation == true)
+                {
+                    yield return null;
+                }
+
                 WorldSaveGameManager saveGameManager =
                     WorldSaveGameManager.Instance;
                 if (saveGameManager?.CanSaveGame == true)

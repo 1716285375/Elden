@@ -35,6 +35,11 @@ namespace ZZ
             AICharacterManager character,
             float deltaTime)
         {
+            if (character.CurrentTarget?.IsDead == true)
+            {
+                character.ClearTarget();
+            }
+
             if (!character.HasValidTarget || character.IsTargetBeyondLoseDistance)
             {
                 character.ClearTarget();

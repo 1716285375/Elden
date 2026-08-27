@@ -459,6 +459,7 @@ namespace ZZ
                 return;
             }
 
+            WorldAIManager.Instance?.DisableAllBossFights();
             PlayerManager player = GetComponent<PlayerManager>();
             int currentRunes = player?.PlayerStatsManager?.Runes ?? 0;
             if (currentRunes > 0)

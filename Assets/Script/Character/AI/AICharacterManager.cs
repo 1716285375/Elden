@@ -85,6 +85,7 @@ namespace ZZ
         private bool m_repeatPatrol;
         private bool m_startsSleeping;
         private bool m_willInvestigateSound = true;
+        private bool m_hasBeenAwakenedAlready;
         private bool m_useExplicitMovementAnimation;
         private float m_horizontalMovementAnimation;
         private float m_verticalMovementAnimation;
@@ -121,6 +122,11 @@ namespace ZZ
 
         /// <summary>Gets the replicated awake state.</summary>
         public bool IsAwake => m_aiNetworkManager?.IsAwake.Value ?? true;
+
+        /// <summary>Gets whether this Boss has consumed its one-time awakening.</summary>
+        public bool HasBeenAwakenedAlready => m_hasBeenAwakenedAlready;
+
+        internal AICharacterSpawner OriginSpawner => m_originSpawner;
 
         /// <summary>Gets the lightweight server beacon assigned to this AI.</summary>
         public AIActivationBeacon ActivationBeacon => m_activationBeacon;
@@ -371,6 +377,17 @@ namespace ZZ
             m_willInvestigateSound = willInvestigateSound;
         }
 
+        /// <summary>Restores one Boss's persistent awakening flag without changing its awake state.</summary>
+        public void RestoreBossAwakeningProgress(bool hasBeenAwakenedAlready)
+        {
+            if (IsSpawned && !IsServer)
+            {
+                return;
+            }
+
+            m_hasBeenAwakenedAlready = hasBeenAwakenedAlready;
+        }
+
         /// <summary>Overrides spawned Health and Stamina for one server-owned AI instance.</summary>
         public bool ApplyManuallyConfiguredStats(
             float maximumHealth,
@@ -509,7 +526,6 @@ namespace ZZ
             }
 
             m_currentTarget = player;
-            m_originSpawner?.MarkBossAwakened();
             return true;
         }
 
@@ -522,6 +538,9 @@ namespace ZZ
             }
 
             m_currentTarget = enteringPlayer;
+            bool shouldPlayFirstAwakening = !m_hasBeenAwakenedAlready;
+            WakeFromSleep(shouldPlayFirstAwakening);
+            m_hasBeenAwakenedAlready = true;
             m_originSpawner?.MarkBossAwakened();
             m_stateMachine.ChangeState(AICharacterStateId.PursueTarget);
         }
@@ -545,11 +564,6 @@ namespace ZZ
 
             m_nextDetectionTime = Time.time + m_detectionInterval;
             m_currentTarget = FindNearestVisiblePlayer();
-            if (m_currentTarget != null)
-            {
-                m_originSpawner?.MarkBossAwakened();
-            }
-
             return m_currentTarget != null;
         }
 
@@ -782,14 +796,20 @@ namespace ZZ
             m_aiNetworkManager?.PlaySleepingAnimation();
         }
 
-        internal void WakeFromSleep()
+        internal void WakeFromSleep(bool playWakingAnimation = true)
         {
             if (IsServer && !IsAwake)
             {
                 m_aiNetworkManager?.SetAwakeState(
                     true,
                     m_sleepingAnimation,
-                    m_wakingAnimation);
+                    m_wakingAnimation,
+                    playWakingAnimation);
+                if (m_bossCharacter != null)
+                {
+                    m_hasBeenAwakenedAlready = true;
+                    m_originSpawner?.MarkBossAwakened();
+                }
             }
         }
 
@@ -1086,7 +1106,8 @@ namespace ZZ
                 m_aiNetworkManager?.SetAwakeState(
                     !m_startsSleeping,
                     m_sleepingAnimation,
-                    m_wakingAnimation);
+                    m_wakingAnimation,
+                    true);
             }
         }
 

@@ -12,6 +12,10 @@ namespace ZZ
         [SerializeField, Min(1)] private int m_bossID = 1;
         [SerializeField] private GameObject m_fogWallRoot;
 
+        [Header("Music")]
+        [SerializeField] private AudioSource m_bossMusicSource;
+        [SerializeField] private AudioClip m_bossMusic;
+
         private BossCharacterManager m_boundBoss;
 
         private void Awake()
@@ -105,6 +109,7 @@ namespace ZZ
             }
 
             PlayerUIManager.Instance?.PlayerUIBossHealthBar?.UnbindBoss(m_boundBoss);
+            SetBossMusicActive(false);
             m_boundBoss = null;
         }
 
@@ -121,10 +126,37 @@ namespace ZZ
             if (isEncounterActive)
             {
                 PlayerUIManager.Instance?.PlayerUIBossHealthBar?.BindBoss(m_boundBoss);
+                SetBossMusicActive(true);
                 return;
             }
 
-            PlayerUIManager.Instance?.PlayerUIBossHealthBar?.UnbindBoss(m_boundBoss);
+            PlayerUIManager.Instance?.PlayerUIBossHealthBar?.RemoveHPBar(m_boundBoss);
+            SetBossMusicActive(false);
+        }
+
+        private void SetBossMusicActive(bool isActive)
+        {
+            if (m_bossMusicSource == null)
+            {
+                return;
+            }
+
+            if (!isActive)
+            {
+                m_bossMusicSource.Stop();
+                return;
+            }
+
+            if (m_bossMusic != null)
+            {
+                m_bossMusicSource.clip = m_bossMusic;
+            }
+
+            m_bossMusicSource.loop = true;
+            if (m_bossMusicSource.clip != null && !m_bossMusicSource.isPlaying)
+            {
+                m_bossMusicSource.Play();
+            }
         }
 
         private void SetArenaLocked(bool isLocked)
