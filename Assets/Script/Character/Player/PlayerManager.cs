@@ -289,6 +289,7 @@ namespace ZZ
             currentData.Dexterity = CharacterNetworkManager.Dexterity.Value;
             currentData.Intelligence = CharacterNetworkManager.Intelligence.Value;
             currentData.Faith = CharacterNetworkManager.Faith.Value;
+            currentData.Runes = PlayerStatsManager.Runes;
             currentData.CurrentHealth = CharacterNetworkManager.CurrentHealth.Value;
             currentData.CurrentStamina = CharacterNetworkManager.CurrentStamina.Value;
             currentData.CurrentFocusPoints =
@@ -368,6 +369,7 @@ namespace ZZ
             CharacterNetworkManager.Dexterity.Value = currentData.Dexterity;
             CharacterNetworkManager.Intelligence.Value = currentData.Intelligence;
             CharacterNetworkManager.Faith.Value = currentData.Faith;
+            PlayerStatsManager.SetRunes(currentData.Runes);
             PlayerStatsManager.SetNewMaxHealthValue();
             PlayerStatsManager.SetNewMaxStaminaValue();
             PlayerStatsManager.SetNewMaxFocusPointsValue();

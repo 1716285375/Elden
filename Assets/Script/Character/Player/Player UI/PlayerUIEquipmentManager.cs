@@ -1,4 +1,3 @@
-using Unity.Netcode;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,12 +7,11 @@ namespace ZZ
     /// <summary>
     /// Presents equipped slots and transfers compatible items through the inventory boundary.
     /// </summary>
-    public class PlayerUIEquipmentManager : MonoBehaviour
+    public class PlayerUIEquipmentManager : PlayerUIMenu
     {
         private const int k_EquipmentSlotCount = 15;
 
         [Header("WINDOWS")]
-        [SerializeField] private GameObject m_equipmentMenu;
         [SerializeField] private GameObject m_equipmentInventoryWindow;
 
         [Header("EQUIPMENT SLOTS")]
@@ -30,7 +28,7 @@ namespace ZZ
 
         private EquipmentSlotType m_currentSelectedEquipmentSlot;
 
-        public bool IsEquipmentMenuOpen => m_equipmentMenu?.activeSelf == true;
+        public bool IsEquipmentMenuOpen => IsMenuOpen;
         public bool IsEquipmentInventoryOpen =>
             m_equipmentInventoryWindow?.activeSelf == true;
         public EquipmentSlotType CurrentSelectedEquipmentSlot =>
@@ -39,16 +37,13 @@ namespace ZZ
         /// <summary>Opens the Equipment Menu at its equipped-slot overview.</summary>
         public void OpenEquipmentManagerMenu()
         {
-            PlayerUIManager playerUIManager = PlayerUIManager.Instance;
-            if (playerUIManager?.CanOpenMenuWindows != true)
+            OpenMenu();
+            if (!IsMenuOpen)
             {
                 return;
             }
 
-            playerUIManager.CloseAllMenuWindows();
-            m_equipmentMenu?.SetActive(true);
             m_equipmentInventoryWindow?.SetActive(false);
-            playerUIManager.NotifyMenuWindowOpened();
             RefreshMenu();
             SelectLastSelectedEquipmentSlot();
         }
@@ -56,9 +51,14 @@ namespace ZZ
         /// <summary>Closes the Equipment Menu and discards its generated candidate list.</summary>
         public void CloseEquipmentManagerMenu()
         {
+            CloseMenu();
+        }
+
+        /// <inheritdoc />
+        public override void CloseMenu()
+        {
             CloseEquipmentInventoryWindow(false);
-            m_equipmentMenu?.SetActive(false);
-            PlayerUIManager.Instance?.RefreshMenuWindowState();
+            base.CloseMenu();
         }
 
         /// <summary>Refreshes data-driven equipment presentation without reopening a window.</summary>
@@ -301,9 +301,7 @@ namespace ZZ
 
         private static PlayerInventoryManager ResolveLocalInventory()
         {
-            NetworkObject playerObject =
-                NetworkManager.Singleton?.LocalClient?.PlayerObject;
-            return playerObject?.GetComponent<PlayerInventoryManager>();
+            return PlayerUIManager.Instance?.LocalPlayer?.InventoryManager;
         }
 
         private static bool TryGetEquipmentQuantity(

@@ -23,7 +23,8 @@ namespace ZZ
         private const int k_ProjectileDataVersion = 7;
         private const int k_ComplexItemDataVersion = 8;
         private const int k_CharacterCreationDataVersion = 9;
-        private const int k_CurrentDataVersion = 9;
+        private const int k_LevelUpDataVersion = 10;
+        private const int k_CurrentDataVersion = 10;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -39,6 +40,7 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_dexterity = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_intelligence = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_faith = k_DefaultAttributeLevel;
+        [SerializeField, Min(0)] private int m_runes;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
@@ -189,6 +191,13 @@ namespace ZZ
         {
             get => m_faith;
             set => m_faith = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the saved private Rune balance.</summary>
+        public int Runes
+        {
+            get => m_runes;
+            set => m_runes = Mathf.Max(0, value);
         }
 
         public float CurrentHealth
@@ -723,6 +732,11 @@ namespace ZZ
                 m_hairColorRed = 79;
                 m_hairColorGreen = 53;
                 m_hairColorBlue = 35;
+            }
+
+            if (m_dataVersion < k_LevelUpDataVersion)
+            {
+                m_runes = 0;
             }
 
             m_bosses ??= new List<BossSaveData>();

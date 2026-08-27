@@ -5,10 +5,9 @@ using UnityEngine.UI;
 namespace ZZ
 {
     /// <summary>Owns unlocked Site of Grace navigation and local fast travel.</summary>
-    public class PlayerUITeleportLocationManager : MonoBehaviour
+    public class PlayerUITeleportLocationManager : PlayerUIMenu
     {
         [Header("TELEPORT LOCATION MENU")]
-        [SerializeField] private GameObject m_teleportLocationMenu;
         [SerializeField] private Button[] m_teleportLocationButtons =
             System.Array.Empty<Button>();
         [SerializeField] private int[] m_siteOfGraceIDs =
@@ -17,36 +16,32 @@ namespace ZZ
 
         /// <summary>Gets whether the unlocked-location menu currently owns input.</summary>
         public bool IsTeleportLocationMenuOpen =>
-            m_teleportLocationMenu?.activeSelf == true;
+            IsMenuOpen;
 
         /// <summary>Gets whether the current session contains exactly one local player.</summary>
         public bool CanFastTravel => CanFastTravelInCurrentSession();
 
-        private void OnDisable()
-        {
-            CloseTeleportLocationMenu();
-        }
-
         /// <summary>Opens the travel menu when the active session is single-player.</summary>
         public void OpenTeleportLocationMenu()
         {
-            PlayerUIManager playerUIManager = PlayerUIManager.Instance;
-            if (playerUIManager?.CanOpenMenuWindows != true || !CanFastTravel)
+            if (!CanFastTravel)
             {
                 return;
             }
 
-            playerUIManager.CloseAllMenuWindows();
-            m_teleportLocationMenu?.SetActive(true);
-            playerUIManager.NotifyMenuWindowOpened();
+            OpenMenu();
+            if (!IsMenuOpen)
+            {
+                return;
+            }
+
             RefreshUnlockedLocations();
         }
 
         /// <summary>Closes only the unlocked-location menu.</summary>
         public void CloseTeleportLocationMenu()
         {
-            m_teleportLocationMenu?.SetActive(false);
-            PlayerUIManager.Instance?.RefreshMenuWindowState();
+            CloseMenu();
         }
 
         /// <summary>Teleports the local player to one unlocked, registered location.</summary>

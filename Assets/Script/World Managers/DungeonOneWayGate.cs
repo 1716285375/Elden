@@ -69,6 +69,7 @@ namespace ZZ
 
             m_isOpen.Value = true;
             ApplyOpenState(true);
+            SaveGameAfterInteraction(player);
         }
 
         /// <summary>Returns whether one position lies on the authored opening side.</summary>

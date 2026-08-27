@@ -59,6 +59,17 @@ namespace ZZ
         {
         }
 
+        /// <summary>Saves local character state after a persistent world interaction.</summary>
+        protected static void SaveGameAfterInteraction(PlayerManager player)
+        {
+            WorldSaveGameManager saveGameManager =
+                WorldSaveGameManager.Instance;
+            if (player?.IsOwner == true && saveGameManager?.CanSaveGame == true)
+            {
+                saveGameManager.SaveGame();
+            }
+        }
+
         /// <summary>Applies the configured one-shot collider policy after a successful interaction.</summary>
         public void CompleteInteraction()
         {
