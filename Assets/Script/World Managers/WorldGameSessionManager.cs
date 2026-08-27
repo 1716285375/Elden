@@ -77,6 +77,11 @@ namespace ZZ
             }
 
             m_players.Add(player);
+            if (NetworkManager.Singleton?.IsServer == true)
+            {
+                WorldSceneSubSceneManager.Instance
+                    ?.RegisterPlayerAtDefaultLocation(player);
+            }
         }
 
         /// <summary>
@@ -84,6 +89,11 @@ namespace ZZ
         /// </summary>
         public void RemovePlayer(PlayerManager player)
         {
+            if (NetworkManager.Singleton?.IsServer == true)
+            {
+                WorldSceneSubSceneManager.Instance?.RemovePlayer(player);
+            }
+
             m_players.Remove(player);
         }
 
