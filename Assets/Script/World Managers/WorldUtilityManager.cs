@@ -6,6 +6,8 @@ namespace ZZ
     public class WorldUtilityManager : MonoBehaviour
     {
         private const int k_DefaultEnvironmentLayer = 0;
+        private const int k_PlayerLayer = 8;
+        private const int k_DamageableCharacterLayer = 10;
         private const int k_SlipperyEnvironmentLayer = 15;
         private const float k_LightPoiseThreshold = 10f;
         private const float k_MediumPoiseThreshold = 30f;
@@ -23,6 +25,9 @@ namespace ZZ
             (1 << k_SlipperyEnvironmentLayer);
         [SerializeField] private LayerMask m_slipperyEnvironmentLayers =
             1 << k_SlipperyEnvironmentLayer;
+        [SerializeField] private LayerMask m_characterLayers =
+            (1 << k_PlayerLayer) |
+            (1 << k_DamageableCharacterLayer);
 
         public static WorldUtilityManager Instance => s_instance;
 
@@ -48,6 +53,15 @@ namespace ZZ
             return IncludeRequiredLayer(
                 m_slipperyEnvironmentLayers,
                 k_SlipperyEnvironmentLayer);
+        }
+
+        /// <summary>Gets the Player and AI layers used for character collisions.</summary>
+        public LayerMask GetCharacterLayers()
+        {
+            LayerMask characterLayers = m_characterLayers;
+            characterLayers.value |= 1 << k_PlayerLayer;
+            characterLayers.value |= 1 << k_DamageableCharacterLayer;
+            return characterLayers;
         }
 
         private void Awake()
