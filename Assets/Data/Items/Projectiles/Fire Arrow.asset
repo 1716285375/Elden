@@ -16,6 +16,8 @@ MonoBehaviour:
   m_itemIcon: {fileID: 21300000, guid: 694ad6966461b26458663421688232cd, type: 3}
   m_itemDescription: An arrow tipped to inflict both physical and fire damage.
   m_itemID: 13
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
   m_projectileClass: 0
   m_forwardVelocity: 30
   m_upwardVelocity: 1.5

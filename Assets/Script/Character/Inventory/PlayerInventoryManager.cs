@@ -164,6 +164,31 @@ namespace ZZ
             }
 
             m_itemsInInventory ??= new List<Item>();
+            m_itemsInInventory.RemoveAll(candidate => candidate == null);
+            if (item.IsStackable)
+            {
+                Item existingStack = m_itemsInInventory.Find(candidate =>
+                    candidate.ItemID == item.ItemID &&
+                    candidate.GetType() == item.GetType() &&
+                    candidate.IsStackable);
+                if (existingStack != null)
+                {
+                    if (existingStack.CurrentItemAmount + item.CurrentItemAmount >
+                        existingStack.MaxItemAmount)
+                    {
+                        Debug.LogWarning(
+                            $"Inventory stack {item.ItemName} reached its maximum; " +
+                            $"{item.CurrentItemAmount} item(s) could not be added.",
+                            this);
+                        return false;
+                    }
+
+                    existingStack.AddItemAmount(item.CurrentItemAmount);
+                    DestroyRuntimeItem(item);
+                    return true;
+                }
+            }
+
             m_itemsInInventory.Add(item);
             return true;
         }
@@ -173,7 +198,55 @@ namespace ZZ
         {
             m_itemsInInventory ??= new List<Item>();
             m_itemsInInventory.RemoveAll(candidate => candidate == null);
-            return item != null && m_itemsInInventory.Remove(item);
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (!item.IsStackable)
+            {
+                return m_itemsInInventory.Remove(item);
+            }
+
+            Item inventoryStack = m_itemsInInventory.Find(candidate =>
+                candidate.ItemID == item.ItemID &&
+                candidate.GetType() == item.GetType() &&
+                candidate.IsStackable);
+            if (inventoryStack == null ||
+                !inventoryStack.TryRemoveItemAmount(item.CurrentItemAmount))
+            {
+                return false;
+            }
+
+            if (inventoryStack.CurrentItemAmount <= 0)
+            {
+                m_itemsInInventory.Remove(inventoryStack);
+                DestroyRuntimeItem(inventoryStack);
+            }
+
+            return true;
+        }
+
+        /// <summary>Returns the total inventory amount for one stable catalog item.</summary>
+        public int GetItemAmount(int itemID)
+        {
+            if (itemID < 0 || m_itemsInInventory == null)
+            {
+                return 0;
+            }
+
+            int totalAmount = 0;
+            foreach (Item item in m_itemsInInventory)
+            {
+                if (item?.ItemID == itemID)
+                {
+                    totalAmount += item.IsStackable
+                        ? item.CurrentItemAmount
+                        : 1;
+                }
+            }
+
+            return totalAmount;
         }
 
         /// <summary>Gets the item currently occupying one Character Menu equipment slot.</summary>
@@ -676,6 +749,8 @@ namespace ZZ
                 database.GetProjectileFromSerializedData);
             AddRuntimeItems(saveData.QuickSlotItemsInInventory,
                 database.GetQuickSlotItemFromSerializedData);
+            AddRuntimeItems(saveData.StackableItemsInInventory,
+                database.GetItemStackFromSerializedData);
             AddRuntimeItems(saveData.HeadEquipmentInInventory,
                 database.GetRuntimeHeadEquipmentByID);
             AddRuntimeItems(saveData.BodyEquipmentInInventory,

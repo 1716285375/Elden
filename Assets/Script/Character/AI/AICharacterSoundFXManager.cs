@@ -142,6 +142,7 @@ namespace ZZ
         {
             if (!m_dialogueIsPlaying)
             {
+                m_currentDialogue?.OnDialogueCanceled();
                 return;
             }
 

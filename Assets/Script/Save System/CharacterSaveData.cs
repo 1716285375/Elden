@@ -26,7 +26,8 @@ namespace ZZ
         private const int k_LevelUpDataVersion = 10;
         private const int k_DeadSpotDataVersion = 11;
         private const int k_DialogueDataVersion = 12;
-        private const int k_CurrentDataVersion = 12;
+        private const int k_WeaponUpgradeDataVersion = 13;
+        private const int k_CurrentDataVersion = 13;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -50,6 +51,7 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_deadSpotRuneCount;
         [SerializeField, Min(0)] private int m_lastSiteOfGraceRestedAt;
         [SerializeField, Min(0)] private int m_namelessKnightStageID;
+        [SerializeField, Min(0)] private int m_blacksmithStageID;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
@@ -89,6 +91,8 @@ namespace ZZ
             m_projectilesInInventory = new();
         [SerializeField] private List<SerializableQuickSlotItem>
             m_quickSlotItemsInInventory = new();
+        [SerializeField] private List<SerializableItemStack>
+            m_stackableItemsInInventory = new();
         [SerializeField] private List<int> m_headEquipmentInInventory = new();
         [SerializeField] private List<int> m_bodyEquipmentInInventory = new();
         [SerializeField] private List<int> m_handEquipmentInInventory = new();
@@ -258,6 +262,13 @@ namespace ZZ
             set => m_namelessKnightStageID = Mathf.Max(0, value);
         }
 
+        /// <summary>Gets or sets the saved Blacksmith dialogue Stage.</summary>
+        public int BlacksmithStageID
+        {
+            get => m_blacksmithStageID;
+            set => m_blacksmithStageID = Mathf.Max(0, value);
+        }
+
         public float CurrentHealth
         {
             get => m_currentHealth;
@@ -393,6 +404,11 @@ namespace ZZ
         public List<SerializableQuickSlotItem> QuickSlotItemsInInventory =>
             m_quickSlotItemsInInventory ??=
                 new List<SerializableQuickSlotItem>();
+
+        /// <summary>Gets saved unequipped generic stackable items.</summary>
+        public List<SerializableItemStack> StackableItemsInInventory =>
+            m_stackableItemsInInventory ??=
+                new List<SerializableItemStack>();
 
         /// <summary>Gets saved unequipped head-equipment identifiers.</summary>
         public List<int> HeadEquipmentInInventory =>
@@ -586,6 +602,7 @@ namespace ZZ
             WeaponsInInventory.Clear();
             ProjectilesInInventory.Clear();
             QuickSlotItemsInInventory.Clear();
+            StackableItemsInInventory.Clear();
             HeadEquipmentInInventory.Clear();
             BodyEquipmentInInventory.Clear();
             HandEquipmentInInventory.Clear();
@@ -812,6 +829,13 @@ namespace ZZ
                 m_namelessKnightStageID = 0;
             }
 
+            if (m_dataVersion < k_WeaponUpgradeDataVersion)
+            {
+                m_blacksmithStageID = 0;
+                m_stackableItemsInInventory =
+                    new List<SerializableItemStack>();
+            }
+
             m_bosses ??= new List<BossSaveData>();
             m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
             m_rightHandWeaponSlot01 ??= CreateLegacyWeapon(1);
@@ -830,6 +854,8 @@ namespace ZZ
                 new List<SerializableRangeProjectile>();
             m_quickSlotItemsInInventory ??=
                 new List<SerializableQuickSlotItem>();
+            m_stackableItemsInInventory ??=
+                new List<SerializableItemStack>();
             m_headEquipmentInInventory ??= new List<int>();
             m_bodyEquipmentInInventory ??= new List<int>();
             m_handEquipmentInInventory ??= new List<int>();

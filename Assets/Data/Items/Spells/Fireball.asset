@@ -17,6 +17,8 @@ MonoBehaviour:
   m_itemDescription: Conjures a homing ball of flame. Hold the catalyst input for
     full charge.
   m_itemID: 10
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
   m_spellClass: 0
   m_spellSlotsUsed: 1
   m_fullChargeModifier: 1.4

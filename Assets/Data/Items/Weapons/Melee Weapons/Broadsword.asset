@@ -16,6 +16,8 @@ MonoBehaviour:
   m_itemIcon: {fileID: 21300000, guid: 64edbf7e28d2a4a4189a37ba6dd79ea3, type: 3}
   m_itemDescription: A heavier sword that trades stamina for stronger physical damage.
   m_itemID: 2
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
   m_itemWeight: 0
   m_weaponModel: {fileID: 1899376960549978770, guid: c3c3759be0fe23f4c8c35c500d04be23, type: 3}
   m_isUnarmed: 0
@@ -30,6 +32,7 @@ MonoBehaviour:
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
+  m_upgradeLevel: 0
   m_strengthRequirement: 10
   m_dexterityRequirement: 10
   m_intelligenceRequirement: 0

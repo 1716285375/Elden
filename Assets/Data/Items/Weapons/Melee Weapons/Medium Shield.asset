@@ -16,6 +16,9 @@ MonoBehaviour:
   m_itemIcon: {fileID: 21300000, guid: 5c6eb0f112197a140b8e306b96ec7bf2, type: 3}
   m_itemDescription: A balanced shield with full Physical guard and dependable Stability.
   m_itemID: 3
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
+  m_itemWeight: 0
   m_weaponModel: {fileID: 1582763652874089129, guid: 68dabc27d2a6f924c9a0a9c4779d8550, type: 3}
   m_isUnarmed: 0
   m_weaponModelType: 1
@@ -29,6 +32,7 @@ MonoBehaviour:
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
+  m_upgradeLevel: 0
   m_strengthRequirement: 0
   m_dexterityRequirement: 0
   m_intelligenceRequirement: 0
@@ -59,6 +63,14 @@ MonoBehaviour:
   m_runningAttack01DamageModifier: 1.2
   m_rollAttack01DamageModifier: 1.1
   m_backStepAttack01DamageModifier: 1.15
+  m_lightJumpingAttack01DamageModifier: 1
+  m_heavyJumpingAttack01DamageModifier: 1.8
+  m_dualAttack01DamageModifier: 0.77
+  m_dualAttack02DamageModifier: 0.77
+  m_dualJumpAttackDamageModifier: 0.77
+  m_dualRunAttackDamageModifier: 0.77
+  m_dualRollAttackDamageModifier: 0.77
+  m_dualBackstepAttackDamageModifier: 0.77
   m_lightAttack01StaminaCostMultiplier: 1
   m_heavyAttack01StaminaCostMultiplier: 1
   m_chargedAttack01StaminaCostMultiplier: 1.5

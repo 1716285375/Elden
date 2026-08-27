@@ -246,8 +246,17 @@ namespace ZZ
 
         private static void GrantItemToPlayer(PlayerManager player, Item item)
         {
-            if (player?.InventoryManager?.AddItemToInventory(item) != true)
+            Item runtimeItem = WorldItemDatabase.Instance
+                ?.GetRuntimeItemByID(item?.ItemID ?? -1) ?? item;
+            if (player?.InventoryManager?.AddItemToInventory(runtimeItem) != true)
             {
+                if (runtimeItem != null &&
+                    runtimeItem != item &&
+                    (runtimeItem.hideFlags & HideFlags.DontSave) != 0)
+                {
+                    UnityEngine.Object.Destroy(runtimeItem);
+                }
+
                 return;
             }
 
@@ -263,7 +272,11 @@ namespace ZZ
                     false,
                     false);
             PlayerUIManager.Instance?.PlayerUIPopUpManager
-                ?.SendItemPopup(item, 1);
+                ?.SendItemPopup(
+                    runtimeItem,
+                    runtimeItem.IsStackable
+                        ? runtimeItem.CurrentItemAmount
+                        : 1);
         }
 
         private bool TryResolveRequestingPlayer(

@@ -16,6 +16,8 @@ MonoBehaviour:
   m_itemIcon: {fileID: 0}
   m_itemDescription: A two-handed bow compatible with Arrow-class ammunition.
   m_itemID: 11
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
   m_itemWeight: 0
   m_weaponModel: {fileID: 7364217939783419758, guid: e2cdb377f3433ca4f9d800d791630d6a, type: 3}
   m_isUnarmed: 0
@@ -30,6 +32,7 @@ MonoBehaviour:
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
+  m_upgradeLevel: 0
   m_strengthRequirement: 0
   m_dexterityRequirement: 0
   m_intelligenceRequirement: 0
@@ -59,6 +62,12 @@ MonoBehaviour:
   m_backStepAttack01DamageModifier: 1.15
   m_lightJumpingAttack01DamageModifier: 1
   m_heavyJumpingAttack01DamageModifier: 1.8
+  m_dualAttack01DamageModifier: 0.77
+  m_dualAttack02DamageModifier: 0.77
+  m_dualJumpAttackDamageModifier: 0.77
+  m_dualRunAttackDamageModifier: 0.77
+  m_dualRollAttackDamageModifier: 0.77
+  m_dualBackstepAttackDamageModifier: 0.77
   m_lightAttack01StaminaCostMultiplier: 1
   m_heavyAttack01StaminaCostMultiplier: 1
   m_chargedAttack01StaminaCostMultiplier: 1.5

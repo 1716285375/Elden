@@ -7,6 +7,8 @@ namespace ZZ
     /// </summary>
     public class WeaponManager : MonoBehaviour
     {
+        public const float UpgradeDamagePerLevel = 11f;
+
         [SerializeField] private MeleeWeaponDamageCollider m_meleeDamageCollider;
         [SerializeField] private Animator m_weaponAnimator;
 
@@ -49,11 +51,11 @@ namespace ZZ
 
             m_meleeDamageCollider.SetDamageSource(weaponOwner);
             m_meleeDamageCollider.SetDamageValues(
-                weapon.PhysicalDamage,
-                weapon.MagicDamage,
-                weapon.FireDamage,
-                weapon.LightningDamage,
-                weapon.HolyDamage,
+                GetUpgradedDamage(weapon.PhysicalDamage, weapon.UpgradeLevel),
+                GetUpgradedDamage(weapon.MagicDamage, weapon.UpgradeLevel),
+                GetUpgradedDamage(weapon.FireDamage, weapon.UpgradeLevel),
+                GetUpgradedDamage(weapon.LightningDamage, weapon.UpgradeLevel),
+                GetUpgradedDamage(weapon.HolyDamage, weapon.UpgradeLevel),
                 weapon.BasePoiseDamage);
             m_meleeDamageCollider.CloseDamageCollider();
         }
@@ -93,12 +95,34 @@ namespace ZZ
 
             float damageModifier = Weapon.GetAttackDamageModifier(attackType);
             m_meleeDamageCollider.SetDamageValues(
-                Weapon.PhysicalDamage * damageModifier,
-                Weapon.MagicDamage * damageModifier,
-                Weapon.FireDamage * damageModifier,
-                Weapon.LightningDamage * damageModifier,
-                Weapon.HolyDamage * damageModifier,
+                GetUpgradedDamage(Weapon.PhysicalDamage, Weapon.UpgradeLevel) *
+                    damageModifier,
+                GetUpgradedDamage(Weapon.MagicDamage, Weapon.UpgradeLevel) *
+                    damageModifier,
+                GetUpgradedDamage(Weapon.FireDamage, Weapon.UpgradeLevel) *
+                    damageModifier,
+                GetUpgradedDamage(Weapon.LightningDamage, Weapon.UpgradeLevel) *
+                    damageModifier,
+                GetUpgradedDamage(Weapon.HolyDamage, Weapon.UpgradeLevel) *
+                    damageModifier,
                 Weapon.BasePoiseDamage);
+        }
+
+        /// <summary>Adds reinforcement only to damage channels authored above zero.</summary>
+        public static float GetUpgradedDamage(
+            float baseDamage,
+            UpgradeLevel upgradeLevel)
+        {
+            if (baseDamage <= 0f)
+            {
+                return 0f;
+            }
+
+            int sanitizedLevel = Mathf.Clamp(
+                (int)upgradeLevel,
+                (int)UpgradeLevel.Level0,
+                (int)UpgradeLevel.Level10);
+            return baseDamage + sanitizedLevel * UpgradeDamagePerLevel;
         }
 
         /// <summary>Updates an independent bow Animator without requiring melee hitboxes.</summary>
