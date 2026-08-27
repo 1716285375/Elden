@@ -18,9 +18,21 @@ namespace ZZ
         [FormerlySerializedAs("gravity")]
         [SerializeField] private float m_gravityForce = -40f;
 
+        [Header("Slope Sliding")]
+        [SerializeField, Min(0f)] private float m_slopeSlideStartPositionYOffset = 1f;
+        [SerializeField, Min(0f)] private float m_slopeSlideSphereCastMaxDistance = 2f;
+        [SerializeField, Range(0f, 90f)] private float m_slipperySurfaceMaxAngle = 15f;
+        [SerializeField, Min(0f)] private float m_slopeSlideSpeed = 11f;
+        [SerializeField, Min(0f)] private float m_slopeSlideSpeedMultiplier = 3f;
+        [SerializeField, Range(-100f, 0f)] private float m_slopeSlideForce = -5f;
+        [SerializeField] private bool m_ignoreGravity;
+
         protected CharacterController m_characterController;
         protected CharacterManager m_characterManager;
         protected Vector3 m_verticalVelocity;
+        protected Vector3 m_slopeSlideVelocity;
+        protected bool m_isSliding;
+        protected bool m_slideUntilGrounded;
 
         private float m_inAirTimer;
         private bool m_hasSetFallingVelocity;
@@ -40,6 +52,14 @@ namespace ZZ
         public bool CanRun => m_canRun;
         /// <summary>Gets whether the current action permits a dodge.</summary>
         public bool CanRoll => m_canRoll;
+        /// <summary>Gets whether this character is currently sliding down a detected surface.</summary>
+        public bool IsSliding => m_isSliding;
+        /// <summary>Gets the current surface-projected slope velocity.</summary>
+        public Vector3 SlopeSlideVelocity => m_slopeSlideVelocity;
+        /// <summary>Gets the EP126 continuation flag reserved by the slope state machine.</summary>
+        public bool SlideUntilGrounded => m_slideUntilGrounded;
+        /// <summary>Gets whether gravity and slope movement are temporarily disabled.</summary>
+        public bool IsIgnoringGravity => m_ignoreGravity;
         protected float GravityForce => m_gravityForce;
 
         /// <summary>Restricts movement to walking without disabling directional control.</summary>
@@ -52,6 +72,17 @@ namespace ZZ
         public void SetCanRoll(bool canRoll)
         {
             m_canRoll = canRoll;
+        }
+
+        /// <summary>Enables or disables gravity-driven vertical and slope movement.</summary>
+        public void SetIgnoreGravity(bool shouldIgnoreGravity)
+        {
+            m_ignoreGravity = shouldIgnoreGravity;
+            if (m_ignoreGravity)
+            {
+                ClearSlopeSlideState();
+                m_verticalVelocity = Vector3.zero;
+            }
         }
 
         protected virtual void Awake()
@@ -68,10 +99,17 @@ namespace ZZ
             }
 
             bool wasGrounded = m_characterManager.IsGrounded;
+            int groundLayerMask = m_groundLayers.value;
+            if (WorldUtilityManager.Instance != null)
+            {
+                groundLayerMask |= WorldUtilityManager.Instance
+                    .GetGroundLayers().value;
+            }
+
             bool isGrounded = Physics.CheckSphere(
                 GetGroundCheckPosition(m_characterController),
                 m_groundCheckRadius,
-                m_groundLayers,
+                groundLayerMask,
                 QueryTriggerInteraction.Ignore);
             m_characterManager.SetGroundedState(isGrounded);
 
@@ -93,7 +131,8 @@ namespace ZZ
         {
             if (m_characterManager == null ||
                 m_characterController == null ||
-                !m_characterController.enabled)
+                !m_characterController.enabled ||
+                m_ignoreGravity)
             {
                 return;
             }
@@ -102,7 +141,6 @@ namespace ZZ
             {
                 m_inAirTimer = 0f;
                 m_hasSetFallingVelocity = false;
-                m_verticalVelocity.y = m_groundedYVelocity;
             }
             else
             {
@@ -120,12 +158,175 @@ namespace ZZ
             m_characterController.Move(m_verticalVelocity * Time.deltaTime);
         }
 
+        /// <summary>Chooses falling or grounded slope surfaces without duplicating probe logic.</summary>
+        protected void HandleSlopeSlideCheck()
+        {
+            if (m_characterManager == null || m_ignoreGravity)
+            {
+                ClearSlopeSlideState();
+                return;
+            }
+
+            WorldUtilityManager utilityManager = WorldUtilityManager.Instance;
+            LayerMask layerMask;
+            if (!m_characterManager.IsGrounded)
+            {
+                layerMask = utilityManager != null
+                    ? utilityManager.GetEnvironmentLayers()
+                    : m_groundLayers;
+            }
+            else
+            {
+                layerMask = utilityManager != null
+                    ? utilityManager.GetSlipperyEnviroLayers()
+                    : 0;
+            }
+
+            SetSlopeSlideVelocity(layerMask);
+        }
+
+        /// <summary>Applies the previously detected slope velocity and grounded vertical force.</summary>
+        protected void SetGroundedVelocity()
+        {
+            if (m_characterManager == null ||
+                m_characterController == null ||
+                !m_characterController.enabled ||
+                m_ignoreGravity)
+            {
+                return;
+            }
+
+            if (m_characterManager.IsJumping && m_verticalVelocity.y > 0f)
+            {
+                ClearSlopeSlideState();
+                return;
+            }
+
+            if (m_isSliding)
+            {
+                float maximumDownwardVelocity =
+                    m_groundedYVelocity + m_slopeSlideForce;
+                m_verticalVelocity.y = Mathf.Max(
+                    m_verticalVelocity.y + m_slopeSlideForce * Time.deltaTime,
+                    maximumDownwardVelocity);
+                m_characterController.Move(
+                    m_slopeSlideVelocity * Time.deltaTime);
+                return;
+            }
+
+            if (m_characterManager.IsGrounded && m_verticalVelocity.y < 0f)
+            {
+                m_verticalVelocity.y = m_groundedYVelocity;
+            }
+        }
+
+        /// <summary>Snaps a severely desynchronized non-owner back to replicated position.</summary>
+        protected void CorrectRemotePositionDesynchronization()
+        {
+            if (m_characterManager == null ||
+                m_characterManager.IsOwner ||
+                m_characterManager.CharacterNetworkManager == null)
+            {
+                return;
+            }
+
+            Vector3 networkPosition = m_characterManager
+                .CharacterNetworkManager.NetworkPosition.Value;
+            if ((transform.position - networkPosition).sqrMagnitude <= 6.25f)
+            {
+                return;
+            }
+
+            m_verticalVelocity = Vector3.zero;
+            ClearSlopeSlideState();
+            bool controllerWasEnabled = m_characterController != null &&
+                m_characterController.enabled;
+            if (controllerWasEnabled)
+            {
+                m_characterController.enabled = false;
+            }
+
+            transform.position = networkPosition;
+            if (controllerWasEnabled)
+            {
+                m_characterController.enabled = true;
+            }
+        }
+
+        /// <summary>Calculates a velocity tangent to a surface from a downward force.</summary>
+        public static Vector3 CalculateSlopeSlideVelocity(
+            Vector3 downwardForce,
+            Vector3 surfaceNormal,
+            float slideSpeed)
+        {
+            Vector3 slideDirection = Vector3.ProjectOnPlane(
+                downwardForce,
+                surfaceNormal);
+            if (slideDirection.sqrMagnitude <= Mathf.Epsilon)
+            {
+                return Vector3.zero;
+            }
+
+            return slideDirection.normalized * Mathf.Max(0f, slideSpeed);
+        }
+
+        protected void SetSlopeSlideVelocity(LayerMask layerMask)
+        {
+            if (m_characterController == null || layerMask.value == 0)
+            {
+                ClearSlopeSlideState();
+                return;
+            }
+
+            Vector3 probeOrigin = transform.position +
+                Vector3.up * m_slopeSlideStartPositionYOffset;
+            bool hitSurface = Physics.SphereCast(
+                probeOrigin,
+                m_groundCheckRadius,
+                Vector3.down,
+                out RaycastHit hitInfo,
+                m_slopeSlideSphereCastMaxDistance,
+                layerMask,
+                QueryTriggerInteraction.Ignore);
+            float slopeAngle = hitSurface
+                ? Vector3.Angle(hitInfo.normal, Vector3.up)
+                : 0f;
+            if (!hitSurface || slopeAngle < m_slipperySurfaceMaxAngle)
+            {
+                ClearSlopeSlideState();
+                return;
+            }
+
+            Vector3 targetVelocity = CalculateSlopeSlideVelocity(
+                Vector3.down,
+                hitInfo.normal,
+                m_slopeSlideSpeed);
+            float acceleration = m_slopeSlideSpeed *
+                m_slopeSlideSpeedMultiplier;
+            m_slopeSlideVelocity = Vector3.MoveTowards(
+                m_slopeSlideVelocity,
+                targetVelocity,
+                acceleration * Time.deltaTime);
+            m_isSliding = m_slopeSlideVelocity.sqrMagnitude > Mathf.Epsilon;
+            if (m_characterManager.IsJumping && m_verticalVelocity.y > 0f)
+            {
+                ClearSlopeSlideState();
+            }
+        }
+
         protected void ResetAirborneMovement()
         {
             m_verticalVelocity = Vector3.zero;
+            ClearSlopeSlideState();
             m_inAirTimer = 0f;
             m_hasSetFallingVelocity = false;
             m_characterManager?.EndJump();
+        }
+
+        private void ClearSlopeSlideState()
+        {
+            m_slopeSlideVelocity = Vector3.zero;
+            m_isSliding = false;
         }
 
         private Vector3 GetGroundCheckPosition(CharacterController controller)

@@ -71,6 +71,7 @@ namespace ZZ
             }
 
             HandleGroundCheck();
+            CorrectRemotePositionDesynchronization();
 
             if (m_player.IsOwner)
             {
@@ -242,6 +243,8 @@ namespace ZZ
         {
             m_playerInputManager ??= PlayerInputManager.Instance;
             m_playerCamera ??= PlayerCamera.Instance;
+            SetGroundedVelocity();
+            HandleSlopeSlideCheck();
 
             if (m_playerInputManager == null)
             {
