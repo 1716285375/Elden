@@ -15,6 +15,8 @@ namespace ZZ
             Animator.StringToHash("PivotRight");
         private static readonly int s_bossPhaseTransitionState =
             Animator.StringToHash("Action Override.Boss_Phase_Transition");
+        private static readonly int s_emptyActionState =
+            Animator.StringToHash("Action Override.Empty");
 
         private AICharacterManager m_aiCharacter;
         private AICharacterCombatManager m_combatManager;
@@ -40,6 +42,28 @@ namespace ZZ
         public void PlayWakingAnimation(string stateName)
         {
             PlayIdleBehaviorAnimation(stateName, 0.1f);
+        }
+
+        /// <summary>Skips a consumed awakening cinematic and resumes locomotion immediately.</summary>
+        public void PlayAwakeIdleAnimation()
+        {
+            if (CharacterAnimator == null || m_aiCharacter == null)
+            {
+                return;
+            }
+
+            int actionLayerIndex = CharacterAnimator.GetLayerIndex(
+                k_ActionLayerName);
+            if (actionLayerIndex >= 0 &&
+                CharacterAnimator.HasState(actionLayerIndex, s_emptyActionState))
+            {
+                CharacterAnimator.CrossFade(
+                    s_emptyActionState,
+                    0.1f,
+                    actionLayerIndex);
+            }
+
+            m_aiCharacter.ResetActionFlags();
         }
 
         /// <summary>Triggers a locally presented pivot selected by the server.</summary>

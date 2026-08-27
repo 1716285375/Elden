@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -6,11 +7,14 @@ namespace ZZ
     /// <summary>Displays the active network Boss name and replicated Health.</summary>
     public class PlayerUIBossHealthBar : MonoBehaviour
     {
+        private const float k_DefaultRemovalDelay = 1f;
+
         [SerializeField] private TMP_Text m_bossNameText;
         [SerializeField] private UIStatBar m_healthBar;
 
         private BossCharacterManager m_boundBoss;
         private CharacterNetworkManager m_boundNetworkManager;
+        private Coroutine m_removeHealthBarCoroutine;
 
         private void Awake()
         {
@@ -25,6 +29,7 @@ namespace ZZ
                 return;
             }
 
+            StopRemovalCoroutine();
             if (m_boundBoss != boss)
             {
                 UnbindCurrentBoss();
@@ -48,6 +53,26 @@ namespace ZZ
             gameObject.SetActive(true);
         }
 
+        /// <summary>Removes the supplied Boss bar after the standard encounter-end delay.</summary>
+        public void RemoveHPBar(BossCharacterManager boss)
+        {
+            if (boss != null && m_boundBoss != boss)
+            {
+                return;
+            }
+
+            StopRemovalCoroutine();
+            if (isActiveAndEnabled)
+            {
+                m_removeHealthBarCoroutine = StartCoroutine(
+                    RemoveHPBarAfterDelay());
+            }
+            else
+            {
+                UnbindBoss(boss);
+            }
+        }
+
         /// <summary>Releases this HUD only when it is still bound to the supplied Boss.</summary>
         public void UnbindBoss(BossCharacterManager boss)
         {
@@ -56,13 +81,24 @@ namespace ZZ
                 return;
             }
 
+            StopRemovalCoroutine();
             UnbindCurrentBoss();
             gameObject.SetActive(false);
         }
 
         private void OnDestroy()
         {
+            StopRemovalCoroutine();
             UnbindCurrentBoss();
+        }
+
+        private IEnumerator RemoveHPBarAfterDelay()
+        {
+            yield return new WaitForSecondsRealtime(k_DefaultRemovalDelay);
+
+            m_removeHealthBarCoroutine = null;
+            UnbindCurrentBoss();
+            gameObject.SetActive(false);
         }
 
         private void OnCurrentHealthChanged(float previousHealth, float currentHealth)
@@ -98,6 +134,17 @@ namespace ZZ
 
             m_boundNetworkManager = null;
             m_boundBoss = null;
+        }
+
+        private void StopRemovalCoroutine()
+        {
+            if (m_removeHealthBarCoroutine == null)
+            {
+                return;
+            }
+
+            StopCoroutine(m_removeHealthBarCoroutine);
+            m_removeHealthBarCoroutine = null;
         }
     }
 }

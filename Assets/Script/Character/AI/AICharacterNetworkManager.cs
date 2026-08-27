@@ -21,6 +21,13 @@ namespace ZZ
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Server);
 
+        /// <summary>Replicates whether the next sleeping-to-awake transition plays its cinematic.</summary>
+        public NetworkVariable<bool> PlayWakingAnimationOnAwake =
+            new NetworkVariable<bool>(
+                true,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Server);
+
         /// <summary>Replicates whether this AI has left its sleeping state.</summary>
         public NetworkVariable<bool> IsAwake = new NetworkVariable<bool>(
             true,
@@ -96,7 +103,8 @@ namespace ZZ
         public void SetAwakeState(
             bool isAwake,
             string sleepingAnimation,
-            string wakingAnimation)
+            string wakingAnimation,
+            bool playWakingAnimation = true)
         {
             if (!IsSpawned || !IsServer)
             {
@@ -115,6 +123,7 @@ namespace ZZ
                     wakingAnimation);
             }
 
+            PlayWakingAnimationOnAwake.Value = playWakingAnimation;
             if (IsAwake.Value != isAwake)
             {
                 IsAwake.Value = isAwake;
@@ -197,8 +206,15 @@ namespace ZZ
                 GetComponentInChildren<AICharacterAnimatorManager>(true);
             if (isAwake)
             {
-                animatorManager?.PlayWakingAnimation(
-                    WakingAnimation.Value.ToString());
+                if (PlayWakingAnimationOnAwake.Value)
+                {
+                    animatorManager?.PlayWakingAnimation(
+                        WakingAnimation.Value.ToString());
+                }
+                else
+                {
+                    animatorManager?.PlayAwakeIdleAnimation();
+                }
             }
             else
             {

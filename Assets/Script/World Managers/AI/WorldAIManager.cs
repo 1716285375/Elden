@@ -160,6 +160,21 @@ namespace ZZ
             StartLoadingOperation(ResetAllCharactersRoutine());
         }
 
+        /// <summary>Ends every currently active Boss encounter on the listening server.</summary>
+        public void DisableAllBossFights()
+        {
+            if (!IsServerReady())
+            {
+                return;
+            }
+
+            foreach (AICharacterManager character in m_spawnedCharacters)
+            {
+                character?.GetComponent<BossCharacterManager>()
+                    ?.CompleteEncounter();
+            }
+        }
+
         /// <summary>Despawns every registered AI across fixed-update frames.</summary>
         public void DespawnAllCharacters()
         {

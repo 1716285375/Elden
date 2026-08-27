@@ -67,6 +67,8 @@ namespace ZZ
 
             if (IsServer)
             {
+                m_aiCharacter.RestoreBossAwakeningProgress(
+                    m_aiCharacter.OriginSpawner?.HasBossBeenAwakened == true);
                 InitializeServerHealth();
                 m_currentPhaseIndex.Value = GetPhaseIndexForHealth(
                     m_networkManager.CurrentHealth.Value,

@@ -40,6 +40,12 @@ namespace ZZ
         /// <summary>Gets whether this spawn point represents a persistent boss.</summary>
         public bool IsBoss => m_bossID > 0;
 
+        /// <summary>Gets whether this Boss has already completed its one-time awakening.</summary>
+        public bool HasBossBeenAwakened =>
+            IsBoss &&
+            (WorldSaveGameManager.Instance?.GetBossProgress(m_bossID) ??
+                BossProgressState.Dormant) != BossProgressState.Dormant;
+
         /// <summary>Gets the scene patrol route requested by this spawn point.</summary>
         public int PatrolPathID => m_patrolPathID;
 
@@ -185,6 +191,12 @@ namespace ZZ
                     BossProgressState.Defeated)
             {
                 return false;
+            }
+
+            if (IsBoss)
+            {
+                m_instantiatedCharacter.RestoreBossAwakeningProgress(
+                    HasBossBeenAwakened);
             }
 
             Vector3 spawnPosition = transform.position;
