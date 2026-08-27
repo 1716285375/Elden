@@ -17,9 +17,12 @@ MonoBehaviour:
   m_itemDescription: A sacred flask that restores Focus Points at the drink success
     frame.
   m_itemID: 15
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
   m_itemModel: {fileID: 156559210574365274, guid: 0ca6b028c54a9344a994ab0e2a37b722, type: 3}
   m_useItemAnimation: {fileID: 7400000, guid: 95daa1dc3a107aa4fb20736a4cf1602d, type: 2}
   m_isConsumable: 1
+  m_currentAmount: 0
   m_emptyFlaskItemModel: {fileID: 4353431601353277311, guid: 6568a9f42aed5bb4da284b707570a972, type: 3}
   m_restoresHealth: 0
   m_flaskRestoration: 50

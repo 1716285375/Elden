@@ -49,3 +49,5 @@ MonoBehaviour:
   m_namelessKnightDialogues:
   - {fileID: 11400000, guid: 9e74e65c25ea940469c6e679a05b4a0a, type: 2}
   - {fileID: 11400000, guid: 1005e60a1520b3d4eb32ea2ea2d2f6cb, type: 2}
+  m_blacksmithDialogues:
+  - {fileID: 11400000, guid: 985914dff2398f84eaa9ce7aa3edb131, type: 2}

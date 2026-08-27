@@ -20,6 +20,8 @@ namespace ZZ
         [Header("Dialogue")]
         [SerializeField] private List<CharacterDialogue>
             m_namelessKnightDialogues = new();
+        [SerializeField] private List<CharacterDialogue>
+            m_blacksmithDialogues = new();
 
         private PlayerManager m_player;
         private CharacterSaveData m_characterSlot01;
@@ -36,6 +38,7 @@ namespace ZZ
         private CharacterSaveData m_currentCharacterData;
         private bool m_shouldApplyLoadedCharacterData;
         private int m_namelessKnightStageID;
+        private int m_blacksmithStageID;
 
         public static WorldSaveGameManager Instance => s_instance;
 
@@ -65,6 +68,8 @@ namespace ZZ
             {
                 CharacterDialogueID.NamelessKnight =>
                     m_namelessKnightStageID,
+                CharacterDialogueID.Blacksmith =>
+                    m_blacksmithStageID,
                 _ => 0
             };
         }
@@ -78,6 +83,8 @@ namespace ZZ
                 {
                     CharacterDialogueID.NamelessKnight =>
                         m_namelessKnightDialogues,
+                    CharacterDialogueID.Blacksmith =>
+                        m_blacksmithDialogues,
                     _ => null
                 };
             return FindDialogueByStageID(
@@ -132,6 +139,12 @@ namespace ZZ
                     m_currentCharacterData.NamelessKnightStageID =
                         sanitizedStageID;
                     break;
+                case CharacterDialogueID.Blacksmith:
+                    didChange = m_blacksmithStageID != sanitizedStageID;
+                    m_blacksmithStageID = sanitizedStageID;
+                    m_currentCharacterData.BlacksmithStageID =
+                        sanitizedStageID;
+                    break;
                 default:
                     return false;
             }
@@ -149,6 +162,8 @@ namespace ZZ
         {
             m_namelessKnightStageID =
                 m_currentCharacterData?.NamelessKnightStageID ?? 0;
+            m_blacksmithStageID =
+                m_currentCharacterData?.BlacksmithStageID ?? 0;
         }
 
         /// <summary>Gets the active slot's saved lifecycle state for one boss.</summary>
@@ -348,7 +363,17 @@ namespace ZZ
         {
             return new SerializableWeapon(
                 weapon?.ItemID ?? -1,
-                weapon?.AshOfWarAction?.ItemID ?? -1);
+                weapon?.AshOfWarAction?.ItemID ?? -1,
+                (int)(weapon?.UpgradeLevel ?? UpgradeLevel.Level0));
+        }
+
+        /// <summary>Converts one generic runtime stack into persistent state.</summary>
+        public static SerializableItemStack GetSerializableItemStackFromItem(
+            Item item)
+        {
+            return new SerializableItemStack(
+                item?.ItemID ?? -1,
+                item?.CurrentItemAmount ?? 0);
         }
 
         /// <summary>Converts one runtime ammunition stack into persistent state.</summary>

@@ -20,6 +20,7 @@ namespace ZZ
         [SerializeField] private List<SpellItem> m_spells = new();
         [SerializeField] private List<RangedProjectileItem> m_projectiles = new();
         [SerializeField] private List<QuickSlotItem> m_quickSlotItems = new();
+        [SerializeField] private List<UpgradeMaterial> m_upgradeMaterials = new();
 
         [Header("World Pickups")]
         [SerializeField] private GameObject m_creatureDropPickupPrefab;
@@ -43,6 +44,10 @@ namespace ZZ
 
         /// <summary>Gets every gameplay quick-slot item registered in the catalog.</summary>
         public IReadOnlyList<QuickSlotItem> QuickSlotItems => m_quickSlotItems;
+
+        /// <summary>Gets every authored weapon-upgrade material template.</summary>
+        public IReadOnlyList<UpgradeMaterial> UpgradeMaterials =>
+            m_upgradeMaterials;
 
         /// <summary>Gets the server-spawned pickup presentation used by creature loot.</summary>
         public GameObject CreatureDropPickupPrefab => m_creatureDropPickupPrefab;
@@ -135,6 +140,33 @@ namespace ZZ
             return GetItemByID(itemID, m_quickSlotItems);
         }
 
+        /// <summary>Returns an upgrade material only when its catalog ID is registered.</summary>
+        public UpgradeMaterial GetUpgradeMaterialByID(int itemID)
+        {
+            return GetItemByID(itemID, m_upgradeMaterials);
+        }
+
+        /// <summary>Returns the authored material template for one progression tier.</summary>
+        public UpgradeMaterial GetUpgradeMaterialByStone(UpgradeStone upgradeStone)
+        {
+            return m_upgradeMaterials.Find(material =>
+                material != null && material.UpgradeStone == upgradeStone);
+        }
+
+        /// <summary>
+        /// Creates an isolated catalog-backed cost object with the requested amount.
+        /// </summary>
+        public UpgradeMaterial CreateUpgradeMaterialCost(
+            UpgradeStone upgradeStone,
+            int requiredAmount)
+        {
+            UpgradeMaterial runtimeMaterial = CreateRuntimeItem(
+                GetUpgradeMaterialByStone(upgradeStone),
+                "Upgrade Cost");
+            runtimeMaterial?.SetCurrentItemAmount(requiredAmount);
+            return runtimeMaterial;
+        }
+
         /// <summary>
         /// Rebuilds one private weapon instance, including its saved Ash of War.
         /// Invalid identifiers resolve to a private Unarmed fallback.
@@ -163,7 +195,34 @@ namespace ZZ
                         : null);
             }
 
+            runtimeWeapon.SetUpgradeLevel(
+                (UpgradeLevel)Mathf.Clamp(
+                    resolvedSavedWeapon ? data.UpgradeLevel : 0,
+                    (int)UpgradeLevel.Level0,
+                    (int)UpgradeLevel.Level10));
+
             return runtimeWeapon;
+        }
+
+        /// <summary>Rebuilds one private generic stack from saved inventory state.</summary>
+        public Item GetItemStackFromSerializedData(SerializableItemStack data)
+        {
+            if (data == null || data.ItemID < 0 || data.ItemAmount <= 0)
+            {
+                return null;
+            }
+
+            Item runtimeItem = CreateRuntimeItem(
+                GetItemByID(data.ItemID),
+                "Inventory Stack");
+            runtimeItem?.SetCurrentItemAmount(data.ItemAmount);
+            return runtimeItem;
+        }
+
+        /// <summary>Creates one private runtime item from a catalog identifier.</summary>
+        public Item GetRuntimeItemByID(int itemID)
+        {
+            return CreateRuntimeItem(GetItemByID(itemID), "Inventory Item");
         }
 
         /// <summary>Rebuilds one private ammunition stack from saved state.</summary>
@@ -227,6 +286,7 @@ namespace ZZ
             AppendMissingItems(m_spells);
             AppendMissingItems(m_projectiles);
             AppendMissingItems(m_quickSlotItems);
+            AppendMissingItems(m_upgradeMaterials);
             for (int itemIndex = 0; itemIndex < m_items.Count; itemIndex++)
             {
                 m_items[itemIndex]?.AssignItemID(itemIndex);

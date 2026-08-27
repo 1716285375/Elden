@@ -17,6 +17,8 @@ MonoBehaviour:
   m_itemDescription: Deflect an incoming parryable attack with a measured shield
     motion.
   m_itemID: 8
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
   m_focusPointsCost: 0
   m_staminaCost: 12
   m_usableWeaponClasses: 04000000

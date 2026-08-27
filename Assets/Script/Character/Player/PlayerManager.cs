@@ -510,6 +510,12 @@ namespace ZZ
                                     quickSlotItem,
                                     this));
                         break;
+                    case Item stackableItem when stackableItem.IsStackable:
+                        currentData.StackableItemsInInventory.Add(
+                            WorldSaveGameManager
+                                .GetSerializableItemStackFromItem(
+                                    stackableItem));
+                        break;
                     case HeadEquipmentItem headEquipment:
                         currentData.HeadEquipmentInInventory.Add(
                             headEquipment.ItemID);

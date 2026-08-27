@@ -15,6 +15,7 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_requiredStageID;
         [SerializeField] private bool m_setStageAfterDialogue;
         [SerializeField, Min(0)] private int m_stageIDToSet;
+        [SerializeField] private DialogueEndEvent m_dialogueEndEvent;
 
         [Header("Greeting")]
         [SerializeField] private List<string> m_greetingStrings = new();
@@ -33,6 +34,7 @@ namespace ZZ
         public int RequiredStageID => m_requiredStageID;
         public bool SetStageAfterDialogue => m_setStageAfterDialogue;
         public int StageIDToSet => m_stageIDToSet;
+        public DialogueEndEvent DialogueEndEvent => m_dialogueEndEvent;
         public int DialogueIndex => m_dialogueIndex;
         public int CoreLineCount => m_dialogueStrings?.Count ?? 0;
 
@@ -132,11 +134,21 @@ namespace ZZ
         /// <summary>Extension point invoked only after the full sequence completes.</summary>
         public virtual void OnDialogueEnded()
         {
+            if (m_dialogueEndEvent == DialogueEndEvent.Blacksmith)
+            {
+                PlayerUIManager.Instance?.PlayerUIWeaponUpgradeManager
+                    ?.OpenMenuAfterFixedFrame();
+            }
         }
 
         /// <summary>Extension point invoked when the player leaves or combat interrupts playback.</summary>
         public virtual void OnDialogueCanceled()
         {
+            if (m_dialogueEndEvent == DialogueEndEvent.Blacksmith)
+            {
+                PlayerUIManager.Instance?.PlayerUIWeaponUpgradeManager
+                    ?.CloseMenuAfterFixedFrame();
+            }
         }
 
         private void OnValidate()

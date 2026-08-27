@@ -16,9 +16,12 @@ MonoBehaviour:
   m_itemIcon: {fileID: 6792779763568305790, guid: cfadb293a8cd0b646ab0d77b5b4c01e9, type: 2}
   m_itemDescription: A sacred flask that restores Health at the drink success frame.
   m_itemID: 14
+  m_maxItemAmount: 1
+  m_currentItemAmount: 1
   m_itemModel: {fileID: 1383299079016199604, guid: 444edd3cff894f244ba43e4f5fd9d0c7, type: 3}
   m_useItemAnimation: {fileID: 7400000, guid: 95daa1dc3a107aa4fb20736a4cf1602d, type: 2}
   m_isConsumable: 1
+  m_currentAmount: 0
   m_emptyFlaskItemModel: {fileID: 4353431601353277311, guid: 6568a9f42aed5bb4da284b707570a972, type: 3}
   m_restoresHealth: 1
   m_flaskRestoration: 55

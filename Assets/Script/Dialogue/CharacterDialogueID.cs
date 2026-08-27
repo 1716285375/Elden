@@ -4,6 +4,7 @@ namespace ZZ
     public enum CharacterDialogueID
     {
         NoDialogue = 0,
-        NamelessKnight = 1
+        NamelessKnight = 1,
+        Blacksmith = 2
     }
 }

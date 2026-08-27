@@ -26,6 +26,9 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_lightningDamage;
         [SerializeField, Min(0f)] private float m_holyDamage;
 
+        [Header("Upgrade")]
+        [SerializeField] private UpgradeLevel m_upgradeLevel;
+
         [Header("Attribute Requirements")]
         [SerializeField, Min(0)] private int m_strengthRequirement;
         [SerializeField, Min(0)] private int m_dexterityRequirement;
@@ -119,6 +122,12 @@ namespace ZZ
         /// <summary>Gets the weapon's base holy damage.</summary>
         public float HolyDamage => m_holyDamage;
 
+        /// <summary>Gets this runtime weapon instance's reinforcement level.</summary>
+        public UpgradeLevel UpgradeLevel => m_upgradeLevel;
+
+        /// <summary>Gets whether this weapon has reached the supported reinforcement cap.</summary>
+        public bool IsFullyUpgraded => m_upgradeLevel >= UpgradeLevel.Level10;
+
         /// <summary>Gets the reserved strength requirement.</summary>
         public int StrengthRequirement => m_strengthRequirement;
 
@@ -188,6 +197,27 @@ namespace ZZ
         public void SetAshOfWar(AshOfWar ashOfWar)
         {
             m_ashOfWarAction = ashOfWar;
+        }
+
+        /// <summary>Restores a clamped per-instance reinforcement level.</summary>
+        public void SetUpgradeLevel(UpgradeLevel upgradeLevel)
+        {
+            m_upgradeLevel = (UpgradeLevel)Mathf.Clamp(
+                (int)upgradeLevel,
+                (int)UpgradeLevel.Level0,
+                (int)UpgradeLevel.Level10);
+        }
+
+        /// <summary>Advances this runtime weapon by one level when it is eligible.</summary>
+        public bool TryUpgrade()
+        {
+            if (m_isUnarmed || IsFullyUpgraded)
+            {
+                return false;
+            }
+
+            SetUpgradeLevel((UpgradeLevel)((int)m_upgradeLevel + 1));
+            return true;
         }
 
         /// <summary>

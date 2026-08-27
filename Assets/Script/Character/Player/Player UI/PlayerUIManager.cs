@@ -25,9 +25,17 @@ namespace ZZ
         [SerializeField] private PlayerUITeleportLocationManager
             m_playerUITeleportLocationManager;
         [SerializeField] private PlayerUILevelUpManager m_playerUILevelUpManager;
+        [SerializeField] private PlayerUIWeaponUpgradeManager
+            m_playerUIWeaponUpgradeManager;
         [SerializeField] private PlayerUILoadingScreenManager
             m_playerUILoadingScreenManager;
         [SerializeField] private GameObject m_menuEventSystem;
+
+        [Header("UI SOUNDS")]
+        [SerializeField] private AudioSource m_uiAudioSource;
+        [SerializeField] private AudioClip m_menuHoverSound;
+        [SerializeField] private AudioClip m_menuConfirmSound;
+        [SerializeField] private AudioClip m_unableToContinueSound;
 
         private bool m_isMenuWindowOpen;
         private bool m_isMenuInputBlocked;
@@ -74,6 +82,10 @@ namespace ZZ
         public PlayerUILevelUpManager PlayerUILevelUpManager =>
             m_playerUILevelUpManager;
 
+        /// <summary>Gets the shared Character Menu, Anvil, and Blacksmith service.</summary>
+        public PlayerUIWeaponUpgradeManager PlayerUIWeaponUpgradeManager =>
+            m_playerUIWeaponUpgradeManager;
+
         /// <summary>Gets the persistent world-transition loading-screen controller.</summary>
         public PlayerUILoadingScreenManager PlayerUILoadingScreenManager =>
             m_playerUILoadingScreenManager;
@@ -107,8 +119,16 @@ namespace ZZ
                     GetComponentInChildren<PlayerUITeleportLocationManager>(true);
                 m_playerUILevelUpManager ??=
                     GetComponentInChildren<PlayerUILevelUpManager>(true);
+                m_playerUIWeaponUpgradeManager ??=
+                    GetComponentInChildren<PlayerUIWeaponUpgradeManager>(true);
                 m_playerUILoadingScreenManager ??=
                     GetComponentInChildren<PlayerUILoadingScreenManager>(true);
+                m_uiAudioSource ??= GetComponent<AudioSource>();
+                if (m_uiAudioSource != null)
+                {
+                    m_uiAudioSource.spatialBlend = 0f;
+                    m_uiAudioSource.playOnAwake = false;
+                }
             }
             else
             {
@@ -149,6 +169,7 @@ namespace ZZ
             m_playerUISiteOfGraceManager?.CloseSiteOfGraceMenu();
             m_playerUITeleportLocationManager?.CloseTeleportLocationMenu();
             m_playerUILevelUpManager?.CloseMenu();
+            m_playerUIWeaponUpgradeManager?.CloseMenu();
             ReleaseMenuInput();
         }
 
@@ -208,6 +229,8 @@ namespace ZZ
                 m_playerUITeleportLocationManager
                     ?.IsTeleportLocationMenuOpen == true ||
                 m_playerUILevelUpManager?.IsMenuOpen == true;
+            hasOpenMenu |=
+                m_playerUIWeaponUpgradeManager?.IsMenuOpen == true;
             if (hasOpenMenu)
             {
                 NotifyMenuWindowOpened();
@@ -215,6 +238,24 @@ namespace ZZ
             }
 
             ReleaseMenuInput();
+        }
+
+        /// <summary>Plays the shared non-spatial navigation sound.</summary>
+        public void PlayMenuHoverSound()
+        {
+            PlayUISound(m_menuHoverSound);
+        }
+
+        /// <summary>Plays the shared non-spatial confirmation sound.</summary>
+        public void PlayMenuConfirmSound()
+        {
+            PlayUISound(m_menuConfirmSound);
+        }
+
+        /// <summary>Plays the shared non-spatial invalid-action sound.</summary>
+        public void PlayUnableToContinueSound()
+        {
+            PlayUISound(m_unableToContinueSound);
         }
 
         private void ActivateMenuEventSystem()
@@ -246,6 +287,14 @@ namespace ZZ
             PlayerInputManager.Instance?.UnblockGameplayInput();
             Cursor.lockState = m_previousCursorLockMode;
             Cursor.visible = m_wasCursorVisible;
+        }
+
+        private void PlayUISound(AudioClip audioClip)
+        {
+            if (m_uiAudioSource != null && audioClip != null)
+            {
+                m_uiAudioSource.PlayOneShot(audioClip);
+            }
         }
     }
 }
