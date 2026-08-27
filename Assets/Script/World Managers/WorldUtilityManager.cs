@@ -5,6 +5,8 @@ namespace ZZ
     /// <summary>Owns persistent world-wide gameplay constants and shared classifiers.</summary>
     public class WorldUtilityManager : MonoBehaviour
     {
+        private const int k_DefaultEnvironmentLayer = 0;
+        private const int k_SlipperyEnvironmentLayer = 15;
         private const float k_LightPoiseThreshold = 10f;
         private const float k_MediumPoiseThreshold = 30f;
         private const float k_HeavyPoiseThreshold = 70f;
@@ -12,7 +14,41 @@ namespace ZZ
 
         private static WorldUtilityManager s_instance;
 
+        [Header("Environment Layers")]
+        [SerializeField] private LayerMask m_environmentLayers =
+            (1 << k_DefaultEnvironmentLayer) |
+            (1 << k_SlipperyEnvironmentLayer);
+        [SerializeField] private LayerMask m_groundLayers =
+            (1 << k_DefaultEnvironmentLayer) |
+            (1 << k_SlipperyEnvironmentLayer);
+        [SerializeField] private LayerMask m_slipperyEnvironmentLayers =
+            1 << k_SlipperyEnvironmentLayer;
+
         public static WorldUtilityManager Instance => s_instance;
+
+        /// <summary>Gets all surfaces that can affect falling characters.</summary>
+        public LayerMask GetEnvironmentLayers()
+        {
+            return IncludeRequiredLayer(
+                m_environmentLayers,
+                k_SlipperyEnvironmentLayer);
+        }
+
+        /// <summary>Gets all surfaces recognized by the shared ground probe.</summary>
+        public LayerMask GetGroundLayers()
+        {
+            return IncludeRequiredLayer(
+                m_groundLayers,
+                k_SlipperyEnvironmentLayer);
+        }
+
+        /// <summary>Gets surfaces that force already-grounded characters to slide.</summary>
+        public LayerMask GetSlipperyEnviroLayers()
+        {
+            return IncludeRequiredLayer(
+                m_slipperyEnvironmentLayers,
+                k_SlipperyEnvironmentLayer);
+        }
 
         private void Awake()
         {
@@ -110,6 +146,14 @@ namespace ZZ
                 default:
                     return new Vector3(0.12f, 0f, 0.74f);
             }
+        }
+
+        private static LayerMask IncludeRequiredLayer(
+            LayerMask layerMask,
+            int requiredLayer)
+        {
+            layerMask.value |= 1 << requiredLayer;
+            return layerMask;
         }
     }
 }
