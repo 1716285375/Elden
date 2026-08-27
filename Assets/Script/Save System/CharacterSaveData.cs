@@ -25,7 +25,8 @@ namespace ZZ
         private const int k_CharacterCreationDataVersion = 9;
         private const int k_LevelUpDataVersion = 10;
         private const int k_DeadSpotDataVersion = 11;
-        private const int k_CurrentDataVersion = 11;
+        private const int k_DialogueDataVersion = 12;
+        private const int k_CurrentDataVersion = 12;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -48,6 +49,7 @@ namespace ZZ
         [SerializeField] private float m_deadSpotPositionZ;
         [SerializeField, Min(0)] private int m_deadSpotRuneCount;
         [SerializeField, Min(0)] private int m_lastSiteOfGraceRestedAt;
+        [SerializeField, Min(0)] private int m_namelessKnightStageID;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
@@ -247,6 +249,13 @@ namespace ZZ
         {
             get => m_lastSiteOfGraceRestedAt;
             set => m_lastSiteOfGraceRestedAt = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the saved Nameless Knight dialogue Stage.</summary>
+        public int NamelessKnightStageID
+        {
+            get => m_namelessKnightStageID;
+            set => m_namelessKnightStageID = Mathf.Max(0, value);
         }
 
         public float CurrentHealth
@@ -796,6 +805,11 @@ namespace ZZ
                 m_deadSpotPositionZ = 0f;
                 m_deadSpotRuneCount = 0;
                 m_lastSiteOfGraceRestedAt = 0;
+            }
+
+            if (m_dataVersion < k_DialogueDataVersion)
+            {
+                m_namelessKnightStageID = 0;
             }
 
             m_bosses ??= new List<BossSaveData>();

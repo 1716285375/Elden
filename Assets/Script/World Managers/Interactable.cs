@@ -104,7 +104,7 @@ namespace ZZ
             }
         }
 
-        private void OnTriggerEnter(Collider other)
+        protected virtual void OnTriggerEnter(Collider other)
         {
             PlayerInteractionManager interactionManager =
                 other.GetComponentInParent<PlayerInteractionManager>();
@@ -115,7 +115,7 @@ namespace ZZ
             }
         }
 
-        private void OnTriggerExit(Collider other)
+        protected virtual void OnTriggerExit(Collider other)
         {
             PlayerInteractionManager interactionManager =
                 other.GetComponentInParent<PlayerInteractionManager>();

@@ -66,10 +66,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58084440a533cdd48965c30ce6f3c1ee, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossArenaController
   m_bossID: 1001
   m_fogWallRoot: {fileID: 2174716667473277780}
+  m_bossMusicSource: {fileID: 0}
+  m_bossMusic: {fileID: 0}
 --- !u!1 &1645735966587180557
 GameObject:
   m_ObjectHideFlags: 0
@@ -112,7 +114,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
   m_patrolPathID: 10801
@@ -120,6 +122,9 @@ MonoBehaviour:
   m_isSleeping: 0
   m_willInvestigateSound: 1
   m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
 --- !u!1 &1785569251608325428
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,6 +161,7 @@ Transform:
   - {fileID: 5353606116574465717}
   - {fileID: 309855024466306605}
   - {fileID: 8899390692207623577}
+  - {fileID: 4387164886734593850}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &659408512431881297
@@ -168,9 +174,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e2c9dccbc4a9b54b9de536af3d068f4, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldAIManager
   m_aiActivationBeaconPrefab: {fileID: 1174959693093781671, guid: 9e684d8a33fdaae47ab0af5aa933f24b, type: 3}
+  m_dialogueInteractablePrefab: {fileID: 2785176864149174166, guid: 3fedaf98de918ac4d887ea7a1e4f4dcc, type: 3}
 --- !u!1 &2000721114566122125
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,7 +220,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 271294674669322707, guid: 036b7f6bfa4f44447952004b69b2bd11, type: 3}
   m_patrolPathID: 0
@@ -221,6 +228,9 @@ MonoBehaviour:
   m_isSleeping: 0
   m_willInvestigateSound: 1
   m_bossID: 1001
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
 --- !u!1 &2174716667473277780
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,7 +407,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87f71837b87f86c48ac4a967d050e278, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.EventTriggerWakeNearbyCharacters
   m_triggerRadius: 1
   m_awakenRadius: 20
@@ -443,7 +453,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
   m_patrolPathID: 0
@@ -451,6 +461,9 @@ MonoBehaviour:
   m_isSleeping: 1
   m_willInvestigateSound: 1
   m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
 --- !u!1 &2864727150372499814
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +506,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
   m_patrolPathID: 0
@@ -501,6 +514,9 @@ MonoBehaviour:
   m_isSleeping: 0
   m_willInvestigateSound: 1
   m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
 --- !u!1 &3125334643779709020
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,7 +563,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e31acb0f857adca43b680481d2c72140, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIPatrolPath
   m_patrolPathID: 10801
   m_patrolPoints:
@@ -586,6 +602,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 309855024466306605}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4903342449231122629
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4387164886734593850}
+  - component: {fileID: 4690353495689043640}
+  m_Layer: 0
+  m_Name: Nameless Knight Dialogue NPC Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4387164886734593850
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4903342449231122629}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.9659259, z: 0, w: -0.25881907}
+  m_LocalPosition: {x: 3, y: 0.1, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7522123555961254226}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4690353495689043640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4903342449231122629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 0a29a1894e5fef844b60bd75dd5f974f, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 0
+  m_bossID: 0
+  m_manuallySetStats: 1
+  m_maximumHealth: 500
+  m_maximumStamina: 100
 --- !u!1 &6924501395002583010
 GameObject:
   m_ObjectHideFlags: 0

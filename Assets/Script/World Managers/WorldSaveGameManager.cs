@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Unity.Netcode;
 using UnityEngine;
@@ -16,6 +17,10 @@ namespace ZZ
         [SerializeField] private string m_worldSceneName = "Scene_World_01";
         [SerializeField] private int m_startingSceneIndex = 1;
 
+        [Header("Dialogue")]
+        [SerializeField] private List<CharacterDialogue>
+            m_namelessKnightDialogues = new();
+
         private PlayerManager m_player;
         private CharacterSaveData m_characterSlot01;
         private CharacterSaveData m_characterSlot02;
@@ -30,6 +35,7 @@ namespace ZZ
         private CharacterSlot m_currentCharacterSlotBeingUsed = CharacterSlot.NoSlot;
         private CharacterSaveData m_currentCharacterData;
         private bool m_shouldApplyLoadedCharacterData;
+        private int m_namelessKnightStageID;
 
         public static WorldSaveGameManager Instance => s_instance;
 
@@ -51,6 +57,99 @@ namespace ZZ
             m_currentCharacterData != null &&
             m_player != null &&
             m_player.IsOwner;
+
+        /// <summary>Gets one NPC's loaded dialogue Stage.</summary>
+        public int GetStageOfDialogue(CharacterDialogueID characterDialogueID)
+        {
+            return characterDialogueID switch
+            {
+                CharacterDialogueID.NamelessKnight =>
+                    m_namelessKnightStageID,
+                _ => 0
+            };
+        }
+
+        /// <summary>Returns a runtime dialogue copy for the NPC's currently loaded Stage.</summary>
+        public CharacterDialogue GetCurrentDialogue(
+            CharacterDialogueID characterDialogueID)
+        {
+            IReadOnlyList<CharacterDialogue> dialogueList =
+                characterDialogueID switch
+                {
+                    CharacterDialogueID.NamelessKnight =>
+                        m_namelessKnightDialogues,
+                    _ => null
+                };
+            return FindDialogueByStageID(
+                GetStageOfDialogue(characterDialogueID),
+                dialogueList);
+        }
+
+        /// <summary>
+        /// Finds one authored Stage and returns an isolated runtime copy for mutable playback.
+        /// </summary>
+        public CharacterDialogue FindDialogueByStageID(
+            int stageID,
+            IReadOnlyList<CharacterDialogue> dialogueList)
+        {
+            if (dialogueList == null)
+            {
+                return null;
+            }
+
+            foreach (CharacterDialogue dialogueAsset in dialogueList)
+            {
+                if (dialogueAsset != null &&
+                    dialogueAsset.RequiredStageID == stageID)
+                {
+                    return dialogueAsset.CreateRuntimeCopy();
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>Updates one Stage, mirrors it into save data, and optionally saves.</summary>
+        public bool SetStageOfDialogue(
+            CharacterDialogueID characterDialogueID,
+            int stageID,
+            bool saveImmediately)
+        {
+            if (m_currentCharacterData == null ||
+                characterDialogueID == CharacterDialogueID.NoDialogue)
+            {
+                return false;
+            }
+
+            int sanitizedStageID = Mathf.Max(0, stageID);
+            bool didChange;
+            switch (characterDialogueID)
+            {
+                case CharacterDialogueID.NamelessKnight:
+                    didChange =
+                        m_namelessKnightStageID != sanitizedStageID;
+                    m_namelessKnightStageID = sanitizedStageID;
+                    m_currentCharacterData.NamelessKnightStageID =
+                        sanitizedStageID;
+                    break;
+                default:
+                    return false;
+            }
+
+            if (didChange && saveImmediately && CanSaveGame)
+            {
+                SaveGame();
+            }
+
+            return didChange;
+        }
+
+        /// <summary>Copies Dialogue Stage values only after current save data is assigned.</summary>
+        public void GetStageIDsOnLoad()
+        {
+            m_namelessKnightStageID =
+                m_currentCharacterData?.NamelessKnightStageID ?? 0;
+        }
 
         /// <summary>Gets the active slot's saved lifecycle state for one boss.</summary>
         public BossProgressState GetBossProgress(int bossID)
@@ -335,6 +434,7 @@ namespace ZZ
 
             m_currentCharacterSlotBeingUsed = freeSlot;
             m_currentCharacterData = startingCharacterData;
+            GetStageIDsOnLoad();
             SetCharacterDataForSlot(freeSlot, startingCharacterData);
             m_shouldApplyLoadedCharacterData = true;
             StartCoroutine(LoadScene(m_startingSceneIndex));
@@ -394,6 +494,7 @@ namespace ZZ
                 }
 
                 m_currentCharacterData = loadedData;
+                GetStageIDsOnLoad();
                 SetCharacterDataForSlot(m_currentCharacterSlotBeingUsed, loadedData);
                 m_shouldApplyLoadedCharacterData = true;
                 StartCoroutine(LoadScene(loadedData.SceneIndex));

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb6414be81ba264409b7682c44f86468, type: 3}
+  m_Name: Nameless Knight Stage 00
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterDialogue
+  m_requiredStageID: 0
+  m_setStageAfterDialogue: 1
+  m_stageIDToSet: 5
+  m_greetingStrings:
+  - Still breathing, wanderer?
+  - Come closer. I have no blade left for you.
+  m_greetingAudioClips:
+  - {fileID: 8300000, guid: 1f745405d7d0573429b3f0a833d01704, type: 3}
+  - {fileID: 8300000, guid: 7b6465f6444bb9a40954f3b45b03cca3, type: 3}
+  m_dialogueStrings:
+  - The Ashen Crypt remembers every oath broken within it.
+  - Rest at the grace before you descend. The dead do not tire.
+  m_dialogueAudioClips:
+  - {fileID: 8300000, guid: 7b6465f6444bb9a40954f3b45b03cca3, type: 3}
+  - {fileID: 8300000, guid: b20a31592d5053b42a83ec42df6eb998, type: 3}
+  m_farewellStrings:
+  - Go carefully, wanderer.
+  m_farewellAudioClips:
+  - {fileID: 8300000, guid: 236d0503f09740540832e5f05f617b5e, type: 3}
