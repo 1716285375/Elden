@@ -26,6 +26,10 @@ namespace ZZ
         [SerializeField] private TMP_Text m_itemNameText;
         [SerializeField] private TMP_Text m_itemAmountText;
 
+        [Header("DIALOGUE POPUP")]
+        [SerializeField] private GameObject m_dialoguePopup;
+        [SerializeField] private TMP_Text m_dialogueSubtitleText;
+
         [Header("TIMING")]
         [SerializeField, Min(0.01f)] private float m_fadeInDuration = 0.8f;
         [SerializeField, Min(0f)] private float m_visibleDuration = 2f;
@@ -36,10 +40,13 @@ namespace ZZ
         private Coroutine m_popupRoutine;
 
         public bool IsPopUpWindowOpen { get; private set; }
+        public bool IsDialoguePopupOpen =>
+            m_dialoguePopup?.activeSelf == true;
 
         private void OnDisable()
         {
             HideYouDiedPopup();
+            CloseDialoguePopup();
             CloseAllPopUpWindows();
         }
 
@@ -138,6 +145,45 @@ namespace ZZ
             RefreshPopupState();
         }
 
+        /// <summary>Opens the persistent bottom-center subtitle presentation.</summary>
+        public void SendDialoguePopup(string subtitle)
+        {
+            if (m_dialoguePopup == null || m_dialogueSubtitleText == null)
+            {
+                Debug.LogWarning(
+                    "The dialogue popup references are incomplete.",
+                    this);
+                return;
+            }
+
+            m_playerMessagePopup?.SetActive(false);
+            m_itemPopup?.SetActive(false);
+            m_dialogueSubtitleText.text = subtitle ?? string.Empty;
+            m_dialoguePopup.SetActive(true);
+            RefreshPopupState();
+        }
+
+        /// <summary>Updates only the current subtitle without restarting playback.</summary>
+        public void UpdateDialogueSubtitle(string subtitle)
+        {
+            if (m_dialogueSubtitleText != null)
+            {
+                m_dialogueSubtitleText.text = subtitle ?? string.Empty;
+            }
+        }
+
+        /// <summary>Closes the dialogue presentation without affecting other popup types.</summary>
+        public void CloseDialoguePopup()
+        {
+            if (m_dialogueSubtitleText != null)
+            {
+                m_dialogueSubtitleText.text = string.Empty;
+            }
+
+            m_dialoguePopup?.SetActive(false);
+            RefreshPopupState();
+        }
+
         private IEnumerator DisplayYouDiedPopup()
         {
             StartCoroutine(StretchPopUpTextOverTime());
@@ -226,7 +272,8 @@ namespace ZZ
         {
             IsPopUpWindowOpen = m_youDiedPopup?.activeSelf == true ||
                 m_playerMessagePopup?.activeSelf == true ||
-                m_itemPopup?.activeSelf == true;
+                m_itemPopup?.activeSelf == true ||
+                m_dialoguePopup?.activeSelf == true;
         }
     }
 }

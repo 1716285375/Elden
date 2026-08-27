@@ -21,6 +21,7 @@ namespace ZZ
         private const float k_MinimumDirectionMagnitude = 0.0001f;
 
         [Header("Perception")]
+        [SerializeField] private bool m_autoAcquireTargets = true;
         [SerializeField, Min(0f)] private float m_detectionRadius = 18f;
         [SerializeField, Min(0f)] private float m_loseTargetRadius = 24f;
         [SerializeField, Range(1f, 360f)] private float m_fieldOfView = 140f;
@@ -95,6 +96,9 @@ namespace ZZ
 
         /// <summary>Gets the server-selected player target.</summary>
         public PlayerManager CurrentTarget => m_currentTarget;
+
+        /// <summary>Gets whether idle perception automatically selects nearby players.</summary>
+        public bool AutoAcquireTargets => m_autoAcquireTargets;
 
         /// <summary>Gets this enemy's server-authoritative loot inventory.</summary>
         public AICharacterInventoryManager InventoryManager => m_aiInventoryManager;
@@ -569,6 +573,11 @@ namespace ZZ
             if (HasValidTarget)
             {
                 return true;
+            }
+
+            if (!m_autoAcquireTargets)
+            {
+                return false;
             }
 
             if (Time.time < m_nextDetectionTime)

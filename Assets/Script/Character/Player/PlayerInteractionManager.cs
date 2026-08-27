@@ -82,6 +82,15 @@ namespace ZZ
                 return;
             }
 
+            PlayerUIPopUpManager popUpManager =
+                PlayerUIManager.Instance?.PlayerUIPopUpManager;
+            if (popUpManager?.IsDialoguePopupOpen == true)
+            {
+                popUpManager.ClosePlayerMessagePopup();
+                m_hasOpenPrompt = false;
+                return;
+            }
+
             if (m_currentInteractableActions[0] == null)
             {
                 m_currentInteractableActions.RemoveAt(0);
@@ -102,7 +111,7 @@ namespace ZZ
                 return;
             }
 
-            if (m_activeInteractable == candidate)
+            if (m_activeInteractable == candidate && m_hasOpenPrompt)
             {
                 return;
             }
@@ -121,6 +130,7 @@ namespace ZZ
             }
 
             CloseAllPopUpWindows();
+            m_hasOpenPrompt = false;
             CheckForInteractable();
             Interactable interactable = m_activeInteractable;
             if (interactable == null || !interactable.CanInteract(m_player))

@@ -18,6 +18,10 @@ namespace ZZ
         [Header("Activation")]
         [SerializeField] private AIActivationBeacon m_aiActivationBeaconPrefab;
 
+        [Header("Dialogue")]
+        [SerializeField] private DialogueInteractable
+            m_dialogueInteractablePrefab;
+
         private readonly List<AICharacterSpawner> m_characterSpawners = new();
         private readonly List<AICharacterManager> m_spawnedCharacters = new();
         private readonly List<AIPatrolPath> m_patrolPaths = new();
@@ -43,6 +47,10 @@ namespace ZZ
         /// <summary>Gets the shared server-side beacon template used by every AI.</summary>
         public AIActivationBeacon AIActivationBeaconPrefab =>
             m_aiActivationBeaconPrefab;
+
+        /// <summary>Gets the server-spawned reusable Talk trigger template.</summary>
+        public DialogueInteractable DialogueInteractablePrefab =>
+            m_dialogueInteractablePrefab;
 
         /// <summary>Gets whether Spawn, Reset, or Despawn work is running across frames.</summary>
         public bool IsPerformingLoadingOperation =>
@@ -89,6 +97,60 @@ namespace ZZ
         public void UnregisterAI(AICharacterManager aiCharacter)
         {
             m_spawnedCharacters.Remove(aiCharacter);
+        }
+
+        /// <summary>
+        /// Spawns and network-parents one Talk trigger after its AI has entered the world.
+        /// </summary>
+        public DialogueInteractable SpawnDialogueInteractable(
+            AICharacterSoundFXManager soundFXManager)
+        {
+            if (!IsServerReady() ||
+                soundFXManager == null ||
+                soundFXManager.CharacterDialogueID ==
+                    CharacterDialogueID.NoDialogue ||
+                soundFXManager.InteractableDialogueObject != null)
+            {
+                return soundFXManager?.InteractableDialogueObject;
+            }
+
+            AICharacterManager aiCharacter =
+                soundFXManager.GetComponentInParent<AICharacterManager>();
+            NetworkObject aiNetworkObject =
+                aiCharacter?.GetComponent<NetworkObject>();
+            NetworkObject prefabNetworkObject =
+                m_dialogueInteractablePrefab?.GetComponent<NetworkObject>();
+            if (aiCharacter == null ||
+                aiNetworkObject == null ||
+                !aiNetworkObject.IsSpawned ||
+                m_dialogueInteractablePrefab == null ||
+                prefabNetworkObject == null)
+            {
+                Debug.LogWarning(
+                    "Dialogue-capable AI requires a networked Dialogue Interactable prefab.",
+                    this);
+                return null;
+            }
+
+            DialogueInteractable dialogueInteractable = Instantiate(
+                m_dialogueInteractablePrefab,
+                aiCharacter.transform.position,
+                aiCharacter.transform.rotation);
+            dialogueInteractable.SetOwningCharacter(aiCharacter);
+            NetworkObject dialogueNetworkObject =
+                dialogueInteractable.GetComponent<NetworkObject>();
+            dialogueNetworkObject.Spawn(true);
+            if (!dialogueNetworkObject.TrySetParent(aiNetworkObject, false))
+            {
+                dialogueNetworkObject.Despawn(true);
+                Debug.LogError(
+                    $"Could not network-parent dialogue trigger to {aiCharacter.name}.",
+                    aiCharacter);
+                return null;
+            }
+
+            soundFXManager.RegisterDialogueInteractable(dialogueInteractable);
+            return dialogueInteractable;
         }
 
         /// <summary>Registers one scene-authored spawner without duplicates.</summary>
