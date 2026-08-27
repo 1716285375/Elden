@@ -9,6 +9,8 @@ namespace ZZ
         private const int k_PlayerLayer = 8;
         private const int k_DamageableCharacterLayer = 10;
         private const int k_SlipperyEnvironmentLayer = 15;
+        private const int k_BreakableObjectLayer = 16;
+        private const int k_BrokenObjectLayer = 17;
         private const float k_LightPoiseThreshold = 10f;
         private const float k_MediumPoiseThreshold = 30f;
         private const float k_HeavyPoiseThreshold = 70f;
@@ -19,10 +21,14 @@ namespace ZZ
         [Header("Environment Layers")]
         [SerializeField] private LayerMask m_environmentLayers =
             (1 << k_DefaultEnvironmentLayer) |
-            (1 << k_SlipperyEnvironmentLayer);
+            (1 << k_SlipperyEnvironmentLayer) |
+            (1 << k_BreakableObjectLayer) |
+            (1 << k_BrokenObjectLayer);
         [SerializeField] private LayerMask m_groundLayers =
             (1 << k_DefaultEnvironmentLayer) |
-            (1 << k_SlipperyEnvironmentLayer);
+            (1 << k_SlipperyEnvironmentLayer) |
+            (1 << k_BreakableObjectLayer) |
+            (1 << k_BrokenObjectLayer);
         [SerializeField] private LayerMask m_slipperyEnvironmentLayers =
             1 << k_SlipperyEnvironmentLayer;
         [SerializeField] private LayerMask m_characterLayers =
@@ -34,17 +40,13 @@ namespace ZZ
         /// <summary>Gets all surfaces that can affect falling characters.</summary>
         public LayerMask GetEnvironmentLayers()
         {
-            return IncludeRequiredLayer(
-                m_environmentLayers,
-                k_SlipperyEnvironmentLayer);
+            return IncludeRequiredEnvironmentLayers(m_environmentLayers);
         }
 
         /// <summary>Gets all surfaces recognized by the shared ground probe.</summary>
         public LayerMask GetGroundLayers()
         {
-            return IncludeRequiredLayer(
-                m_groundLayers,
-                k_SlipperyEnvironmentLayer);
+            return IncludeRequiredEnvironmentLayers(m_groundLayers);
         }
 
         /// <summary>Gets surfaces that force already-grounded characters to slide.</summary>
@@ -168,6 +170,18 @@ namespace ZZ
         {
             layerMask.value |= 1 << requiredLayer;
             return layerMask;
+        }
+
+        private static LayerMask IncludeRequiredEnvironmentLayers(
+            LayerMask layerMask)
+        {
+            layerMask = IncludeRequiredLayer(
+                layerMask,
+                k_SlipperyEnvironmentLayer);
+            layerMask = IncludeRequiredLayer(
+                layerMask,
+                k_BreakableObjectLayer);
+            return IncludeRequiredLayer(layerMask, k_BrokenObjectLayer);
         }
     }
 }

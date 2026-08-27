@@ -454,6 +454,7 @@ namespace ZZ
             }
 
             transform.rotation = Quaternion.LookRotation(rollDirection);
+            m_player.CharacterNetworkManager?.SetRollingState(true);
             PlayDodgeAction(CharacterActionAnimation.RollForward);
         }
 
