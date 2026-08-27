@@ -106,9 +106,9 @@ namespace ZZ.Tests
                 SerializedObject serializedTeleport = new SerializedObject(
                     teleportManager);
                 GameObject siteMenu = serializedSite.FindProperty(
-                    "m_siteOfGraceMenu").objectReferenceValue as GameObject;
+                    "m_menuWindow").objectReferenceValue as GameObject;
                 GameObject teleportMenu = serializedTeleport.FindProperty(
-                    "m_teleportLocationMenu").objectReferenceValue as GameObject;
+                    "m_menuWindow").objectReferenceValue as GameObject;
 
                 Assert.That(
                     serializedUI.FindProperty("m_playerUISiteOfGraceManager")

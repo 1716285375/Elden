@@ -75,6 +75,35 @@ namespace ZZ
                 runesToAdd);
         }
 
+        /// <summary>Spends a non-negative Rune amount without earned-Rune feedback.</summary>
+        public bool TrySpendRunes(int runesToSpend)
+        {
+            if (runesToSpend < 0 ||
+                IsSpawned && !IsOwner ||
+                runesToSpend > Runes)
+            {
+                return false;
+            }
+
+            m_runes -= runesToSpend;
+            PlayerUIManager.Instance?.PlayerUIHUDManager
+                ?.SetRuneCountImmediately(Runes);
+            return true;
+        }
+
+        /// <summary>Loads a Rune balance without displaying it as a new reward.</summary>
+        public void SetRunes(int runeCount)
+        {
+            if (IsSpawned && !IsOwner)
+            {
+                return;
+            }
+
+            m_runes = UnityEngine.Mathf.Max(0, runeCount);
+            PlayerUIManager.Instance?.PlayerUIHUDManager
+                ?.SetRuneCountImmediately(Runes);
+        }
+
         /// <summary>Returns a non-negative, overflow-safe Rune balance.</summary>
         public static int CalculateRuneTotal(int currentRunes, int runesToAdd)
         {

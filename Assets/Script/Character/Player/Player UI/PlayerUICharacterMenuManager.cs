@@ -6,20 +6,18 @@ using UnityEngine.SceneManagement;
 namespace ZZ
 {
     /// <summary>Owns Character Menu lifecycle and the persistent menu open/close input.</summary>
-    public class PlayerUICharacterMenuManager : MonoBehaviour
+    public class PlayerUICharacterMenuManager : PlayerUIMenu
     {
         private const string k_OpenCharacterMenuActionName =
             "Open Character Menu";
         private const string k_CloseMenuActionName = "Close Menu";
-
-        [SerializeField] private GameObject m_characterMenu;
 
         private PlayerControls m_playerControls;
         private InputAction m_openCharacterMenuAction;
         private InputAction m_closeMenuAction;
         private Coroutine m_delayedCloseRoutine;
 
-        public bool IsCharacterMenuOpen => m_characterMenu?.activeSelf == true;
+        public bool IsCharacterMenuOpen => IsMenuOpen;
 
         private void OnEnable()
         {
@@ -35,7 +33,7 @@ namespace ZZ
             RefreshMenuInput(SceneManager.GetActiveScene());
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             if (m_openCharacterMenuAction != null)
@@ -51,7 +49,7 @@ namespace ZZ
 
             m_playerControls?.UI.Disable();
             CancelDelayedClose();
-            CloseCharacterMenu();
+            base.OnDisable();
         }
 
         private void OnDestroy()
@@ -62,25 +60,23 @@ namespace ZZ
         /// <summary>Opens the Character Menu after closing other transient UI.</summary>
         public void OpenCharacterMenu()
         {
-            PlayerUIManager playerUIManager = PlayerUIManager.Instance;
-            if (playerUIManager?.CanOpenMenuWindows != true)
-            {
-                return;
-            }
-
             CancelDelayedClose();
-            playerUIManager.PlayerUIPopUpManager?.CloseAllPopUpWindows();
-            playerUIManager.CloseAllMenuWindows();
-            m_characterMenu?.SetActive(true);
-            playerUIManager.NotifyMenuWindowOpened();
+            PlayerUIManager.Instance?.PlayerUIPopUpManager
+                ?.CloseAllPopUpWindows();
+            OpenMenu();
         }
 
         /// <summary>Closes only the Character Menu window.</summary>
         public void CloseCharacterMenu()
         {
+            CloseMenu();
+        }
+
+        /// <inheritdoc />
+        public override void CloseMenu()
+        {
             CancelDelayedClose();
-            m_characterMenu?.SetActive(false);
-            PlayerUIManager.Instance?.RefreshMenuWindowState();
+            base.CloseMenu();
         }
 
         /// <summary>

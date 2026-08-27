@@ -24,6 +24,7 @@ namespace ZZ
             m_playerUISiteOfGraceManager;
         [SerializeField] private PlayerUITeleportLocationManager
             m_playerUITeleportLocationManager;
+        [SerializeField] private PlayerUILevelUpManager m_playerUILevelUpManager;
         [SerializeField] private PlayerUILoadingScreenManager
             m_playerUILoadingScreenManager;
         [SerializeField] private GameObject m_menuEventSystem;
@@ -69,6 +70,10 @@ namespace ZZ
         public PlayerUITeleportLocationManager PlayerUITeleportLocationManager =>
             m_playerUITeleportLocationManager;
 
+        /// <summary>Gets the Site of Grace Level Up menu controller.</summary>
+        public PlayerUILevelUpManager PlayerUILevelUpManager =>
+            m_playerUILevelUpManager;
+
         /// <summary>Gets the persistent world-transition loading-screen controller.</summary>
         public PlayerUILoadingScreenManager PlayerUILoadingScreenManager =>
             m_playerUILoadingScreenManager;
@@ -100,6 +105,8 @@ namespace ZZ
                     GetComponentInChildren<PlayerUISiteOfGraceManager>(true);
                 m_playerUITeleportLocationManager ??=
                     GetComponentInChildren<PlayerUITeleportLocationManager>(true);
+                m_playerUILevelUpManager ??=
+                    GetComponentInChildren<PlayerUILevelUpManager>(true);
                 m_playerUILoadingScreenManager ??=
                     GetComponentInChildren<PlayerUILoadingScreenManager>(true);
             }
@@ -136,11 +143,12 @@ namespace ZZ
         /// <summary>Closes every modal menu through one shared ownership boundary.</summary>
         public void CloseAllMenuWindows()
         {
-            m_playerUICharacterMenuManager?.CloseCharacterMenu();
-            m_playerUIEquipmentManager?.CloseEquipmentManagerMenu();
+            m_playerUICharacterMenuManager?.CloseMenu();
+            m_playerUIEquipmentManager?.CloseMenu();
             m_playerUISaveGameManager?.CloseSaveGameMenu();
             m_playerUISiteOfGraceManager?.CloseSiteOfGraceMenu();
             m_playerUITeleportLocationManager?.CloseTeleportLocationMenu();
+            m_playerUILevelUpManager?.CloseMenu();
             ReleaseMenuInput();
         }
 
@@ -193,12 +201,13 @@ namespace ZZ
         public void RefreshMenuWindowState()
         {
             bool hasOpenMenu =
-                m_playerUICharacterMenuManager?.IsCharacterMenuOpen == true ||
-                m_playerUIEquipmentManager?.IsEquipmentMenuOpen == true ||
+                m_playerUICharacterMenuManager?.IsMenuOpen == true ||
+                m_playerUIEquipmentManager?.IsMenuOpen == true ||
                 m_playerUISaveGameManager?.IsSaveGameMenuOpen == true ||
                 m_playerUISiteOfGraceManager?.IsSiteOfGraceMenuOpen == true ||
                 m_playerUITeleportLocationManager
-                    ?.IsTeleportLocationMenuOpen == true;
+                    ?.IsTeleportLocationMenuOpen == true ||
+                m_playerUILevelUpManager?.IsMenuOpen == true;
             if (hasOpenMenu)
             {
                 NotifyMenuWindowOpened();
