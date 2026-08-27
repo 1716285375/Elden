@@ -78,6 +78,7 @@ namespace ZZ
             WorldGameSessionManager.Instance?.AddPlayer(this);
             TryPlaceAtSpawnPoint(SceneManager.GetActiveScene());
             RestoreSpawnedClientState();
+            PlayerCombatManager?.RestoreDeadSpotFromSaveIfNeeded();
             BindLocalPlayerSystems();
         }
 
@@ -586,6 +587,7 @@ namespace ZZ
         {
             TryPlaceAtSpawnPoint(scene);
             WorldSaveGameManager.Instance?.TryApplyLoadedCharacterData(this);
+            PlayerCombatManager?.RestoreDeadSpotFromSaveIfNeeded();
         }
 
         private void TryPlaceAtSpawnPoint(Scene scene)

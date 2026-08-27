@@ -61,5 +61,19 @@ namespace ZZ
             return m_sitesOfGrace.Find(
                 site => site.SiteOfGraceID == siteOfGraceID);
         }
+
+        /// <summary>Finds the saved checkpoint or falls back to the first valid Site.</summary>
+        public SiteOfGraceInteractable GetRespawnSiteOfGrace(
+            int preferredSiteOfGraceID)
+        {
+            m_sitesOfGrace.RemoveAll(site => site == null);
+            SiteOfGraceInteractable preferredSite =
+                GetSiteOfGraceByID(preferredSiteOfGraceID);
+            return preferredSite != null
+                ? preferredSite
+                : m_sitesOfGrace.Count > 0
+                    ? m_sitesOfGrace[0]
+                    : null;
+        }
     }
 }

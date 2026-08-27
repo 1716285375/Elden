@@ -24,7 +24,8 @@ namespace ZZ
         private const int k_ComplexItemDataVersion = 8;
         private const int k_CharacterCreationDataVersion = 9;
         private const int k_LevelUpDataVersion = 10;
-        private const int k_CurrentDataVersion = 10;
+        private const int k_DeadSpotDataVersion = 11;
+        private const int k_CurrentDataVersion = 11;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -41,6 +42,12 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_intelligence = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_faith = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_runes;
+        [SerializeField] private bool m_hasDeadSpot;
+        [SerializeField] private float m_deadSpotPositionX;
+        [SerializeField] private float m_deadSpotPositionY;
+        [SerializeField] private float m_deadSpotPositionZ;
+        [SerializeField, Min(0)] private int m_deadSpotRuneCount;
+        [SerializeField, Min(0)] private int m_lastSiteOfGraceRestedAt;
         [SerializeField, Min(0f)] private float m_currentHealth = k_DefaultCurrentHealth;
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
@@ -198,6 +205,48 @@ namespace ZZ
         {
             get => m_runes;
             set => m_runes = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets whether an unclaimed Rune recovery point exists.</summary>
+        public bool HasDeadSpot
+        {
+            get => m_hasDeadSpot;
+            set => m_hasDeadSpot = value;
+        }
+
+        /// <summary>Gets or sets the saved Dead Spot X coordinate.</summary>
+        public float DeadSpotPositionX
+        {
+            get => m_deadSpotPositionX;
+            set => m_deadSpotPositionX = value;
+        }
+
+        /// <summary>Gets or sets the saved Dead Spot Y coordinate.</summary>
+        public float DeadSpotPositionY
+        {
+            get => m_deadSpotPositionY;
+            set => m_deadSpotPositionY = value;
+        }
+
+        /// <summary>Gets or sets the saved Dead Spot Z coordinate.</summary>
+        public float DeadSpotPositionZ
+        {
+            get => m_deadSpotPositionZ;
+            set => m_deadSpotPositionZ = value;
+        }
+
+        /// <summary>Gets or sets the Rune count held by the saved Dead Spot.</summary>
+        public int DeadSpotRuneCount
+        {
+            get => m_deadSpotRuneCount;
+            set => m_deadSpotRuneCount = Mathf.Max(0, value);
+        }
+
+        /// <summary>Gets or sets the last Site of Grace used as a checkpoint.</summary>
+        public int LastSiteOfGraceRestedAt
+        {
+            get => m_lastSiteOfGraceRestedAt;
+            set => m_lastSiteOfGraceRestedAt = Mathf.Max(0, value);
         }
 
         public float CurrentHealth
@@ -737,6 +786,16 @@ namespace ZZ
             if (m_dataVersion < k_LevelUpDataVersion)
             {
                 m_runes = 0;
+            }
+
+            if (m_dataVersion < k_DeadSpotDataVersion)
+            {
+                m_hasDeadSpot = false;
+                m_deadSpotPositionX = 0f;
+                m_deadSpotPositionY = 0f;
+                m_deadSpotPositionZ = 0f;
+                m_deadSpotRuneCount = 0;
+                m_lastSiteOfGraceRestedAt = 0;
             }
 
             m_bosses ??= new List<BossSaveData>();

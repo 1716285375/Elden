@@ -18,6 +18,11 @@ namespace ZZ
 
         private readonly List<PlayerManager> m_players = new();
 
+        [Header("HOST REVIVAL")]
+        [SerializeField, Min(0f)] private float m_hostReviveDelaySeconds = 5f;
+
+        private Coroutine m_revivalCoroutine;
+
         /// <summary>Gets the persistent active-player session instance.</summary>
         public static WorldGameSessionManager Instance => s_instance;
 
@@ -46,6 +51,7 @@ namespace ZZ
 
         private void OnDisable()
         {
+            StopRevivalCoroutine();
             if (NetworkManager.Singleton != null)
             {
                 NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
@@ -79,6 +85,78 @@ namespace ZZ
         public void RemovePlayer(PlayerManager player)
         {
             m_players.Remove(player);
+        }
+
+        /// <summary>Starts one delayed revival for the locally owned Host player.</summary>
+        public void ReviveHost()
+        {
+            ReviveHost(FindHostPlayer());
+        }
+
+        /// <summary>Restarts the delayed revival for the supplied Host-owned player.</summary>
+        public void ReviveHost(PlayerManager hostPlayer)
+        {
+            if (NetworkManager.Singleton?.IsHost != true ||
+                hostPlayer == null ||
+                !hostPlayer.IsOwner ||
+                !hostPlayer.IsServer ||
+                !hostPlayer.IsDead)
+            {
+                return;
+            }
+
+            StopRevivalCoroutine();
+            m_revivalCoroutine = StartCoroutine(
+                ReviveHostCoroutine(hostPlayer));
+        }
+
+        private IEnumerator ReviveHostCoroutine(PlayerManager hostPlayer)
+        {
+            yield return new WaitForSecondsRealtime(m_hostReviveDelaySeconds);
+
+            PlayerUILoadingScreenManager loadingScreen =
+                PlayerUIManager.Instance?.PlayerUILoadingScreenManager;
+            loadingScreen?.ActivateLoadingScreen();
+            yield return null;
+
+            if (hostPlayer != null && hostPlayer.IsOwner && hostPlayer.IsDead)
+            {
+                hostPlayer.ReviveCharacter();
+                CharacterSaveData saveData =
+                    WorldSaveGameManager.Instance?.CurrentCharacterData;
+                SiteOfGraceInteractable respawnSite =
+                    WorldObjectManager.Instance?.GetRespawnSiteOfGrace(
+                        saveData?.LastSiteOfGraceRestedAt ?? 0);
+                respawnSite?.TeleportLocalPlayer();
+
+                WorldSaveGameManager saveGameManager =
+                    WorldSaveGameManager.Instance;
+                if (saveGameManager?.CanSaveGame == true)
+                {
+                    saveGameManager.SaveGame();
+                }
+            }
+
+            loadingScreen?.DeactivateLoadingScreen();
+            m_revivalCoroutine = null;
+        }
+
+        private PlayerManager FindHostPlayer()
+        {
+            RemoveNullPlayers();
+            return m_players.Find(player =>
+                player.IsOwner && player.IsServer);
+        }
+
+        private void StopRevivalCoroutine()
+        {
+            if (m_revivalCoroutine == null)
+            {
+                return;
+            }
+
+            StopCoroutine(m_revivalCoroutine);
+            m_revivalCoroutine = null;
         }
 
         private void OnClientConnected(ulong clientId)

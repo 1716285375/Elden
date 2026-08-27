@@ -9,6 +9,7 @@ namespace ZZ
             "Effects/Take Blocked Damage Effect";
         private const string k_CriticalDamageEffectResourcePath =
             "Effects/Take Critical Damage Effect";
+        private const string k_DeadSpotResourcePath = "Effects/Dead Spot";
 
         private static WorldCharacterEffectsManager s_instance;
 
@@ -20,6 +21,7 @@ namespace ZZ
         [Header("Quick Slot Effects")]
         [SerializeField] private GameObject m_healingFlaskVFX;
         [SerializeField] private GameObject m_focusFlaskVFX;
+        [SerializeField] private GameObject m_deadSpotVFX;
 
         public static WorldCharacterEffectsManager Instance => s_instance;
         public TakeDamageEffect TakeDamageEffect => m_takeDamageEffect;
@@ -33,6 +35,9 @@ namespace ZZ
         public GameObject FocusFlaskVFX => m_focusFlaskVFX != null
             ? m_focusFlaskVFX
             : m_healingFlaskVFX;
+        /// <summary>Gets the networked Rune recovery-point presentation.</summary>
+        public GameObject DeadSpotVFX => m_deadSpotVFX ??=
+            Resources.Load<GameObject>(k_DeadSpotResourcePath);
 
         /// <summary>
         /// Gets the authored instant effects in their stable identifier order.

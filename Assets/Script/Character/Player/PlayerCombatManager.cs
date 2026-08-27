@@ -1,4 +1,7 @@
+using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ZZ
 {
@@ -29,6 +32,8 @@ namespace ZZ
         private ProjectileSlot m_currentProjectileSlot;
         private QuickSlotItem m_currentQuickSlotItem;
         private bool m_isUsingItem;
+        private Coroutine m_restoreDeadSpotRoutine;
+        private PickupRunesInteractable m_activeDeadSpot;
 
         /// <summary>Gets the weapon currently selected by the player's action hand.</summary>
         public WeaponItem CurrentWeaponBeingUsed => ResolveCurrentWeapon();
@@ -73,6 +78,21 @@ namespace ZZ
             m_player = GetComponent<PlayerManager>();
         }
 
+        private void OnEnable()
+        {
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            if (m_restoreDeadSpotRoutine != null)
+            {
+                StopCoroutine(m_restoreDeadSpotRoutine);
+                m_restoreDeadSpotRoutine = null;
+            }
+        }
+
         private void Update()
         {
             if (!IsChargingSpell ||
@@ -90,6 +110,118 @@ namespace ZZ
 
             m_hasReachedFullSpellCharge = true;
             m_player.PlayerNetworkManager?.SetSpellFullyChargedState(true);
+        }
+
+        /// <summary>Creates one Host-owned Rune recovery point at a death position.</summary>
+        public bool CreateDeadSpot(
+            Vector3 position,
+            int runeCount,
+            bool removePlayersRunes = true)
+        {
+            NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager?.IsHost != true ||
+                m_player == null ||
+                !m_player.IsOwner ||
+                runeCount <= 0)
+            {
+                return false;
+            }
+
+            GameObject deadSpotPrefab =
+                WorldCharacterEffectsManager.Instance?.DeadSpotVFX;
+            if (deadSpotPrefab == null)
+            {
+                Debug.LogError(
+                    "WorldCharacterEffectsManager is missing the Dead Spot prefab.",
+                    this);
+                return false;
+            }
+
+            GameObject deadSpotObject = Instantiate(
+                deadSpotPrefab,
+                position,
+                Quaternion.identity);
+            NetworkObject networkObject =
+                deadSpotObject.GetComponent<NetworkObject>();
+            PickupRunesInteractable deadSpot =
+                deadSpotObject.GetComponent<PickupRunesInteractable>();
+            if (networkObject == null || deadSpot == null)
+            {
+                Debug.LogError(
+                    "The Dead Spot prefab requires NetworkObject and PickupRunesInteractable.",
+                    deadSpotObject);
+                Destroy(deadSpotObject);
+                return false;
+            }
+
+            networkObject.Spawn(true);
+            if (!deadSpot.InitializeDeadSpot(runeCount, m_player.OwnerClientId))
+            {
+                networkObject.Despawn(true);
+                return false;
+            }
+
+            m_activeDeadSpot = deadSpot;
+            if (!removePlayersRunes)
+            {
+                return true;
+            }
+
+            m_player.PlayerStatsManager?.AddRunes(-runeCount);
+            WorldSaveGameManager saveGameManager = WorldSaveGameManager.Instance;
+            saveGameManager?.RecordDeadSpot(position, runeCount, false);
+            if (saveGameManager?.CanSaveGame == true)
+            {
+                saveGameManager.SaveGame();
+            }
+
+            return true;
+        }
+
+        /// <summary>Restores a saved Dead Spot after the gameplay Scene becomes active.</summary>
+        public void RestoreDeadSpotFromSaveIfNeeded()
+        {
+            if (m_restoreDeadSpotRoutine == null)
+            {
+                m_restoreDeadSpotRoutine = StartCoroutine(
+                    RestoreDeadSpotAfterSceneChange());
+            }
+        }
+
+        private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
+        {
+            if (activeScene.buildIndex > 0)
+            {
+                RestoreDeadSpotFromSaveIfNeeded();
+            }
+        }
+
+        private IEnumerator RestoreDeadSpotAfterSceneChange()
+        {
+            yield return null;
+
+            m_restoreDeadSpotRoutine = null;
+            CharacterSaveData saveData =
+                WorldSaveGameManager.Instance?.CurrentCharacterData;
+            if (NetworkManager.Singleton?.IsHost != true ||
+                m_player == null ||
+                !m_player.IsOwner ||
+                SceneManager.GetActiveScene().buildIndex <= 0 ||
+                m_activeDeadSpot != null ||
+                saveData?.HasDeadSpot != true ||
+                saveData.DeadSpotRuneCount <= 0)
+            {
+                yield break;
+            }
+
+            Vector3 deadSpotPosition = new Vector3(
+                saveData.DeadSpotPositionX,
+                saveData.DeadSpotPositionY,
+                saveData.DeadSpotPositionZ);
+            CreateDeadSpot(
+                deadSpotPosition,
+                saveData.DeadSpotRuneCount,
+                false);
         }
 
         /// <summary>
