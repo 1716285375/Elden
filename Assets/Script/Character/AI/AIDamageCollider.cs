@@ -40,6 +40,7 @@ namespace ZZ
             }
 
             base.Damage(target, contactPoint, wasBlocked);
+            m_combatManager.RecordSuccessfulHit(target);
         }
     }
 }

@@ -23,6 +23,11 @@ namespace ZZ
         [Header("Boss Persistence")]
         [SerializeField, Min(0)] private int m_bossID;
 
+        [Header("Manual Stats")]
+        [SerializeField] private bool m_manuallySetStats;
+        [SerializeField, Min(1f)] private float m_maximumHealth = 100f;
+        [SerializeField, Min(1f)] private float m_maximumStamina = 100f;
+
         private AICharacterManager m_instantiatedCharacter;
         private bool m_hasResolvedSpawn;
 
@@ -123,6 +128,13 @@ namespace ZZ
                 m_isSleeping,
                 m_willInvestigateSound);
             instance.GetComponent<NetworkObject>().Spawn(true);
+            if (m_manuallySetStats)
+            {
+                character.ApplyManuallyConfiguredStats(
+                    m_maximumHealth,
+                    m_maximumStamina);
+            }
+
             character.InitializeAsInactive();
 
             m_instantiatedCharacter = character;

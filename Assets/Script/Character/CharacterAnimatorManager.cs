@@ -248,6 +248,25 @@ namespace ZZ
                 Mathf.Abs(horizontalValue) + Mathf.Abs(verticalValue) > 0.1f);
         }
 
+        /// <summary>
+        /// Applies unsnapped locomotion values immediately for replicated AI blend trees.
+        /// </summary>
+        public void SetAnimatorMovementParameters(
+            float horizontalValue,
+            float verticalValue)
+        {
+            if (m_animator == null)
+            {
+                return;
+            }
+
+            m_animator.SetFloat(s_horizontalParameter, horizontalValue);
+            m_animator.SetFloat(s_verticalParameter, verticalValue);
+            m_animator.SetBool(
+                s_isMovingParameter,
+                Mathf.Abs(horizontalValue) + Mathf.Abs(verticalValue) > 0.1f);
+        }
+
         /// <summary>Applies the replicated sustained block condition to the Animator.</summary>
         public void SetBlockingState(bool isBlocking)
         {

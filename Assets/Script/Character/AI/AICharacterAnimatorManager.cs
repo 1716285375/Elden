@@ -127,10 +127,16 @@ namespace ZZ
                 ?.PlayStanceBrokenSoundEffect();
         }
 
-        /// <summary>Receives the shared combo event; AI attacks do not queue combos.</summary>
+        /// <summary>Animation Event: opens the server-authoritative AI combo window.</summary>
         public void EnableCanDoCombo()
         {
-            // Authored undead clips share player events, but AI attacks are single-step.
+            m_combatManager?.EnableCanDoCombo();
+        }
+
+        /// <summary>Animation Event: closes the AI combo window and clears hit confirmation.</summary>
+        public void DisableCanDoCombo()
+        {
+            m_combatManager?.DisableCanDoCombo();
         }
 
         private void PlayIdleBehaviorAnimation(

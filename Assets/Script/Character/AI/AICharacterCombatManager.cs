@@ -29,7 +29,9 @@ namespace ZZ
         private readonly List<PlayerManager> m_playersWithinActivationRange = new();
 
         private AICharacterManager m_aiCharacter;
-        private BossAttackData m_currentBossAttack;
+        private AICharacterAttackAction m_currentAttackAction;
+        private bool m_canPerformCombo;
+        private bool m_hasHitTargetDuringCombo;
         private int m_currentStance;
         private float m_stanceRegenerationTimer;
         private float m_stanceTickTimer;
@@ -39,6 +41,10 @@ namespace ZZ
         public int CurrentStance => m_currentStance;
         public float StanceRegenerationTimer => m_stanceRegenerationTimer;
         public bool IgnoreStanceBreak => m_ignoreStanceBreak;
+        public AICharacterAttackAction CurrentAttackAction =>
+            m_currentAttackAction;
+        public bool CanPerformCombo => m_canPerformCombo;
+        public bool HasHitTargetDuringCombo => m_hasHitTargetDuringCombo;
 
         /// <summary>Gets the number of valid players currently keeping this AI active.</summary>
         public int PlayersWithinActivationRangeCount
@@ -130,7 +136,7 @@ namespace ZZ
         }
 
         /// <summary>Starts one server-selected data-driven attack.</summary>
-        public bool PerformAttack(BossAttackData bossAttack)
+        public bool PerformAttack(AICharacterAttackAction attackAction)
         {
             if (m_aiCharacter == null ||
                 !m_aiCharacter.IsServer ||
@@ -140,16 +146,40 @@ namespace ZZ
                 return false;
             }
 
-            m_currentBossAttack = bossAttack;
+            DisableCanDoCombo();
+            m_currentAttackAction = attackAction;
             PrepareAttackDamage();
-            AttackType attackType = bossAttack != null
-                ? bossAttack.AttackType
+            AttackType attackType = attackAction != null
+                ? attackAction.AttackType
                 : AttackType.LightAttack01;
             m_aiCharacter.CharacterNetworkManager?.SetParryableState(
-                bossAttack?.IsParryable ?? m_defaultAttackIsParryable);
+                attackAction?.IsParryable ?? m_defaultAttackIsParryable);
             ReplicateAttack(attackType);
             m_aiCharacter.CharacterNetworkManager
                 ?.NotifyServerOfAttackActionServerRpc(attackType);
+            return m_aiCharacter.IsPerformingAction;
+        }
+
+        /// <summary>Transitions from an active attack into its authored combo action.</summary>
+        public bool PerformCombo(AICharacterAttackAction comboAction)
+        {
+            if (m_aiCharacter == null ||
+                !m_aiCharacter.IsServer ||
+                m_aiCharacter.IsDead ||
+                !m_canPerformCombo ||
+                comboAction == null)
+            {
+                return false;
+            }
+
+            DisableCanDoCombo();
+            m_currentAttackAction = comboAction;
+            PrepareAttackDamage();
+            m_aiCharacter.CharacterNetworkManager?.SetParryableState(
+                comboAction.IsParryable);
+            ReplicateAttack(comboAction.AttackType);
+            m_aiCharacter.CharacterNetworkManager
+                ?.NotifyServerOfAttackActionServerRpc(comboAction.AttackType);
             return m_aiCharacter.IsPerformingAction;
         }
 
@@ -157,7 +187,24 @@ namespace ZZ
         public void PrepareAttackDamage()
         {
             m_charactersDamaged.Clear();
+            m_hasHitTargetDuringCombo = false;
             ConfigureDamageColliders();
+        }
+
+        /// <summary>Opens the authored animation-frame window for one combo transition.</summary>
+        public void EnableCanDoCombo()
+        {
+            if (m_aiCharacter != null && m_aiCharacter.IsServer)
+            {
+                m_canPerformCombo = true;
+            }
+        }
+
+        /// <summary>Closes the combo window and clears its per-attack hit confirmation.</summary>
+        public void DisableCanDoCombo()
+        {
+            m_canPerformCombo = false;
+            m_hasHitTargetDuringCombo = false;
         }
 
         /// <summary>Opens the left-hand active frames on the server.</summary>
@@ -195,6 +242,13 @@ namespace ZZ
         public override void CloseAllDamageColliders()
         {
             CloseDamageColliders();
+        }
+
+        /// <inheritdoc />
+        public override void ResetActionState()
+        {
+            base.ResetActionState();
+            DisableCanDoCombo();
         }
 
         /// <summary>Records the player eligible for a Rune award if this hit causes death.</summary>
@@ -270,6 +324,18 @@ namespace ZZ
                 target != m_aiCharacter &&
                 !target.IsDead &&
                 m_charactersDamaged.Add(target);
+        }
+
+        internal void RecordSuccessfulHit(CharacterManager target)
+        {
+            if (m_aiCharacter != null &&
+                m_aiCharacter.IsServer &&
+                target != null &&
+                target != m_aiCharacter &&
+                !target.IsDead)
+            {
+                m_hasHitTargetDuringCombo = true;
+            }
         }
 
         private void HandleStanceBreak()
@@ -376,15 +442,15 @@ namespace ZZ
             }
 
             damageCollider.SetDamageSource(m_aiCharacter);
-            if (m_currentBossAttack != null)
+            if (m_currentAttackAction != null)
             {
                 damageCollider.SetDamageValues(
-                    m_currentBossAttack.PhysicalDamage,
-                    m_currentBossAttack.MagicDamage,
-                    m_currentBossAttack.FireDamage,
-                    m_currentBossAttack.LightningDamage,
-                    m_currentBossAttack.HolyDamage,
-                    m_currentBossAttack.PoiseDamage);
+                    m_currentAttackAction.PhysicalDamage,
+                    m_currentAttackAction.MagicDamage,
+                    m_currentAttackAction.FireDamage,
+                    m_currentAttackAction.LightningDamage,
+                    m_currentAttackAction.HolyDamage,
+                    m_currentAttackAction.PoiseDamage);
                 return;
             }
 

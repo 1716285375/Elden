@@ -8,6 +8,7 @@ namespace ZZ
         internal override void Enter(AICharacterManager character)
         {
             character.SetNavigationEnabled(true);
+            character.ResetMovementAnimationForPursuit();
         }
 
         internal override AICharacterStateId Tick(
