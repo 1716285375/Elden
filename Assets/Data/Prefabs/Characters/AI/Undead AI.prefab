@@ -559,9 +559,9 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.38
   m_Speed: 2.4
-  m_Acceleration: 12
+  m_Acceleration: 16
   avoidancePriority: 50
-  m_AngularSpeed: 0
+  m_AngularSpeed: 720
   m_StoppingDistance: 1.65
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -720,6 +720,11 @@ MonoBehaviour:
     m_InternalValue: 0
   m_networkPositionSmoothTime: 0.1
   m_networkRotationSmoothTime: 0.1
+  IsActive:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 1
   CurrentAIState:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -990,6 +995,19 @@ MonoBehaviour:
   m_combatStanceDistance: 3.2
   m_attackDistance: 2.1
   m_attackCooldown: 2.6
+  m_defaultAttackAction: {fileID: 11400000, guid: 888d9660d9629ba4fb4dc3cf4c63c8b1, type: 2}
+  m_willCircleTarget: 0
+  m_combatStrafeAnimationAmount: 0.5
+  m_combatStrafeSpeed: 1.35
+  m_strafeObstacleBuffer: 0.15
+  m_strafeObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  m_canBlock: 0
+  m_percentageOfTimeWillBlock: 55
+  m_canPerformCombo: 0
+  m_chanceToPerformCombo: 65
+  m_onlyPerformComboIfInitialAttackHits: 1
   m_turningSpeed: 300
   m_pivotAngle: 70
   m_pivotCooldown: 1.1
@@ -1383,7 +1401,7 @@ PrefabInstance:
       addedObject: {fileID: 4933833250192825753}
     - targetCorrespondingSourceObject: {fileID: 1709254077376921, guid: 041bad5155fb64b45aa5c4dc91208ca0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1178455848550768128}
+      addedObject: {fileID: 6197682158423663551}
   m_SourcePrefab: {fileID: 100100000, guid: 041bad5155fb64b45aa5c4dc91208ca0, type: 3}
 --- !u!1 &2363106722413110016 stripped
 GameObject:
@@ -1532,7 +1550,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1178455848550768128
+--- !u!114 &6197682158423663551
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1541,15 +1559,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 2363106722413110016}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0d495050e70b184fb91b0e3cdfc134b, type: 3}
+  m_Script: {fileID: 11500000, guid: a42c234e65fc1f84b8d5cb78c5a59077, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterSoundFXManager
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSoundFXManager
   m_audioSource: {fileID: 4933833250192825753}
   m_damageGrunts:
   - {fileID: 8300000, guid: 46b41ec07d6b9384a89210c358887d8d, type: 3}
   - {fileID: 8300000, guid: 1ce785b76b009644cb3deaee788ea358, type: 3}
   - {fileID: 8300000, guid: 90e0d6876454d44479a5da7c85bcaeec, type: 3}
   m_footstepSounds: []
+  m_blockingSoundEffects:
+  - {fileID: 8300000, guid: 52506b408dce06c4fb071d642c0dc45a, type: 3}
+  - {fileID: 8300000, guid: 921c8234df7c3204385063ac71e354d3, type: 3}
+  - {fileID: 8300000, guid: 78d820b8eab284c458ef4b260d752b6a, type: 3}
 --- !u!4 &2367889404833833670 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4799762105739359, guid: 041bad5155fb64b45aa5c4dc91208ca0, type: 3}

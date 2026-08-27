@@ -9,17 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efeb866ced2838d42b5d28302ab5c8cf, type: 3}
-  m_Name: Watcher Claw
-  m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
-  m_attackType: 0
+  m_Script: {fileID: 11500000, guid: 794448893d67eb64ca608ce9ad394be7, type: 3}
+  m_Name: Undead Swipe 02
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterAttackAction
+  m_attackType: 3
   m_isParryable: 1
-  m_minimumRange: 0.6
-  m_maximumRange: 2.35
-  m_selectionWeight: 3
-  m_recoveryTime: 2.15
-  m_comboAction: {fileID: 11400000, guid: 67942f297ada2324e9e169e725e270dd, type: 2}
-  m_physicalDamage: 36
+  m_minimumRange: 0.45
+  m_maximumRange: 2.75
+  m_selectionWeight: 1
+  m_recoveryTime: 1.55
+  m_comboAction: {fileID: 0}
+  m_physicalDamage: 30
   m_magicDamage: 0
   m_fireDamage: 0
   m_lightningDamage: 0

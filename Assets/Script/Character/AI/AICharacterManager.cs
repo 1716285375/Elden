@@ -32,6 +32,24 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_combatStanceDistance = 3.2f;
         [SerializeField, Min(0f)] private float m_attackDistance = 2.1f;
         [SerializeField, Min(0f)] private float m_attackCooldown = 2.6f;
+        [SerializeField] private AICharacterAttackAction m_defaultAttackAction;
+
+        [Header("Combat Movement")]
+        [SerializeField] private bool m_willCircleTarget;
+        [SerializeField, Range(0f, 1f)] private float
+            m_combatStrafeAnimationAmount = 0.5f;
+        [SerializeField, Min(0f)] private float m_combatStrafeSpeed = 1.35f;
+        [SerializeField, Min(0f)] private float m_strafeObstacleBuffer = 0.15f;
+        [SerializeField] private LayerMask m_strafeObstacleLayers = 1;
+
+        [Header("Combat Decisions")]
+        [SerializeField] private bool m_canBlock;
+        [SerializeField, Range(0f, 100f)] private float
+            m_percentageOfTimeWillBlock = 75f;
+        [SerializeField] private bool m_canPerformCombo;
+        [SerializeField, Range(0f, 100f)] private float
+            m_chanceToPerformCombo = 50f;
+        [SerializeField] private bool m_onlyPerformComboIfInitialAttackHits = true;
 
         [Header("Turning")]
         [SerializeField, Min(0f)] private float m_turningSpeed = 300f;
@@ -52,6 +70,7 @@ namespace ZZ
         [SerializeField] private AICharacterInventoryManager m_aiInventoryManager;
 
         private readonly RaycastHit[] m_sightHits = new RaycastHit[16];
+        private readonly Collider[] m_strafeObstacleHits = new Collider[16];
 
         private AICharacterStateMachine m_stateMachine;
         private AIActivationBeacon m_activationBeacon;
@@ -66,6 +85,9 @@ namespace ZZ
         private bool m_repeatPatrol;
         private bool m_startsSleeping;
         private bool m_willInvestigateSound = true;
+        private bool m_useExplicitMovementAnimation;
+        private float m_horizontalMovementAnimation;
+        private float m_verticalMovementAnimation;
 
         /// <summary>Gets the server-selected player target.</summary>
         public PlayerManager CurrentTarget => m_currentTarget;
@@ -118,6 +140,23 @@ namespace ZZ
             !IsPerformingAction &&
             Time.time >= m_nextAttackTime &&
             IsAttackAvailableAtTargetDistance();
+        internal bool WillCircleTarget => m_willCircleTarget;
+        internal float CombatStrafeAnimationAmount =>
+            m_combatStrafeAnimationAmount;
+        internal bool CanBlock => m_canBlock;
+        internal float PercentageOfTimeWillBlock =>
+            m_percentageOfTimeWillBlock;
+        internal bool CanPerformCombo => m_canPerformCombo;
+        internal float ChanceToPerformCombo => m_chanceToPerformCombo;
+        internal bool OnlyPerformComboIfInitialAttackHits =>
+            m_onlyPerformComboIfInitialAttackHits;
+        internal AICharacterAttackAction CurrentAttackAction =>
+            m_aiCombatManager?.CurrentAttackAction;
+        internal bool CanEnterComboWindow =>
+            m_aiCombatManager?.CanPerformCombo == true;
+        internal bool HasHitTargetDuringCombo =>
+            m_aiCombatManager?.HasHitTargetDuringCombo == true;
+        internal float TargetDistance => Mathf.Sqrt(GetTargetDistanceSquared());
 
         protected override void Awake()
         {
@@ -132,12 +171,13 @@ namespace ZZ
             m_aiInventoryManager ??= GetComponent<AICharacterInventoryManager>();
             m_bossCharacter = GetComponent<BossCharacterManager>();
             m_investigateSoundState = new InvestigateSoundAIState();
+            AttackAIState attackState = new AttackAIState();
             m_stateMachine = new AICharacterStateMachine(
                 this,
                 new IdleAIState(),
                 new PursueTargetAIState(),
-                new CombatStanceAIState(),
-                new AttackAIState(),
+                new CombatStanceAIState(attackState),
+                attackState,
                 new DeadAIState(),
                 m_investigateSoundState);
         }
@@ -167,6 +207,7 @@ namespace ZZ
             m_originSpawner?.NotifyCharacterDespawned(this);
             DestroyActivationBeacon();
             CloseAttackDamageColliders();
+            SetBlockingState(false);
             if (m_navMeshAgent != null)
             {
                 m_navMeshAgent.enabled = false;
@@ -263,6 +304,10 @@ namespace ZZ
             m_aiNetworkManager.CurrentHealth.Value = Mathf.Max(
                 0f,
                 m_aiNetworkManager.MaxHealth.Value);
+            m_aiNetworkManager.CurrentStamina.Value = Mathf.Max(
+                0f,
+                m_aiNetworkManager.MaxStamina.Value);
+            SetBlockingState(false);
             if (wasDead)
             {
                 m_aiNetworkManager.IsDead.Value = false;
@@ -324,6 +369,27 @@ namespace ZZ
             m_repeatPatrol = patrolPath != null && repeatPatrol;
             m_startsSleeping = startsSleeping;
             m_willInvestigateSound = willInvestigateSound;
+        }
+
+        /// <summary>Overrides spawned Health and Stamina for one server-owned AI instance.</summary>
+        public bool ApplyManuallyConfiguredStats(
+            float maximumHealth,
+            float maximumStamina)
+        {
+            if (!IsSpawned ||
+                !IsServer ||
+                m_aiNetworkManager?.IsOwner != true)
+            {
+                return false;
+            }
+
+            float resolvedHealth = Mathf.Max(1f, maximumHealth);
+            float resolvedStamina = Mathf.Max(1f, maximumStamina);
+            m_aiNetworkManager.MaxHealth.Value = resolvedHealth;
+            m_aiNetworkManager.CurrentHealth.Value = resolvedHealth;
+            m_aiNetworkManager.MaxStamina.Value = resolvedStamina;
+            m_aiNetworkManager.CurrentStamina.Value = resolvedStamina;
+            return true;
         }
 
         /// <summary>Creates this AI's lightweight server-side wake beacon.</summary>
@@ -409,6 +475,7 @@ namespace ZZ
             }
 
             CloseAttackDamageColliders();
+            SetBlockingState(false);
             ClearTarget();
             StopMoving();
             m_stateMachine?.ChangeState(AICharacterStateId.Idle);
@@ -520,6 +587,7 @@ namespace ZZ
                 return;
             }
 
+            UseNavigationMovementAnimation();
             m_navMeshAgent.isStopped = false;
             m_navMeshAgent.SetDestination(m_currentTarget.transform.position);
             Vector3 facingDirection = m_navMeshAgent.desiredVelocity;
@@ -529,6 +597,57 @@ namespace ZZ
             }
 
             RotateTowards(facingDirection, true);
+        }
+
+        internal void MoveAroundTarget(float strafeAmount, float deltaTime)
+        {
+            if (!HasValidTarget || !CanUseNavMeshAgent())
+            {
+                StopMoving();
+                return;
+            }
+
+            if (IsStrafePathBlocked())
+            {
+                MoveTowardsTarget();
+                SetMovementAnimationParameters(0f, Mathf.Abs(strafeAmount));
+                return;
+            }
+
+            m_navMeshAgent.isStopped = true;
+            m_navMeshAgent.ResetPath();
+            Vector3 strafeDirection = transform.right * Mathf.Sign(strafeAmount);
+            m_navMeshAgent.Move(
+                strafeDirection * m_combatStrafeSpeed * Mathf.Max(0f, deltaTime));
+            FaceTarget();
+            SetMovementAnimationParameters(strafeAmount, 0f);
+        }
+
+        internal bool IsStrafePathBlocked()
+        {
+            float characterRadius = m_bodyCollider != null
+                ? m_bodyCollider.radius
+                : 0.35f;
+            int hitCount = Physics.OverlapSphereNonAlloc(
+                LockOnTransform.position,
+                characterRadius + m_strafeObstacleBuffer,
+                m_strafeObstacleHits,
+                m_strafeObstacleLayers,
+                QueryTriggerInteraction.Ignore);
+            for (int hitIndex = 0; hitIndex < hitCount; hitIndex++)
+            {
+                Collider hit = m_strafeObstacleHits[hitIndex];
+                if (hit == null ||
+                    hit.transform.IsChildOf(transform) ||
+                    hit.GetComponentInParent<CharacterManager>() != null)
+                {
+                    continue;
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         internal void SetNavigationEnabled(bool isEnabled)
@@ -612,6 +731,7 @@ namespace ZZ
                 return false;
             }
 
+            UseNavigationMovementAnimation();
             m_navMeshAgent.isStopped = false;
             return m_navMeshAgent.SetDestination(destination);
         }
@@ -675,6 +795,7 @@ namespace ZZ
 
         internal void StopMoving()
         {
+            SetMovementAnimationParameters(0f, 0f);
             if (!CanUseNavMeshAgent())
             {
                 return;
@@ -682,6 +803,35 @@ namespace ZZ
 
             m_navMeshAgent.isStopped = true;
             m_navMeshAgent.ResetPath();
+        }
+
+        internal void ResetMovementAnimationForPursuit()
+        {
+            m_useExplicitMovementAnimation = false;
+            PublishMovementAnimation(0f, 1f);
+        }
+
+        internal void SetMovementAnimationParameters(
+            float horizontalValue,
+            float verticalValue)
+        {
+            m_useExplicitMovementAnimation = true;
+            m_horizontalMovementAnimation = Mathf.Clamp(
+                horizontalValue,
+                -1f,
+                1f);
+            m_verticalMovementAnimation = Mathf.Clamp(
+                verticalValue,
+                -1f,
+                1f);
+        }
+
+        internal void SetBlockingState(bool isBlocking)
+        {
+            if (IsServer && m_aiNetworkManager?.IsOwner == true)
+            {
+                m_aiNetworkManager.SetBlockingState(isBlocking);
+            }
         }
 
         internal void FaceTarget()
@@ -701,17 +851,29 @@ namespace ZZ
                 return false;
             }
 
-            BossAttackData bossAttack = m_bossCharacter?.SelectAttack(
-                Mathf.Sqrt(GetTargetDistanceSquared()));
-            if (m_bossCharacter != null && bossAttack == null)
+            AICharacterAttackAction attackAction = m_bossCharacter != null
+                ? m_bossCharacter.SelectAttack(TargetDistance)
+                : m_defaultAttackAction;
+            if (m_bossCharacter != null && attackAction == null)
             {
                 return false;
             }
 
-            m_nextAttackTime = Time.time + (bossAttack != null
-                ? bossAttack.RecoveryTime
+            m_nextAttackTime = Time.time + (attackAction != null
+                ? attackAction.RecoveryTime
                 : m_attackCooldown);
-            return m_aiCombatManager.PerformAttack(bossAttack);
+            return m_aiCombatManager.PerformAttack(attackAction);
+        }
+
+        internal bool TryStartCombo(AICharacterAttackAction comboAction)
+        {
+            return m_aiCombatManager != null &&
+                m_aiCombatManager.PerformCombo(comboAction);
+        }
+
+        internal void DisableComboWindow()
+        {
+            m_aiCombatManager?.DisableCanDoCombo();
         }
 
         internal void CloseAttackDamageColliders()
@@ -984,6 +1146,11 @@ namespace ZZ
                 m_navMeshAgent.isOnNavMesh;
         }
 
+        private void UseNavigationMovementAnimation()
+        {
+            m_useExplicitMovementAnimation = false;
+        }
+
         private void UpdateMovementAnimation()
         {
             if (m_aiAnimatorManager == null || m_aiNetworkManager == null)
@@ -991,28 +1158,52 @@ namespace ZZ
                 return;
             }
 
-            float movementAmount;
+            float horizontalValue;
+            float verticalValue;
             if (IsServer)
             {
-                movementAmount = CanUseNavMeshAgent() && m_navMeshAgent.speed > 0f
-                    ? Mathf.Clamp01(m_navMeshAgent.velocity.magnitude / m_navMeshAgent.speed)
-                    : 0f;
-                if (m_aiNetworkManager.IsOwner)
+                if (m_useExplicitMovementAnimation)
                 {
-                    m_aiNetworkManager.HorizontalMovement.Value = 0f;
-                    m_aiNetworkManager.VerticalMovement.Value = movementAmount;
-                    m_aiNetworkManager.MoveAmount.Value = movementAmount;
+                    horizontalValue = m_horizontalMovementAnimation;
+                    verticalValue = m_verticalMovementAnimation;
                 }
+                else
+                {
+                    horizontalValue = 0f;
+                    verticalValue = CanUseNavMeshAgent() &&
+                        m_navMeshAgent.speed > 0f
+                            ? Mathf.Clamp01(
+                                m_navMeshAgent.velocity.magnitude /
+                                m_navMeshAgent.speed)
+                            : 0f;
+                }
+
+                PublishMovementAnimation(horizontalValue, verticalValue);
             }
             else
             {
-                movementAmount = m_aiNetworkManager.MoveAmount.Value;
+                horizontalValue = m_aiNetworkManager.HorizontalMovement.Value;
+                verticalValue = m_aiNetworkManager.VerticalMovement.Value;
             }
 
-            m_aiAnimatorManager.UpdateAnimatorMovementParameters(
-                0f,
-                movementAmount,
-                false);
+            m_aiAnimatorManager.SetAnimatorMovementParameters(
+                horizontalValue,
+                verticalValue);
+        }
+
+        private void PublishMovementAnimation(
+            float horizontalValue,
+            float verticalValue)
+        {
+            if (m_aiNetworkManager?.IsOwner != true)
+            {
+                return;
+            }
+
+            m_aiNetworkManager.HorizontalMovement.Value = horizontalValue;
+            m_aiNetworkManager.VerticalMovement.Value = verticalValue;
+            m_aiNetworkManager.MoveAmount.Value = Mathf.Clamp01(
+                Mathf.Abs(horizontalValue) + Mathf.Abs(verticalValue));
         }
     }
 }
