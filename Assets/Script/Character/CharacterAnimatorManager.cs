@@ -150,6 +150,18 @@ namespace ZZ
             Animator.StringToHash("Action Override.TwoHandJumpLightAttack");
         private static readonly int s_twoHandHeavyJumpingAttack01State =
             Animator.StringToHash("Action Override.TwoHandJumpHeavyStart");
+        private static readonly int s_dualAttack01State =
+            Animator.StringToHash("Action Override.Dual_Attack_01");
+        private static readonly int s_dualAttack02State =
+            Animator.StringToHash("Action Override.Dual_Attack_02");
+        private static readonly int s_dualJumpAttackState =
+            Animator.StringToHash("Action Override.Dual_Jump_Attack_Start");
+        private static readonly int s_dualRunAttackState =
+            Animator.StringToHash("Action Override.Dual_Run_Attack");
+        private static readonly int s_dualRollAttackState =
+            Animator.StringToHash("Action Override.Dual_Roll_Attack");
+        private static readonly int s_dualBackstepAttackState =
+            Animator.StringToHash("Action Override.Dual_BackStep_Attack");
 
         [SerializeField] private Animator m_animator;
 
@@ -838,6 +850,18 @@ namespace ZZ
                     return s_lightJumpingAttack01State;
                 case AttackType.HeavyJumpingAttack01:
                     return s_heavyJumpingAttack01State;
+                case AttackType.DualAttack01:
+                    return s_dualAttack01State;
+                case AttackType.DualAttack02:
+                    return s_dualAttack02State;
+                case AttackType.DualJumpAttack:
+                    return s_dualJumpAttackState;
+                case AttackType.DualRunAttack:
+                    return s_dualRunAttackState;
+                case AttackType.DualRollAttack:
+                    return s_dualRollAttackState;
+                case AttackType.DualBackstepAttack:
+                    return s_dualBackstepAttackState;
                 default:
                     return s_lightAttack01State;
             }
@@ -882,7 +906,10 @@ namespace ZZ
         {
             return attackType == AttackType.RunningAttack01 ||
                 attackType == AttackType.RollAttack01 ||
-                attackType == AttackType.BackStepAttack01;
+                attackType == AttackType.BackStepAttack01 ||
+                attackType == AttackType.DualRunAttack ||
+                attackType == AttackType.DualRollAttack ||
+                attackType == AttackType.DualBackstepAttack;
         }
 
         private IReadOnlyList<AnimationClip> GetDamageAnimations(

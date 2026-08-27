@@ -38,6 +38,30 @@ namespace ZZ
             m_player?.EquipmentManager?.CloseDamageCollider();
         }
 
+        /// <summary>Animation Event: opens the dual attack's main-hand hit window.</summary>
+        public void OpenMainHandDamageCollider()
+        {
+            m_player?.EquipmentManager?.OpenMainHandDamageCollider();
+        }
+
+        /// <summary>Animation Event: closes the dual attack's main-hand hit window.</summary>
+        public void CloseMainHandDamageCollider()
+        {
+            m_player?.EquipmentManager?.CloseMainHandDamageCollider();
+        }
+
+        /// <summary>Animation Event: opens the dual attack's off-hand hit window.</summary>
+        public void OpenOffHandDamageCollider()
+        {
+            m_player?.EquipmentManager?.OpenOffHandDamageCollider();
+        }
+
+        /// <summary>Animation Event: closes the dual attack's off-hand hit window.</summary>
+        public void CloseOffHandDamageCollider()
+        {
+            m_player?.EquipmentManager?.CloseOffHandDamageCollider();
+        }
+
         /// <summary>
         /// Forwards the attack animation event that drains attack stamina on the owner.
         /// </summary>

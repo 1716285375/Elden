@@ -67,6 +67,12 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_backStepAttack01DamageModifier = 1.15f;
         [SerializeField, Min(0f)] private float m_lightJumpingAttack01DamageModifier = 1f;
         [SerializeField, Min(0f)] private float m_heavyJumpingAttack01DamageModifier = 1.8f;
+        [SerializeField, Min(0f)] private float m_dualAttack01DamageModifier = 0.77f;
+        [SerializeField, Min(0f)] private float m_dualAttack02DamageModifier = 0.77f;
+        [SerializeField, Min(0f)] private float m_dualJumpAttackDamageModifier = 0.77f;
+        [SerializeField, Min(0f)] private float m_dualRunAttackDamageModifier = 0.77f;
+        [SerializeField, Min(0f)] private float m_dualRollAttackDamageModifier = 0.77f;
+        [SerializeField, Min(0f)] private float m_dualBackstepAttackDamageModifier = 0.77f;
         [SerializeField, Min(0f)] private float m_lightAttack01StaminaCostMultiplier = 1f;
         [SerializeField, Min(0f)] private float m_heavyAttack01StaminaCostMultiplier = 1f;
         [SerializeField, Min(0f)] private float m_chargedAttack01StaminaCostMultiplier = 1.5f;
@@ -206,6 +212,18 @@ namespace ZZ
                     return m_lightJumpingAttack01DamageModifier;
                 case AttackType.HeavyJumpingAttack01:
                     return m_heavyJumpingAttack01DamageModifier;
+                case AttackType.DualAttack01:
+                    return m_dualAttack01DamageModifier;
+                case AttackType.DualAttack02:
+                    return m_dualAttack02DamageModifier;
+                case AttackType.DualJumpAttack:
+                    return m_dualJumpAttackDamageModifier;
+                case AttackType.DualRunAttack:
+                    return m_dualRunAttackDamageModifier;
+                case AttackType.DualRollAttack:
+                    return m_dualRollAttackDamageModifier;
+                case AttackType.DualBackstepAttack:
+                    return m_dualBackstepAttackDamageModifier;
                 default:
                     return m_lightAttack01DamageModifier;
             }
@@ -232,6 +250,16 @@ namespace ZZ
                 case AttackType.HeavyJumpingAttack01:
                     return m_heavyAttack01StaminaCostMultiplier;
                 case AttackType.LightJumpingAttack01:
+                    return m_lightAttack01StaminaCostMultiplier;
+                case AttackType.DualRunAttack:
+                    return m_runningAttack01StaminaCostMultiplier;
+                case AttackType.DualRollAttack:
+                    return m_rollAttack01StaminaCostMultiplier;
+                case AttackType.DualBackstepAttack:
+                    return m_backStepAttack01StaminaCostMultiplier;
+                case AttackType.DualAttack01:
+                case AttackType.DualAttack02:
+                case AttackType.DualJumpAttack:
                     return m_lightAttack01StaminaCostMultiplier;
                 default:
                     return m_lightAttack01StaminaCostMultiplier;

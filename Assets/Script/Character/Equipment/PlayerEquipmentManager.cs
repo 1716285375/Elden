@@ -482,19 +482,7 @@ namespace ZZ
         public void OpenDamageCollider()
         {
             WeaponManager weaponManager = GetCurrentWeaponManager();
-            m_characterSoundFXManager?.PlayWeaponWhoosh(weaponManager?.Weapon);
-            if (m_player == null || !m_player.IsOwner)
-            {
-                return;
-            }
-
-            if (weaponManager == null)
-            {
-                return;
-            }
-
-            weaponManager.SetAttackType(m_player.PlayerCombatManager.CurrentAttackType);
-            weaponManager.OpenDamageCollider();
+            OpenDamageCollider(weaponManager);
         }
 
         /// <summary>
@@ -503,6 +491,30 @@ namespace ZZ
         public void CloseDamageCollider()
         {
             GetCurrentWeaponManager()?.CloseDamageCollider();
+        }
+
+        /// <summary>Opens only the equipped main-hand weapon's damage window.</summary>
+        public void OpenMainHandDamageCollider()
+        {
+            OpenDamageCollider(CurrentRightHandWeaponManager);
+        }
+
+        /// <summary>Closes only the equipped main-hand weapon's damage window.</summary>
+        public void CloseMainHandDamageCollider()
+        {
+            CurrentRightHandWeaponManager?.CloseDamageCollider();
+        }
+
+        /// <summary>Opens only the equipped off-hand weapon's damage window.</summary>
+        public void OpenOffHandDamageCollider()
+        {
+            OpenDamageCollider(CurrentLeftHandWeaponManager);
+        }
+
+        /// <summary>Closes only the equipped off-hand weapon's damage window.</summary>
+        public void CloseOffHandDamageCollider()
+        {
+            CurrentLeftHandWeaponManager?.CloseDamageCollider();
         }
 
         /// <summary>Applies bow hold conditions to the currently active weapon model.</summary>
@@ -527,6 +539,21 @@ namespace ZZ
             return isUsingRightHand
                 ? CurrentRightHandWeaponManager
                 : CurrentLeftHandWeaponManager;
+        }
+
+        private void OpenDamageCollider(WeaponManager weaponManager)
+        {
+            m_characterSoundFXManager?.PlayWeaponWhoosh(weaponManager?.Weapon);
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                weaponManager == null)
+            {
+                return;
+            }
+
+            weaponManager.SetAttackType(
+                m_player.PlayerCombatManager.CurrentAttackType);
+            weaponManager.OpenDamageCollider();
         }
 
         private void DiscoverWeaponSlots()

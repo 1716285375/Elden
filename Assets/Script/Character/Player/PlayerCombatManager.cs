@@ -19,6 +19,7 @@ namespace ZZ
         private WeaponItem m_chargingWeapon;
         private float m_chargeStartTime;
         private bool m_canComboWithMainHandWeapon;
+        private bool m_canPerformOffHandCombo;
         private bool m_canQueueNextAttack;
         private bool m_canPerformCommittedAttack;
         private AttackType m_committedAttackType;
@@ -43,6 +44,9 @@ namespace ZZ
 
         /// <summary>Gets whether the current main-hand attack accepts its next combo input.</summary>
         public bool CanComboWithMainHandWeapon => m_canComboWithMainHandWeapon;
+
+        /// <summary>Gets whether the active dual attack accepts another off-hand input.</summary>
+        public bool CanPerformOffHandCombo => m_canPerformOffHandCombo;
 
         /// <summary>Gets whether the current animation accepts a buffered attack input.</summary>
         public bool CanQueueNextAttack => m_canQueueNextAttack;
@@ -798,6 +802,111 @@ namespace ZZ
             }
         }
 
+        /// <summary>
+        /// Returns whether the equipped hand pair can replace blocking with Power Stance.
+        /// </summary>
+        public bool CanUsePowerStance()
+        {
+            PlayerInventoryManager inventory = m_player?.InventoryManager;
+            return CanUsePowerStance(
+                inventory?.CurrentRightHandWeapon,
+                inventory?.CurrentLeftHandWeapon,
+                m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true);
+        }
+
+        /// <summary>Evaluates Power Stance from weapon class rather than item identity.</summary>
+        public static bool CanUsePowerStance(
+            WeaponItem mainHandWeapon,
+            WeaponItem offHandWeapon,
+            bool isTwoHandingWeapon)
+        {
+            return !isTwoHandingWeapon &&
+                mainHandWeapon != null &&
+                offHandWeapon != null &&
+                mainHandWeapon.WeaponClass == offHandWeapon.WeaponClass;
+        }
+
+        /// <summary>
+        /// Resolves and performs the off-hand Power Stance attack for the current movement state.
+        /// </summary>
+        public bool PerformPowerStanceLeftHandAction(WeaponItem offHandWeapon)
+        {
+            CharacterNetworkManager networkManager =
+                m_player?.CharacterNetworkManager;
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                offHandWeapon == null ||
+                networkManager == null ||
+                networkManager.CurrentStamina.Value <= 0f ||
+                !CanUsePowerStance())
+            {
+                return false;
+            }
+
+            if (!m_player.IsGrounded && m_player.IsPerformingAction)
+            {
+                return false;
+            }
+
+            bool canPerformRollAttack = CanPerformRollingAttack();
+            bool canPerformBackstepAttack = CanPerformBackstepAttack();
+            if (m_player.IsPerformingAction &&
+                !canPerformRollAttack &&
+                !canPerformBackstepAttack &&
+                !m_canPerformOffHandCombo)
+            {
+                return false;
+            }
+
+            AttackType attackType = ResolvePowerStanceAttackType(
+                m_player.IsGrounded,
+                m_player.IsPerformingAction,
+                canPerformRollAttack,
+                canPerformBackstepAttack,
+                m_player.LocomotionManager?.IsSprinting == true,
+                CurrentAttackType);
+            DisableCanPerformCommittedAttack();
+            DisableCanCombo();
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(false);
+            ReplicateAttack(attackType, offHandWeapon);
+            networkManager.NotifyServerOfAttackActionServerRpc(attackType);
+            return true;
+        }
+
+        /// <summary>Applies EP125 movement-state priority to a validated dual attack.</summary>
+        public static AttackType ResolvePowerStanceAttackType(
+            bool isGrounded,
+            bool isPerformingAction,
+            bool canPerformRollAttack,
+            bool canPerformBackstepAttack,
+            bool isSprinting,
+            AttackType previousAttack)
+        {
+            if (!isGrounded && !isPerformingAction)
+            {
+                return AttackType.DualJumpAttack;
+            }
+
+            if (canPerformRollAttack)
+            {
+                return AttackType.DualRollAttack;
+            }
+
+            if (canPerformBackstepAttack)
+            {
+                return AttackType.DualBackstepAttack;
+            }
+
+            if (isSprinting && !isPerformingAction)
+            {
+                return AttackType.DualRunAttack;
+            }
+
+            return previousAttack == AttackType.DualAttack01
+                ? AttackType.DualAttack02
+                : AttackType.DualAttack01;
+        }
+
         /// <summary>Switches between the off-hand blocking and right-hand action sets.</summary>
         public void ApplyBlockingAnimatorController(bool isBlockingController)
         {
@@ -886,6 +995,15 @@ namespace ZZ
         /// </summary>
         public void EnableCanCombo()
         {
+            bool isOffHandAction =
+                m_player?.PlayerNetworkManager?.IsUsingLeftHand.Value == true &&
+                m_player.PlayerNetworkManager.IsTwoHandingWeapon.Value == false;
+            m_canPerformOffHandCombo =
+                m_player != null &&
+                m_player.IsOwner &&
+                m_player.IsPerformingAction &&
+                isOffHandAction &&
+                IsDualComboAttack(CurrentAttackType);
             m_canQueueNextAttack =
                 m_player != null &&
                 m_player.IsOwner &&
@@ -902,6 +1020,7 @@ namespace ZZ
         public void DisableCanCombo()
         {
             m_canComboWithMainHandWeapon = false;
+            m_canPerformOffHandCombo = false;
             m_canQueueNextAttack = false;
         }
 
@@ -995,6 +1114,20 @@ namespace ZZ
         public void EnableCanPerformBackStepAttack()
         {
             EnableCommittedAttack(AttackType.BackStepAttack01);
+        }
+
+        /// <summary>Returns whether the active dodge recovery accepts a dual roll attack.</summary>
+        public bool CanPerformRollingAttack()
+        {
+            return m_canPerformCommittedAttack &&
+                m_committedAttackType == AttackType.RollAttack01;
+        }
+
+        /// <summary>Returns whether the active dodge recovery accepts a dual backstep attack.</summary>
+        public bool CanPerformBackstepAttack()
+        {
+            return m_canPerformCommittedAttack &&
+                m_committedAttackType == AttackType.BackStepAttack01;
         }
 
         /// <summary>Closes any unconsumed committed-action attack window.</summary>
@@ -1585,6 +1718,12 @@ namespace ZZ
                 currentAttack == AttackType.LightAttack02 ||
                 currentAttack == AttackType.HeavyAttack01 ||
                 currentAttack == AttackType.ChargedAttack01;
+        }
+
+        private static bool IsDualComboAttack(AttackType currentAttack)
+        {
+            return currentAttack == AttackType.DualAttack01 ||
+                currentAttack == AttackType.DualAttack02;
         }
 
         private static bool TryGetNextMainHandComboAttack(
