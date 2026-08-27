@@ -12,7 +12,10 @@ namespace ZZ
         private bool m_hasChosenPath;
         private bool m_hasRolledForBlockChance;
         private bool m_hasRolledForComboChance;
+        private bool m_hasRolledForEvasionChance;
+        private bool m_hasEvaded;
         private bool m_willBlockDuringThisCombatRotation;
+        private bool m_willEvadeDuringThisCombatRotation;
         private float m_strafeAmount;
 
         internal CombatStanceAIState(AttackAIState attackState)
@@ -29,6 +32,7 @@ namespace ZZ
             ChooseStrafePath(character);
             RollForBlocking(character);
             RollForCombo(character);
+            RollForEvasion(character);
         }
 
         internal override AICharacterStateId Tick(
@@ -49,6 +53,12 @@ namespace ZZ
             if (!character.IsTargetWithinCombatRange)
             {
                 return AICharacterStateId.PursueTarget;
+            }
+
+            TryPerformEvasion(character);
+            if (character.IsPerformingAction)
+            {
+                return StateId;
             }
 
             if (character.WillCircleTarget && m_hasChosenPath)
@@ -72,7 +82,10 @@ namespace ZZ
             m_hasChosenPath = false;
             m_hasRolledForBlockChance = false;
             m_hasRolledForComboChance = false;
+            m_hasRolledForEvasionChance = false;
+            m_hasEvaded = false;
             m_willBlockDuringThisCombatRotation = false;
+            m_willEvadeDuringThisCombatRotation = false;
             m_strafeAmount = 0f;
         }
 
@@ -130,6 +143,31 @@ namespace ZZ
             m_attackState.ConfigureComboDecision(
                 willPerformCombo,
                 character.OnlyPerformComboIfInitialAttackHits);
+        }
+
+        private void RollForEvasion(AICharacterManager character)
+        {
+            if (!character.CanEvade || m_hasRolledForEvasionChance)
+            {
+                return;
+            }
+
+            m_hasRolledForEvasionChance = true;
+            m_willEvadeDuringThisCombatRotation = RollForOutcomeChance(
+                character.PercentageOfTimeWillEvade,
+                Random.Range(k_MinimumRoll, k_MaximumRollExclusive));
+        }
+
+        private void TryPerformEvasion(AICharacterManager character)
+        {
+            if (!m_willEvadeDuringThisCombatRotation ||
+                m_hasEvaded ||
+                !character.IsCurrentTargetAttacking)
+            {
+                return;
+            }
+
+            m_hasEvaded = character.TryPerformEvasion();
         }
     }
 }

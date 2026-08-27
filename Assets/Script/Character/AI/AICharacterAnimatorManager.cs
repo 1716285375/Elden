@@ -163,6 +163,28 @@ namespace ZZ
             m_combatManager?.DisableCanDoCombo();
         }
 
+        /// <summary>Animation Event: consumes the player-only Roll Attack event safely.</summary>
+        public void EnableCanPerformRollAttack()
+        {
+            m_combatManager?.DisableCanDoCombo();
+        }
+
+        /// <summary>Animation Event: consumes the shared committed-attack close event safely.</summary>
+        public void DisableCanPerformCommittedAttack()
+        {
+            m_combatManager?.DisableCanDoCombo();
+        }
+
+        private void OnAnimatorMove()
+        {
+            if (CharacterAnimator != null)
+            {
+                m_aiCharacter?.ApplyRootMotion(
+                    CharacterAnimator.deltaPosition,
+                    CharacterAnimator.deltaRotation);
+            }
+        }
+
         private void PlayIdleBehaviorAnimation(
             string stateName,
             float transitionDuration)

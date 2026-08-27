@@ -25,6 +25,9 @@ namespace ZZ
         [SerializeField, Min(0f)] private float
             m_defaultTimeUntilStanceRegenerationBegins = 3f;
 
+        [Header("Evasion")]
+        [SerializeField, Min(0f)] private float m_maximumEvasionDistance = 5f;
+
         private readonly HashSet<CharacterManager> m_charactersDamaged = new();
         private readonly List<PlayerManager> m_playersWithinActivationRange = new();
 
@@ -181,6 +184,62 @@ namespace ZZ
             m_aiCharacter.CharacterNetworkManager
                 ?.NotifyServerOfAttackActionServerRpc(comboAction.AttackType);
             return m_aiCharacter.IsPerformingAction;
+        }
+
+        /// <summary>Performs this AI type's server-authored response to a nearby attack.</summary>
+        public virtual bool PerformEvasion()
+        {
+            PlayerManager target = m_aiCharacter?.CurrentTarget;
+            if (m_aiCharacter == null ||
+                !m_aiCharacter.IsServer ||
+                m_aiCharacter.IsDead ||
+                m_aiCharacter.IsPerformingAction ||
+                target == null ||
+                Vector3.Distance(
+                    m_aiCharacter.transform.position,
+                    target.transform.position) > m_maximumEvasionDistance)
+            {
+                return false;
+            }
+
+            Vector3 evasionDirection = GetBackwardEvasionDirection(
+                m_aiCharacter.transform.forward);
+            m_aiCharacter.StopMoving();
+            m_aiCharacter.CloseAttackDamageColliders();
+            m_aiCharacter.SetBlockingState(false);
+            m_aiCharacter.transform.rotation = Quaternion.LookRotation(
+                evasionDirection,
+                Vector3.up);
+            m_aiCharacter.SetInvulnerable(true);
+            m_aiCharacter.CharacterAnimatorManager?.PlayTargetActionAnimation(
+                CharacterActionAnimation.RollForward,
+                true,
+                true,
+                false,
+                false);
+            if (!m_aiCharacter.IsPerformingAction)
+            {
+                m_aiCharacter.SetInvulnerable(false);
+                return false;
+            }
+
+            m_aiCharacter.CharacterNetworkManager
+                ?.NotifyServerOfActionAnimationServerRpc(
+                    CharacterActionAnimation.RollForward,
+                    true,
+                    true,
+                    false,
+                    false);
+            return true;
+        }
+
+        internal static Vector3 GetBackwardEvasionDirection(Vector3 forward)
+        {
+            Vector3 direction = -forward;
+            direction.y = 0f;
+            return direction.sqrMagnitude > Mathf.Epsilon
+                ? direction.normalized
+                : Vector3.back;
         }
 
         /// <summary>Refreshes the damage payload and clears the per-attack hit registry.</summary>

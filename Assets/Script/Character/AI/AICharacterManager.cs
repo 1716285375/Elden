@@ -50,6 +50,9 @@ namespace ZZ
         [SerializeField, Range(0f, 100f)] private float
             m_chanceToPerformCombo = 50f;
         [SerializeField] private bool m_onlyPerformComboIfInitialAttackHits = true;
+        [SerializeField] private bool m_canEvade;
+        [SerializeField, Range(0f, 100f)] private float
+            m_percentageOfTimeWillEvade = 35f;
 
         [Header("Turning")]
         [SerializeField, Min(0f)] private float m_turningSpeed = 300f;
@@ -156,6 +159,11 @@ namespace ZZ
         internal float ChanceToPerformCombo => m_chanceToPerformCombo;
         internal bool OnlyPerformComboIfInitialAttackHits =>
             m_onlyPerformComboIfInitialAttackHits;
+        internal bool CanEvade => m_canEvade;
+        internal float PercentageOfTimeWillEvade =>
+            m_percentageOfTimeWillEvade;
+        internal bool IsCurrentTargetAttacking =>
+            m_currentTarget?.CharacterNetworkManager?.IsAttacking.Value == true;
         internal AICharacterAttackAction CurrentAttackAction =>
             m_aiCombatManager?.CurrentAttackAction;
         internal bool CanEnterComboWindow =>
@@ -459,10 +467,16 @@ namespace ZZ
         }
 
         /// <summary>Keeps this AI active while one valid player remains nearby.</summary>
-        public void ActivateCharacter(PlayerManager player)
+        public virtual void ActivateCharacter(PlayerManager player)
         {
             if (!IsServer || IsDead || player == null || m_aiCombatManager == null)
             {
+                return;
+            }
+
+            if (m_bossCharacter?.HasBeenDefeated == true)
+            {
+                DeactivateCharacter(player);
                 return;
             }
 
@@ -477,7 +491,7 @@ namespace ZZ
         }
 
         /// <summary>Disables this AI after the final nearby player leaves.</summary>
-        public void DeactivateCharacter(PlayerManager player)
+        public virtual void DeactivateCharacter(PlayerManager player)
         {
             if (!IsServer || m_aiCombatManager == null)
             {
@@ -854,6 +868,28 @@ namespace ZZ
             }
         }
 
+        internal void ApplyRootMotion(
+            Vector3 deltaPosition,
+            Quaternion deltaRotation)
+        {
+            if (!IsServer || !ShouldApplyRootMotion)
+            {
+                return;
+            }
+
+            deltaPosition.y = 0f;
+            if (CanUseNavMeshAgent())
+            {
+                m_navMeshAgent.Move(deltaPosition);
+            }
+            else
+            {
+                transform.position += deltaPosition;
+            }
+
+            transform.rotation *= deltaRotation;
+        }
+
         internal void FaceTarget()
         {
             if (HasValidTarget)
@@ -889,6 +925,11 @@ namespace ZZ
         {
             return m_aiCombatManager != null &&
                 m_aiCombatManager.PerformCombo(comboAction);
+        }
+
+        internal bool TryPerformEvasion()
+        {
+            return m_aiCombatManager?.PerformEvasion() == true;
         }
 
         internal void DisableComboWindow()

@@ -730,6 +730,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  PlayWakingAnimationOnAwake:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 1
   IsAwake:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -909,6 +914,7 @@ MonoBehaviour:
   m_ignoreStanceBreak: 0
   m_stanceRegeneratedPerSecond: 15
   m_defaultTimeUntilStanceRegenerationBegins: 3
+  m_maximumEvasionDistance: 5
 --- !u!114 &4706865235773157865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1008,6 +1014,8 @@ MonoBehaviour:
   m_canPerformCombo: 0
   m_chanceToPerformCombo: 65
   m_onlyPerformComboIfInitialAttackHits: 1
+  m_canEvade: 0
+  m_percentageOfTimeWillEvade: 0
   m_turningSpeed: 300
   m_pivotAngle: 70
   m_pivotCooldown: 1.1
