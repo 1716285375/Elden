@@ -71,6 +71,7 @@ namespace ZZ
         {
             UnsubscribeFromSceneEvents();
             StopSceneQueue();
+            StartCoroutine(UnloadAllAdditiveScenesNonNetwork());
             base.OnNetworkDespawn();
         }
 
@@ -382,6 +383,28 @@ namespace ZZ
             m_pendingUnloadSceneIDs.Clear();
             m_sceneIsLoading = false;
             m_sceneIsUnloading = false;
+        }
+
+        private IEnumerator UnloadAllAdditiveScenesNonNetwork()
+        {
+            Scene[] scenesToUnload = m_loadedScenes
+                .Where(scene =>
+                    scene.IsValid() &&
+                    scene.isLoaded &&
+                    scene.name != PersistentWorldSceneID)
+                .ToArray();
+            m_loadedScenes.RemoveAll(scene =>
+                scenesToUnload.Any(candidate => candidate.handle == scene.handle));
+
+            foreach (Scene scene in scenesToUnload)
+            {
+                AsyncOperation unloadOperation =
+                    SceneManager.UnloadSceneAsync(scene);
+                if (unloadOperation != null)
+                {
+                    yield return unloadOperation;
+                }
+            }
         }
     }
 }

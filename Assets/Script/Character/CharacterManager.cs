@@ -208,6 +208,7 @@ namespace ZZ
             m_characterLocomotionManager?.SetCanRun(true);
             m_characterLocomotionManager?.SetCanRoll(true);
             m_characterCombatManager?.ResetActionState();
+            m_characterNetworkManager?.SetRollingState(false);
             EndJump();
         }
 

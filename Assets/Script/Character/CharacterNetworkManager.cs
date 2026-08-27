@@ -97,6 +97,10 @@ namespace ZZ
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsRolling = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         public NetworkVariable<bool> IsDead = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -176,6 +180,7 @@ namespace ZZ
                 NetworkPosition.Value = transform.position;
                 NetworkRotation.Value = transform.rotation;
                 IsJumping.Value = false;
+                IsRolling.Value = false;
                 IsChargingAttack.Value = false;
                 IsBlocking.Value = false;
                 IsAttacking.Value = false;
@@ -207,6 +212,7 @@ namespace ZZ
         public override void OnGainedOwnership()
         {
             base.OnGainedOwnership();
+            SetRollingState(false);
             SetChargingAttackState(false);
             SetBlockingState(false);
             SetAttackingState(false);
@@ -269,6 +275,19 @@ namespace ZZ
                 StartCoroutine(m_characterManager.ProcessDeathEvent(
                     IsBeingCriticallyDamaged.Value));
             }
+        }
+
+        /// <summary>
+        /// Writes whether the owner is currently inside a rolling action.
+        /// </summary>
+        public void SetRollingState(bool isRolling)
+        {
+            if (!IsSpawned || !IsOwner || IsRolling.Value == isRolling)
+            {
+                return;
+            }
+
+            IsRolling.Value = isRolling;
         }
 
         /// <summary>
