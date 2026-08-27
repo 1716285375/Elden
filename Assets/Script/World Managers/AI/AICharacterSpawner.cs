@@ -46,6 +46,12 @@ namespace ZZ
             (WorldSaveGameManager.Instance?.GetBossProgress(m_bossID) ??
                 BossProgressState.Dormant) != BossProgressState.Dormant;
 
+        /// <summary>Gets whether this Boss is permanently defeated in the active save.</summary>
+        public bool HasBossBeenDefeated =>
+            IsBoss &&
+            WorldSaveGameManager.Instance?.GetBossProgress(m_bossID) ==
+                BossProgressState.Defeated;
+
         /// <summary>Gets the scene patrol route requested by this spawn point.</summary>
         public int PatrolPathID => m_patrolPathID;
 

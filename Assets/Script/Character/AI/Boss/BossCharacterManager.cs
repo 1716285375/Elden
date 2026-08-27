@@ -48,6 +48,8 @@ namespace ZZ
         public int BossID => m_bossID;
         public string BossName => m_bossName;
         public bool IsEncounterActive => m_isEncounterActive.Value;
+        public bool HasBeenDefeated =>
+            m_aiCharacter?.OriginSpawner?.HasBossBeenDefeated == true;
         public int CurrentPhaseIndex => m_currentPhaseIndex.Value;
         public CharacterNetworkManager CharacterNetworkManager => m_networkManager;
 
