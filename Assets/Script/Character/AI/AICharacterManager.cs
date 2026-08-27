@@ -54,6 +54,7 @@ namespace ZZ
         private readonly RaycastHit[] m_sightHits = new RaycastHit[16];
 
         private AICharacterStateMachine m_stateMachine;
+        private AIActivationBeacon m_activationBeacon;
         private InvestigateSoundAIState m_investigateSoundState;
         private AICharacterSpawner m_originSpawner;
         private BossCharacterManager m_bossCharacter;
@@ -98,6 +99,9 @@ namespace ZZ
 
         /// <summary>Gets the replicated awake state.</summary>
         public bool IsAwake => m_aiNetworkManager?.IsAwake.Value ?? true;
+
+        /// <summary>Gets the lightweight server beacon assigned to this AI.</summary>
+        public AIActivationBeacon ActivationBeacon => m_activationBeacon;
 
         internal float NavigationStoppingDistance => m_navMeshAgent != null
             ? m_navMeshAgent.stoppingDistance
@@ -145,6 +149,7 @@ namespace ZZ
 
             if (IsServer)
             {
+                CreateActivationBeacon();
                 SetNavigationEnabled(true);
                 PlaceOnNavMesh();
                 ApplyInitialAwakeState();
@@ -160,6 +165,7 @@ namespace ZZ
         {
             WorldAIManager.Instance?.UnregisterAI(this);
             m_originSpawner?.NotifyCharacterDespawned(this);
+            DestroyActivationBeacon();
             CloseAttackDamageColliders();
             if (m_navMeshAgent != null)
             {
@@ -167,6 +173,11 @@ namespace ZZ
             }
 
             base.OnNetworkDespawn();
+        }
+
+        private void OnDestroy()
+        {
+            DestroyActivationBeacon();
         }
 
         private void Update()
@@ -270,6 +281,13 @@ namespace ZZ
             m_aiNetworkManager.NetworkPosition.Value = transform.position;
             m_aiNetworkManager.NetworkRotation.Value = transform.rotation;
             CharacterUIManager?.ResetCharacterHPBar();
+            m_aiCombatManager?.ClearPlayersWithinActivationRange();
+            if (CreateActivationBeacon())
+            {
+                SetActivationBeaconEnabled(true);
+                m_aiNetworkManager.SetActiveState(false);
+            }
+
             return true;
         }
 
@@ -306,6 +324,113 @@ namespace ZZ
             m_repeatPatrol = patrolPath != null && repeatPatrol;
             m_startsSleeping = startsSleeping;
             m_willInvestigateSound = willInvestigateSound;
+        }
+
+        /// <summary>Creates this AI's lightweight server-side wake beacon.</summary>
+        public bool CreateActivationBeacon()
+        {
+            if (!IsServer)
+            {
+                return false;
+            }
+
+            if (m_activationBeacon != null)
+            {
+                return true;
+            }
+
+            AIActivationBeacon beaconPrefab =
+                WorldAIManager.Instance?.AIActivationBeaconPrefab;
+            if (beaconPrefab == null)
+            {
+                Debug.LogError(
+                    $"{name} cannot use distance activation without an AI beacon prefab.",
+                    this);
+                return false;
+            }
+
+            m_activationBeacon = Instantiate(
+                beaconPrefab,
+                transform.position,
+                Quaternion.identity);
+            m_activationBeacon.SetOwnerOfBeacon(this);
+            m_activationBeacon.gameObject.SetActive(false);
+            return true;
+        }
+
+        /// <summary>Starts a newly spawned server AI behind its distance gate.</summary>
+        public bool InitializeAsInactive()
+        {
+            if (!IsServer ||
+                m_aiNetworkManager == null ||
+                !CreateActivationBeacon())
+            {
+                return false;
+            }
+
+            m_aiCombatManager?.ClearPlayersWithinActivationRange();
+            ClearTarget();
+            m_stateMachine?.ChangeState(AICharacterStateId.Idle);
+            SetActivationBeaconEnabled(true);
+            return m_aiNetworkManager.SetActiveState(false);
+        }
+
+        /// <summary>Keeps this AI active while one valid player remains nearby.</summary>
+        public void ActivateCharacter(PlayerManager player)
+        {
+            if (!IsServer || IsDead || player == null || m_aiCombatManager == null)
+            {
+                return;
+            }
+
+            m_aiCombatManager.AddPlayerToPlayersWithinRange(player);
+            if (m_aiCombatManager.PlayersWithinActivationRangeCount <= 0)
+            {
+                return;
+            }
+
+            m_aiNetworkManager?.SetActiveState(true);
+            SetActivationBeaconEnabled(false);
+        }
+
+        /// <summary>Disables this AI after the final nearby player leaves.</summary>
+        public void DeactivateCharacter(PlayerManager player)
+        {
+            if (!IsServer || m_aiCombatManager == null)
+            {
+                return;
+            }
+
+            m_aiCombatManager.RemovePlayerFromPlayersWithinRange(player);
+            if (m_aiCombatManager.PlayersWithinActivationRangeCount > 0 ||
+                !CreateActivationBeacon())
+            {
+                return;
+            }
+
+            CloseAttackDamageColliders();
+            ClearTarget();
+            StopMoving();
+            m_stateMachine?.ChangeState(AICharacterStateId.Idle);
+            SetActivationBeaconEnabled(true);
+            m_aiNetworkManager?.SetActiveState(false);
+        }
+
+        /// <summary>Re-enables this AI root so its range list can accept a player.</summary>
+        public bool ReactivateAICharacter()
+        {
+            if (!IsServer || IsDead || m_aiNetworkManager == null)
+            {
+                return false;
+            }
+
+            bool wasReactivated = m_aiNetworkManager.SetActiveState(true);
+            if (wasReactivated)
+            {
+                SetActivationBeaconEnabled(false);
+            }
+
+            return wasReactivated;
         }
 
         /// <summary>Assigns a valid server-side player stimulus without choosing its response.</summary>
@@ -801,6 +926,32 @@ namespace ZZ
                     m_sleepingAnimation,
                     m_wakingAnimation);
             }
+        }
+
+        private void SetActivationBeaconEnabled(bool isEnabled)
+        {
+            if (m_activationBeacon == null)
+            {
+                return;
+            }
+
+            if (isEnabled)
+            {
+                m_activationBeacon.transform.position = transform.position;
+            }
+
+            m_activationBeacon.gameObject.SetActive(isEnabled);
+        }
+
+        private void DestroyActivationBeacon()
+        {
+            if (m_activationBeacon == null)
+            {
+                return;
+            }
+
+            Destroy(m_activationBeacon.gameObject);
+            m_activationBeacon = null;
         }
 
         private void WarpToSpawnPoint(

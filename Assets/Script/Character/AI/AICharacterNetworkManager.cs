@@ -8,6 +8,12 @@ namespace ZZ
     /// </summary>
     public class AICharacterNetworkManager : CharacterNetworkManager
     {
+        /// <summary>Replicates whether the complete AI root is enabled on every peer.</summary>
+        public NetworkVariable<bool> IsActive = new NetworkVariable<bool>(
+            true,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server);
+
         /// <summary>Replicates the server-selected behavior state.</summary>
         public NetworkVariable<AICharacterStateId> CurrentAIState =
             new NetworkVariable<AICharacterStateId>(
@@ -39,18 +45,42 @@ namespace ZZ
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            IsActive.OnValueChanged += OnActiveStateChanged;
             IsAwake.OnValueChanged += OnAwakeStateChanged;
             if (!IsAwake.Value)
             {
                 PlaySleepingAnimation();
             }
+
+            ApplyActiveState(IsActive.Value);
         }
 
         /// <inheritdoc />
         public override void OnNetworkDespawn()
         {
+            IsActive.OnValueChanged -= OnActiveStateChanged;
             IsAwake.OnValueChanged -= OnAwakeStateChanged;
             base.OnNetworkDespawn();
+        }
+
+        /// <summary>Publishes one server-authoritative AI activation transition.</summary>
+        public bool SetActiveState(bool isActive)
+        {
+            if (!IsSpawned || !IsServer)
+            {
+                return false;
+            }
+
+            if (IsActive.Value != isActive)
+            {
+                IsActive.Value = isActive;
+            }
+            else
+            {
+                ApplyActiveState(isActive);
+            }
+
+            return true;
         }
 
         /// <summary>Publishes an AI state transition from the server.</summary>
@@ -174,6 +204,19 @@ namespace ZZ
             {
                 animatorManager?.PlaySleepingAnimation(
                     SleepingAnimation.Value.ToString());
+            }
+        }
+
+        private void OnActiveStateChanged(bool wasActive, bool isActive)
+        {
+            ApplyActiveState(isActive);
+        }
+
+        private void ApplyActiveState(bool isActive)
+        {
+            if (gameObject.activeSelf != isActive)
+            {
+                gameObject.SetActive(isActive);
             }
         }
 

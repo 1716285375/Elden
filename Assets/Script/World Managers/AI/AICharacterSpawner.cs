@@ -123,6 +123,7 @@ namespace ZZ
                 m_isSleeping,
                 m_willInvestigateSound);
             instance.GetComponent<NetworkObject>().Spawn(true);
+            character.InitializeAsInactive();
 
             m_instantiatedCharacter = character;
             m_hasResolvedSpawn = true;
