@@ -52,6 +52,9 @@ namespace ZZ
             Vector3 contactPoint = collision.contactCount > 0
                 ? collision.GetContact(0).point
                 : collision.collider.ClosestPointOnBounds(transform.position);
+            WorldSoundFXManager.Instance?.AlertNearbyCharactersToSound(
+                contactPoint,
+                3f);
             CreatePenetrationIntoObject(collision.collider, contactPoint);
         }
 

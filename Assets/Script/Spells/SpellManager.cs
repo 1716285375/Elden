@@ -102,6 +102,9 @@ namespace ZZ
 
             m_hasImpacted = true;
             m_damageCollider?.CloseDamageCollider();
+            WorldSoundFXManager.Instance?.AlertNearbyCharactersToSound(
+                contactPoint,
+                5f);
             GameObject impactEffect = m_isFullyCharged &&
                 m_fullChargeImpactEffect != null
                     ? m_fullChargeImpactEffect

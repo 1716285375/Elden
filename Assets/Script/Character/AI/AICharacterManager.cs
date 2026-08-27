@@ -17,6 +17,7 @@ namespace ZZ
     public class AICharacterManager : CharacterManager
     {
         private const float k_NavMeshSampleDistance = 3f;
+        private const float k_SoundSampleDistance = 2f;
         private const float k_MinimumDirectionMagnitude = 0.0001f;
 
         [Header("Perception")]
@@ -37,6 +38,11 @@ namespace ZZ
         [SerializeField, Range(0f, 180f)] private float m_pivotAngle = 70f;
         [SerializeField, Min(0f)] private float m_pivotCooldown = 1.1f;
 
+        [Header("Idle Behavior")]
+        [SerializeField, Min(0f)] private float m_timeBetweenPatrols = 15f;
+        [SerializeField] private string m_sleepingAnimation = "Sleep_01";
+        [SerializeField] private string m_wakingAnimation = "Wake_01";
+
         [Header("References")]
         [SerializeField] private NavMeshAgent m_navMeshAgent;
         [SerializeField] private CapsuleCollider m_bodyCollider;
@@ -48,12 +54,17 @@ namespace ZZ
         private readonly RaycastHit[] m_sightHits = new RaycastHit[16];
 
         private AICharacterStateMachine m_stateMachine;
+        private InvestigateSoundAIState m_investigateSoundState;
         private AICharacterSpawner m_originSpawner;
         private BossCharacterManager m_bossCharacter;
         private PlayerManager m_currentTarget;
         private float m_nextDetectionTime;
         private float m_nextAttackTime;
         private float m_nextPivotTime;
+        private AIPatrolPath m_patrolPath;
+        private bool m_repeatPatrol;
+        private bool m_startsSleeping;
+        private bool m_willInvestigateSound = true;
 
         /// <summary>Gets the server-selected player target.</summary>
         public PlayerManager CurrentTarget => m_currentTarget;
@@ -65,6 +76,32 @@ namespace ZZ
         public AICharacterStateId CurrentState => m_aiNetworkManager != null
             ? m_aiNetworkManager.CurrentAIState.Value
             : m_stateMachine?.CurrentStateId ?? AICharacterStateId.Idle;
+
+        /// <summary>Gets the configured non-combat behavior for this spawned enemy.</summary>
+        public IdleStateMode IdleMode => m_startsSleeping && !IsAwake
+            ? IdleStateMode.Sleep
+            : m_patrolPath != null
+                ? IdleStateMode.Patrol
+                : IdleStateMode.Idle;
+
+        /// <summary>Gets the patrol route resolved by the origin spawner.</summary>
+        public AIPatrolPath PatrolPath => m_patrolPath;
+
+        /// <summary>Gets whether a completed patrol begins again after resting.</summary>
+        public bool RepeatPatrol => m_repeatPatrol;
+
+        /// <summary>Gets the delay before a repeating patrol starts its next lap.</summary>
+        public float TimeBetweenPatrols => m_timeBetweenPatrols;
+
+        /// <summary>Gets whether this AI responds to world sound events.</summary>
+        public bool WillInvestigateSound => m_willInvestigateSound;
+
+        /// <summary>Gets the replicated awake state.</summary>
+        public bool IsAwake => m_aiNetworkManager?.IsAwake.Value ?? true;
+
+        internal float NavigationStoppingDistance => m_navMeshAgent != null
+            ? m_navMeshAgent.stoppingDistance
+            : 0f;
 
         internal bool HasValidTarget => IsValidTarget(m_currentTarget);
         internal bool IsTargetBeyondLoseDistance =>
@@ -90,13 +127,15 @@ namespace ZZ
             m_aiCombatManager ??= GetComponent<AICharacterCombatManager>();
             m_aiInventoryManager ??= GetComponent<AICharacterInventoryManager>();
             m_bossCharacter = GetComponent<BossCharacterManager>();
+            m_investigateSoundState = new InvestigateSoundAIState();
             m_stateMachine = new AICharacterStateMachine(
                 this,
                 new IdleAIState(),
                 new PursueTargetAIState(),
                 new CombatStanceAIState(),
                 new AttackAIState(),
-                new DeadAIState());
+                new DeadAIState(),
+                m_investigateSoundState);
         }
 
         public override void OnNetworkSpawn()
@@ -104,15 +143,16 @@ namespace ZZ
             base.OnNetworkSpawn();
             WorldAIManager.Instance?.RegisterAI(this);
 
-            if (m_navMeshAgent != null)
-            {
-                m_navMeshAgent.enabled = IsServer;
-            }
-
             if (IsServer)
             {
+                SetNavigationEnabled(true);
                 PlaceOnNavMesh();
+                ApplyInitialAwakeState();
                 m_stateMachine.ChangeState(AICharacterStateId.Idle);
+            }
+            else if (m_navMeshAgent != null)
+            {
+                m_navMeshAgent.enabled = false;
             }
         }
 
@@ -223,6 +263,7 @@ namespace ZZ
             }
 
             SetInvulnerable(false);
+            ApplyInitialAwakeState();
             m_bossCharacter?.CompleteEncounter();
             WarpToSpawnPoint(spawnPosition, spawnRotation);
             m_stateMachine.ChangeState(AICharacterStateId.Idle);
@@ -244,6 +285,40 @@ namespace ZZ
             }
 
             m_originSpawner = originSpawner;
+        }
+
+        /// <summary>Applies one spawner's non-combat behavior before network spawning.</summary>
+        public void ConfigureIdleBehavior(
+            AIPatrolPath patrolPath,
+            bool repeatPatrol,
+            bool startsSleeping,
+            bool willInvestigateSound)
+        {
+            if (IsSpawned)
+            {
+                Debug.LogWarning(
+                    "AI idle behavior must be configured before network spawning.",
+                    this);
+                return;
+            }
+
+            m_patrolPath = patrolPath;
+            m_repeatPatrol = patrolPath != null && repeatPatrol;
+            m_startsSleeping = startsSleeping;
+            m_willInvestigateSound = willInvestigateSound;
+        }
+
+        /// <summary>Assigns a valid server-side player stimulus without choosing its response.</summary>
+        public bool SetTarget(PlayerManager player)
+        {
+            if (!IsServer || IsDead || !IsValidTarget(player))
+            {
+                return false;
+            }
+
+            m_currentTarget = player;
+            m_originSpawner?.MarkBossAwakened();
+            return true;
         }
 
         /// <summary>Assigns the entering player and wakes a dormant server-owned Boss.</summary>
@@ -286,6 +361,27 @@ namespace ZZ
             return m_currentTarget != null;
         }
 
+        internal bool BeginSoundInvestigation(Vector3 positionOfSound)
+        {
+            if (!IsServer ||
+                IsDead ||
+                !m_willInvestigateSound ||
+                CurrentState != AICharacterStateId.Idle ||
+                m_investigateSoundState == null)
+            {
+                return false;
+            }
+
+            if (!IsAwake)
+            {
+                WakeFromSleep();
+            }
+
+            m_investigateSoundState.SetSoundPosition(positionOfSound);
+            m_stateMachine.ChangeState(AICharacterStateId.InvestigateSound);
+            return true;
+        }
+
         internal void ClearTarget()
         {
             m_currentTarget = null;
@@ -308,6 +404,148 @@ namespace ZZ
             }
 
             RotateTowards(facingDirection, true);
+        }
+
+        internal void SetNavigationEnabled(bool isEnabled)
+        {
+            if (!IsServer || m_navMeshAgent == null)
+            {
+                return;
+            }
+
+            if (!isEnabled)
+            {
+                StopMoving();
+                m_navMeshAgent.enabled = false;
+                return;
+            }
+
+            if (m_navMeshAgent.enabled && m_navMeshAgent.isOnNavMesh)
+            {
+                return;
+            }
+
+            Vector3 sampledPosition = transform.position;
+            if (NavMesh.SamplePosition(
+                    transform.position,
+                    out NavMeshHit hit,
+                    k_NavMeshSampleDistance,
+                    NavMesh.AllAreas))
+            {
+                sampledPosition = hit.position;
+            }
+
+            if (!m_navMeshAgent.enabled)
+            {
+                transform.position = sampledPosition;
+                m_navMeshAgent.enabled = true;
+            }
+
+            if (m_navMeshAgent.isOnNavMesh)
+            {
+                m_navMeshAgent.Warp(sampledPosition);
+            }
+        }
+
+        internal bool TryResolveReachableDestination(
+            Vector3 requestedDestination,
+            out Vector3 reachableDestination)
+        {
+            reachableDestination = requestedDestination;
+            SetNavigationEnabled(true);
+            if (!CanUseNavMeshAgent())
+            {
+                return false;
+            }
+
+            NavMeshPath path = new NavMeshPath();
+            if (m_navMeshAgent.CalculatePath(requestedDestination, path) &&
+                path.status == NavMeshPathStatus.PathComplete)
+            {
+                return true;
+            }
+
+            if (!NavMesh.SamplePosition(
+                    requestedDestination,
+                    out NavMeshHit hit,
+                    k_SoundSampleDistance,
+                    NavMesh.AllAreas) ||
+                !m_navMeshAgent.CalculatePath(hit.position, path) ||
+                path.status != NavMeshPathStatus.PathComplete)
+            {
+                return false;
+            }
+
+            reachableDestination = hit.position;
+            return true;
+        }
+
+        internal bool SetNavigationDestination(Vector3 destination)
+        {
+            if (!CanUseNavMeshAgent())
+            {
+                return false;
+            }
+
+            m_navMeshAgent.isStopped = false;
+            return m_navMeshAgent.SetDestination(destination);
+        }
+
+        internal bool HasReachedNavigationDestination(
+            Vector3 destination,
+            float tolerance)
+        {
+            float resolvedTolerance = Mathf.Max(
+                tolerance,
+                m_navMeshAgent != null ? m_navMeshAgent.stoppingDistance : 0f);
+            if (CanUseNavMeshAgent() &&
+                !m_navMeshAgent.pathPending &&
+                m_navMeshAgent.remainingDistance <= resolvedTolerance)
+            {
+                return true;
+            }
+
+            Vector3 offset = destination - transform.position;
+            offset.y = 0f;
+            return offset.sqrMagnitude <= resolvedTolerance * resolvedTolerance;
+        }
+
+        internal void RotateTowardsAgent()
+        {
+            if (!CanUseNavMeshAgent())
+            {
+                return;
+            }
+
+            Vector3 direction = m_navMeshAgent.desiredVelocity;
+            if (direction.sqrMagnitude <= k_MinimumDirectionMagnitude &&
+                m_navMeshAgent.hasPath)
+            {
+                direction = m_navMeshAgent.steeringTarget - transform.position;
+            }
+
+            RotateTowards(direction, false);
+        }
+
+        internal void PivotTowardsPosition(Vector3 worldPosition)
+        {
+            RotateTowards(worldPosition - transform.position, true);
+        }
+
+        internal void PlaySleepingAnimation()
+        {
+            m_aiNetworkManager?.PlaySleepingAnimation();
+        }
+
+        internal void WakeFromSleep()
+        {
+            if (IsServer && !IsAwake)
+            {
+                m_aiNetworkManager?.SetAwakeState(
+                    true,
+                    m_sleepingAnimation,
+                    m_wakingAnimation);
+            }
         }
 
         internal void StopMoving()
@@ -551,6 +789,17 @@ namespace ZZ
                     NavMesh.AllAreas))
             {
                 m_navMeshAgent.Warp(hit.position);
+            }
+        }
+
+        private void ApplyInitialAwakeState()
+        {
+            if (IsServer)
+            {
+                m_aiNetworkManager?.SetAwakeState(
+                    !m_startsSleeping,
+                    m_sleepingAnimation,
+                    m_wakingAnimation);
             }
         }
 

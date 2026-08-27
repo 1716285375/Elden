@@ -166,7 +166,20 @@ namespace ZZ
             if (m_aiCharacter != null && m_aiCharacter.IsOwner && player != null)
             {
                 m_runeRewardCandidate = player;
+                m_aiCharacter.SetTarget(player);
             }
+        }
+
+        /// <summary>Moves an idle, living server AI into sound investigation when allowed.</summary>
+        public bool AlertCharacterToSound(Vector3 positionOfSound)
+        {
+            return m_aiCharacter != null &&
+                m_aiCharacter.IsOwner &&
+                m_aiCharacter.IsServer &&
+                !m_aiCharacter.IsDead &&
+                m_aiCharacter.CurrentState == AICharacterStateId.Idle &&
+                m_aiCharacter.WillInvestigateSound &&
+                m_aiCharacter.BeginSoundInvestigation(positionOfSound);
         }
 
         /// <summary>Clears stale kill credit when this AI is revived or reused.</summary>

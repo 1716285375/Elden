@@ -17,6 +17,7 @@ namespace ZZ
 
         private readonly List<AICharacterSpawner> m_characterSpawners = new();
         private readonly List<AICharacterManager> m_spawnedCharacters = new();
+        private readonly List<AIPatrolPath> m_patrolPaths = new();
 
         private bool m_hasSpawnedCharacters;
         private bool m_isPerformingLoadingOperation;
@@ -32,6 +33,9 @@ namespace ZZ
         /// <summary>Gets every registered spawn point in this gameplay scene.</summary>
         public IReadOnlyList<AICharacterSpawner> CharacterSpawners =>
             m_characterSpawners;
+
+        /// <summary>Gets the registered patrol paths in the active gameplay scene.</summary>
+        public IReadOnlyList<AIPatrolPath> PatrolPaths => m_patrolPaths;
 
         /// <summary>Gets whether Spawn, Reset, or Despawn work is running across frames.</summary>
         public bool IsPerformingLoadingOperation =>
@@ -100,6 +104,28 @@ namespace ZZ
         public void UnregisterSpawner(AICharacterSpawner characterSpawner)
         {
             m_characterSpawners.Remove(characterSpawner);
+        }
+
+        /// <summary>Registers one scene patrol route without duplicates.</summary>
+        public void AddPatrolPathToList(AIPatrolPath patrolPath)
+        {
+            if (patrolPath != null && !m_patrolPaths.Contains(patrolPath))
+            {
+                m_patrolPaths.Add(patrolPath);
+            }
+        }
+
+        /// <summary>Removes one unloaded scene patrol route.</summary>
+        public void RemovePatrolPathFromList(AIPatrolPath patrolPath)
+        {
+            m_patrolPaths.Remove(patrolPath);
+        }
+
+        /// <summary>Finds a patrol route by stable ID, or returns null for Idle fallback.</summary>
+        public AIPatrolPath GetAIPatrolPathByID(int patrolPathID)
+        {
+            return m_patrolPaths.FirstOrDefault(path =>
+                path != null && path.PatrolPathID == patrolPathID);
         }
 
         /// <summary>Spawns every authored AI across fixed-update frames.</summary>

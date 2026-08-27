@@ -9,6 +9,7 @@ namespace ZZ
         PursueTarget = 1,
         CombatStance = 2,
         Attack = 3,
-        Dead = 4
+        Dead = 4,
+        InvestigateSound = 5
     }
 }

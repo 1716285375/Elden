@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace ZZ
@@ -7,7 +9,14 @@ namespace ZZ
     /// </summary>
     public class WorldSoundFXManager : MonoBehaviour
     {
+        private const string k_CharacterLayerName = "Damageable Character";
+        private const int k_MaximumSoundColliders = 64;
+
         private static WorldSoundFXManager s_instance;
+
+        private readonly Collider[] m_soundColliders =
+            new Collider[k_MaximumSoundColliders];
+        private readonly HashSet<AICharacterManager> m_alertedCharacters = new();
 
         [SerializeField] private AudioClip m_rollingSoundFX;
         [SerializeField] private AudioClip m_pickupItemSoundEffect;
@@ -90,6 +99,59 @@ namespace ZZ
             }
 
             return false;
+        }
+
+        /// <summary>Alerts each living server AI within range exactly once.</summary>
+        public int AlertNearbyCharactersToSound(
+            Vector3 soundPosition,
+            float soundRange)
+        {
+            NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager == null ||
+                !networkManager.IsListening ||
+                !networkManager.IsServer ||
+                soundRange <= 0f)
+            {
+                return 0;
+            }
+
+            int characterLayerMask = LayerMask.GetMask(k_CharacterLayerName);
+            if (characterLayerMask == 0)
+            {
+                return 0;
+            }
+
+            int colliderCount = Physics.OverlapSphereNonAlloc(
+                soundPosition,
+                soundRange,
+                m_soundColliders,
+                characterLayerMask,
+                QueryTriggerInteraction.Collide);
+            m_alertedCharacters.Clear();
+            int alertedCount = 0;
+            for (int colliderIndex = 0;
+                colliderIndex < colliderCount;
+                colliderIndex++)
+            {
+                Collider characterCollider = m_soundColliders[colliderIndex];
+                AICharacterManager aiCharacter = characterCollider != null
+                    ? characterCollider.GetComponentInParent<AICharacterManager>()
+                    : null;
+                if (aiCharacter == null ||
+                    aiCharacter.IsDead ||
+                    !m_alertedCharacters.Add(aiCharacter))
+                {
+                    continue;
+                }
+
+                if (aiCharacter.GetComponent<AICharacterCombatManager>()
+                    ?.AlertCharacterToSound(soundPosition) == true)
+                {
+                    alertedCount++;
+                }
+            }
+
+            return alertedCount;
         }
 
         private void Awake()

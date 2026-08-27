@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Netcode;
 
 namespace ZZ
@@ -7,11 +8,50 @@ namespace ZZ
     /// </summary>
     public class AICharacterNetworkManager : CharacterNetworkManager
     {
+        /// <summary>Replicates the server-selected behavior state.</summary>
         public NetworkVariable<AICharacterStateId> CurrentAIState =
             new NetworkVariable<AICharacterStateId>(
                 AICharacterStateId.Idle,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Server);
+
+        /// <summary>Replicates whether this AI has left its sleeping state.</summary>
+        public NetworkVariable<bool> IsAwake = new NetworkVariable<bool>(
+            true,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server);
+
+        /// <summary>Replicates the authored persistent sleeping state name.</summary>
+        public NetworkVariable<FixedString64Bytes> SleepingAnimation =
+            new NetworkVariable<FixedString64Bytes>(
+                new FixedString64Bytes("Sleep_01"),
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Server);
+
+        /// <summary>Replicates the authored waking transition state name.</summary>
+        public NetworkVariable<FixedString64Bytes> WakingAnimation =
+            new NetworkVariable<FixedString64Bytes>(
+                new FixedString64Bytes("Wake_01"),
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Server);
+
+        /// <inheritdoc />
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            IsAwake.OnValueChanged += OnAwakeStateChanged;
+            if (!IsAwake.Value)
+            {
+                PlaySleepingAnimation();
+            }
+        }
+
+        /// <inheritdoc />
+        public override void OnNetworkDespawn()
+        {
+            IsAwake.OnValueChanged -= OnAwakeStateChanged;
+            base.OnNetworkDespawn();
+        }
 
         /// <summary>Publishes an AI state transition from the server.</summary>
         public void SetAIState(AICharacterStateId stateId)
@@ -20,6 +60,46 @@ namespace ZZ
             {
                 CurrentAIState.Value = stateId;
             }
+        }
+
+        /// <summary>Publishes authored sleep data and a server-selected awake transition.</summary>
+        public void SetAwakeState(
+            bool isAwake,
+            string sleepingAnimation,
+            string wakingAnimation)
+        {
+            if (!IsSpawned || !IsServer)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(sleepingAnimation))
+            {
+                SleepingAnimation.Value = new FixedString64Bytes(
+                    sleepingAnimation);
+            }
+
+            if (!string.IsNullOrWhiteSpace(wakingAnimation))
+            {
+                WakingAnimation.Value = new FixedString64Bytes(
+                    wakingAnimation);
+            }
+
+            if (IsAwake.Value != isAwake)
+            {
+                IsAwake.Value = isAwake;
+            }
+            else if (!isAwake)
+            {
+                PlaySleepingAnimation();
+            }
+        }
+
+        /// <summary>Applies the current sleeping animation without waiting for a value change.</summary>
+        public void PlaySleepingAnimation()
+        {
+            GetComponentInChildren<AICharacterAnimatorManager>(true)
+                ?.PlaySleepingAnimation(SleepingAnimation.Value.ToString());
         }
 
         /// <inheritdoc />
@@ -79,6 +159,22 @@ namespace ZZ
             }
 
             combatManager.ClearRuneRewardCandidate();
+        }
+
+        private void OnAwakeStateChanged(bool wasAwake, bool isAwake)
+        {
+            AICharacterAnimatorManager animatorManager =
+                GetComponentInChildren<AICharacterAnimatorManager>(true);
+            if (isAwake)
+            {
+                animatorManager?.PlayWakingAnimation(
+                    WakingAnimation.Value.ToString());
+            }
+            else
+            {
+                animatorManager?.PlaySleepingAnimation(
+                    SleepingAnimation.Value.ToString());
+            }
         }
 
         [ClientRpc]
