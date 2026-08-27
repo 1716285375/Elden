@@ -450,6 +450,27 @@ namespace ZZ
             ResetOwnedQuickSlotState();
         }
 
+        /// <inheritdoc />
+        protected override void OnIsDeadChanged(bool wasDead, bool isDead)
+        {
+            base.OnIsDeadChanged(wasDead, isDead);
+            if (wasDead || !isDead || !IsOwner || !IsServer)
+            {
+                return;
+            }
+
+            PlayerManager player = GetComponent<PlayerManager>();
+            int currentRunes = player?.PlayerStatsManager?.Runes ?? 0;
+            if (currentRunes > 0)
+            {
+                player.PlayerCombatManager?.CreateDeadSpot(
+                    player.transform.position,
+                    currentRunes);
+            }
+
+            WorldGameSessionManager.Instance?.ReviveHost(player);
+        }
+
         /// <summary>Returns the synchronized count for one flask category.</summary>
         public int GetRemainingFlaskCount(bool healthFlask)
         {

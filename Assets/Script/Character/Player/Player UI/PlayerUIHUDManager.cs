@@ -89,10 +89,10 @@ namespace ZZ
             RefreshHUD();
         }
 
-        /// <summary>Shows a newly earned Rune amount and restarts the merge delay.</summary>
+        /// <summary>Shows one signed Rune change and restarts the merge delay.</summary>
         public void SetRunesCount(int runesToAdd)
         {
-            if (runesToAdd <= 0)
+            if (runesToAdd == 0)
             {
                 return;
             }
@@ -119,14 +119,29 @@ namespace ZZ
             SetPendingRuneText(0);
         }
 
-        /// <summary>Returns an overflow-safe pending Rune total for consecutive kills.</summary>
+        /// <summary>Returns an overflow-safe pending total for signed Rune changes.</summary>
         public static int CalculatePendingRuneTotal(
             int pendingRunes,
             int runesToAdd)
         {
-            long total = (long)Mathf.Max(0, pendingRunes) +
-                Mathf.Max(0, runesToAdd);
-            return total >= int.MaxValue ? int.MaxValue : (int)total;
+            long total = (long)pendingRunes + runesToAdd;
+            return total <= int.MinValue
+                ? int.MinValue
+                : total >= int.MaxValue
+                    ? int.MaxValue
+                    : (int)total;
+        }
+
+        /// <summary>Formats a signed pending Rune change without producing a double sign.</summary>
+        public static string FormatRuneChange(int runeChange)
+        {
+            if (runeChange == 0)
+            {
+                return string.Empty;
+            }
+
+            string sign = runeChange > 0 ? "+" : "-";
+            return $"{sign} {System.Math.Abs((long)runeChange)}";
         }
 
         /// <summary>
@@ -549,10 +564,8 @@ namespace ZZ
                 return;
             }
 
-            m_runesToAddText.text = pendingRunes > 0
-                ? $"+ {pendingRunes}"
-                : string.Empty;
-            m_runesToAddText.gameObject.SetActive(pendingRunes > 0);
+            m_runesToAddText.text = FormatRuneChange(pendingRunes);
+            m_runesToAddText.gameObject.SetActive(pendingRunes != 0);
         }
     }
 }

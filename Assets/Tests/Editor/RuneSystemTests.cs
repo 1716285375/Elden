@@ -41,7 +41,7 @@ namespace ZZ.Tests
             Assert.That(
                 calculate.Invoke(null, new object[] { int.MaxValue, 50 }),
                 Is.EqualTo(int.MaxValue));
-            Assert.That(calculate.Invoke(null, new object[] { 100, -50 }), Is.EqualTo(100));
+            Assert.That(calculate.Invoke(null, new object[] { 100, -50 }), Is.EqualTo(50));
 
             GameObject gameObject = new GameObject("Rune Stats Test");
             try
@@ -49,7 +49,7 @@ namespace ZZ.Tests
                 Component stats = gameObject.AddComponent(statsType);
                 addRunes.Invoke(stats, new object[] { 50 });
                 addRunes.Invoke(stats, new object[] { -10 });
-                Assert.That(runes.GetValue(stats), Is.EqualTo(50));
+                Assert.That(runes.GetValue(stats), Is.EqualTo(40));
             }
             finally
             {

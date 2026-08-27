@@ -88,6 +88,74 @@ namespace ZZ
             return didChange;
         }
 
+        /// <summary>Stores the Site of Grace that should receive the next revival.</summary>
+        public bool RecordLastSiteOfGraceRestedAt(
+            int siteOfGraceID,
+            bool saveImmediately)
+        {
+            if (m_currentCharacterData == null || siteOfGraceID < 0)
+            {
+                return false;
+            }
+
+            bool didChange =
+                m_currentCharacterData.LastSiteOfGraceRestedAt != siteOfGraceID;
+            m_currentCharacterData.LastSiteOfGraceRestedAt = siteOfGraceID;
+            if (didChange && saveImmediately && CanSaveGame)
+            {
+                SaveGame();
+            }
+
+            return didChange;
+        }
+
+        /// <summary>Transfers a Rune balance into a persistent world recovery point.</summary>
+        public bool RecordDeadSpot(
+            Vector3 position,
+            int runeCount,
+            bool saveImmediately)
+        {
+            if (m_currentCharacterData == null || runeCount <= 0)
+            {
+                return false;
+            }
+
+            m_currentCharacterData.HasDeadSpot = true;
+            m_currentCharacterData.DeadSpotPositionX = position.x;
+            m_currentCharacterData.DeadSpotPositionY = position.y;
+            m_currentCharacterData.DeadSpotPositionZ = position.z;
+            m_currentCharacterData.DeadSpotRuneCount = runeCount;
+            if (saveImmediately && CanSaveGame)
+            {
+                SaveGame();
+            }
+
+            return true;
+        }
+
+        /// <summary>Clears the saved recovery point after its Runes are reclaimed.</summary>
+        public bool ClearDeadSpot(bool saveImmediately)
+        {
+            if (m_currentCharacterData == null)
+            {
+                return false;
+            }
+
+            bool didChange = m_currentCharacterData.HasDeadSpot ||
+                m_currentCharacterData.DeadSpotRuneCount > 0;
+            m_currentCharacterData.HasDeadSpot = false;
+            m_currentCharacterData.DeadSpotPositionX = 0f;
+            m_currentCharacterData.DeadSpotPositionY = 0f;
+            m_currentCharacterData.DeadSpotPositionZ = 0f;
+            m_currentCharacterData.DeadSpotRuneCount = 0;
+            if (didChange && saveImmediately && CanSaveGame)
+            {
+                SaveGame();
+            }
+
+            return didChange;
+        }
+
         /// <summary>
         /// Advances one boss state and optionally writes the active save immediately.
         /// </summary>

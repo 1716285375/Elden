@@ -62,17 +62,24 @@ namespace ZZ
             m_boundHUD.SetRuneCountImmediately(Runes);
         }
 
-        /// <summary>Adds a positive Rune reward and starts the HUD pending presentation.</summary>
+        /// <summary>Applies a signed Rune change and starts the HUD pending presentation.</summary>
         public void AddRunes(int runesToAdd)
         {
-            if (runesToAdd <= 0 || IsSpawned && !IsOwner)
+            if (runesToAdd == 0 || IsSpawned && !IsOwner)
             {
                 return;
             }
 
+            int previousRunes = Runes;
             m_runes = CalculateRuneTotal(m_runes, runesToAdd);
+            int appliedRuneChange = m_runes - previousRunes;
+            if (appliedRuneChange == 0)
+            {
+                return;
+            }
+
             PlayerUIManager.Instance?.PlayerUIHUDManager?.SetRunesCount(
-                runesToAdd);
+                appliedRuneChange);
         }
 
         /// <summary>Spends a non-negative Rune amount without earned-Rune feedback.</summary>
@@ -104,12 +111,16 @@ namespace ZZ
                 ?.SetRuneCountImmediately(Runes);
         }
 
-        /// <summary>Returns a non-negative, overflow-safe Rune balance.</summary>
+        /// <summary>Returns a clamped Rune balance after applying one signed change.</summary>
         public static int CalculateRuneTotal(int currentRunes, int runesToAdd)
         {
             long total = (long)UnityEngine.Mathf.Max(0, currentRunes) +
-                UnityEngine.Mathf.Max(0, runesToAdd);
-            return total >= int.MaxValue ? int.MaxValue : (int)total;
+                runesToAdd;
+            return total <= 0L
+                ? 0
+                : total >= int.MaxValue
+                    ? int.MaxValue
+                    : (int)total;
         }
 
         /// <summary>

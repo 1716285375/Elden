@@ -256,6 +256,9 @@ namespace ZZ
                     ?.SendPlayerMessagePopup(k_RestingMessage);
                 WorldSaveGameManager saveGameManager =
                     WorldSaveGameManager.Instance;
+                saveGameManager?.RecordLastSiteOfGraceRestedAt(
+                    m_siteOfGraceID,
+                    false);
                 if (saveGameManager?.CanSaveGame == true)
                 {
                     saveGameManager.SaveGame();
