@@ -9,6 +9,7 @@ namespace ZZ
         [Header("Visual Effects")]
         [SerializeField] private GameObject m_bloodSplatterVFX;
         [SerializeField] private GameObject m_criticalBloodSplatterVFX;
+        [SerializeField] private GameObject m_poisonedVFX;
 
         [SerializeField] private CharacterManager m_character;
 
@@ -20,6 +21,7 @@ namespace ZZ
         [SerializeField] private List<TimedCharacterEffect> m_timedEffects = new();
 
         private readonly List<GameObject> m_currentActionEffects = new();
+        private GameObject m_activePoisonedVFX;
         private float m_effectTickTimer;
 
         protected CharacterManager Character => m_character;
@@ -54,6 +56,7 @@ namespace ZZ
 
         protected virtual void OnDestroy()
         {
+            SetPoisonedVFX(false);
             DestroyAllCurrentActionEffects();
             RemoveAllTimedEffects();
             RemoveAllStaticEffects();
@@ -218,10 +221,78 @@ namespace ZZ
                 return false;
             }
 
+            if (buildupType == Buildup.Poison &&
+                networkManager.IsPoisoned.Value)
+            {
+                return false;
+            }
+
             float currentBuildup = networkManager.GetBuildup(buildupType);
-            return networkManager.TrySetBuildup(
-                buildupType,
-                currentBuildup + buildupAmount);
+            if (!networkManager.TrySetBuildup(
+                    buildupType,
+                    currentBuildup + buildupAmount))
+            {
+                return false;
+            }
+
+            float capacity = Mathf.Max(0f, networkManager.BuildupCapacity.Value);
+            if (buildupType == Buildup.Poison &&
+                capacity > 0f &&
+                networkManager.GetBuildup(buildupType) >= capacity)
+            {
+                TriggerPoison(networkManager);
+            }
+
+            return true;
+        }
+
+        /// <summary>Applies one owner-authoritative Poison damage tick.</summary>
+        public bool ProcessPoisonDamage(float poisonDamage)
+        {
+            CharacterNetworkManager networkManager =
+                m_character?.CharacterNetworkManager;
+            if (m_character == null ||
+                !m_character.IsSpawned ||
+                !m_character.IsOwner ||
+                m_character.IsDead ||
+                networkManager == null ||
+                !networkManager.IsPoisoned.Value ||
+                poisonDamage <= 0f)
+            {
+                return false;
+            }
+
+            float remainingHealth = PoisonedEffect.CalculateRemainingHealth(
+                networkManager.CurrentHealth.Value,
+                poisonDamage);
+            networkManager.CurrentHealth.Value = remainingHealth;
+            if (remainingHealth <= 0f)
+            {
+                networkManager.TrySetPoisoned(false);
+                networkManager.IsDead.Value = true;
+            }
+
+            return true;
+        }
+
+        /// <summary>Applies replicated Poison presentation and owner cleanup.</summary>
+        public void SetPoisonedState(bool isPoisoned)
+        {
+            SetPoisonedVFX(isPoisoned);
+            if (isPoisoned ||
+                m_character == null ||
+                !m_character.IsSpawned ||
+                !m_character.IsOwner)
+            {
+                return;
+            }
+
+            PoisonedEffect poisonedEffect =
+                WorldCharacterEffectsManager.Instance?.PoisonedEffect;
+            if (poisonedEffect != null)
+            {
+                RemoveTimedEffect(poisonedEffect.TimedEffectID);
+            }
         }
 
         /// <summary>Adds a runtime clone, or refreshes an active effect with the same ID.</summary>
@@ -266,8 +337,8 @@ namespace ZZ
                 return false;
             }
 
-            activeEffect.RemoveEffect(m_character);
             m_timedEffects.Remove(activeEffect);
+            activeEffect.RemoveEffect(m_character);
             DestroyTimedEffect(activeEffect);
             m_timedEffects.RemoveAll(effect => effect == null);
             return true;
@@ -374,6 +445,54 @@ namespace ZZ
                 effectTemplate.CreateRuntimeBuildupEffect(buildupAmount));
         }
 
+        private void TriggerPoison(CharacterNetworkManager networkManager)
+        {
+            PoisonedEffect poisonedEffect =
+                WorldCharacterEffectsManager.Instance?.PoisonedEffect;
+            if (poisonedEffect == null)
+            {
+                Debug.LogWarning(
+                    "Poison buildup reached capacity without a Poisoned Effect asset.",
+                    this);
+                return;
+            }
+
+            networkManager.TrySetBuildup(Buildup.Poison, 0f);
+            networkManager.TrySetPoisoned(true);
+            AddTimedEffect(poisonedEffect);
+        }
+
+        private void SetPoisonedVFX(bool isPoisoned)
+        {
+            if (!isPoisoned)
+            {
+                DestroyEffectInstance(m_activePoisonedVFX);
+                m_activePoisonedVFX = null;
+                return;
+            }
+
+            if (m_activePoisonedVFX != null || m_character == null)
+            {
+                return;
+            }
+
+            GameObject poisonedVFX = m_poisonedVFX != null
+                ? m_poisonedVFX
+                : WorldCharacterEffectsManager.Instance?.PoisonedVFX;
+            if (poisonedVFX == null)
+            {
+                return;
+            }
+
+            Transform anchor = m_character.LockOnTransform;
+            m_activePoisonedVFX = Instantiate(
+                poisonedVFX,
+                anchor.position,
+                anchor.rotation,
+                anchor);
+            m_activePoisonedVFX.transform.localPosition = Vector3.zero;
+        }
+
         private void RemoveAllTimedEffects()
         {
             for (int effectIndex = m_timedEffects.Count - 1;
@@ -381,11 +500,29 @@ namespace ZZ
                 effectIndex--)
             {
                 TimedCharacterEffect runtimeEffect = m_timedEffects[effectIndex];
+                m_timedEffects.RemoveAt(effectIndex);
                 runtimeEffect?.RemoveEffect(m_character);
                 DestroyTimedEffect(runtimeEffect);
             }
 
             m_timedEffects.Clear();
+        }
+
+        private static void DestroyEffectInstance(GameObject effectInstance)
+        {
+            if (effectInstance == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(effectInstance);
+            }
+            else
+            {
+                DestroyImmediate(effectInstance);
+            }
         }
 
         private static void DestroyStaticEffect(StaticCharacterEffect runtimeEffect)

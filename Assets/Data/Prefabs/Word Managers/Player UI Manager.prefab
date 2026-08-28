@@ -2832,6 +2832,8 @@ MonoBehaviour:
   m_itemAmountText: {fileID: 8707920435933420550}
   m_dialoguePopup: {fileID: 5589251224498503712}
   m_dialogueSubtitleText: {fileID: 4073670557636916735}
+  m_popupOrganizer: {fileID: 726505512319676889}
+  m_statusEffectWarningPrefab: {fileID: 6864639305829897378, guid: dc846f6f94f785046adf7fe8bf3b85a5, type: 3}
   m_fadeInDuration: 0.8
   m_visibleDuration: 2
   m_fadeOutDuration: 1
@@ -4151,6 +4153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.UIStatBar
   m_slider: {fileID: 4347513223360626062}
   m_rectTransform: {fileID: 4230013361265796142}
+  m_fillImage: {fileID: 0}
   m_shouldScaleBarLengthWithStats: 1
   m_widthScaleMultiplier: 2
 --- !u!1 &1880667334618611349
@@ -8696,6 +8699,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.UIStatBar
   m_slider: {fileID: 7616585825630794260}
   m_rectTransform: {fileID: 3111070811892800363}
+  m_fillImage: {fileID: 0}
   m_shouldScaleBarLengthWithStats: 0
   m_widthScaleMultiplier: 2
 --- !u!1 &3801729927193342213
@@ -11522,6 +11526,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.UIStatBar
   m_slider: {fileID: 5271516373930321011}
   m_rectTransform: {fileID: 2812305833210893830}
+  m_fillImage: {fileID: 0}
   m_shouldScaleBarLengthWithStats: 1
   m_widthScaleMultiplier: 2
 --- !u!1 &5102774468566175700
@@ -20481,6 +20486,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.UIStatBar
   m_slider: {fileID: 1396558388972860733}
   m_rectTransform: {fileID: 7420551273651950649}
+  m_fillImage: {fileID: 0}
   m_shouldScaleBarLengthWithStats: 1
   m_widthScaleMultiplier: 2
 --- !u!1 &8355979543838253397

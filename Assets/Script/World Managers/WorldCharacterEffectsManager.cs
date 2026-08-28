@@ -17,6 +17,10 @@ namespace ZZ
             "Effects/Degrade Poison Buildup Effect";
         private const string k_DegradeBleedBuildupEffectResourcePath =
             "Effects/Degrade Bleed Buildup Effect";
+        private const string k_PoisonedEffectResourcePath =
+            "Effects/Poisoned Effect";
+        private const string k_PoisonedVFXResourcePath =
+            "Effects/Poisoned VFX";
         private const string k_DeadSpotResourcePath = "Effects/Dead Spot";
 
         private static WorldCharacterEffectsManager s_instance;
@@ -30,11 +34,13 @@ namespace ZZ
         [SerializeField] private TakeBuildupEffect m_takeBleedBuildupEffect;
         [SerializeField] private BuildupEffect m_degradePoisonBuildupEffect;
         [SerializeField] private BuildupEffect m_degradeBleedBuildupEffect;
+        [SerializeField] private PoisonedEffect m_poisonedEffect;
 
         [Header("Quick Slot Effects")]
         [SerializeField] private GameObject m_healingFlaskVFX;
         [SerializeField] private GameObject m_focusFlaskVFX;
         [SerializeField] private GameObject m_deadSpotVFX;
+        [SerializeField] private GameObject m_poisonedVFX;
 
         public static WorldCharacterEffectsManager Instance => s_instance;
         public TakeDamageEffect TakeDamageEffect => m_takeDamageEffect;
@@ -56,6 +62,10 @@ namespace ZZ
         public BuildupEffect DegradeBleedBuildupEffect =>
             m_degradeBleedBuildupEffect ??= Resources.Load<BuildupEffect>(
                 k_DegradeBleedBuildupEffectResourcePath);
+        /// <summary>Gets the timed Health-drain template applied at Poison capacity.</summary>
+        public PoisonedEffect PoisonedEffect =>
+            m_poisonedEffect ??= Resources.Load<PoisonedEffect>(
+                k_PoisonedEffectResourcePath);
         public GameObject HealingFlaskVFX => m_healingFlaskVFX;
         public GameObject FocusFlaskVFX => m_focusFlaskVFX != null
             ? m_focusFlaskVFX
@@ -63,6 +73,9 @@ namespace ZZ
         /// <summary>Gets the networked Rune recovery-point presentation.</summary>
         public GameObject DeadSpotVFX => m_deadSpotVFX ??=
             Resources.Load<GameObject>(k_DeadSpotResourcePath);
+        /// <summary>Gets the replicated local presentation used by poisoned characters.</summary>
+        public GameObject PoisonedVFX => m_poisonedVFX ??=
+            Resources.Load<GameObject>(k_PoisonedVFXResourcePath);
 
         /// <summary>
         /// Gets the authored instant effects in their stable identifier order.
@@ -155,10 +168,13 @@ namespace ZZ
                 k_DegradePoisonBuildupEffectResourcePath);
             m_degradeBleedBuildupEffect ??= Resources.Load<BuildupEffect>(
                 k_DegradeBleedBuildupEffectResourcePath);
+            m_poisonedEffect ??= Resources.Load<PoisonedEffect>(
+                k_PoisonedEffectResourcePath);
             RegisterEffect(m_instantEffects, m_takePoisonBuildupEffect);
             RegisterEffect(m_instantEffects, m_takeBleedBuildupEffect);
             RegisterEffect(m_timedEffects, m_degradePoisonBuildupEffect);
             RegisterEffect(m_timedEffects, m_degradeBleedBuildupEffect);
+            RegisterEffect(m_timedEffects, m_poisonedEffect);
         }
 
         private static void RegisterEffect<T>(List<T> effects, T effect)

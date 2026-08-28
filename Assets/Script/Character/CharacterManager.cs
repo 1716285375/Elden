@@ -265,6 +265,12 @@ namespace ZZ
         /// </summary>
         public virtual void ReviveCharacter()
         {
+            if (IsSpawned && IsOwner && m_characterNetworkManager != null)
+            {
+                m_characterNetworkManager.TrySetPoisoned(false);
+                m_characterNetworkManager.TrySetBuildup(Buildup.Poison, 0f);
+            }
+
             m_isDeathEventRunning = false;
             m_isInvulnerable = false;
             m_characterAnimatorManager?.PlayEmptyActionAnimation();
