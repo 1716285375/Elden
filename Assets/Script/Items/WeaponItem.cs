@@ -26,6 +26,10 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_lightningDamage;
         [SerializeField, Min(0f)] private float m_holyDamage;
 
+        [Header("Status Buildup")]
+        [SerializeField, Min(0f)] private float m_poisonBuildup;
+        [SerializeField, Min(0f)] private float m_bleedBuildup;
+
         [Header("Upgrade")]
         [SerializeField] private UpgradeLevel m_upgradeLevel;
 
@@ -121,6 +125,12 @@ namespace ZZ
 
         /// <summary>Gets the weapon's base holy damage.</summary>
         public float HolyDamage => m_holyDamage;
+
+        /// <summary>Gets Poison accumulation applied by an unblocked hit.</summary>
+        public float PoisonBuildup => Mathf.Max(0f, m_poisonBuildup);
+
+        /// <summary>Gets Bleed accumulation applied by an unblocked hit.</summary>
+        public float BleedBuildup => Mathf.Max(0f, m_bleedBuildup);
 
         /// <summary>Gets this runtime weapon instance's reinforcement level.</summary>
         public UpgradeLevel UpgradeLevel => m_upgradeLevel;

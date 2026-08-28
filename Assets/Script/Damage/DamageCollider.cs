@@ -19,6 +19,10 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_holyDamage;
         [SerializeField, Min(0f)] private float m_poiseDamage;
 
+        [Header("Status Buildup")]
+        [SerializeField, Min(0f)] private float m_poisonBuildup;
+        [SerializeField, Min(0f)] private float m_bleedBuildup;
+
         private readonly List<CharacterManager> m_charactersDamaged = new();
         private Collider m_damageCollider;
 
@@ -168,6 +172,15 @@ namespace ZZ
             m_lightningDamage = Mathf.Max(0f, lightningDamage);
             m_holyDamage = Mathf.Max(0f, holyDamage);
             m_poiseDamage = Mathf.Max(0f, poiseDamage);
+            m_poisonBuildup = 0f;
+            m_bleedBuildup = 0f;
+        }
+
+        /// <summary>Configures status accumulation emitted by the current damage source.</summary>
+        public void SetBuildupValues(float poisonBuildup, float bleedBuildup)
+        {
+            m_poisonBuildup = Mathf.Max(0f, poisonBuildup);
+            m_bleedBuildup = Mathf.Max(0f, bleedBuildup);
         }
 
         /// <summary>
@@ -262,6 +275,8 @@ namespace ZZ
                     m_lightningDamage,
                     m_holyDamage,
                     m_poiseDamage,
+                    m_poisonBuildup,
+                    m_bleedBuildup,
                     contactPoint,
                     wasBlocked);
                 return;
@@ -297,6 +312,12 @@ namespace ZZ
             }
 
             effectsManager.ProcessRuntimeInstantEffect(runtimeEffect);
+            if (!wasBlocked)
+            {
+                effectsManager.ProcessBuildupEffects(
+                    m_poisonBuildup,
+                    m_bleedBuildup);
+            }
         }
 
         private InstantCharacterEffect CreateRuntimeDamageEffect(

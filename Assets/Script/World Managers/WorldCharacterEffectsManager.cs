@@ -9,14 +9,27 @@ namespace ZZ
             "Effects/Take Blocked Damage Effect";
         private const string k_CriticalDamageEffectResourcePath =
             "Effects/Take Critical Damage Effect";
+        private const string k_TakePoisonBuildupEffectResourcePath =
+            "Effects/Take Poison Buildup Effect";
+        private const string k_TakeBleedBuildupEffectResourcePath =
+            "Effects/Take Bleed Buildup Effect";
+        private const string k_DegradePoisonBuildupEffectResourcePath =
+            "Effects/Degrade Poison Buildup Effect";
+        private const string k_DegradeBleedBuildupEffectResourcePath =
+            "Effects/Degrade Bleed Buildup Effect";
         private const string k_DeadSpotResourcePath = "Effects/Dead Spot";
 
         private static WorldCharacterEffectsManager s_instance;
 
         [SerializeField] private List<InstantCharacterEffect> m_instantEffects = new();
+        [SerializeField] private List<TimedCharacterEffect> m_timedEffects = new();
         [SerializeField] private TakeDamageEffect m_takeDamageEffect;
         [SerializeField] private TakeBlockedDamageEffect m_takeBlockedDamageEffect;
         [SerializeField] private TakeCriticalDamageEffect m_takeCriticalDamageEffect;
+        [SerializeField] private TakeBuildupEffect m_takePoisonBuildupEffect;
+        [SerializeField] private TakeBuildupEffect m_takeBleedBuildupEffect;
+        [SerializeField] private BuildupEffect m_degradePoisonBuildupEffect;
+        [SerializeField] private BuildupEffect m_degradeBleedBuildupEffect;
 
         [Header("Quick Slot Effects")]
         [SerializeField] private GameObject m_healingFlaskVFX;
@@ -31,6 +44,18 @@ namespace ZZ
         public TakeCriticalDamageEffect TakeCriticalDamageEffect =>
             m_takeCriticalDamageEffect ??= Resources.Load<TakeCriticalDamageEffect>(
                 k_CriticalDamageEffectResourcePath);
+        public TakeBuildupEffect TakePoisonBuildupEffect =>
+            m_takePoisonBuildupEffect ??= Resources.Load<TakeBuildupEffect>(
+                k_TakePoisonBuildupEffectResourcePath);
+        public TakeBuildupEffect TakeBleedBuildupEffect =>
+            m_takeBleedBuildupEffect ??= Resources.Load<TakeBuildupEffect>(
+                k_TakeBleedBuildupEffectResourcePath);
+        public BuildupEffect DegradePoisonBuildupEffect =>
+            m_degradePoisonBuildupEffect ??= Resources.Load<BuildupEffect>(
+                k_DegradePoisonBuildupEffectResourcePath);
+        public BuildupEffect DegradeBleedBuildupEffect =>
+            m_degradeBleedBuildupEffect ??= Resources.Load<BuildupEffect>(
+                k_DegradeBleedBuildupEffectResourcePath);
         public GameObject HealingFlaskVFX => m_healingFlaskVFX;
         public GameObject FocusFlaskVFX => m_focusFlaskVFX != null
             ? m_focusFlaskVFX
@@ -44,6 +69,9 @@ namespace ZZ
         /// </summary>
         public IReadOnlyList<InstantCharacterEffect> InstantEffects => m_instantEffects;
 
+        /// <summary>Gets authored timed effects in their stable identifier order.</summary>
+        public IReadOnlyList<TimedCharacterEffect> TimedEffects => m_timedEffects;
+
         private void Awake()
         {
             if (s_instance != null && s_instance != this)
@@ -53,13 +81,14 @@ namespace ZZ
             }
 
             s_instance = this;
-            AssignInstantEffectIds();
+            RegisterResourceEffects();
+            AssignEffectIDs();
             DontDestroyOnLoad(gameObject);
         }
 
         private void OnValidate()
         {
-            AssignInstantEffectIds();
+            AssignEffectIDs();
         }
 
         private void OnDestroy()
@@ -87,11 +116,57 @@ namespace ZZ
             return instantEffect != null && instantEffect.InstantEffectId == instantEffectId;
         }
 
-        private void AssignInstantEffectIds()
+        /// <summary>Finds a timed effect by its catalog identifier.</summary>
+        public bool TryGetTimedEffect(
+            int timedEffectID,
+            out TimedCharacterEffect timedEffect)
+        {
+            if (timedEffectID < 0 || timedEffectID >= m_timedEffects.Count)
+            {
+                timedEffect = null;
+                return false;
+            }
+
+            timedEffect = m_timedEffects[timedEffectID];
+            return timedEffect != null &&
+                timedEffect.TimedEffectID == timedEffectID;
+        }
+
+        private void AssignEffectIDs()
         {
             for (int effectIndex = 0; effectIndex < m_instantEffects.Count; effectIndex++)
             {
                 m_instantEffects[effectIndex]?.AssignInstantEffectId(effectIndex);
+            }
+
+            for (int effectIndex = 0; effectIndex < m_timedEffects.Count; effectIndex++)
+            {
+                m_timedEffects[effectIndex]?.AssignTimedEffectID(effectIndex);
+            }
+        }
+
+        private void RegisterResourceEffects()
+        {
+            m_takePoisonBuildupEffect ??= Resources.Load<TakeBuildupEffect>(
+                k_TakePoisonBuildupEffectResourcePath);
+            m_takeBleedBuildupEffect ??= Resources.Load<TakeBuildupEffect>(
+                k_TakeBleedBuildupEffectResourcePath);
+            m_degradePoisonBuildupEffect ??= Resources.Load<BuildupEffect>(
+                k_DegradePoisonBuildupEffectResourcePath);
+            m_degradeBleedBuildupEffect ??= Resources.Load<BuildupEffect>(
+                k_DegradeBleedBuildupEffectResourcePath);
+            RegisterEffect(m_instantEffects, m_takePoisonBuildupEffect);
+            RegisterEffect(m_instantEffects, m_takeBleedBuildupEffect);
+            RegisterEffect(m_timedEffects, m_degradePoisonBuildupEffect);
+            RegisterEffect(m_timedEffects, m_degradeBleedBuildupEffect);
+        }
+
+        private static void RegisterEffect<T>(List<T> effects, T effect)
+            where T : Object
+        {
+            if (effect != null && !effects.Contains(effect))
+            {
+                effects.Add(effect);
             }
         }
     }

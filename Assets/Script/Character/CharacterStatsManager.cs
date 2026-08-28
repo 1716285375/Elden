@@ -10,6 +10,7 @@ namespace ZZ
         private const float k_HealthPerVitalityLevel = 15f;
         private const float k_StaminaPerEnduranceLevel = 10f;
         private const float k_FocusPointsPerMindLevel = 10f;
+        private const float k_BuildupCapacityPerVitalityLevel = 3.25f;
         private const float k_PoiseTimerEpsilon = 0.0001f;
 
         [Header("Stamina Regeneration")]
@@ -210,6 +211,14 @@ namespace ZZ
             return Mathf.Max(0, mindLevel) * k_FocusPointsPerMindLevel;
         }
 
+        /// <summary>Calculates the shared status buildup cap from Vitality.</summary>
+        public static float CalculateBuildupCapacityBasedOnVitalityLevel(
+            int vitalityLevel)
+        {
+            return Mathf.Max(0, vitalityLevel) *
+                k_BuildupCapacityPerVitalityLevel;
+        }
+
         /// <summary>
         /// Recalculates maximum Health and fills the owner resource to that maximum.
         /// </summary>
@@ -224,6 +233,45 @@ namespace ZZ
                 m_characterNetworkManager.Vitality.Value);
             m_characterNetworkManager.MaxHealth.Value = maximumHealth;
             m_characterNetworkManager.CurrentHealth.Value = maximumHealth;
+        }
+
+        /// <summary>Recalculates shared status capacity and clamps active accumulation.</summary>
+        public void SetNewBuildupCapacityValue()
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            float capacity = CalculateBuildupCapacityBasedOnVitalityLevel(
+                m_characterNetworkManager.Vitality.Value);
+            m_characterNetworkManager.BuildupCapacity.Value = capacity;
+            m_characterNetworkManager.TrySetBuildup(
+                Buildup.Poison,
+                m_characterNetworkManager.PoisonBuildup.Value);
+            m_characterNetworkManager.TrySetBuildup(
+                Buildup.Bleed,
+                m_characterNetworkManager.BleedBuildup.Value);
+        }
+
+        /// <summary>Applies one decay tick and returns the replicated buildup remaining.</summary>
+        public float DegradeBuildup(BuildupEffect buildupEffect)
+        {
+            if (buildupEffect == null ||
+                !IsSpawned ||
+                !IsOwner ||
+                m_characterNetworkManager == null)
+            {
+                return 0f;
+            }
+
+            Buildup buildupType = buildupEffect.BuildupType;
+            float currentBuildup = m_characterNetworkManager.GetBuildup(
+                buildupType);
+            m_characterNetworkManager.TrySetBuildup(
+                buildupType,
+                currentBuildup + buildupEffect.BuildupAmountDegradation);
+            return m_characterNetworkManager.GetBuildup(buildupType);
         }
 
         /// <summary>
@@ -596,6 +644,11 @@ namespace ZZ
             {
                 SetNewMaxFocusPointsValue();
             }
+
+            if (m_characterNetworkManager.BuildupCapacity.Value <= 0f)
+            {
+                SetNewBuildupCapacityValue();
+            }
         }
 
         private void OnVitalityChanged(int previousVitality, int currentVitality)
@@ -603,6 +656,7 @@ namespace ZZ
             if (IsOwner)
             {
                 SetNewMaxHealthValue();
+                SetNewBuildupCapacityValue();
             }
         }
 
