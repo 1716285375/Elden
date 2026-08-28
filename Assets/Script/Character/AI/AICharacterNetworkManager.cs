@@ -99,6 +99,25 @@ namespace ZZ
             }
         }
 
+        /// <summary>Mirrors one server target change into every client's runtime reference list.</summary>
+        public void ReplicateTargetRelationship(
+            PlayerManager previousTarget,
+            PlayerManager currentTarget)
+        {
+            if (!IsSpawned || !IsServer)
+            {
+                return;
+            }
+
+            bool hadPreviousTarget = previousTarget?.IsSpawned == true;
+            bool hasCurrentTarget = currentTarget?.IsSpawned == true;
+            SynchronizeTargetRelationshipClientRpc(
+                hadPreviousTarget,
+                hadPreviousTarget ? previousTarget.NetworkObjectId : 0UL,
+                hasCurrentTarget,
+                hasCurrentTarget ? currentTarget.NetworkObjectId : 0UL);
+        }
+
         /// <summary>Publishes authored sleep data and a server-selected awake transition.</summary>
         public void SetAwakeState(
             bool isAwake,
@@ -278,6 +297,47 @@ namespace ZZ
 
             GetComponentInChildren<AICharacterAnimatorManager>(true)
                 ?.PlayPivotTurn(turnLeft);
+        }
+
+        [ClientRpc]
+        private void SynchronizeTargetRelationshipClientRpc(
+            bool hadPreviousTarget,
+            ulong previousTargetNetworkObjectId,
+            bool hasCurrentTarget,
+            ulong currentTargetNetworkObjectId)
+        {
+            if (IsServer)
+            {
+                return;
+            }
+
+            CharacterManager targetingCharacter = GetComponent<CharacterManager>();
+            if (hadPreviousTarget)
+            {
+                ResolvePlayer(previousTargetNetworkObjectId)
+                    ?.CharacterCombatManager
+                    ?.RemoveCharacterTargetingMe(targetingCharacter);
+            }
+
+            if (hasCurrentTarget)
+            {
+                ResolvePlayer(currentTargetNetworkObjectId)
+                    ?.CharacterCombatManager
+                    ?.AddCharacterTargetingMe(targetingCharacter);
+            }
+        }
+
+        private PlayerManager ResolvePlayer(ulong networkObjectId)
+        {
+            if (NetworkManager == null ||
+                !NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(
+                    networkObjectId,
+                    out NetworkObject networkObject))
+            {
+                return null;
+            }
+
+            return networkObject.GetComponent<PlayerManager>();
         }
     }
 }

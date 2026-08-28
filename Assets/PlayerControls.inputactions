@@ -149,6 +149,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Sneak",
+                    "type": "Button",
+                    "id": "bcc7e4c8-e48a-4beb-96ff-6200e3e5dccd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -644,6 +653,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Switch Quick Slot Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e28919fb-6fdc-4463-bcf4-418911ca037d",
+                    "path": "<Keyboard>/c",
+                    "interactions": "press",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Sneak",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4dbe0483-da77-45e1-b512-e68c185c7ffd",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "press",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Sneak",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

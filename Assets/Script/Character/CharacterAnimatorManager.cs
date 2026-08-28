@@ -22,6 +22,8 @@ namespace ZZ
             Animator.StringToHash("isChargingAttack");
         private static readonly int s_isBlockingParameter =
             Animator.StringToHash("isBlocking");
+        private static readonly int s_isSneakingParameter =
+            Animator.StringToHash("isSneaking");
         private static readonly int s_isTwoHandingWeaponParameter =
             Animator.StringToHash("isTwoHandingWeapon");
         private static readonly int s_isChargingRightSpellParameter =
@@ -90,6 +92,8 @@ namespace ZZ
             Animator.StringToHash("Action Override.Cast_Spell_Left_Release_Full");
         private static readonly int s_bowDrawState =
             Animator.StringToHash("Action Override.Bow_Draw");
+        private static readonly int s_sneakBowDrawState =
+            Animator.StringToHash("Action Override.Sneak Bow Draw");
         private static readonly int s_bowOutOfAmmoState =
             Animator.StringToHash("Action Override.Bow_Out_Of_Ammo");
         private static readonly int s_swapRightWeaponState =
@@ -226,6 +230,8 @@ namespace ZZ
                     player.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true);
                 SetBlockingState(
                     player.CharacterNetworkManager?.IsBlocking.Value == true);
+                SetSneakingState(
+                    player.CharacterNetworkManager?.IsSneaking.Value == true);
             }
 
             return true;
@@ -283,6 +289,12 @@ namespace ZZ
         public void SetBlockingState(bool isBlocking)
         {
             m_animator?.SetBool(s_isBlockingParameter, isBlocking);
+        }
+
+        /// <summary>Applies the replicated low-profile locomotion condition.</summary>
+        public void SetSneakingState(bool isSneaking)
+        {
+            m_animator?.SetBool(s_isSneakingParameter, isSneaking);
         }
 
         /// <summary>Applies the replicated two-hand locomotion and blocking condition.</summary>
@@ -1010,7 +1022,7 @@ namespace ZZ
                 : null;
         }
 
-        private static bool TryGetActionStateHash(
+        private bool TryGetActionStateHash(
             CharacterActionAnimation targetAnimation,
             out int actionStateHash)
         {
@@ -1086,7 +1098,11 @@ namespace ZZ
                     actionStateHash = s_releaseFullChargeSpellLeftState;
                     return true;
                 case CharacterActionAnimation.BowDraw:
-                    actionStateHash = s_bowDrawState;
+                    actionStateHash =
+                        m_characterManager?.CharacterNetworkManager
+                            ?.IsSneaking.Value == true
+                            ? s_sneakBowDrawState
+                            : s_bowDrawState;
                     return true;
                 case CharacterActionAnimation.BowOutOfAmmo:
                     actionStateHash = s_bowOutOfAmmoState;

@@ -38,9 +38,15 @@ namespace ZZ
                 ChangeState(AICharacterStateId.Idle);
             }
 
-            AICharacterStateId nextState = m_currentState.Tick(
+            AICharacterState stateAtTickStart = m_currentState;
+            AICharacterStateId nextState = stateAtTickStart.Tick(
                 m_character,
                 deltaTime);
+            if (m_currentState != stateAtTickStart)
+            {
+                return;
+            }
+
             if (nextState != m_currentState.StateId)
             {
                 ChangeState(nextState);

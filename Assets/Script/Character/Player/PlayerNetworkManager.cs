@@ -612,6 +612,36 @@ namespace ZZ
             }
         }
 
+        /// <summary>Toggles owner-authored sneaking while preserving compatible bow actions.</summary>
+        public bool ToggleSneakingState()
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            PlayerManager player = GetComponent<PlayerManager>();
+            bool isCompatibleRangedAction =
+                player?.PlayerCombatManager?.HasArrowNotched == true;
+            bool shouldSneak = !IsSneaking.Value;
+            if (shouldSneak &&
+                (player == null ||
+                    player.IsDead ||
+                    player.IsPerformingAction && !isCompatibleRangedAction))
+            {
+                return false;
+            }
+
+            if (shouldSneak)
+            {
+                player.PlayerCombatManager?.SetBlocking(false);
+                player.LocomotionManager?.StopSprinting();
+            }
+
+            SetSneakingState(shouldSneak);
+            return IsSneaking.Value == shouldSneak;
+        }
+
         /// <summary>Commits one ammunition slot and begins its held notch state.</summary>
         public void SetNotchedProjectileState(
             int projectileID,

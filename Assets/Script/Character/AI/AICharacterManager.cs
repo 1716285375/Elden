@@ -27,6 +27,8 @@ namespace ZZ
         [SerializeField, Range(1f, 360f)] private float m_fieldOfView = 140f;
         [SerializeField, Min(0.02f)] private float m_detectionInterval = 0.2f;
         [SerializeField, Min(0f)] private float m_eyeHeight = 1.4f;
+        [SerializeField, Range(0.01f, 1f)] private float
+            m_sneakingDetectionRadiusMultiplier = 0.25f;
         [SerializeField] private LayerMask m_lineOfSightLayers = ~0;
 
         [Header("Combat")]
@@ -221,6 +223,7 @@ namespace ZZ
 
         public override void OnNetworkDespawn()
         {
+            ClearTarget();
             WorldAIManager.Instance?.UnregisterAI(this);
             m_originSpawner?.NotifyCharacterDespawned(this);
             DestroyActivationBeacon();
@@ -234,9 +237,11 @@ namespace ZZ
             base.OnNetworkDespawn();
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
+            ClearTarget();
             DestroyActivationBeacon();
+            base.OnDestroy();
         }
 
         private void Update()
@@ -543,7 +548,18 @@ namespace ZZ
                 return false;
             }
 
+            if (m_currentTarget == player)
+            {
+                return true;
+            }
+
+            PlayerManager previousTarget = m_currentTarget;
+            previousTarget?.CharacterCombatManager?.RemoveCharacterTargetingMe(this);
             m_currentTarget = player;
+            m_currentTarget.CharacterCombatManager?.AddCharacterTargetingMe(this);
+            m_aiNetworkManager?.ReplicateTargetRelationship(
+                previousTarget,
+                m_currentTarget);
             return true;
         }
 
@@ -555,7 +571,11 @@ namespace ZZ
                 return;
             }
 
-            m_currentTarget = enteringPlayer;
+            if (!SetTarget(enteringPlayer))
+            {
+                return;
+            }
+
             bool shouldPlayFirstAwakening = !m_hasBeenAwakenedAlready;
             WakeFromSleep(shouldPlayFirstAwakening);
             m_hasBeenAwakenedAlready = true;
@@ -586,8 +606,8 @@ namespace ZZ
             }
 
             m_nextDetectionTime = Time.time + m_detectionInterval;
-            m_currentTarget = FindNearestVisiblePlayer();
-            return m_currentTarget != null;
+            PlayerManager target = FindNearestVisiblePlayer();
+            return target != null && SetTarget(target);
         }
 
         internal bool BeginSoundInvestigation(Vector3 positionOfSound)
@@ -613,7 +633,15 @@ namespace ZZ
 
         internal void ClearTarget()
         {
+            if (m_currentTarget == null)
+            {
+                return;
+            }
+
+            PlayerManager previousTarget = m_currentTarget;
+            previousTarget?.CharacterCombatManager?.RemoveCharacterTargetingMe(this);
             m_currentTarget = null;
+            m_aiNetworkManager?.ReplicateTargetRelationship(previousTarget, null);
         }
 
         internal void MoveTowardsTarget()
@@ -998,7 +1026,17 @@ namespace ZZ
             Vector3 targetOffset = player.transform.position - transform.position;
             targetOffset.y = 0f;
             float distanceSquared = targetOffset.sqrMagnitude;
-            if (distanceSquared > m_detectionRadius * m_detectionRadius ||
+            bool isSneaking =
+                player.CharacterNetworkManager?.IsSneaking.Value == true;
+            bool isHidden = player.CharacterCombatManager?.IsHidden ?? false;
+            bool isFullyConcealed = isSneaking &&
+                isHidden &&
+                player.CharacterCombatManager?.IsInsideStealthObject == true;
+            float detectionRadius = isSneaking && isHidden
+                ? m_detectionRadius * m_sneakingDetectionRadiusMultiplier
+                : m_detectionRadius;
+            if (isFullyConcealed ||
+                distanceSquared > detectionRadius * detectionRadius ||
                 distanceSquared >= nearestDistanceSquared ||
                 !IsWithinFieldOfView(targetOffset) ||
                 !HasLineOfSight(player))

@@ -133,6 +133,14 @@ namespace ZZ
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsSneaking = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsHidden = new NetworkVariable<bool>(
+            true,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server);
         public NetworkVariable<bool> IsDead = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -221,6 +229,7 @@ namespace ZZ
             IsChargingAttack.OnValueChanged += OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged += OnIsBlockingChanged;
             IsParrying.OnValueChanged += OnIsParryingChanged;
+            IsSneaking.OnValueChanged += OnIsSneakingChanged;
 
             if (IsOwner)
             {
@@ -228,6 +237,7 @@ namespace ZZ
                 NetworkRotation.Value = transform.rotation;
                 IsJumping.Value = false;
                 IsRolling.Value = false;
+                IsSneaking.Value = false;
                 IsChargingAttack.Value = false;
                 IsBlocking.Value = false;
                 IsAttacking.Value = false;
@@ -237,8 +247,14 @@ namespace ZZ
                 IsBeingCriticallyDamaged.Value = false;
             }
 
+            if (IsServer)
+            {
+                IsHidden.Value = m_characterCombatManager?.IsHidden ?? true;
+            }
+
             ApplyChargingAttackState(IsChargingAttack.Value);
             ApplyBlockingState(IsBlocking.Value);
+            ApplySneakingState(IsSneaking.Value);
             m_characterAnimatorManager?.SetDeadState(IsDead.Value);
             OnIsPoisonedChanged(false, IsPoisoned.Value);
             OnIsFrostbittenChanged(false, IsFrostbitten.Value);
@@ -257,8 +273,10 @@ namespace ZZ
             IsChargingAttack.OnValueChanged -= OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged -= OnIsBlockingChanged;
             IsParrying.OnValueChanged -= OnIsParryingChanged;
+            IsSneaking.OnValueChanged -= OnIsSneakingChanged;
             ApplyChargingAttackState(false);
             ApplyBlockingState(false);
+            ApplySneakingState(false);
             m_characterManager?.CharacterEffectsManager?.SetFrostbittenState(
                 false);
             m_characterManager?.SetFrozenState(false);
@@ -269,6 +287,7 @@ namespace ZZ
         {
             base.OnGainedOwnership();
             SetRollingState(false);
+            SetSneakingState(false);
             SetChargingAttackState(false);
             SetBlockingState(false);
             SetAttackingState(false);
@@ -376,6 +395,28 @@ namespace ZZ
             }
 
             IsBlocking.Value = isBlocking;
+        }
+
+        /// <summary>Writes the owner's deliberate low-profile locomotion state.</summary>
+        public void SetSneakingState(bool isSneaking)
+        {
+            if (!IsSpawned || !IsOwner || IsSneaking.Value == isSneaking)
+            {
+                return;
+            }
+
+            IsSneaking.Value = isSneaking;
+        }
+
+        /// <summary>Writes server-authoritative target visibility for every peer.</summary>
+        public void SetHiddenState(bool isHidden)
+        {
+            if (!IsSpawned || !IsServer || IsHidden.Value == isHidden)
+            {
+                return;
+            }
+
+            IsHidden.Value = isHidden;
         }
 
         /// <summary>Writes whether the owner is inside an attack action.</summary>
@@ -1144,6 +1185,11 @@ namespace ZZ
             m_characterAnimatorManager?.SetDeadState(isDead);
             if (isDead)
             {
+                if (IsOwner)
+                {
+                    SetSneakingState(false);
+                }
+
                 if (IsOwner && IsPoisoned.Value)
                 {
                     TrySetPoisoned(false);
@@ -1222,6 +1268,11 @@ namespace ZZ
             ApplyBlockingState(isBlocking);
         }
 
+        private void OnIsSneakingChanged(bool wasSneaking, bool isSneaking)
+        {
+            ApplySneakingState(isSneaking);
+        }
+
         private void OnIsParryingChanged(bool wasParrying, bool isParrying)
         {
             if (!isParrying)
@@ -1249,6 +1300,13 @@ namespace ZZ
                         ? player.InventoryManager?.CurrentTwoHandWeapon
                         : player.InventoryManager?.CurrentLeftHandWeapon);
             }
+        }
+
+        private void ApplySneakingState(bool isSneaking)
+        {
+            m_characterAnimatorManager ??=
+                GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterAnimatorManager?.SetSneakingState(isSneaking);
         }
     }
 }
