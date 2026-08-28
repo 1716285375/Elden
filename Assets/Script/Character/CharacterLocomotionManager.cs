@@ -49,6 +49,7 @@ namespace ZZ
         private bool m_hasSetFallingVelocity;
         private bool m_canRun = true;
         private bool m_canRoll = true;
+        private bool m_isRidingLift;
         private Vector3 m_characterSlideVelocity;
         private Coroutine m_slideOffCharacterCoroutine;
 
@@ -65,6 +66,8 @@ namespace ZZ
         public bool CanRun => m_canRun;
         /// <summary>Gets whether the current action permits a dodge.</summary>
         public bool CanRoll => m_canRoll;
+        /// <summary>Gets whether a moving platform currently owns vertical placement.</summary>
+        public bool IsRidingLift => m_isRidingLift;
         /// <summary>Gets whether this character is currently sliding down a detected surface.</summary>
         public bool IsSliding => m_isSliding;
         /// <summary>Gets the current surface-projected slope velocity.</summary>
@@ -89,6 +92,39 @@ namespace ZZ
         public void SetCanRoll(bool canRoll)
         {
             m_canRoll = canRoll;
+        }
+
+        /// <summary>Transfers vertical placement authority to or from a moving lift.</summary>
+        public void SetRidingLift(bool isRidingLift)
+        {
+            m_isRidingLift = isRidingLift;
+            if (m_isRidingLift &&
+                m_characterManager != null &&
+                !m_characterManager.IsJumping)
+            {
+                m_verticalVelocity = Vector3.zero;
+            }
+        }
+
+        /// <summary>Moves a non-jumping rider to one world-space lift surface height.</summary>
+        public void MoveWithLiftToHeight(float worldHeight)
+        {
+            if (!m_isRidingLift ||
+                m_characterManager == null ||
+                m_characterManager.IsJumping)
+            {
+                return;
+            }
+
+            Vector3 verticalMovement = Vector3.up *
+                (worldHeight - transform.position.y);
+            if (m_characterController != null && m_characterController.enabled)
+            {
+                m_characterController.Move(verticalMovement);
+                return;
+            }
+
+            transform.position += verticalMovement;
         }
 
         /// <summary>Enables or disables gravity-driven vertical and slope movement.</summary>
@@ -154,6 +190,14 @@ namespace ZZ
                 !m_characterController.enabled ||
                 m_ignoreGravity)
             {
+                return;
+            }
+
+            if (m_isRidingLift &&
+                m_characterManager.IsGrounded &&
+                !m_characterManager.IsJumping)
+            {
+                m_verticalVelocity = Vector3.zero;
                 return;
             }
 
@@ -295,6 +339,11 @@ namespace ZZ
 
             Vector3 networkPosition = m_characterManager
                 .CharacterNetworkManager.NetworkPosition.Value;
+            if (m_isRidingLift && !m_characterManager.IsJumping)
+            {
+                networkPosition.y = transform.position.y;
+            }
+
             if ((transform.position - networkPosition).sqrMagnitude <= 6.25f)
             {
                 return;

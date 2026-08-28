@@ -292,9 +292,17 @@ namespace ZZ
             }
             else
             {
+                Vector3 networkPosition = NetworkPosition.Value;
+                if (m_characterManager?.CharacterLocomotionManager
+                    ?.IsRidingLift == true &&
+                    m_characterManager.IsJumping == false)
+                {
+                    networkPosition.y = transform.position.y;
+                }
+
                 transform.position = Vector3.SmoothDamp(
                     transform.position,
-                    NetworkPosition.Value,
+                    networkPosition,
                     ref m_networkPositionVelocity,
                     m_networkPositionSmoothTime);
 
