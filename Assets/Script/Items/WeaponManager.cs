@@ -11,6 +11,8 @@ namespace ZZ
 
         [SerializeField] private MeleeWeaponDamageCollider m_meleeDamageCollider;
         [SerializeField] private Animator m_weaponAnimator;
+        [SerializeField] private ParticleSystem m_particleWeaponTrail;
+        [SerializeField] private TrailRenderer m_rendererWeaponTrail;
 
         private AttackType m_currentAttackType = AttackType.LightAttack01;
 
@@ -20,6 +22,16 @@ namespace ZZ
         /// <summary>Gets the melee hitbox supplied by the equipped runtime model.</summary>
         public MeleeWeaponDamageCollider MeleeDamageCollider =>
             m_meleeDamageCollider;
+
+        /// <summary>Gets the authored particle trail used by this weapon, when present.</summary>
+        public ParticleSystem WeaponTrailParticles => m_particleWeaponTrail;
+
+        /// <summary>Gets whether either supported trail implementation is emitting.</summary>
+        public bool IsWeaponTrailEmitting =>
+            (m_particleWeaponTrail != null &&
+                m_particleWeaponTrail.emission.enabled) ||
+            (m_rendererWeaponTrail != null &&
+                m_rendererWeaponTrail.emitting);
 
         /// <summary>Gets the authored spell origin embedded in this weapon model.</summary>
         public SpellInstantiationLocation SpellInstantiationLocation { get; private set; }
@@ -31,7 +43,14 @@ namespace ZZ
             SpellInstantiationLocation ??=
                 GetComponentInChildren<SpellInstantiationLocation>(true);
             m_weaponAnimator ??= GetComponentInChildren<Animator>(true);
+            DiscoverWeaponTrail();
             m_meleeDamageCollider?.CloseDamageCollider();
+            ToggleWeaponTrail(false);
+        }
+
+        private void OnDisable()
+        {
+            ToggleWeaponTrail(false);
         }
 
         /// <summary>
@@ -76,6 +95,7 @@ namespace ZZ
         public void OpenDamageCollider()
         {
             m_meleeDamageCollider?.OpenDamageCollider();
+            ToggleWeaponTrail(true);
         }
 
         /// <summary>
@@ -84,6 +104,36 @@ namespace ZZ
         public void CloseDamageCollider()
         {
             m_meleeDamageCollider?.CloseDamageCollider();
+            ToggleWeaponTrail(false);
+        }
+
+        /// <summary>
+        /// Toggles the configured weapon trail without exposing its rendering implementation.
+        /// </summary>
+        public void ToggleWeaponTrail(bool status)
+        {
+            if (m_rendererWeaponTrail != null)
+            {
+                m_rendererWeaponTrail.emitting = status;
+            }
+
+            if (m_particleWeaponTrail == null)
+            {
+                return;
+            }
+
+            ParticleSystem.EmissionModule emission =
+                m_particleWeaponTrail.emission;
+            emission.enabled = status;
+            if (status)
+            {
+                m_particleWeaponTrail.Play(true);
+                return;
+            }
+
+            m_particleWeaponTrail.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmitting);
         }
 
         /// <summary>
@@ -145,6 +195,26 @@ namespace ZZ
 
             m_weaponAnimator.SetBool("hasArrowNotched", hasArrowNotched);
             m_weaponAnimator.SetBool("isHoldingArrow", isHoldingArrow);
+        }
+
+        private void DiscoverWeaponTrail()
+        {
+            m_rendererWeaponTrail ??=
+                GetComponentInChildren<TrailRenderer>(true);
+            if (m_particleWeaponTrail != null)
+            {
+                return;
+            }
+
+            foreach (ParticleSystem particles in
+                     GetComponentsInChildren<ParticleSystem>(true))
+            {
+                if (particles.name.Contains("Weapon Trail"))
+                {
+                    m_particleWeaponTrail = particles;
+                    return;
+                }
+            }
         }
     }
 }
