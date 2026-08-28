@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e52edbe2ab6764abc4823483d5b240, type: 3}
+  m_Name: Frostbite Effect
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.FrostbiteEffect
+  m_timedEffectID: 5
+  m_defaultTimeLengthOnEffect: 60
+  m_hpPercentageDamage: 10
+  m_staminaRegenerationModifierEffect: {fileID: 11400000, guid: 343a359a6c75e134bb02533349eb981e, type: 2}

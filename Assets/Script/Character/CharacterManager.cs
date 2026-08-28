@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -34,6 +35,16 @@ namespace ZZ
         private bool m_shouldApplyRootMotion;
         private bool m_isDeathEventRunning;
         private bool m_isInvulnerable;
+        private bool m_hasFrozenStateSnapshot;
+        private bool m_canMoveBeforeFrozen;
+        private bool m_canRotateBeforeFrozen;
+        private bool m_wasPerformingActionBeforeFrozen;
+        private bool m_shouldApplyRootMotionBeforeFrozen;
+        private bool m_canRunBeforeFrozen;
+        private bool m_canRollBeforeFrozen;
+        private float m_animatorSpeedBeforeFrozen = 1f;
+        private readonly List<FrozenRendererState> m_frozenRendererStates = new();
+        private readonly List<FrozenBehaviourState> m_frozenBehaviourStates = new();
 
         public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
         public CharacterEffectsManager CharacterEffectsManager => m_characterEffectsManager;
@@ -113,6 +124,7 @@ namespace ZZ
 
         public override void OnNetworkDespawn()
         {
+            SetFrozenState(false);
             m_characterUIManager?.UnbindNetworkHealth();
             base.OnNetworkDespawn();
         }
@@ -146,6 +158,11 @@ namespace ZZ
             bool canRotate,
             bool canMove)
         {
+            if (m_hasFrozenStateSnapshot)
+            {
+                return;
+            }
+
             if (isPerformingAction && m_isPerformingAction)
             {
                 m_characterEffectsManager?.DestroyAllCurrentActionEffects();
@@ -180,13 +197,37 @@ namespace ZZ
         /// </summary>
         public void SetCanRotate(bool canRotate)
         {
+            if (m_hasFrozenStateSnapshot)
+            {
+                return;
+            }
+
             m_canRotate = canRotate;
         }
 
         /// <summary>Updates only the movement permission for an active action state.</summary>
         public void SetCanMove(bool canMove)
         {
+            if (m_hasFrozenStateSnapshot)
+            {
+                return;
+            }
+
             m_canMove = canMove;
+        }
+
+        /// <summary>
+        /// Freezes or restores animation, action permissions, IK behaviours, and renderer materials.
+        /// </summary>
+        public void SetFrozenState(bool isFrozen)
+        {
+            if (isFrozen)
+            {
+                ApplyFrozenState();
+                return;
+            }
+
+            RestoreFrozenState();
         }
 
         /// <summary>Sets whether incoming instant damage should be ignored.</summary>
@@ -201,6 +242,20 @@ namespace ZZ
         public void ResetActionFlags()
         {
             m_characterEffectsManager?.DestroyAllCurrentActionEffects();
+            if (m_hasFrozenStateSnapshot)
+            {
+                m_wasPerformingActionBeforeFrozen = false;
+                m_shouldApplyRootMotionBeforeFrozen = false;
+                m_canMoveBeforeFrozen = true;
+                m_canRotateBeforeFrozen = true;
+                m_canRunBeforeFrozen = true;
+                m_canRollBeforeFrozen = true;
+                m_characterCombatManager?.ResetActionState();
+                m_characterNetworkManager?.SetRollingState(false);
+                EndJump();
+                return;
+            }
+
             m_isPerformingAction = false;
             m_canMove = true;
             m_canRotate = true;
@@ -269,12 +324,215 @@ namespace ZZ
             {
                 m_characterNetworkManager.TrySetPoisoned(false);
                 m_characterNetworkManager.TrySetBuildup(Buildup.Poison, 0f);
+                m_characterNetworkManager.TrySetFrostbitten(false);
+                m_characterNetworkManager.TrySetFrozen(false);
+                m_characterNetworkManager.TrySetBuildup(Buildup.Frost, 0f);
             }
+
+            SetFrozenState(false);
 
             m_isDeathEventRunning = false;
             m_isInvulnerable = false;
             m_characterAnimatorManager?.PlayEmptyActionAnimation();
             ResetActionFlags();
+        }
+
+        private void ApplyFrozenState()
+        {
+            if (m_hasFrozenStateSnapshot)
+            {
+                return;
+            }
+
+            m_hasFrozenStateSnapshot = true;
+            m_canMoveBeforeFrozen = m_canMove;
+            m_canRotateBeforeFrozen = m_canRotate;
+            m_wasPerformingActionBeforeFrozen = m_isPerformingAction;
+            m_shouldApplyRootMotionBeforeFrozen = m_shouldApplyRootMotion;
+            m_canRunBeforeFrozen = m_characterLocomotionManager?.CanRun ?? true;
+            m_canRollBeforeFrozen = m_characterLocomotionManager?.CanRoll ?? true;
+            m_animatorSpeedBeforeFrozen = m_animator != null
+                ? m_animator.speed
+                : 1f;
+
+            m_canMove = false;
+            m_canRotate = false;
+            m_isPerformingAction = true;
+            m_shouldApplyRootMotion = false;
+            m_characterLocomotionManager?.SetCanRun(false);
+            m_characterLocomotionManager?.SetCanRoll(false);
+            if (m_animator != null)
+            {
+                m_animator.speed = 0f;
+            }
+
+            DisableIKBehaviours();
+            ApplyFrozenMaterials();
+        }
+
+        private void RestoreFrozenState()
+        {
+            if (!m_hasFrozenStateSnapshot)
+            {
+                return;
+            }
+
+            RestoreFrozenMaterials();
+            RestoreIKBehaviours();
+            if (m_animator != null)
+            {
+                m_animator.speed = m_animatorSpeedBeforeFrozen;
+            }
+
+            m_canMove = m_canMoveBeforeFrozen;
+            m_canRotate = m_canRotateBeforeFrozen;
+            m_isPerformingAction = m_wasPerformingActionBeforeFrozen;
+            m_shouldApplyRootMotion = m_shouldApplyRootMotionBeforeFrozen;
+            m_characterLocomotionManager?.SetCanRun(m_canRunBeforeFrozen);
+            m_characterLocomotionManager?.SetCanRoll(m_canRollBeforeFrozen);
+            m_hasFrozenStateSnapshot = false;
+        }
+
+        private void DisableIKBehaviours()
+        {
+            m_frozenBehaviourStates.Clear();
+            Behaviour[] behaviours = GetComponentsInChildren<Behaviour>(true);
+            foreach (Behaviour behaviour in behaviours)
+            {
+                if (behaviour == null || !IsIKBehaviour(behaviour))
+                {
+                    continue;
+                }
+
+                m_frozenBehaviourStates.Add(new FrozenBehaviourState(
+                    behaviour,
+                    behaviour.enabled));
+                behaviour.enabled = false;
+            }
+        }
+
+        private void RestoreIKBehaviours()
+        {
+            foreach (FrozenBehaviourState state in m_frozenBehaviourStates)
+            {
+                if (state.Behaviour != null)
+                {
+                    state.Behaviour.enabled = state.WasEnabled;
+                }
+            }
+
+            m_frozenBehaviourStates.Clear();
+        }
+
+        private void ApplyFrozenMaterials()
+        {
+            RestoreFrozenMaterials();
+            Material frozenMaterial =
+                WorldCharacterEffectsManager.Instance?.FrozenMaterial;
+            if (frozenMaterial == null)
+            {
+                return;
+            }
+
+            Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer renderer in renderers)
+            {
+                if (renderer is not SkinnedMeshRenderer &&
+                    renderer is not MeshRenderer)
+                {
+                    continue;
+                }
+
+                Material[] originalMaterials = renderer.sharedMaterials;
+                Material[] frozenMaterials = new Material[originalMaterials.Length];
+                for (int materialIndex = 0;
+                    materialIndex < frozenMaterials.Length;
+                    materialIndex++)
+                {
+                    frozenMaterials[materialIndex] = new Material(frozenMaterial);
+                }
+
+                m_frozenRendererStates.Add(new FrozenRendererState(
+                    renderer,
+                    originalMaterials,
+                    frozenMaterials));
+                renderer.sharedMaterials = frozenMaterials;
+            }
+        }
+
+        private void RestoreFrozenMaterials()
+        {
+            foreach (FrozenRendererState state in m_frozenRendererStates)
+            {
+                if (state.Renderer != null)
+                {
+                    state.Renderer.sharedMaterials = state.OriginalMaterials;
+                }
+
+                foreach (Material frozenMaterial in state.FrozenMaterials)
+                {
+                    DestroyMaterialInstance(frozenMaterial);
+                }
+            }
+
+            m_frozenRendererStates.Clear();
+        }
+
+        private static bool IsIKBehaviour(Behaviour behaviour)
+        {
+            string typeName = behaviour.GetType().Name;
+            return typeName.IndexOf(
+                    "IK",
+                    System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                typeName.IndexOf(
+                    "RigBuilder",
+                    System.StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static void DestroyMaterialInstance(Material material)
+        {
+            if (material == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(material);
+            }
+            else
+            {
+                DestroyImmediate(material);
+            }
+        }
+
+        private sealed class FrozenRendererState
+        {
+            public FrozenRendererState(
+                Renderer renderer,
+                Material[] originalMaterials,
+                Material[] frozenMaterials)
+            {
+                Renderer = renderer;
+                OriginalMaterials = originalMaterials;
+                FrozenMaterials = frozenMaterials;
+            }
+
+            public Renderer Renderer { get; }
+            public Material[] OriginalMaterials { get; }
+            public Material[] FrozenMaterials { get; }
+        }
+
+        private readonly struct FrozenBehaviourState
+        {
+            public FrozenBehaviourState(Behaviour behaviour, bool wasEnabled)
+            {
+                Behaviour = behaviour;
+                WasEnabled = wasEnabled;
+            }
+
+            public Behaviour Behaviour { get; }
+            public bool WasEnabled { get; }
         }
 
         protected bool BeginDeathEvent(bool manuallySelectDeathAnimation)

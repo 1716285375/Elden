@@ -38,10 +38,14 @@ namespace ZZ
         [Header("Status Effect Colors")]
         [SerializeField] private Color m_poisonColor =
             new(0.34f, 0.62f, 0.2f, 1f);
+        [SerializeField] private Color m_frostColor =
+            new(0.25f, 0.72f, 1f, 1f);
 
         public static WorldUtilityManager Instance => s_instance;
         /// <summary>Gets the shared Poison presentation color.</summary>
         public Color PoisonColor => m_poisonColor;
+        /// <summary>Gets the shared Frostbite presentation color.</summary>
+        public Color FrostColor => m_frostColor;
 
         /// <summary>Gets all surfaces that can affect falling characters.</summary>
         public LayerMask GetEnvironmentLayers()

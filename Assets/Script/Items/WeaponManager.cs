@@ -59,7 +59,8 @@ namespace ZZ
                 weapon.BasePoiseDamage);
             m_meleeDamageCollider.SetBuildupValues(
                 weapon.PoisonBuildup,
-                weapon.BleedBuildup);
+                weapon.BleedBuildup,
+                weapon.FrostBuildup);
             m_meleeDamageCollider.CloseDamageCollider();
         }
 
@@ -111,7 +112,8 @@ namespace ZZ
                 Weapon.BasePoiseDamage);
             m_meleeDamageCollider.SetBuildupValues(
                 Weapon.PoisonBuildup,
-                Weapon.BleedBuildup);
+                Weapon.BleedBuildup,
+                Weapon.FrostBuildup);
         }
 
         /// <summary>Adds reinforcement only to damage channels authored above zero.</summary>

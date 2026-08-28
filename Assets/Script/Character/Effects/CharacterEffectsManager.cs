@@ -10,6 +10,7 @@ namespace ZZ
         [SerializeField] private GameObject m_bloodSplatterVFX;
         [SerializeField] private GameObject m_criticalBloodSplatterVFX;
         [SerializeField] private GameObject m_poisonedVFX;
+        [SerializeField] private GameObject m_frostbiteVFX;
 
         [SerializeField] private CharacterManager m_character;
 
@@ -22,6 +23,7 @@ namespace ZZ
 
         private readonly List<GameObject> m_currentActionEffects = new();
         private GameObject m_activePoisonedVFX;
+        private GameObject m_activeFrostbiteVFX;
         private float m_effectTickTimer;
 
         protected CharacterManager Character => m_character;
@@ -57,6 +59,7 @@ namespace ZZ
         protected virtual void OnDestroy()
         {
             SetPoisonedVFX(false);
+            SetFrostbiteVFX(false);
             DestroyAllCurrentActionEffects();
             RemoveAllTimedEffects();
             RemoveAllStaticEffects();
@@ -190,8 +193,11 @@ namespace ZZ
             }
         }
 
-        /// <summary>Processes authored Poison and Bleed payloads on the target owner.</summary>
-        public void ProcessBuildupEffects(float poisonBuildup, float bleedBuildup)
+        /// <summary>Processes authored status buildup payloads on the target owner.</summary>
+        public void ProcessBuildupEffects(
+            float poisonBuildup,
+            float bleedBuildup,
+            float frostBuildup)
         {
             WorldCharacterEffectsManager worldEffects =
                 WorldCharacterEffectsManager.Instance;
@@ -201,6 +207,9 @@ namespace ZZ
             ProcessBuildupEffect(
                 worldEffects?.TakeBleedBuildupEffect,
                 bleedBuildup);
+            ProcessBuildupEffect(
+                worldEffects?.TakeFrostBuildupEffect,
+                frostBuildup);
         }
 
         /// <summary>Adds one owner-authoritative accumulation amount.</summary>
@@ -226,6 +235,11 @@ namespace ZZ
             {
                 return false;
             }
+            if (buildupType == Buildup.Frost &&
+                networkManager.IsFrostbitten.Value)
+            {
+                return false;
+            }
 
             float currentBuildup = networkManager.GetBuildup(buildupType);
             if (!networkManager.TrySetBuildup(
@@ -241,6 +255,39 @@ namespace ZZ
                 networkManager.GetBuildup(buildupType) >= capacity)
             {
                 TriggerPoison(networkManager);
+            }
+            else if (buildupType == Buildup.Frost &&
+                capacity > 0f &&
+                networkManager.GetBuildup(buildupType) >= capacity)
+            {
+                TriggerFrostbite(networkManager);
+            }
+
+            return true;
+        }
+
+        /// <summary>Applies owner-authoritative status damage and shared death state.</summary>
+        public bool ProcessEffectDamage(float effectDamage)
+        {
+            CharacterNetworkManager networkManager =
+                m_character?.CharacterNetworkManager;
+            if (m_character == null ||
+                !m_character.IsSpawned ||
+                !m_character.IsOwner ||
+                m_character.IsDead ||
+                networkManager == null ||
+                effectDamage <= 0f)
+            {
+                return false;
+            }
+
+            float remainingHealth = Mathf.Max(
+                0f,
+                networkManager.CurrentHealth.Value - effectDamage);
+            networkManager.CurrentHealth.Value = remainingHealth;
+            if (remainingHealth <= 0f)
+            {
+                networkManager.IsDead.Value = true;
             }
 
             return true;
@@ -262,17 +309,7 @@ namespace ZZ
                 return false;
             }
 
-            float remainingHealth = PoisonedEffect.CalculateRemainingHealth(
-                networkManager.CurrentHealth.Value,
-                poisonDamage);
-            networkManager.CurrentHealth.Value = remainingHealth;
-            if (remainingHealth <= 0f)
-            {
-                networkManager.TrySetPoisoned(false);
-                networkManager.IsDead.Value = true;
-            }
-
-            return true;
+            return ProcessEffectDamage(poisonDamage);
         }
 
         /// <summary>Applies replicated Poison presentation and owner cleanup.</summary>
@@ -292,6 +329,26 @@ namespace ZZ
             if (poisonedEffect != null)
             {
                 RemoveTimedEffect(poisonedEffect.TimedEffectID);
+            }
+        }
+
+        /// <summary>Applies replicated Frostbite VFX and owner effect cleanup.</summary>
+        public void SetFrostbittenState(bool isFrostbitten)
+        {
+            SetFrostbiteVFX(isFrostbitten);
+            if (isFrostbitten ||
+                m_character == null ||
+                !m_character.IsSpawned ||
+                !m_character.IsOwner)
+            {
+                return;
+            }
+
+            FrostbiteEffect frostbiteEffect =
+                WorldCharacterEffectsManager.Instance?.FrostbiteEffect;
+            if (frostbiteEffect != null)
+            {
+                RemoveTimedEffect(frostbiteEffect.TimedEffectID);
             }
         }
 
@@ -462,6 +519,23 @@ namespace ZZ
             AddTimedEffect(poisonedEffect);
         }
 
+        private void TriggerFrostbite(CharacterNetworkManager networkManager)
+        {
+            FrostbiteEffect frostbiteEffect =
+                WorldCharacterEffectsManager.Instance?.FrostbiteEffect;
+            if (frostbiteEffect == null)
+            {
+                Debug.LogWarning(
+                    "Frost buildup reached capacity without a Frostbite Effect asset.",
+                    this);
+                return;
+            }
+
+            networkManager.TrySetBuildup(Buildup.Frost, 0f);
+            networkManager.TrySetFrostbitten(true);
+            AddTimedEffect(frostbiteEffect);
+        }
+
         private void SetPoisonedVFX(bool isPoisoned)
         {
             if (!isPoisoned)
@@ -491,6 +565,37 @@ namespace ZZ
                 anchor.rotation,
                 anchor);
             m_activePoisonedVFX.transform.localPosition = Vector3.zero;
+        }
+
+        private void SetFrostbiteVFX(bool isFrostbitten)
+        {
+            if (!isFrostbitten)
+            {
+                DestroyEffectInstance(m_activeFrostbiteVFX);
+                m_activeFrostbiteVFX = null;
+                return;
+            }
+
+            if (m_activeFrostbiteVFX != null || m_character == null)
+            {
+                return;
+            }
+
+            GameObject frostbiteVFX = m_frostbiteVFX != null
+                ? m_frostbiteVFX
+                : WorldCharacterEffectsManager.Instance?.FrostbiteVFX;
+            if (frostbiteVFX == null)
+            {
+                return;
+            }
+
+            Transform anchor = m_character.LockOnTransform;
+            m_activeFrostbiteVFX = Instantiate(
+                frostbiteVFX,
+                anchor.position,
+                anchor.rotation,
+                anchor);
+            m_activeFrostbiteVFX.transform.localPosition = Vector3.zero;
         }
 
         private void RemoveAllTimedEffects()

@@ -307,7 +307,7 @@ namespace ZZ.Editor
                 SerializedProperty bars = GetRequiredProperty(
                     serializedHUD,
                     "m_buildupBars");
-                bars.arraySize = 2;
+                bars.arraySize = Mathf.Max(2, bars.arraySize);
                 bars.GetArrayElementAtIndex(0).objectReferenceValue = poisonBar;
                 bars.GetArrayElementAtIndex(1).objectReferenceValue = bleedBar;
                 serializedHUD.ApplyModifiedPropertiesWithoutUndo();
@@ -382,14 +382,14 @@ namespace ZZ.Editor
                     bars,
                     bar => bar.BuildupType == Buildup.Bleed &&
                         !bar.gameObject.activeSelf);
-                if (hud == null || bars.Length != 2 || !hasPoison || !hasBleed)
+                if (hud == null || bars.Length < 2 || !hasPoison || !hasBleed)
                 {
                     throw new InvalidOperationException(
-                        "Player UI must contain two hidden buildup bars bound to the HUD.");
+                        "Player UI must contain hidden Poison and Bleed buildup bars.");
                 }
 
                 SerializedObject serializedHUD = new(hud);
-                if (GetRequiredProperty(serializedHUD, "m_buildupBars").arraySize != 2)
+                if (GetRequiredProperty(serializedHUD, "m_buildupBars").arraySize < 2)
                 {
                     throw new InvalidOperationException(
                         "Player UI HUD buildup references are incomplete.");
