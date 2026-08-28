@@ -15,6 +15,8 @@ namespace ZZ
     [RequireComponent(typeof(NetworkObject))]
     public class WorldSceneManager : NetworkBehaviour
     {
+        private const float k_SceneEventRetryTimeoutSeconds = 30f;
+
         /// <summary>The world Scene that remains loaded for the whole gameplay session.</summary>
         public const string PersistentWorldSceneID = "Scene_World_01";
 
@@ -25,6 +27,9 @@ namespace ZZ
         private readonly Queue<string> m_queuedUnloadSceneIDs = new();
         private readonly HashSet<string> m_pendingLoadSceneIDs = new();
         private readonly HashSet<string> m_pendingUnloadSceneIDs = new();
+
+        [SerializeField, Min(0f)] private float m_loadOperationInterval = 0.1f;
+        [SerializeField, Min(0f)] private float m_unloadOperationInterval = 0.5f;
 
         private Coroutine m_sceneQueueCoroutine;
         private bool m_sceneIsLoading;
@@ -206,22 +211,27 @@ namespace ZZ
                 if (m_queuedSceneIDs.Count > 0)
                 {
                     string sceneID = m_queuedSceneIDs.Dequeue();
-                    m_pendingLoadSceneIDs.Remove(sceneID);
                     if (!IsSceneLoaded(sceneID) && ShouldLoadScene(sceneID))
                     {
                         yield return LoadQueuedScene(sceneID);
                         WorldSceneSubSceneManager.Instance?.ReconcileLoadedScenes();
+                        yield return WaitForQueueInterval(
+                            m_loadOperationInterval);
                     }
 
+                    m_pendingLoadSceneIDs.Remove(sceneID);
                     continue;
                 }
 
                 string unloadSceneID = m_queuedUnloadSceneIDs.Dequeue();
-                m_pendingUnloadSceneIDs.Remove(unloadSceneID);
                 if (CanUnloadScene(unloadSceneID))
                 {
                     yield return UnloadQueuedScene(unloadSceneID);
+                    yield return WaitForQueueInterval(
+                        m_unloadOperationInterval);
                 }
+
+                m_pendingUnloadSceneIDs.Remove(unloadSceneID);
             }
 
             m_sceneQueueCoroutine = null;
@@ -229,21 +239,38 @@ namespace ZZ
 
         private IEnumerator LoadQueuedScene(string sceneID)
         {
-            m_sceneIsLoading = true;
-            SceneEventProgressStatus status = NetworkManager.SceneManager.LoadScene(
-                sceneID,
-                LoadSceneMode.Additive);
-            if (status != SceneEventProgressStatus.Started)
+            float retryUntil = Time.realtimeSinceStartup +
+                k_SceneEventRetryTimeoutSeconds;
+            while (Time.realtimeSinceStartup < retryUntil)
             {
-                m_sceneIsLoading = false;
-                Debug.LogError($"Could not load additive Scene {sceneID}: {status}.");
+                SceneEventProgressStatus status =
+                    NetworkManager.SceneManager.LoadScene(
+                        sceneID,
+                        LoadSceneMode.Additive);
+                if (status == SceneEventProgressStatus.SceneEventInProgress)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                if (status != SceneEventProgressStatus.Started)
+                {
+                    Debug.LogError(
+                        $"Could not load additive Scene {sceneID}: {status}.");
+                    yield break;
+                }
+
+                m_sceneIsLoading = true;
+                while (m_sceneIsLoading)
+                {
+                    yield return null;
+                }
+
                 yield break;
             }
 
-            while (m_sceneIsLoading)
-            {
-                yield return null;
-            }
+            Debug.LogError(
+                $"Timed out waiting to load additive Scene {sceneID}.");
         }
 
         private IEnumerator UnloadQueuedScene(string sceneID)
@@ -254,19 +281,50 @@ namespace ZZ
                 yield break;
             }
 
-            m_sceneIsUnloading = true;
-            SceneEventProgressStatus status = NetworkManager.SceneManager.UnloadScene(scene);
-            if (status != SceneEventProgressStatus.Started)
+            float retryUntil = Time.realtimeSinceStartup +
+                k_SceneEventRetryTimeoutSeconds;
+            while (Time.realtimeSinceStartup < retryUntil)
             {
-                m_sceneIsUnloading = false;
-                Debug.LogError($"Could not unload additive Scene {sceneID}: {status}.");
+                SceneEventProgressStatus status =
+                    NetworkManager.SceneManager.UnloadScene(scene);
+                if (status == SceneEventProgressStatus.SceneEventInProgress)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                if (status != SceneEventProgressStatus.Started)
+                {
+                    Debug.LogError(
+                        $"Could not unload additive Scene {sceneID}: {status}.");
+                    yield break;
+                }
+
+                m_sceneIsUnloading = true;
+                while (m_sceneIsUnloading)
+                {
+                    yield return null;
+                }
+
                 yield break;
             }
 
-            while (m_sceneIsUnloading)
+            Debug.LogError(
+                $"Timed out waiting to unload additive Scene {sceneID}.");
+        }
+
+        private static IEnumerator WaitForQueueInterval(float waitTime)
+        {
+            if (waitTime > 0f && !LoadingScreenIsActive())
             {
-                yield return null;
+                yield return new WaitForSecondsRealtime(waitTime);
             }
+        }
+
+        private static bool LoadingScreenIsActive()
+        {
+            return PlayerUIManager.Instance?.PlayerUILoadingScreenManager
+                ?.IsLoadingScreenActive == true;
         }
 
         private bool CanUnloadScene(string sceneID)

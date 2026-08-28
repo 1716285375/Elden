@@ -20,7 +20,97 @@ MonoBehaviour:
     - 34e5d072bc8b2dc4ebe28e4ceac4294d
     - af8ed880857b3b645acc4b75fd1c732f
     - 2cfb5c87232f31649a2bf41a4d6dbf87
+    - 7e89195358d558b4591c1cb97960d1e9
+    - 8c0118bf0e0814444b77ec66acf11523
+    - 9bb6102ef40a3fd46812672a880d2adb
+    - 982012559d5091540ad2f5e4424f7120
+    - d03e1df8ab1cf0147b440a82df68fbdf
+    - e13c03ecac7983244bd37cd86286bac6
+    - 4a7f84d36309f4049a1984eb8c705c20
+    - c455c06569a35a84f9c6915d8c474e8a
+    - 3ff18cadc600f0f4498e05debc83fb07
+    - 6f86f46fe4cf7994a90d56fef52c7d01
+    - a044deb0e3eab9040a44496146f6ef6d
+    - b7c5d0caa08e81c449431bee48b7ba20
+    - b56c2bf3724093040b102274e2ecb722
+    - add835eb2116d944e9d3affacac69da7
+    - bc8178278bc48564bb8c84b5a050b07f
     m_Values:
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+    - hasProbeVolume: 0
+      bakeScene: 1
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
     - hasProbeVolume: 0
       bakeScene: 1
       bounds:
@@ -77,6 +167,21 @@ MonoBehaviour:
   - 34e5d072bc8b2dc4ebe28e4ceac4294d
   - af8ed880857b3b645acc4b75fd1c732f
   - 2cfb5c87232f31649a2bf41a4d6dbf87
+  - 7e89195358d558b4591c1cb97960d1e9
+  - 8c0118bf0e0814444b77ec66acf11523
+  - 9bb6102ef40a3fd46812672a880d2adb
+  - 982012559d5091540ad2f5e4424f7120
+  - d03e1df8ab1cf0147b440a82df68fbdf
+  - e13c03ecac7983244bd37cd86286bac6
+  - 4a7f84d36309f4049a1984eb8c705c20
+  - c455c06569a35a84f9c6915d8c474e8a
+  - 3ff18cadc600f0f4498e05debc83fb07
+  - 6f86f46fe4cf7994a90d56fef52c7d01
+  - a044deb0e3eab9040a44496146f6ef6d
+  - b7c5d0caa08e81c449431bee48b7ba20
+  - b56c2bf3724093040b102274e2ecb722
+  - add835eb2116d944e9d3affacac69da7
+  - bc8178278bc48564bb8c84b5a050b07f
   obsoleteScenesToNotBake: []
   m_LightingScenarios:
   - Default

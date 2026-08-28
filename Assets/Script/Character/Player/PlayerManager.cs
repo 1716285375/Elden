@@ -20,6 +20,7 @@ namespace ZZ
         private const string k_SpawnPointName = "Player Spawn Point";
 
         [SerializeField] private PlayerAnimatorManager m_playerAnimatorManager;
+        [SerializeField] private WorldLocationSceneSet m_areaCurrentlyIn;
 
         [Header("DEBUG")]
         [SerializeField] private bool m_respawnCharacter;
@@ -32,6 +33,9 @@ namespace ZZ
         public PlayerLocomotionManager LocomotionManager { get; private set; }
         public PlayerLockOnManager LockOnManager { get; private set; }
         public PlayerInteractionManager InteractionManager { get; private set; }
+
+        /// <summary>Gets the server-tracked logical world location.</summary>
+        public WorldLocationSceneSet AreaCurrentlyIn => m_areaCurrentlyIn;
 
         /// <summary>Gets the player's quick-slot and runtime item state.</summary>
         public PlayerInventoryManager InventoryManager { get; private set; }
@@ -69,6 +73,12 @@ namespace ZZ
             PlayerCombatManager = GetComponent<PlayerCombatManager>();
             LockOnManager = GetComponent<PlayerLockOnManager>();
             InteractionManager = GetComponent<PlayerInteractionManager>();
+        }
+
+        /// <summary>Updates the server-owned logical world location reference.</summary>
+        internal void SetAreaCurrentlyIn(WorldLocationSceneSet worldLocation)
+        {
+            m_areaCurrentlyIn = worldLocation;
         }
 
         public override void OnNetworkSpawn()
