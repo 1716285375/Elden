@@ -71,7 +71,7 @@ namespace ZZ
         }
 
         /// <summary>Applies the configured one-shot collider policy after a successful interaction.</summary>
-        public void CompleteInteraction()
+        public virtual void CompleteInteraction()
         {
             if (m_shouldDisableColliderAfterInteraction && m_interactableCollider != null)
             {
