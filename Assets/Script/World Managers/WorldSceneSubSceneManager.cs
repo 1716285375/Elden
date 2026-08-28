@@ -9,34 +9,32 @@ using UnityEngine.SceneManagement;
 namespace ZZ
 {
     /// <summary>
-    /// Tracks every player's current region and protects the union of all current
-    /// and adjacent area Scenes.
+    /// Tracks every player's logical world location and protects the union of all
+    /// physical Scenes required by those locations.
     /// </summary>
     [DefaultExecutionOrder(-8400)]
     [RequireComponent(typeof(NetworkObject))]
     public class WorldSceneSubSceneManager : NetworkBehaviour
     {
         private const float k_ActiveSceneTimeoutSeconds = 30f;
-
-        private static readonly WorldSceneLocation[] s_streamableLocations =
-        {
-            WorldSceneLocation.Area01SubArea00,
-            WorldSceneLocation.Area01SubArea01,
-            WorldSceneLocation.Area01SubArea02,
-            WorldSceneLocation.Area01SubArea03,
-            WorldSceneLocation.Area01SubArea04
-        };
+        private const string k_WorldLocationResourcesPath = "World Locations";
 
         private static WorldSceneSubSceneManager s_instance;
 
-        private readonly List<PlayerManager> m_area00Players = new();
-        private readonly List<PlayerManager> m_area01Players = new();
-        private readonly List<PlayerManager> m_area02Players = new();
-        private readonly List<PlayerManager> m_area03Players = new();
-        private readonly List<PlayerManager> m_area04Players = new();
+        [SerializeField] private WorldLocationSceneSet m_defaultWorldLocation;
+        [SerializeField] private List<WorldLocationSceneSet> m_worldLocations =
+            new();
 
-        /// <summary>Gets the world region decision manager.</summary>
+        private readonly Dictionary<
+            WorldLocationSceneSet,
+            List<PlayerManager>> m_playersInLocation = new();
+
+        /// <summary>Gets the world location decision manager.</summary>
         public static WorldSceneSubSceneManager Instance => s_instance;
+
+        /// <summary>Gets every registered logical location and its current players.</summary>
+        public IReadOnlyDictionary<WorldLocationSceneSet, List<PlayerManager>>
+            PlayersInLocation => m_playersInLocation;
 
         private void Awake()
         {
@@ -47,12 +45,14 @@ namespace ZZ
             }
 
             s_instance = this;
+            EnsureLocationRegistry();
         }
 
         /// <inheritdoc />
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            EnsureLocationRegistry();
             if (!IsServer || WorldGameSessionManager.Instance == null)
             {
                 return;
@@ -79,14 +79,18 @@ namespace ZZ
             }
         }
 
-        /// <summary>Registers a newly spawned player in the world spawn region.</summary>
+        /// <summary>Registers a newly spawned player in the configured spawn location.</summary>
         public void RegisterPlayerAtDefaultLocation(PlayerManager player)
         {
-            if (IsServer && player != null)
+            if (!IsServer || player == null)
             {
-                LoadAreaBasedOnCurrentArea(
-                    WorldSceneLocation.Area01SubArea00,
-                    player);
+                return;
+            }
+
+            EnsureLocationRegistry();
+            if (m_defaultWorldLocation != null)
+            {
+                LoadAreaBasedOnCurrentArea(m_defaultWorldLocation, player);
             }
         }
 
@@ -103,115 +107,108 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Moves one player between regions, queues required loads, then queues only
-        /// unprotected Scenes for unloading.
+        /// Moves one player to a data-driven location, queues all required loads,
+        /// then queues only unprotected Scenes for unloading.
         /// </summary>
         public bool LoadAreaBasedOnCurrentArea(
-            WorldSceneLocation area,
+            WorldLocationSceneSet worldLocation,
             PlayerManager player)
         {
-            if (!IsServer ||
-                player == null ||
-                !IsStreamableLocation(area) ||
-                GetPlayersAtLocation(area).Contains(player))
+            if (!IsServer || player == null || worldLocation == null)
+            {
+                return false;
+            }
+
+            EnsureLocationRegistered(worldLocation);
+            List<PlayerManager> players = m_playersInLocation[worldLocation];
+            RemoveNullPlayers();
+            if (players.Contains(player))
             {
                 return false;
             }
 
             RemovePlayerFromPreviousLocation(player);
-            GetPlayersAtLocation(area).Add(player);
+            players.Add(player);
+            player.SetAreaCurrentlyIn(worldLocation);
 
-            WorldSceneManager sceneManager = WorldSceneManager.Instance;
-            sceneManager?.LoadAdditiveScenes(GetScenesToLoadForLocation(area));
+            WorldSceneManager.Instance?.LoadAdditiveScenes(
+                worldLocation.GetRequiredSceneIDsForWorldLocation());
             ReconcileLoadedScenes();
-            SetActiveAreaClientRpc(
-                area,
-                CreateTargetClientRpcParams(player.OwnerClientId));
+            string activeSceneID = worldLocation.PrimarySceneID;
+            if (!string.IsNullOrEmpty(activeSceneID))
+            {
+                SetActiveAreaClientRpc(
+                    activeSceneID,
+                    CreateTargetClientRpcParams(player.OwnerClientId));
+            }
+
             return true;
         }
 
-        /// <summary>Returns the persistent Scene ID or exact additive Scene asset name.</summary>
-        public static string GetSceneIDFromWorldSceneLocation(
-            WorldSceneLocation location)
+        /// <summary>Moves one legacy trigger through its matching Scene Set asset.</summary>
+        public bool LoadAreaBasedOnCurrentArea(
+            WorldSceneLocation legacyLocation,
+            PlayerManager player)
         {
-            return location switch
-            {
-                WorldSceneLocation.PersistentWorld =>
-                    WorldSceneManager.PersistentWorldSceneID,
-                WorldSceneLocation.Area01SubArea00 => "Area_01_Sub_Area_00",
-                WorldSceneLocation.Area01SubArea01 => "Area_01_Sub_Area_01",
-                WorldSceneLocation.Area01SubArea02 => "Area_01_Sub_Area_02",
-                WorldSceneLocation.Area01SubArea03 => "Area_01_Sub_Area_03",
-                WorldSceneLocation.Area01SubArea04 => "Area_01_Sub_Area_04",
-                _ => string.Empty
-            };
+            return LoadAreaBasedOnCurrentArea(
+                ResolveWorldLocation(legacyLocation),
+                player);
         }
 
-        /// <summary>Returns the current region plus every directly adjacent region.</summary>
-        public static IReadOnlyList<string> GetScenesToLoadForLocation(
-            WorldSceneLocation location)
+        /// <summary>Finds the data asset associated with one migrated enum value.</summary>
+        public WorldLocationSceneSet ResolveWorldLocation(
+            WorldSceneLocation legacyLocation)
         {
-            WorldSceneLocation[] locations = location switch
-            {
-                WorldSceneLocation.Area01SubArea00 =>
-                    new[]
-                    {
-                        WorldSceneLocation.Area01SubArea00,
-                        WorldSceneLocation.Area01SubArea01
-                    },
-                WorldSceneLocation.Area01SubArea01 =>
-                    new[]
-                    {
-                        WorldSceneLocation.Area01SubArea00,
-                        WorldSceneLocation.Area01SubArea01,
-                        WorldSceneLocation.Area01SubArea02
-                    },
-                WorldSceneLocation.Area01SubArea02 =>
-                    new[]
-                    {
-                        WorldSceneLocation.Area01SubArea01,
-                        WorldSceneLocation.Area01SubArea02,
-                        WorldSceneLocation.Area01SubArea03
-                    },
-                WorldSceneLocation.Area01SubArea03 =>
-                    new[]
-                    {
-                        WorldSceneLocation.Area01SubArea02,
-                        WorldSceneLocation.Area01SubArea03,
-                        WorldSceneLocation.Area01SubArea04
-                    },
-                WorldSceneLocation.Area01SubArea04 =>
-                    new[]
-                    {
-                        WorldSceneLocation.Area01SubArea03,
-                        WorldSceneLocation.Area01SubArea04
-                    },
-                _ => System.Array.Empty<WorldSceneLocation>()
-            };
+            EnsureLocationRegistry();
+            return m_worldLocations.FirstOrDefault(location =>
+                location != null &&
+                location.LegacyLocation == legacyLocation);
+        }
 
-            return locations
-                .Select(GetSceneIDFromWorldSceneLocation)
-                .Where(sceneID => !string.IsNullOrEmpty(sceneID))
-                .ToArray();
+        /// <summary>Returns the persistent Scene ID or a legacy location's primary Scene.</summary>
+        public static string GetSceneIDFromWorldSceneLocation(
+            WorldSceneLocation legacyLocation)
+        {
+            if (legacyLocation == WorldSceneLocation.PersistentWorld)
+            {
+                return WorldSceneManager.PersistentWorldSceneID;
+            }
+
+            return FindLocationAsset(legacyLocation)?.PrimarySceneID ??
+                string.Empty;
+        }
+
+        /// <summary>Returns all Scenes configured by one migrated location asset.</summary>
+        public static IReadOnlyList<string> GetScenesToLoadForLocation(
+            WorldSceneLocation legacyLocation)
+        {
+            WorldLocationSceneSet location = FindLocationAsset(legacyLocation);
+            return location != null
+                ? location.GetRequiredSceneIDsForWorldLocation()
+                : System.Array.Empty<string>();
         }
 
         /// <summary>Builds the multiplayer union of Scenes that must remain loaded.</summary>
         public IReadOnlyCollection<string> BuildDoNotUnloadSceneIDs()
         {
+            EnsureLocationRegistry();
             RemoveNullPlayers();
             HashSet<string> protectedScenes = new()
             {
                 WorldSceneManager.PersistentWorldSceneID
             };
 
-            foreach (WorldSceneLocation location in s_streamableLocations)
+            foreach (KeyValuePair<WorldLocationSceneSet, List<PlayerManager>>
+                locationPlayers in m_playersInLocation)
             {
-                if (GetPlayersAtLocation(location).Count == 0)
+                if (locationPlayers.Key == null ||
+                    locationPlayers.Value.Count == 0)
                 {
                     continue;
                 }
 
-                protectedScenes.UnionWith(GetScenesToLoadForLocation(location));
+                protectedScenes.UnionWith(
+                    locationPlayers.Key.GetRequiredSceneIDsForWorldLocation());
             }
 
             return protectedScenes;
@@ -223,58 +220,99 @@ namespace ZZ
             return BuildDoNotUnloadSceneIDs().Contains(sceneID);
         }
 
-        private static bool IsStreamableLocation(WorldSceneLocation location)
-        {
-            return location != WorldSceneLocation.PersistentWorld &&
-                !string.IsNullOrEmpty(GetSceneIDFromWorldSceneLocation(location));
-        }
-
-        private List<PlayerManager> GetPlayersAtLocation(
-            WorldSceneLocation location)
-        {
-            return location switch
-            {
-                WorldSceneLocation.Area01SubArea00 => m_area00Players,
-                WorldSceneLocation.Area01SubArea01 => m_area01Players,
-                WorldSceneLocation.Area01SubArea02 => m_area02Players,
-                WorldSceneLocation.Area01SubArea03 => m_area03Players,
-                WorldSceneLocation.Area01SubArea04 => m_area04Players,
-                _ => throw new System.ArgumentOutOfRangeException(
-                    nameof(location),
-                    location,
-                    "The persistent world cannot own a regional player list.")
-            };
-        }
-
-        private void RemovePlayerFromPreviousLocation(PlayerManager player)
-        {
-            foreach (WorldSceneLocation location in s_streamableLocations)
-            {
-                GetPlayersAtLocation(location).Remove(player);
-            }
-        }
-
-        /// <summary>Queues every loaded Scene outside the current multiplayer protection union.</summary>
+        /// <summary>Queues every loaded Scene outside the multiplayer protection union.</summary>
         public void ReconcileLoadedScenes()
         {
             WorldSceneManager.Instance?.UnloadAllExcept(
                 BuildDoNotUnloadSceneIDs());
         }
 
+        private void EnsureLocationRegistry()
+        {
+            foreach (WorldLocationSceneSet location in
+                Resources.LoadAll<WorldLocationSceneSet>(
+                    k_WorldLocationResourcesPath))
+            {
+                if (location != null && !m_worldLocations.Contains(location))
+                {
+                    m_worldLocations.Add(location);
+                }
+            }
+
+            m_worldLocations.RemoveAll(location => location == null);
+            foreach (WorldLocationSceneSet location in m_worldLocations)
+            {
+                EnsureLocationRegistered(location);
+            }
+
+            if (m_defaultWorldLocation == null)
+            {
+                m_defaultWorldLocation = m_worldLocations.FirstOrDefault(
+                    location => location.LegacyLocation ==
+                        WorldSceneLocation.Area01SubArea00) ??
+                    m_worldLocations.FirstOrDefault();
+            }
+        }
+
+        private void EnsureLocationRegistered(WorldLocationSceneSet location)
+        {
+            if (location != null && !m_playersInLocation.ContainsKey(location))
+            {
+                m_playersInLocation.Add(location, new List<PlayerManager>());
+            }
+        }
+
+        private void RemovePlayerFromPreviousLocation(PlayerManager player)
+        {
+            WorldLocationSceneSet previousLocation = player.AreaCurrentlyIn;
+            if (previousLocation != null &&
+                m_playersInLocation.TryGetValue(
+                    previousLocation,
+                    out List<PlayerManager> previousPlayers))
+            {
+                previousPlayers.Remove(player);
+            }
+
+            foreach (List<PlayerManager> players in m_playersInLocation.Values)
+            {
+                players.Remove(player);
+            }
+
+            player.SetAreaCurrentlyIn(null);
+        }
+
         private void RemoveNullPlayers()
         {
-            foreach (WorldSceneLocation location in s_streamableLocations)
+            foreach (List<PlayerManager> players in m_playersInLocation.Values)
             {
-                GetPlayersAtLocation(location).RemoveAll(player => player == null);
+                players.RemoveAll(player => player == null);
             }
         }
 
         private void ClearPlayerLists()
         {
-            foreach (WorldSceneLocation location in s_streamableLocations)
+            foreach (List<PlayerManager> players in m_playersInLocation.Values)
             {
-                GetPlayersAtLocation(location).Clear();
+                foreach (PlayerManager player in players)
+                {
+                    if (player != null)
+                    {
+                        player.SetAreaCurrentlyIn(null);
+                    }
+                }
+
+                players.Clear();
             }
+        }
+
+        private static WorldLocationSceneSet FindLocationAsset(
+            WorldSceneLocation legacyLocation)
+        {
+            return Resources.LoadAll<WorldLocationSceneSet>(
+                    k_WorldLocationResourcesPath)
+                .FirstOrDefault(location =>
+                    location != null &&
+                    location.LegacyLocation == legacyLocation);
         }
 
         private static ClientRpcParams CreateTargetClientRpcParams(ulong clientID)
@@ -290,25 +328,25 @@ namespace ZZ
 
         [ClientRpc]
         private void SetActiveAreaClientRpc(
-            WorldSceneLocation area,
+            string activeSceneID,
             ClientRpcParams clientRpcParams = default)
         {
-            StartCoroutine(WaitThenSetActiveScene(area));
+            StartCoroutine(WaitThenSetActiveScene(activeSceneID));
         }
 
-        private IEnumerator WaitThenSetActiveScene(WorldSceneLocation area)
+        private IEnumerator WaitThenSetActiveScene(string activeSceneID)
         {
-            string sceneID = GetSceneIDFromWorldSceneLocation(area);
-            float timeoutAt = Time.realtimeSinceStartup + k_ActiveSceneTimeoutSeconds;
+            float timeoutAt = Time.realtimeSinceStartup +
+                k_ActiveSceneTimeoutSeconds;
             while (Time.realtimeSinceStartup < timeoutAt)
             {
                 PlayerManager localPlayer = WorldGameSessionManager.Instance?.Players
                     .FirstOrDefault(player => player != null && player.IsOwner);
                 if (localPlayer != null &&
-                    localPlayer.IsOwner &&
-                    WorldSceneManager.Instance?.IsSceneLoaded(sceneID) == true)
+                    WorldSceneManager.Instance?.IsSceneLoaded(activeSceneID) ==
+                        true)
                 {
-                    Scene scene = SceneManager.GetSceneByName(sceneID);
+                    Scene scene = SceneManager.GetSceneByName(activeSceneID);
                     if (scene.IsValid() && scene.isLoaded)
                     {
                         ProbeReferenceVolume.instance?.SetActiveScene(scene);
@@ -321,7 +359,8 @@ namespace ZZ
             }
 
             Debug.LogWarning(
-                $"Timed out waiting to activate APV lighting for {sceneID}.");
+                $"Timed out waiting to activate APV lighting for " +
+                $"{activeSceneID}.");
         }
     }
 }

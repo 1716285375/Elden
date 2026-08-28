@@ -18,6 +18,8 @@ namespace ZZ.Tests
             "Assets/Scenes/Scene_World_01.unity";
         private const string k_AreaSceneFolder =
             "Assets/Scenes/World Areas";
+        private const string k_WorldLocationFolder =
+            "Assets/Resources/World Locations";
         private const string k_BakingSetPath =
             "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
         private const string k_TriggerPrefabPath =
@@ -55,26 +57,15 @@ namespace ZZ.Tests
         public static void AdjacencyLoadsCurrentAndDirectlyConnectedAreas()
         {
             CollectionAssert.AreEqual(
-                new[]
-                {
-                    "Area_01_Sub_Area_00",
-                    "Area_01_Sub_Area_01"
-                },
+                GetOwnedSceneIDs(0).Concat(GetOwnedSceneIDs(1)),
                 GetScenesToLoad(1));
             CollectionAssert.AreEqual(
-                new[]
-                {
-                    "Area_01_Sub_Area_01",
-                    "Area_01_Sub_Area_02",
-                    "Area_01_Sub_Area_03"
-                },
+                GetOwnedSceneIDs(2)
+                    .Concat(GetOwnedSceneIDs(1))
+                    .Concat(GetOwnedSceneIDs(3)),
                 GetScenesToLoad(3));
             CollectionAssert.AreEqual(
-                new[]
-                {
-                    "Area_01_Sub_Area_03",
-                    "Area_01_Sub_Area_04"
-                },
+                GetOwnedSceneIDs(4).Concat(GetOwnedSceneIDs(3)),
                 GetScenesToLoad(5));
         }
 
@@ -96,18 +87,26 @@ namespace ZZ.Tests
                     GetRuntimeType("ZZ.PlayerManager"));
                 Component playerB = playerBObject.AddComponent(
                     GetRuntimeType("ZZ.PlayerManager"));
-                GetPlayerList(manager, "m_area00Players").Add(playerA);
-                GetPlayerList(manager, "m_area04Players").Add(playerB);
+                manager.GetType().GetMethod(
+                    "EnsureLocationRegistry",
+                    BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(manager, null);
+                IDictionary playersInLocation = (IDictionary)manager.GetType()
+                    .GetField(
+                        "m_playersInLocation",
+                        BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(manager);
+                UnityEngine.Object area00 = LoadLocationAsset(0);
+                UnityEngine.Object area04 = LoadLocationAsset(4);
+                ((IList)playersInLocation[area00]).Add(playerA);
+                ((IList)playersInLocation[area04]).Add(playerB);
 
                 CollectionAssert.AreEquivalent(
-                    new[]
-                    {
-                        "Scene_World_01",
-                        "Area_01_Sub_Area_00",
-                        "Area_01_Sub_Area_01",
-                        "Area_01_Sub_Area_03",
-                        "Area_01_Sub_Area_04"
-                    },
+                    new[] { "Scene_World_01" }
+                        .Concat(GetOwnedSceneIDs(0))
+                        .Concat(GetOwnedSceneIDs(1))
+                        .Concat(GetOwnedSceneIDs(4))
+                        .Concat(GetOwnedSceneIDs(3)),
                     (IEnumerable)manager.GetType().GetMethod(
                         "BuildDoNotUnloadSceneIDs").Invoke(manager, null));
             }
@@ -150,11 +149,11 @@ namespace ZZ.Tests
             string source = ReadRuntimeSource(
                 "World Managers/EventTriggerLoadScene.cs");
             Type triggerType = GetRuntimeType("ZZ.EventTriggerLoadScene");
-            RequireComponent requireCollider = triggerType
-                .GetCustomAttributes<RequireComponent>()
+            DisallowMultipleComponent disallowMultiple = triggerType
+                .GetCustomAttributes<DisallowMultipleComponent>()
                 .Single();
 
-            Assert.That(requireCollider, Is.Not.Null);
+            Assert.That(disallowMultiple, Is.Not.Null);
             Assert.That(
                 source,
                 Does.Contain("NetworkManager.Singleton?.IsServer != true"));
@@ -164,6 +163,8 @@ namespace ZZ.Tests
             Assert.That(
                 source,
                 Does.Contain("LoadAreaBasedOnCurrentArea("));
+            Assert.That(source, Does.Contain("WorldLocationSceneSet"));
+            Assert.That(source, Does.Contain("meshCollider.convex = true"));
         }
 
         [Test]
@@ -175,7 +176,8 @@ namespace ZZ.Tests
             Assert.That(source, Does.Contain("player.IsOwner"));
             Assert.That(
                 source,
-                Does.Contain("WorldSceneManager.Instance?.IsSceneLoaded(sceneID)"));
+                Does.Contain(
+                    "WorldSceneManager.Instance?.IsSceneLoaded(activeSceneID)"));
             Assert.That(
                 source,
                 Does.Contain("ProbeReferenceVolume.instance?.SetActiveScene(scene)"));
@@ -198,14 +200,18 @@ namespace ZZ.Tests
                 (IEnumerable<string>)bakingSet.GetType()
                     .GetProperty("sceneGUIDs")
                     ?.GetValue(bakingSet);
-            foreach (int location in s_areaLocations)
+            for (int locationIndex = 0;
+                locationIndex < s_areaLocations.Length;
+                locationIndex++)
             {
-                string scenePath = $"{k_AreaSceneFolder}/" +
-                    $"{GetSceneID(location)}.unity";
-                Assert.That(enabledScenePaths, Does.Contain(scenePath));
-                Assert.That(
-                    sceneGUIDs,
-                    Does.Contain(AssetDatabase.AssetPathToGUID(scenePath)));
+                foreach (string sceneID in GetOwnedSceneIDs(locationIndex))
+                {
+                    string scenePath = $"{k_AreaSceneFolder}/{sceneID}.unity";
+                    Assert.That(enabledScenePaths, Does.Contain(scenePath));
+                    Assert.That(
+                        sceneGUIDs,
+                        Does.Contain(AssetDatabase.AssetPathToGUID(scenePath)));
+                }
             }
 
             SerializedObject serializedSet = new SerializedObject(bakingSet);
@@ -291,15 +297,23 @@ namespace ZZ.Tests
                 Does.Contain("WorldSceneSubSceneManager.Instance?.RemovePlayer(player)"));
         }
 
-        private static IList GetPlayerList(
-            Component manager,
-            string fieldName)
+        private static UnityEngine.Object LoadLocationAsset(int locationIndex)
         {
-            FieldInfo field = manager.GetType().GetField(
-                fieldName,
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.That(field, Is.Not.Null);
-            return (IList)field.GetValue(manager);
+            string locationID = $"Area_01_Sub_Area_{locationIndex:00}";
+            UnityEngine.Object location = AssetDatabase.LoadAssetAtPath(
+                $"{k_WorldLocationFolder}/{locationID}.asset",
+                GetRuntimeType("ZZ.WorldLocationSceneSet"));
+            Assert.That(location, Is.Not.Null, locationID);
+            return location;
+        }
+
+        private static IEnumerable<string> GetOwnedSceneIDs(int locationIndex)
+        {
+            string locationID = $"Area_01_Sub_Area_{locationIndex:00}";
+            yield return locationID;
+            yield return locationID + "_Props";
+            yield return locationID + "_Effects";
+            yield return locationID + "_Spawners";
         }
 
         private static string GetSceneID(int locationValue)
