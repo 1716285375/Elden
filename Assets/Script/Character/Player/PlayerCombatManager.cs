@@ -784,6 +784,7 @@ namespace ZZ
                 return false;
             }
 
+            networkManager.SetSneakingState(false);
             m_player.PlayerStatsManager?.SetBlockingStats(blockingWeapon);
             bool isRightHandBlock =
                 m_player.PlayerNetworkManager?.IsTwoHandingRightWeapon.Value == true;
@@ -1184,6 +1185,7 @@ namespace ZZ
             }
 
             SetCriticalAttackActionHand();
+            m_player.CharacterNetworkManager?.SetSneakingState(false);
             float damageModifier = riposteWeapon.RiposteAttack01Modifier;
             CharacterNetworkManager attackerNetworkManager =
                 m_player.CharacterNetworkManager;
@@ -1238,6 +1240,7 @@ namespace ZZ
             }
 
             SetCriticalAttackActionHand();
+            m_player.CharacterNetworkManager?.SetSneakingState(false);
             float damageModifier = backstabWeapon.BackstabAttack01Modifier;
             CharacterNetworkManager attackerNetworkManager =
                 m_player.CharacterNetworkManager;

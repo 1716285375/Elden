@@ -237,6 +237,15 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Sneak"",
+                    ""type"": ""Button"",
+                    ""id"": ""bcc7e4c8-e48a-4beb-96ff-6200e3e5dccd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -734,6 +743,28 @@ namespace ZZ
                     ""action"": ""Switch Quick Slot Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e28919fb-6fdc-4463-bcf4-418911ca037d"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": ""press"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Sneak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4dbe0483-da77-45e1-b512-e68c185c7ffd"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""interactions"": ""press"",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Sneak"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -977,6 +1008,7 @@ namespace ZZ
             m_PlayerMovement_LT = m_PlayerMovement.FindAction("LT", throwIfNotFound: true);
             m_PlayerMovement_UseQuickSlotItem = m_PlayerMovement.FindAction("Use Quick Slot Item", throwIfNotFound: true);
             m_PlayerMovement_SwitchQuickSlotItem = m_PlayerMovement.FindAction("Switch Quick Slot Item", throwIfNotFound: true);
+            m_PlayerMovement_Sneak = m_PlayerMovement.FindAction("Sneak", throwIfNotFound: true);
             // Player Camera
             m_PlayerCamera = asset.FindActionMap("Player Camera", throwIfNotFound: true);
             m_PlayerCamera_Movement = m_PlayerCamera.FindAction("Movement", throwIfNotFound: true);
@@ -1085,6 +1117,7 @@ namespace ZZ
         private readonly InputAction m_PlayerMovement_LT;
         private readonly InputAction m_PlayerMovement_UseQuickSlotItem;
         private readonly InputAction m_PlayerMovement_SwitchQuickSlotItem;
+        private readonly InputAction m_PlayerMovement_Sneak;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player Movement".
         /// </summary>
@@ -1161,6 +1194,10 @@ namespace ZZ
             /// </summary>
             public InputAction @SwitchQuickSlotItem => m_Wrapper.m_PlayerMovement_SwitchQuickSlotItem;
             /// <summary>
+            /// Provides access to the underlying input action "PlayerMovement/Sneak".
+            /// </summary>
+            public InputAction @Sneak => m_Wrapper.m_PlayerMovement_Sneak;
+            /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
             public InputActionMap Get() { return m_Wrapper.m_PlayerMovement; }
@@ -1234,6 +1271,9 @@ namespace ZZ
                 @SwitchQuickSlotItem.started += instance.OnSwitchQuickSlotItem;
                 @SwitchQuickSlotItem.performed += instance.OnSwitchQuickSlotItem;
                 @SwitchQuickSlotItem.canceled += instance.OnSwitchQuickSlotItem;
+                @Sneak.started += instance.OnSneak;
+                @Sneak.performed += instance.OnSneak;
+                @Sneak.canceled += instance.OnSneak;
             }
 
             /// <summary>
@@ -1293,6 +1333,9 @@ namespace ZZ
                 @SwitchQuickSlotItem.started -= instance.OnSwitchQuickSlotItem;
                 @SwitchQuickSlotItem.performed -= instance.OnSwitchQuickSlotItem;
                 @SwitchQuickSlotItem.canceled -= instance.OnSwitchQuickSlotItem;
+                @Sneak.started -= instance.OnSneak;
+                @Sneak.performed -= instance.OnSneak;
+                @Sneak.canceled -= instance.OnSneak;
             }
 
             /// <summary>
@@ -1707,6 +1750,13 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSwitchQuickSlotItem(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Sneak" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSneak(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player Camera" which allows adding and removing callbacks.

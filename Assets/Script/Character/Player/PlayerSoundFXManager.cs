@@ -25,6 +25,7 @@ namespace ZZ
                 !m_player.IsServer ||
                 m_player.IsDead ||
                 m_player.PlayerNetworkManager == null ||
+                m_player.PlayerNetworkManager.IsSneaking.Value ||
                 m_player.PlayerNetworkManager.MoveAmount.Value <
                     k_MinimumFootstepMovement ||
                 Time.time < m_nextFootstepTime)
@@ -39,6 +40,11 @@ namespace ZZ
         /// <inheritdoc />
         public override void PlayFootstepSoundEffect()
         {
+            if (m_player?.PlayerNetworkManager?.IsSneaking.Value == true)
+            {
+                return;
+            }
+
             base.PlayFootstepSoundEffect();
             WorldSoundFXManager.Instance?.AlertNearbyCharactersToSound(
                 transform.position,

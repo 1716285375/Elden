@@ -31,6 +31,7 @@ namespace ZZ
         private readonly Queue<AttackInput> m_attackInputQueue = new();
         private bool m_hasDodgeInput;
         private bool m_hasJumpInput;
+        private bool m_hasSneakInput;
         private bool m_hasSwitchRightWeaponInput;
         private bool m_hasSwitchLeftWeaponInput;
         private bool m_hasSwitchQuickSlotItemInput;
@@ -81,6 +82,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.Sprint.performed += OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled += OnSprintCanceled;
             m_playerControls.PlayerMovement.Jump.performed += OnJumpPerformed;
+            m_playerControls.PlayerMovement.Sneak.performed += OnSneakPerformed;
             m_playerControls.PlayerMovement.SwitchRightWeapon.performed +=
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed +=
@@ -127,6 +129,7 @@ namespace ZZ
             m_playerControls.PlayerMovement.Sprint.performed -= OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled -= OnSprintCanceled;
             m_playerControls.PlayerMovement.Jump.performed -= OnJumpPerformed;
+            m_playerControls.PlayerMovement.Sneak.performed -= OnSneakPerformed;
             m_playerControls.PlayerMovement.SwitchRightWeapon.performed -=
                 OnSwitchRightWeaponPerformed;
             m_playerControls.PlayerMovement.SwitchLeftWeapon.performed -=
@@ -251,6 +254,7 @@ namespace ZZ
             CameraHorizontalInput = 0f;
             m_hasDodgeInput = false;
             m_hasJumpInput = false;
+            m_hasSneakInput = false;
             m_hasSwitchRightWeaponInput = false;
             m_hasSwitchLeftWeaponInput = false;
             m_hasSwitchQuickSlotItemInput = false;
@@ -377,6 +381,7 @@ namespace ZZ
             HandlePlayerMovementInput();
             HandleDodgeInput();
             HandleJumpInput();
+            HandleSneakInput();
             HandleWeaponSwitchInput();
             HandleSwitchQuickSlotItemInput();
             HandleInteractionInput();
@@ -450,6 +455,17 @@ namespace ZZ
             m_hasJumpInput = false;
             m_player?.PlayerCombatManager?.SetBlocking(false);
             m_player?.LocomotionManager?.AttemptToPerformJump();
+        }
+
+        private void HandleSneakInput()
+        {
+            if (!m_hasSneakInput)
+            {
+                return;
+            }
+
+            m_hasSneakInput = false;
+            m_player?.PlayerNetworkManager?.ToggleSneakingState();
         }
 
         private void HandleWeaponSwitchInput()
@@ -644,6 +660,11 @@ namespace ZZ
         private void OnJumpPerformed(InputAction.CallbackContext context)
         {
             m_hasJumpInput = true;
+        }
+
+        private void OnSneakPerformed(InputAction.CallbackContext context)
+        {
+            m_hasSneakInput = true;
         }
 
         private void OnSwitchRightWeaponPerformed(InputAction.CallbackContext context)

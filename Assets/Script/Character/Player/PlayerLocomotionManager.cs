@@ -12,7 +12,11 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_walkingSpeed = 2f;
         [FormerlySerializedAs("runningSpeed")]
         [SerializeField, Min(0f)] private float m_runningSpeed = 5f;
+        [SerializeField, Min(0f)] private float m_runningBackwardsSpeed = 4f;
         [SerializeField, Min(0f)] private float m_sprintingSpeed = 8f;
+        [SerializeField, Min(0f)] private float m_sneakingWalkingSpeed = 1.1f;
+        [SerializeField, Min(0f)] private float m_sneakingRunningSpeed = 3f;
+        [SerializeField, Min(0f)] private float m_sneakingBackwardsSpeed = 2.8f;
         [FormerlySerializedAs("rotationSpeed")]
         [SerializeField, Min(0f)] private float m_rotationSpeed = 15f;
 
@@ -38,6 +42,9 @@ namespace ZZ
             m_player != null &&
             m_player.PlayerNetworkManager != null &&
             m_player.PlayerNetworkManager.IsSprinting.Value;
+
+        public bool IsSneaking =>
+            m_player?.CharacterNetworkManager?.IsSneaking.Value == true;
 
         protected override void Awake()
         {
@@ -328,11 +335,40 @@ namespace ZZ
             float movementAmount = CanRun
                 ? m_playerInputManager.MoveAmount
                 : Mathf.Min(0.5f, m_playerInputManager.MoveAmount);
-            float normalSpeed = movementAmount > 0.5f
+            float movementSpeed = ResolveGroundMovementSpeed(movementAmount);
+            m_characterController.Move(moveDirection * movementSpeed * Time.deltaTime);
+        }
+
+        private float ResolveGroundMovementSpeed(float movementAmount)
+        {
+            if (IsSprinting)
+            {
+                return m_sprintingSpeed;
+            }
+
+            bool isMovingBackwards = UsesStrafeMovement() &&
+                m_playerInputManager.VerticalInput < 0f;
+            if (IsSneaking)
+            {
+                if (isMovingBackwards)
+                {
+                    return m_sneakingBackwardsSpeed;
+                }
+
+                return movementAmount > k_SprintMovementThreshold
+                    ? m_sneakingRunningSpeed
+                    : m_sneakingWalkingSpeed;
+            }
+
+            if (isMovingBackwards &&
+                movementAmount > k_SprintMovementThreshold)
+            {
+                return m_runningBackwardsSpeed;
+            }
+
+            return movementAmount > k_SprintMovementThreshold
                 ? m_runningSpeed
                 : m_walkingSpeed;
-            float movementSpeed = IsSprinting ? m_sprintingSpeed : normalSpeed;
-            m_characterController.Move(moveDirection * movementSpeed * Time.deltaTime);
         }
 
         private void HandleJumpingMovement()
@@ -606,6 +642,11 @@ namespace ZZ
                 networkManager.IsSprinting.Value == isSprinting)
             {
                 return;
+            }
+
+            if (isSprinting)
+            {
+                networkManager.SetSneakingState(false);
             }
 
             networkManager.IsSprinting.Value = isSprinting;
