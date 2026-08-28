@@ -544,6 +544,7 @@ namespace ZZ
         private void OpenDamageCollider(WeaponManager weaponManager)
         {
             m_characterSoundFXManager?.PlayWeaponWhoosh(weaponManager?.Weapon);
+            weaponManager?.ToggleWeaponTrail(true);
             if (m_player == null ||
                 !m_player.IsOwner ||
                 weaponManager == null)

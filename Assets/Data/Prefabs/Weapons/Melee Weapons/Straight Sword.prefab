@@ -31,6 +31,7 @@ Transform:
   m_Children:
   - {fileID: 8954364468200981166}
   - {fileID: 9077160356108821746}
+  - {fileID: 4947696362072561605}
   m_Father: {fileID: 9134653301077482294}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2149183686561418024
@@ -106,6 +107,38 @@ MonoBehaviour:
   m_lightningDamage: 0
   m_holyDamage: 0
   m_poiseDamage: 0
+--- !u!1 &3718283945227250308
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4947696362072561605}
+  m_Layer: 0
+  m_Name: Effects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4947696362072561605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3718283945227250308}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8527597060519003706}
+  m_Father: {fileID: 3007427659867341184}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5024126159876492057
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,6 +185,79 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponManager
   m_meleeDamageCollider: {fileID: 1741501362449895872}
+  m_particleWeaponTrail: {fileID: 7257287987808273281}
+  m_rendererWeaponTrail: {fileID: 0}
+--- !u!1001 &2411687588579105971
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4947696362072561605}
+    m_Modifications:
+    - target: {fileID: 5030267814099574578, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 0.47943127
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.00015745498
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.3118686
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00015121698
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516642131532839079, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+      propertyPath: m_Name
+      value: Weapon Trail
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+--- !u!198 &7257287987808273281 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5030267814099574578, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+  m_PrefabInstance: {fileID: 2411687588579105971}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8527597060519003706 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6278041304796453513, guid: 7d83cc5badf700f409fed170f4648f82, type: 3}
+  m_PrefabInstance: {fileID: 2411687588579105971}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8921334508452750661
 PrefabInstance:
   m_ObjectHideFlags: 0
