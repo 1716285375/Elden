@@ -14,9 +14,11 @@ namespace ZZ
         private const float k_PoiseTimerEpsilon = 0.0001f;
 
         [Header("Stamina Regeneration")]
-        [SerializeField, Min(0f)] private float m_staminaRegenerationDelay = 2f;
         [SerializeField, Min(0.01f)] private float m_staminaRegenerationTickInterval = 0.1f;
-        [SerializeField, Min(0f)] private float m_staminaRegenerationAmount = 2f;
+        [SerializeField, Min(0f)] private float m_baseStaminaRegenerationAmount = 2f;
+        [SerializeField] private float m_staminaRegenerationModifier;
+        [SerializeField, Range(0f, 1f)]
+        private float m_blockingStaminaRegenerationMultiplier = 0.2f;
 
         [Header("Poise")]
         [SerializeField] private float m_totalPoiseDamage;
@@ -56,11 +58,23 @@ namespace ZZ
 
         private CharacterManager m_characterManager;
         private CharacterNetworkManager m_characterNetworkManager;
-        private float m_staminaRegenerationTimer;
         private float m_staminaTickTimer;
 
         protected CharacterManager CharacterManager => m_characterManager;
         protected CharacterNetworkManager CharacterNetworkManager => m_characterNetworkManager;
+
+        /// <summary>Gets the authored Stamina restored by one shared regeneration tick.</summary>
+        public float BaseStaminaRegenerationAmount =>
+            Mathf.Max(0f, m_baseStaminaRegenerationAmount);
+
+        /// <summary>Gets the cumulative percentage modifier from active timed effects.</summary>
+        public float StaminaRegenerationModifier => m_staminaRegenerationModifier;
+
+        /// <summary>Gets the current final amount before optional Blocking slowdown.</summary>
+        public float StaminaRegenerationAmount =>
+            CalculateStaminaRegenerationAmount(
+                BaseStaminaRegenerationAmount,
+                m_staminaRegenerationModifier);
 
         /// <summary>Gets Physical damage absorption while a valid block is active.</summary>
         public float BlockingPhysicalAbsorption =>
@@ -167,7 +181,6 @@ namespace ZZ
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            m_characterNetworkManager.CurrentStamina.OnValueChanged += OnCurrentStaminaChanged;
             m_characterNetworkManager.Vitality.OnValueChanged += OnVitalityChanged;
             m_characterNetworkManager.Endurance.OnValueChanged += OnEnduranceChanged;
             m_characterNetworkManager.Mind.OnValueChanged += OnMindChanged;
@@ -182,7 +195,6 @@ namespace ZZ
 
         public override void OnNetworkDespawn()
         {
-            m_characterNetworkManager.CurrentStamina.OnValueChanged -= OnCurrentStaminaChanged;
             m_characterNetworkManager.Vitality.OnValueChanged -= OnVitalityChanged;
             m_characterNetworkManager.Endurance.OnValueChanged -= OnEnduranceChanged;
             m_characterNetworkManager.Mind.OnValueChanged -= OnMindChanged;
@@ -252,6 +264,9 @@ namespace ZZ
             m_characterNetworkManager.TrySetBuildup(
                 Buildup.Bleed,
                 m_characterNetworkManager.BleedBuildup.Value);
+            m_characterNetworkManager.TrySetBuildup(
+                Buildup.Frost,
+                m_characterNetworkManager.FrostBuildup.Value);
         }
 
         /// <summary>Applies one decay tick and returns the replicated buildup remaining.</summary>
@@ -272,6 +287,34 @@ namespace ZZ
                 buildupType,
                 currentBuildup + buildupEffect.BuildupAmountDegradation);
             return m_characterNetworkManager.GetBuildup(buildupType);
+        }
+
+        /// <summary>Adds one reusable percentage modifier to Stamina regeneration.</summary>
+        public void AddStaminaRegenerationModifier(float modifierPercentage)
+        {
+            m_staminaRegenerationModifier += modifierPercentage;
+        }
+
+        /// <summary>Removes one previously applied percentage modifier.</summary>
+        public void RemoveStaminaRegenerationModifier(float modifierPercentage)
+        {
+            m_staminaRegenerationModifier -= modifierPercentage;
+            if (Mathf.Abs(m_staminaRegenerationModifier) <= 0.0001f)
+            {
+                m_staminaRegenerationModifier = 0f;
+            }
+        }
+
+        /// <summary>Calculates a non-negative final value from a percentage modifier.</summary>
+        public static float CalculateStaminaRegenerationAmount(
+            float baseAmount,
+            float modifierPercentage)
+        {
+            float sanitizedBaseAmount = Mathf.Max(0f, baseAmount);
+            return Mathf.Max(
+                0f,
+                sanitizedBaseAmount +
+                sanitizedBaseAmount * modifierPercentage / 100f);
         }
 
         /// <summary>
@@ -568,7 +611,7 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Regenerates owner stamina after its delay and according to the configured fixed tick.
+        /// Regenerates owner Stamina immediately when actions permit, using fixed ticks.
         /// </summary>
         public void RegenerateStamina()
         {
@@ -587,17 +630,7 @@ namespace ZZ
                 return;
             }
 
-            float deltaTime = Time.deltaTime;
-            float delayTimeRemaining = Mathf.Max(
-                0f,
-                m_staminaRegenerationDelay - m_staminaRegenerationTimer);
-            m_staminaRegenerationTimer += deltaTime;
-            if (m_staminaRegenerationTimer < m_staminaRegenerationDelay)
-            {
-                return;
-            }
-
-            m_staminaTickTimer += Mathf.Max(0f, deltaTime - delayTimeRemaining);
+            m_staminaTickTimer += Time.deltaTime;
             float tickInterval = Mathf.Max(0.01f, m_staminaRegenerationTickInterval);
             int elapsedTicks = CalculateElapsedStaminaRegenerationTicks(
                 m_staminaTickTimer,
@@ -608,24 +641,24 @@ namespace ZZ
             }
 
             m_staminaTickTimer -= elapsedTicks * tickInterval;
+            float regenerationAmount = StaminaRegenerationAmount;
+            if (m_characterNetworkManager.IsBlocking.Value)
+            {
+                regenerationAmount *= Mathf.Clamp01(
+                    m_blockingStaminaRegenerationMultiplier);
+            }
+
             m_characterNetworkManager.CurrentStamina.Value = Mathf.Clamp(
-                currentStamina + Mathf.Max(0f, m_staminaRegenerationAmount) * elapsedTicks,
+                currentStamina + regenerationAmount * elapsedTicks,
                 0f,
                 maximumStamina);
         }
 
-        /// <summary>
-        /// Restarts the stamina recovery delay after resource consumption.
-        /// </summary>
-        public void ResetStaminaRegenerationTimer()
-        {
-            m_staminaRegenerationTimer = 0f;
-            m_staminaTickTimer = 0f;
-        }
-
         protected virtual bool IsStaminaRegenerationBlocked()
         {
-            return m_characterManager == null || m_characterManager.IsPerformingAction;
+            return m_characterManager == null ||
+                m_characterManager.IsPerformingAction &&
+                !m_characterNetworkManager.IsBlocking.Value;
         }
 
         private void InitializeResources()
@@ -674,21 +707,6 @@ namespace ZZ
             {
                 SetNewMaxFocusPointsValue();
             }
-        }
-
-        private void OnCurrentStaminaChanged(float previousStamina, float currentStamina)
-        {
-            if (IsOwner && ShouldResetStaminaRegenerationTimer(previousStamina, currentStamina))
-            {
-                ResetStaminaRegenerationTimer();
-            }
-        }
-
-        private static bool ShouldResetStaminaRegenerationTimer(
-            float previousStamina,
-            float currentStamina)
-        {
-            return currentStamina < previousStamina;
         }
 
         private static float CalculateStaminaAfterConsumption(

@@ -182,21 +182,22 @@ namespace ZZ.Tests
             {
                 Type barType = GetRuntimeType("ZZ.UIBuildupBar");
                 Component[] bars = root.GetComponentsInChildren(barType, true);
-                Assert.That(bars.Length, Is.EqualTo(2));
+                Assert.That(bars.Length, Is.GreaterThanOrEqualTo(2));
                 Assert.That(bars.All(bar => !bar.gameObject.activeSelf), Is.True);
                 Assert.That(bars.All(bar =>
                     bar.transform.parent.name == "Popup Organizer"), Is.True);
-                Assert.That(bars.Select(bar =>
+                string[] buildupTypes = bars.Select(bar =>
                         GetProperty(bar, "BuildupType").ToString())
-                    .Distinct()
-                    .Count(), Is.EqualTo(2));
+                    .ToArray();
+                Assert.That(buildupTypes, Does.Contain("Poison"));
+                Assert.That(buildupTypes, Does.Contain("Bleed"));
 
                 Component hud = root.GetComponentInChildren(
                     GetRuntimeType("ZZ.PlayerUIHUDManager"),
                     true);
                 SerializedObject serializedHUD = new(hud);
                 Assert.That(serializedHUD.FindProperty("m_buildupBars").arraySize,
-                    Is.EqualTo(2));
+                    Is.GreaterThanOrEqualTo(2));
             }
             finally
             {

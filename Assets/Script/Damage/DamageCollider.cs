@@ -22,6 +22,7 @@ namespace ZZ
         [Header("Status Buildup")]
         [SerializeField, Min(0f)] private float m_poisonBuildup;
         [SerializeField, Min(0f)] private float m_bleedBuildup;
+        [SerializeField, Min(0f)] private float m_frostBuildup;
 
         private readonly List<CharacterManager> m_charactersDamaged = new();
         private Collider m_damageCollider;
@@ -174,13 +175,18 @@ namespace ZZ
             m_poiseDamage = Mathf.Max(0f, poiseDamage);
             m_poisonBuildup = 0f;
             m_bleedBuildup = 0f;
+            m_frostBuildup = 0f;
         }
 
         /// <summary>Configures status accumulation emitted by the current damage source.</summary>
-        public void SetBuildupValues(float poisonBuildup, float bleedBuildup)
+        public void SetBuildupValues(
+            float poisonBuildup,
+            float bleedBuildup,
+            float frostBuildup)
         {
             m_poisonBuildup = Mathf.Max(0f, poisonBuildup);
             m_bleedBuildup = Mathf.Max(0f, bleedBuildup);
+            m_frostBuildup = Mathf.Max(0f, frostBuildup);
         }
 
         /// <summary>
@@ -277,6 +283,7 @@ namespace ZZ
                     m_poiseDamage,
                     m_poisonBuildup,
                     m_bleedBuildup,
+                    m_frostBuildup,
                     contactPoint,
                     wasBlocked);
                 return;
@@ -316,7 +323,8 @@ namespace ZZ
             {
                 effectsManager.ProcessBuildupEffects(
                     m_poisonBuildup,
-                    m_bleedBuildup);
+                    m_bleedBuildup,
+                    m_frostBuildup);
             }
         }
 

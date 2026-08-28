@@ -29,6 +29,7 @@ namespace ZZ
         [Header("Status Buildup")]
         [SerializeField, Min(0f)] private float m_poisonBuildup;
         [SerializeField, Min(0f)] private float m_bleedBuildup;
+        [SerializeField, Min(0f)] private float m_frostBuildup;
 
         [Header("Upgrade")]
         [SerializeField] private UpgradeLevel m_upgradeLevel;
@@ -131,6 +132,9 @@ namespace ZZ
 
         /// <summary>Gets Bleed accumulation applied by an unblocked hit.</summary>
         public float BleedBuildup => Mathf.Max(0f, m_bleedBuildup);
+
+        /// <summary>Gets Frost accumulation applied by an unblocked hit.</summary>
+        public float FrostBuildup => Mathf.Max(0f, m_frostBuildup);
 
         /// <summary>Gets this runtime weapon instance's reinforcement level.</summary>
         public UpgradeLevel UpgradeLevel => m_upgradeLevel;

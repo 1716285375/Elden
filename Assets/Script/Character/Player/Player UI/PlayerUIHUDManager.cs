@@ -202,6 +202,8 @@ namespace ZZ
                     OnPoisonBuildupChanged;
                 m_boundNetworkManager.BleedBuildup.OnValueChanged +=
                     OnBleedBuildupChanged;
+                m_boundNetworkManager.FrostBuildup.OnValueChanged +=
+                    OnFrostBuildupChanged;
                 m_boundNetworkManager.BuildupCapacity.OnValueChanged +=
                     OnBuildupCapacityChanged;
                 m_boundNetworkManager.IsPoisoned.OnValueChanged +=
@@ -418,6 +420,13 @@ namespace ZZ
             SetBuildupAmount(Buildup.Bleed, currentBuildup);
         }
 
+        private void OnFrostBuildupChanged(
+            float previousBuildup,
+            float currentBuildup)
+        {
+            SetBuildupAmount(Buildup.Frost, currentBuildup);
+        }
+
         private void OnBuildupCapacityChanged(
             float previousCapacity,
             float currentCapacity)
@@ -499,6 +508,9 @@ namespace ZZ
             SetBuildupAmount(
                 Buildup.Bleed,
                 m_boundNetworkManager.BleedBuildup.Value);
+            SetBuildupAmount(
+                Buildup.Frost,
+                m_boundNetworkManager.FrostBuildup.Value);
         }
 
         private void RefreshQuickSlots()
@@ -536,6 +548,8 @@ namespace ZZ
                 OnPoisonBuildupChanged;
             m_boundNetworkManager.BleedBuildup.OnValueChanged -=
                 OnBleedBuildupChanged;
+            m_boundNetworkManager.FrostBuildup.OnValueChanged -=
+                OnFrostBuildupChanged;
             m_boundNetworkManager.BuildupCapacity.OnValueChanged -=
                 OnBuildupCapacityChanged;
             m_boundNetworkManager.IsPoisoned.OnValueChanged -=

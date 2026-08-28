@@ -4,6 +4,7 @@ namespace ZZ
     public enum Buildup
     {
         Poison = 0,
-        Bleed = 1
+        Bleed = 1,
+        Frost = 2
     }
 }

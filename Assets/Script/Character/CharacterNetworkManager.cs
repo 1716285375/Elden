@@ -101,6 +101,10 @@ namespace ZZ
             0f,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> FrostBuildup = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         public NetworkVariable<float> BuildupCapacity = new NetworkVariable<float>(
             0f,
             NetworkVariableReadPermission.Everyone,
@@ -108,6 +112,14 @@ namespace ZZ
 
         [Header("Status Effects")]
         public NetworkVariable<bool> IsPoisoned = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsFrostbitten = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> IsFrozen = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
@@ -191,6 +203,10 @@ namespace ZZ
             {
                 MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
             });
+            FrostBuildup.SetUpdateTraits(new NetworkVariableUpdateTraits
+            {
+                MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
+            });
         }
 
         public override void OnNetworkSpawn()
@@ -200,6 +216,8 @@ namespace ZZ
             CurrentHealth.OnValueChanged += OnCurrentHealthChanged;
             IsDead.OnValueChanged += OnIsDeadChanged;
             IsPoisoned.OnValueChanged += OnIsPoisonedChanged;
+            IsFrostbitten.OnValueChanged += OnIsFrostbittenChanged;
+            IsFrozen.OnValueChanged += OnIsFrozenChanged;
             IsChargingAttack.OnValueChanged += OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged += OnIsBlockingChanged;
             IsParrying.OnValueChanged += OnIsParryingChanged;
@@ -223,6 +241,8 @@ namespace ZZ
             ApplyBlockingState(IsBlocking.Value);
             m_characterAnimatorManager?.SetDeadState(IsDead.Value);
             OnIsPoisonedChanged(false, IsPoisoned.Value);
+            OnIsFrostbittenChanged(false, IsFrostbitten.Value);
+            OnIsFrozenChanged(false, IsFrozen.Value);
             CheckHP();
         }
 
@@ -232,11 +252,16 @@ namespace ZZ
             CurrentHealth.OnValueChanged -= OnCurrentHealthChanged;
             IsDead.OnValueChanged -= OnIsDeadChanged;
             IsPoisoned.OnValueChanged -= OnIsPoisonedChanged;
+            IsFrostbitten.OnValueChanged -= OnIsFrostbittenChanged;
+            IsFrozen.OnValueChanged -= OnIsFrozenChanged;
             IsChargingAttack.OnValueChanged -= OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged -= OnIsBlockingChanged;
             IsParrying.OnValueChanged -= OnIsParryingChanged;
             ApplyChargingAttackState(false);
             ApplyBlockingState(false);
+            m_characterManager?.CharacterEffectsManager?.SetFrostbittenState(
+                false);
+            m_characterManager?.SetFrozenState(false);
             base.OnNetworkDespawn();
         }
 
@@ -385,9 +410,13 @@ namespace ZZ
         /// <summary>Gets the replicated value for one status accumulation channel.</summary>
         public float GetBuildup(Buildup buildupType)
         {
-            return buildupType == Buildup.Poison
-                ? PoisonBuildup.Value
-                : BleedBuildup.Value;
+            return buildupType switch
+            {
+                Buildup.Poison => PoisonBuildup.Value,
+                Buildup.Bleed => BleedBuildup.Value,
+                Buildup.Frost => FrostBuildup.Value,
+                _ => 0f
+            };
         }
 
         /// <summary>Writes one owner-authoritative buildup value within its valid range.</summary>
@@ -405,9 +434,18 @@ namespace ZZ
                 buildupAmount,
                 0f,
                 maximumBuildup);
-            NetworkVariable<float> buildupVariable = buildupType == Buildup.Poison
-                ? PoisonBuildup
-                : BleedBuildup;
+            NetworkVariable<float> buildupVariable = buildupType switch
+            {
+                Buildup.Poison => PoisonBuildup,
+                Buildup.Bleed => BleedBuildup,
+                Buildup.Frost => FrostBuildup,
+                _ => null
+            };
+            if (buildupVariable == null)
+            {
+                return false;
+            }
+
             buildupVariable.Value = sanitizedAmount;
             return true;
         }
@@ -421,6 +459,30 @@ namespace ZZ
             }
 
             IsPoisoned.Value = isPoisoned;
+            return true;
+        }
+
+        /// <summary>Writes the owner's replicated Frostbite state.</summary>
+        public bool TrySetFrostbitten(bool isFrostbitten)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            IsFrostbitten.Value = isFrostbitten;
+            return true;
+        }
+
+        /// <summary>Writes the owner's independent replicated Freeze state.</summary>
+        public bool TrySetFrozen(bool isFrozen)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            IsFrozen.Value = isFrozen;
             return true;
         }
 
@@ -911,6 +973,7 @@ namespace ZZ
             float poiseDamage,
             float poisonBuildup,
             float bleedBuildup,
+            float frostBuildup,
             Vector3 contactPoint,
             bool wasBlocked,
             ServerRpcParams serverRpcParams = default)
@@ -931,6 +994,7 @@ namespace ZZ
                 poiseDamage,
                 poisonBuildup,
                 bleedBuildup,
+                frostBuildup,
                 contactPoint,
                 wasBlocked);
         }
@@ -947,6 +1011,7 @@ namespace ZZ
             float poiseDamage,
             float poisonBuildup,
             float bleedBuildup,
+            float frostBuildup,
             Vector3 contactPoint,
             bool wasBlocked)
         {
@@ -977,7 +1042,8 @@ namespace ZZ
             {
                 target.CharacterEffectsManager?.ProcessBuildupEffects(
                     poisonBuildup,
-                    bleedBuildup);
+                    bleedBuildup,
+                    frostBuildup);
             }
         }
 
@@ -1075,6 +1141,16 @@ namespace ZZ
                     TrySetPoisoned(false);
                 }
 
+                if (IsOwner && IsFrostbitten.Value)
+                {
+                    TrySetFrostbitten(false);
+                }
+
+                if (IsOwner && IsFrozen.Value)
+                {
+                    TrySetFrozen(false);
+                }
+
                 CheckHP();
                 return;
             }
@@ -1103,6 +1179,27 @@ namespace ZZ
                 playerUI?.PlayerUIPopUpManager?.SendStatusEffectPopup(
                     Buildup.Poison);
             }
+        }
+
+        private void OnIsFrostbittenChanged(
+            bool wasFrostbitten,
+            bool isFrostbitten)
+        {
+            m_characterManager?.CharacterEffectsManager?.SetFrostbittenState(
+                isFrostbitten);
+            if (m_characterManager is PlayerManager player &&
+                player.IsOwner &&
+                !wasFrostbitten &&
+                isFrostbitten)
+            {
+                PlayerUIManager.Instance?.PlayerUIPopUpManager
+                    ?.SendStatusEffectPopup(Buildup.Frost);
+            }
+        }
+
+        private void OnIsFrozenChanged(bool wasFrozen, bool isFrozen)
+        {
+            m_characterManager?.SetFrozenState(isFrozen);
         }
 
         private void OnIsChargingAttackChanged(

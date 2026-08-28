@@ -53,6 +53,11 @@ namespace ZZ
             {
                 return;
             }
+            if (m_buildupType == Buildup.Frost &&
+                networkManager?.IsFrostbitten.Value == true)
+            {
+                return;
+            }
 
             if (decayEffect != null)
             {
@@ -76,9 +81,13 @@ namespace ZZ
 
             WorldCharacterEffectsManager worldEffects =
                 WorldCharacterEffectsManager.Instance;
-            return m_buildupType == Buildup.Poison
-                ? worldEffects?.DegradePoisonBuildupEffect
-                : worldEffects?.DegradeBleedBuildupEffect;
+            return m_buildupType switch
+            {
+                Buildup.Poison => worldEffects?.DegradePoisonBuildupEffect,
+                Buildup.Bleed => worldEffects?.DegradeBleedBuildupEffect,
+                Buildup.Frost => worldEffects?.DegradeFrostBuildupEffect,
+                _ => null
+            };
         }
     }
 }

@@ -48,22 +48,31 @@ namespace ZZ
         /// <summary>Returns the reusable label for one buildup-triggered status.</summary>
         public static string GetDisplayText(Buildup statusType)
         {
-            return statusType == Buildup.Poison
-                ? "POISONED"
-                : "BLOOD LOSS";
+            return statusType switch
+            {
+                Buildup.Poison => "POISONED",
+                Buildup.Bleed => "BLOOD LOSS",
+                Buildup.Frost => "FROSTBITE",
+                _ => statusType.ToString().ToUpperInvariant()
+            };
         }
 
         /// <summary>Returns the shared presentation color for one status.</summary>
         public static Color GetDisplayColor(Buildup statusType)
         {
-            if (statusType == Buildup.Poison)
+            switch (statusType)
             {
-                return WorldUtilityManager.Instance != null
-                    ? WorldUtilityManager.Instance.PoisonColor
-                    : new Color(0.34f, 0.62f, 0.2f, 1f);
+                case Buildup.Poison:
+                    return WorldUtilityManager.Instance != null
+                        ? WorldUtilityManager.Instance.PoisonColor
+                        : new Color(0.34f, 0.62f, 0.2f, 1f);
+                case Buildup.Frost:
+                    return WorldUtilityManager.Instance != null
+                        ? WorldUtilityManager.Instance.FrostColor
+                        : new Color(0.25f, 0.72f, 1f, 1f);
+                default:
+                    return new Color(0.66f, 0.08f, 0.1f, 1f);
             }
-
-            return new Color(0.66f, 0.08f, 0.1f, 1f);
         }
 
         private IEnumerator DisplayWarning()
