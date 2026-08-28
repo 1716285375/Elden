@@ -106,6 +106,12 @@ namespace ZZ
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
+        [Header("Status Effects")]
+        public NetworkVariable<bool> IsPoisoned = new NetworkVariable<bool>(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+
         [Header("State")]
         public NetworkVariable<bool> IsJumping = new NetworkVariable<bool>(
             false,
@@ -193,6 +199,7 @@ namespace ZZ
             m_hasResolvedCurrentParry = false;
             CurrentHealth.OnValueChanged += OnCurrentHealthChanged;
             IsDead.OnValueChanged += OnIsDeadChanged;
+            IsPoisoned.OnValueChanged += OnIsPoisonedChanged;
             IsChargingAttack.OnValueChanged += OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged += OnIsBlockingChanged;
             IsParrying.OnValueChanged += OnIsParryingChanged;
@@ -215,6 +222,7 @@ namespace ZZ
             ApplyChargingAttackState(IsChargingAttack.Value);
             ApplyBlockingState(IsBlocking.Value);
             m_characterAnimatorManager?.SetDeadState(IsDead.Value);
+            OnIsPoisonedChanged(false, IsPoisoned.Value);
             CheckHP();
         }
 
@@ -223,6 +231,7 @@ namespace ZZ
             m_hasResolvedCurrentParry = false;
             CurrentHealth.OnValueChanged -= OnCurrentHealthChanged;
             IsDead.OnValueChanged -= OnIsDeadChanged;
+            IsPoisoned.OnValueChanged -= OnIsPoisonedChanged;
             IsChargingAttack.OnValueChanged -= OnIsChargingAttackChanged;
             IsBlocking.OnValueChanged -= OnIsBlockingChanged;
             IsParrying.OnValueChanged -= OnIsParryingChanged;
@@ -400,6 +409,18 @@ namespace ZZ
                 ? PoisonBuildup
                 : BleedBuildup;
             buildupVariable.Value = sanitizedAmount;
+            return true;
+        }
+
+        /// <summary>Writes the owner's replicated Poison state.</summary>
+        public bool TrySetPoisoned(bool isPoisoned)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            IsPoisoned.Value = isPoisoned;
             return true;
         }
 
@@ -1049,6 +1070,11 @@ namespace ZZ
             m_characterAnimatorManager?.SetDeadState(isDead);
             if (isDead)
             {
+                if (IsOwner && IsPoisoned.Value)
+                {
+                    TrySetPoisoned(false);
+                }
+
                 CheckHP();
                 return;
             }
@@ -1056,6 +1082,26 @@ namespace ZZ
             if (wasDead && !IsOwner)
             {
                 m_characterManager?.ReviveCharacter();
+            }
+        }
+
+        private void OnIsPoisonedChanged(bool wasPoisoned, bool isPoisoned)
+        {
+            m_characterManager?.CharacterEffectsManager?.SetPoisonedState(
+                isPoisoned);
+            m_characterManager?.CharacterUIManager?.SetPoisonedState(
+                isPoisoned);
+
+            if (m_characterManager is not PlayerManager player || !player.IsOwner)
+            {
+                return;
+            }
+
+            PlayerUIManager playerUI = PlayerUIManager.Instance;
+            if (!wasPoisoned && isPoisoned)
+            {
+                playerUI?.PlayerUIPopUpManager?.SendStatusEffectPopup(
+                    Buildup.Poison);
             }
         }
 

@@ -61,6 +61,12 @@ namespace ZZ
             RefreshHUD();
         }
 
+        /// <summary>Applies Poison coloring to the locally owned Health bar.</summary>
+        public void SetHealthBarPoisoned(bool isPoisoned)
+        {
+            m_healthBar?.SetPoisonedColor(isPoisoned);
+        }
+
         /// <summary>
         /// Updates the local Stamina presentation from shared character state.
         /// </summary>
@@ -198,6 +204,8 @@ namespace ZZ
                     OnBleedBuildupChanged;
                 m_boundNetworkManager.BuildupCapacity.OnValueChanged +=
                     OnBuildupCapacityChanged;
+                m_boundNetworkManager.IsPoisoned.OnValueChanged +=
+                    OnIsPoisonedChanged;
             }
 
             gameObject.SetActive(true);
@@ -418,6 +426,11 @@ namespace ZZ
             RefreshBuildupBars();
         }
 
+        private void OnIsPoisonedChanged(bool wasPoisoned, bool isPoisoned)
+        {
+            SetHealthBarPoisoned(isPoisoned);
+        }
+
         private void OnRightHandWeaponChanged(WeaponItem weapon)
         {
             m_rightWeaponQuickSlot?.SetItem(weapon);
@@ -468,6 +481,7 @@ namespace ZZ
             SetMaxFocusPointsValue(m_boundNetworkManager.MaxFocusPoints.Value);
             SetNewFocusPointsValue(
                 m_boundNetworkManager.CurrentFocusPoints.Value);
+            SetHealthBarPoisoned(m_boundNetworkManager.IsPoisoned.Value);
             RefreshBuildupBars();
         }
 
@@ -524,6 +538,8 @@ namespace ZZ
                 OnBleedBuildupChanged;
             m_boundNetworkManager.BuildupCapacity.OnValueChanged -=
                 OnBuildupCapacityChanged;
+            m_boundNetworkManager.IsPoisoned.OnValueChanged -=
+                OnIsPoisonedChanged;
             m_boundNetworkManager = null;
         }
 

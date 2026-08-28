@@ -30,6 +30,10 @@ namespace ZZ
         [SerializeField] private GameObject m_dialoguePopup;
         [SerializeField] private TMP_Text m_dialogueSubtitleText;
 
+        [Header("STATUS EFFECT POPUP")]
+        [SerializeField] private Transform m_popupOrganizer;
+        [SerializeField] private UIStatusEffectWarning m_statusEffectWarningPrefab;
+
         [Header("TIMING")]
         [SerializeField, Min(0.01f)] private float m_fadeInDuration = 0.8f;
         [SerializeField, Min(0f)] private float m_visibleDuration = 2f;
@@ -128,6 +132,26 @@ namespace ZZ
             m_itemAmountText.text = $"x{Mathf.Max(1, amount)}";
             m_itemPopup.SetActive(true);
             RefreshPopupState();
+        }
+
+        /// <summary>Creates one passive owner-only status warning under the popup organizer.</summary>
+        public void SendStatusEffectPopup(Buildup statusType)
+        {
+            if (m_statusEffectWarningPrefab == null)
+            {
+                Debug.LogWarning(
+                    "The status effect warning prefab is not configured.",
+                    this);
+                return;
+            }
+
+            Transform parent = m_popupOrganizer != null
+                ? m_popupOrganizer
+                : transform;
+            UIStatusEffectWarning warning = Instantiate(
+                m_statusEffectWarningPrefab,
+                parent);
+            warning.Initialize(statusType);
         }
 
         /// <summary>Closes only the proximity prompt without dismissing an item popup.</summary>

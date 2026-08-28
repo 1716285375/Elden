@@ -46,11 +46,17 @@ namespace ZZ
             }
 
             BuildupEffect decayEffect = ResolveDegradeEffect();
+            CharacterNetworkManager networkManager =
+                character.CharacterNetworkManager;
+            if (m_buildupType == Buildup.Poison &&
+                networkManager?.IsPoisoned.Value == true)
+            {
+                return;
+            }
+
             if (decayEffect != null)
             {
                 effectsManager.AddTimedEffect(decayEffect);
-                CharacterNetworkManager networkManager =
-                    character.CharacterNetworkManager;
                 if (networkManager != null &&
                     BuildupEffect.ShouldStopDegrading(
                         networkManager.GetBuildup(m_buildupType),

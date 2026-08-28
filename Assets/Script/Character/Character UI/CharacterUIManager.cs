@@ -129,6 +129,12 @@ namespace ZZ
                 m_networkManager.CurrentHealth.Value);
         }
 
+        /// <summary>Applies replicated Poison coloring to this world-space Health bar.</summary>
+        public void SetPoisonedState(bool isPoisoned)
+        {
+            m_characterHPBar?.SetPoisonedColor(isPoisoned);
+        }
+
         private void OnMaximumHealthChanged(
             float previousMaximumHealth,
             float maximumHealth)

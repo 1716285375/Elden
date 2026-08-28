@@ -8,13 +8,18 @@ namespace ZZ
     {
         [SerializeField] private Slider m_slider;
         [SerializeField] private RectTransform m_rectTransform;
+        [SerializeField] private Image m_fillImage;
         [SerializeField] private bool m_shouldScaleBarLengthWithStats;
         [SerializeField, Min(0f)] private float m_widthScaleMultiplier = 2f;
+
+        private Color m_defaultFillColor;
+        private bool m_hasDefaultFillColor;
 
         protected virtual void Awake()
         {
             m_slider ??= GetComponent<Slider>();
             m_rectTransform ??= GetComponent<RectTransform>();
+            ResolveFillImage();
         }
 
         /// <summary>
@@ -44,6 +49,34 @@ namespace ZZ
             m_slider.maxValue = Mathf.Max(0f, maximumValue);
             m_slider.value = m_slider.maxValue;
             ScaleBarLength(m_slider.maxValue);
+        }
+
+        /// <summary>Toggles the shared Poison color without losing the authored fill color.</summary>
+        public void SetPoisonedColor(bool isPoisoned)
+        {
+            ResolveFillImage();
+            if (m_fillImage == null)
+            {
+                return;
+            }
+
+            Color poisonColor = WorldUtilityManager.Instance != null
+                ? WorldUtilityManager.Instance.PoisonColor
+                : new Color(0.34f, 0.62f, 0.2f, 1f);
+            m_fillImage.color = isPoisoned
+                ? poisonColor
+                : m_defaultFillColor;
+        }
+
+        private void ResolveFillImage()
+        {
+            m_slider ??= GetComponent<Slider>();
+            m_fillImage ??= m_slider?.fillRect?.GetComponent<Image>();
+            if (m_fillImage != null && !m_hasDefaultFillColor)
+            {
+                m_defaultFillColor = m_fillImage.color;
+                m_hasDefaultFillColor = true;
+            }
         }
 
         private void ScaleBarLength(float maximumValue)
