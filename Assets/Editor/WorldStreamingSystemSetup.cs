@@ -235,6 +235,7 @@ namespace ZZ.Editor
             GetOrAddComponent<NetworkObject>(managerObject);
             GetOrAddComponent<WorldSceneManager>(managerObject);
             GetOrAddComponent<WorldSceneSubSceneManager>(managerObject);
+            GetOrAddComponent<WorldLocationManager>(managerObject);
             ConfigureSpawnAreaTrigger(worldScene, managerObject.transform);
             EditorUtility.SetDirty(managerObject);
         }
@@ -425,6 +426,7 @@ namespace ZZ.Editor
                 managerObject.GetComponent<NetworkObject>() == null ||
                 managerObject.GetComponent<WorldSceneManager>() == null ||
                 managerObject.GetComponent<WorldSceneSubSceneManager>() == null ||
+                managerObject.GetComponent<WorldLocationManager>() == null ||
                 triggerTransform?.GetComponent<EventTriggerLoadScene>() == null ||
                 probeObject?.GetComponent<ProbeVolume>()?.mode !=
                     ProbeVolume.Mode.Local)

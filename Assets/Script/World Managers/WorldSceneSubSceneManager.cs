@@ -139,6 +139,7 @@ namespace ZZ
             {
                 SetActiveAreaClientRpc(
                     activeSceneID,
+                    worldLocation.LocationID,
                     CreateTargetClientRpcParams(player.OwnerClientId));
             }
 
@@ -163,6 +164,21 @@ namespace ZZ
             return m_worldLocations.FirstOrDefault(location =>
                 location != null &&
                 location.LegacyLocation == legacyLocation);
+        }
+
+        /// <summary>Finds the data asset with one stable location identifier.</summary>
+        public WorldLocationSceneSet ResolveWorldLocation(string locationID)
+        {
+            if (string.IsNullOrWhiteSpace(locationID))
+            {
+                return null;
+            }
+
+            EnsureLocationRegistry();
+            string normalizedLocationID = locationID.Trim();
+            return m_worldLocations.FirstOrDefault(location =>
+                location != null &&
+                location.LocationID == normalizedLocationID);
         }
 
         /// <summary>Returns the persistent Scene ID or a legacy location's primary Scene.</summary>
@@ -329,20 +345,43 @@ namespace ZZ
         [ClientRpc]
         private void SetActiveAreaClientRpc(
             string activeSceneID,
+            string worldLocationID,
             ClientRpcParams clientRpcParams = default)
         {
-            StartCoroutine(WaitThenSetActiveScene(activeSceneID));
+            StartCoroutine(WaitThenSetActiveScene(
+                activeSceneID,
+                worldLocationID));
         }
 
-        private IEnumerator WaitThenSetActiveScene(string activeSceneID)
+        private IEnumerator WaitThenSetActiveScene(
+            string activeSceneID,
+            string worldLocationID)
         {
             float timeoutAt = Time.realtimeSinceStartup +
                 k_ActiveSceneTimeoutSeconds;
+            bool localLocationAssigned = false;
             while (Time.realtimeSinceStartup < timeoutAt)
             {
                 PlayerManager localPlayer = WorldGameSessionManager.Instance?.Players
                     .FirstOrDefault(player => player != null && player.IsOwner);
-                if (localPlayer != null &&
+                if (localPlayer != null && !localLocationAssigned)
+                {
+                    WorldLocationSceneSet localLocation =
+                        ResolveWorldLocation(worldLocationID);
+                    if (localLocation == null)
+                    {
+                        Debug.LogError(
+                            $"Could not resolve local world location " +
+                            $"{worldLocationID}.");
+                        yield break;
+                    }
+
+                    localPlayer.SetAreaCurrentlyIn(localLocation);
+                    localLocationAssigned = true;
+                    WorldSceneManager.Instance?.CheckForRequiredRenderers();
+                }
+
+                if (localLocationAssigned &&
                     WorldSceneManager.Instance?.IsSceneLoaded(activeSceneID) ==
                         true)
                 {

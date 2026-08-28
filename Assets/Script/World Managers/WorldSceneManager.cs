@@ -32,6 +32,7 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_unloadOperationInterval = 0.5f;
 
         private Coroutine m_sceneQueueCoroutine;
+        private Coroutine m_requiredRenderersCoroutine;
         private bool m_sceneIsLoading;
         private bool m_sceneIsUnloading;
 
@@ -180,6 +181,59 @@ namespace ZZ
                     UnloadAdditiveScene(scene.name);
                 }
             }
+        }
+
+        /// <summary>
+        /// Restarts the local Renderer calculation using the latest owned-player
+        /// location. Scene loading remains controlled by the server-side union.
+        /// </summary>
+        public void CheckForRequiredRenderers()
+        {
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+
+            if (m_requiredRenderersCoroutine != null)
+            {
+                StopCoroutine(m_requiredRenderersCoroutine);
+            }
+
+            m_requiredRenderersCoroutine = StartCoroutine(
+                CheckForRequiredRenderersAfterSceneRegistration());
+        }
+
+        /// <summary>Maps a configured Scene name or path to its Build Index.</summary>
+        public static int GetBuildIndexFromSceneID(string sceneID)
+        {
+            if (string.IsNullOrWhiteSpace(sceneID))
+            {
+                return -1;
+            }
+
+            string normalizedSceneID = sceneID.Trim();
+            int directBuildIndex = SceneUtility.GetBuildIndexByScenePath(
+                normalizedSceneID);
+            if (directBuildIndex >= 0)
+            {
+                return directBuildIndex;
+            }
+
+            for (int buildIndex = 0;
+                buildIndex < SceneManager.sceneCountInBuildSettings;
+                buildIndex++)
+            {
+                string scenePath = SceneUtility.GetScenePathByBuildIndex(
+                    buildIndex);
+                if (scenePath.EndsWith(
+                        $"/{normalizedSceneID}.unity",
+                        System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SceneUtility.GetBuildIndexByScenePath(scenePath);
+                }
+            }
+
+            return -1;
         }
 
         private bool CanServerManageScenes()
@@ -353,6 +407,7 @@ namespace ZZ
                     if (sceneEvent.ClientId == NetworkManager.LocalClientId)
                     {
                         AddLoadedScene(sceneEvent.SceneName, sceneEvent.Scene);
+                        CheckForRequiredRenderers();
                         if (!IsServer)
                         {
                             m_sceneIsLoading = false;
@@ -362,6 +417,7 @@ namespace ZZ
                 case SceneEventType.LoadEventCompleted:
                     AddLoadedScene(sceneEvent.SceneName, sceneEvent.Scene);
                     m_sceneIsLoading = false;
+                    CheckForRequiredRenderers();
                     break;
                 case SceneEventType.Unload:
                     m_sceneIsUnloading = true;
@@ -370,6 +426,7 @@ namespace ZZ
                     if (sceneEvent.ClientId == NetworkManager.LocalClientId)
                     {
                         RemoveLoadedScene(sceneEvent.SceneName);
+                        CheckForRequiredRenderers();
                         if (!IsServer)
                         {
                             m_sceneIsUnloading = false;
@@ -379,6 +436,7 @@ namespace ZZ
                 case SceneEventType.UnloadEventCompleted:
                     RemoveLoadedScene(sceneEvent.SceneName);
                     m_sceneIsUnloading = false;
+                    CheckForRequiredRenderers();
                     break;
             }
         }
@@ -419,6 +477,44 @@ namespace ZZ
             }
         }
 
+        private IEnumerator CheckForRequiredRenderersAfterSceneRegistration()
+        {
+            yield return null;
+
+            PlayerManager localPlayer = PlayerUIManager.Instance?.LocalPlayer ??
+                WorldGameSessionManager.Instance?.Players.FirstOrDefault(
+                    player => player != null && player.IsOwner);
+            WorldLocationSceneSet currentLocation =
+                localPlayer?.AreaCurrentlyIn;
+            WorldLocationManager locationManager = WorldLocationManager.Instance;
+            if (currentLocation == null || locationManager == null)
+            {
+                m_requiredRenderersCoroutine = null;
+                yield break;
+            }
+
+            HashSet<int> requiredSceneBuildIndexes = currentLocation
+                .GetRequiredSceneIDsForWorldLocation()
+                .Select(GetBuildIndexFromSceneID)
+                .Where(buildIndex => buildIndex >= 0)
+                .ToHashSet();
+            foreach (WorldLocationRendererManager rendererManager in
+                locationManager.WorldLocationRenderers.ToArray())
+            {
+                if (rendererManager == null)
+                {
+                    continue;
+                }
+
+                rendererManager.EnableRootObjectsForRuntime();
+                rendererManager.ToggleAllMeshRenderers(
+                    requiredSceneBuildIndexes.Contains(
+                        rendererManager.RendererSceneID));
+            }
+
+            m_requiredRenderersCoroutine = null;
+        }
+
         private void UnsubscribeFromSceneEvents()
         {
             if (NetworkManager?.SceneManager != null)
@@ -441,6 +537,11 @@ namespace ZZ
             m_pendingUnloadSceneIDs.Clear();
             m_sceneIsLoading = false;
             m_sceneIsUnloading = false;
+            if (m_requiredRenderersCoroutine != null)
+            {
+                StopCoroutine(m_requiredRenderersCoroutine);
+                m_requiredRenderersCoroutine = null;
+            }
         }
 
         private IEnumerator UnloadAllAdditiveScenesNonNetwork()

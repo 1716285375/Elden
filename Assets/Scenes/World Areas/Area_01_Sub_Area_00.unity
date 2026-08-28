@@ -119,6 +119,58 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &548659413
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 548659415}
+  - component: {fileID: 548659414}
+  m_Layer: 0
+  m_Name: World Location Renderer Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &548659414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548659413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 443540b073e14034a9e548f1eb9cc981, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldLocationRendererManager
+  m_rendererSceneID: 2
+  m_manageRootObjects: 1
+  m_rootObjects:
+  - {fileID: 1171300952}
+  - {fileID: 1891318327}
+  - {fileID: 1396411061}
+  m_meshRenderers:
+  - {fileID: 1396411060}
+--- !u!4 &548659415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548659413}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1171300952
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +186,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1171300953
 Transform:
   m_ObjectHideFlags: 0
@@ -158,9 +210,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 83506464710996904, guid: 94bfba50e7718a64e962bec2ab109e06, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1228982896088428166, guid: 94bfba50e7718a64e962bec2ab109e06, type: 3}
       propertyPath: m_Name
       value: Breakable Wooden Crate
+      objectReference: {fileID: 0}
+    - target: {fileID: 1228982896088428166, guid: 94bfba50e7718a64e962bec2ab109e06, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3880579410959048981, guid: 94bfba50e7718a64e962bec2ab109e06, type: 3}
       propertyPath: m_LocalPosition.x
@@ -223,6 +283,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94bfba50e7718a64e962bec2ab109e06, type: 3}
+--- !u!23 &1396411060 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 83506464710996904, guid: 94bfba50e7718a64e962bec2ab109e06, type: 3}
+  m_PrefabInstance: {fileID: 1396411059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1396411061 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1228982896088428166, guid: 94bfba50e7718a64e962bec2ab109e06, type: 3}
+  m_PrefabInstance: {fileID: 1396411059}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1891318327
 GameObject:
   m_ObjectHideFlags: 1
@@ -239,7 +309,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1891318328
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -250,7 +320,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a83d2f7ae04ab6f4f99b0d85377be998, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.ProbeVolumePerSceneData
   serializedBakingSet: {fileID: 11400000, guid: 6a6a1d959a1006b4c8e87d098072718e, type: 2}
   sceneGUID: bea0461fbfc345d4a9efa92b644d0eac
@@ -280,3 +350,4 @@ SceneRoots:
   - {fileID: 1171300953}
   - {fileID: 1891318329}
   - {fileID: 1396411059}
+  - {fileID: 548659415}
