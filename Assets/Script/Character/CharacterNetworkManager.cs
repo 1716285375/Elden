@@ -92,6 +92,20 @@ namespace ZZ
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
+        [Header("Status Buildup")]
+        public NetworkVariable<float> PoisonBuildup = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> BleedBuildup = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<float> BuildupCapacity = new NetworkVariable<float>(
+            0f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+
         [Header("State")]
         public NetworkVariable<bool> IsJumping = new NetworkVariable<bool>(
             false,
@@ -160,6 +174,14 @@ namespace ZZ
                 MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
             });
             CurrentFocusPoints.SetUpdateTraits(new NetworkVariableUpdateTraits
+            {
+                MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
+            });
+            PoisonBuildup.SetUpdateTraits(new NetworkVariableUpdateTraits
+            {
+                MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
+            });
+            BleedBuildup.SetUpdateTraits(new NetworkVariableUpdateTraits
             {
                 MinSecondsBetweenUpdates = k_ResourceNetworkUpdateInterval
             });
@@ -349,6 +371,36 @@ namespace ZZ
             }
 
             IsParryable.Value = isParryable;
+        }
+
+        /// <summary>Gets the replicated value for one status accumulation channel.</summary>
+        public float GetBuildup(Buildup buildupType)
+        {
+            return buildupType == Buildup.Poison
+                ? PoisonBuildup.Value
+                : BleedBuildup.Value;
+        }
+
+        /// <summary>Writes one owner-authoritative buildup value within its valid range.</summary>
+        public bool TrySetBuildup(Buildup buildupType, float buildupAmount)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return false;
+            }
+
+            float maximumBuildup = BuildupCapacity.Value > 0f
+                ? BuildupCapacity.Value
+                : float.MaxValue;
+            float sanitizedAmount = Mathf.Clamp(
+                buildupAmount,
+                0f,
+                maximumBuildup);
+            NetworkVariable<float> buildupVariable = buildupType == Buildup.Poison
+                ? PoisonBuildup
+                : BleedBuildup;
+            buildupVariable.Value = sanitizedAmount;
+            return true;
         }
 
         /// <summary>Reapplies late-join blocking data after replicated equipment is ready.</summary>
@@ -836,6 +888,8 @@ namespace ZZ
             float lightningDamage,
             float holyDamage,
             float poiseDamage,
+            float poisonBuildup,
+            float bleedBuildup,
             Vector3 contactPoint,
             bool wasBlocked,
             ServerRpcParams serverRpcParams = default)
@@ -854,6 +908,8 @@ namespace ZZ
                 lightningDamage,
                 holyDamage,
                 poiseDamage,
+                poisonBuildup,
+                bleedBuildup,
                 contactPoint,
                 wasBlocked);
         }
@@ -868,6 +924,8 @@ namespace ZZ
             float lightningDamage,
             float holyDamage,
             float poiseDamage,
+            float poisonBuildup,
+            float bleedBuildup,
             Vector3 contactPoint,
             bool wasBlocked)
         {
@@ -894,6 +952,12 @@ namespace ZZ
             }
 
             target.CharacterEffectsManager?.ProcessRuntimeInstantEffect(runtimeEffect);
+            if (!wasBlocked)
+            {
+                target.CharacterEffectsManager?.ProcessBuildupEffects(
+                    poisonBuildup,
+                    bleedBuildup);
+            }
         }
 
         private InstantCharacterEffect CreateRuntimeDamageEffect(

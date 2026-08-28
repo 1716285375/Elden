@@ -12,6 +12,8 @@ namespace ZZ
         [SerializeField] private UIStatBar m_healthBar;
         [SerializeField] private UIStatBar m_staminaBar;
         [SerializeField] private UIStatBar m_focusPointsBar;
+        [SerializeField] private UIBuildupBar[] m_buildupBars =
+            System.Array.Empty<UIBuildupBar>();
         [SerializeField] private UIQuickSlot m_leftWeaponQuickSlot;
         [SerializeField] private UIQuickSlot m_rightWeaponQuickSlot;
         [SerializeField] private UIQuickSlot m_spellQuickSlot;
@@ -87,6 +89,30 @@ namespace ZZ
         {
             m_focusPointsBar?.SetMaxStat(maximumFocusPoints);
             RefreshHUD();
+        }
+
+        /// <summary>Updates the shared maximum used by every authored buildup bar.</summary>
+        public void SetMaxBuildupValue(float maximumBuildup)
+        {
+            foreach (UIBuildupBar buildupBar in
+                m_buildupBars ?? System.Array.Empty<UIBuildupBar>())
+            {
+                buildupBar?.SetMaxBuildupValue(maximumBuildup);
+            }
+        }
+
+        /// <summary>Updates and toggles the bar matching one accumulation channel.</summary>
+        public void SetBuildupAmount(Buildup buildupType, float buildupAmount)
+        {
+            foreach (UIBuildupBar buildupBar in
+                m_buildupBars ?? System.Array.Empty<UIBuildupBar>())
+            {
+                if (buildupBar != null && buildupBar.BuildupType == buildupType)
+                {
+                    buildupBar.SetBuildupAmount(buildupAmount);
+                    return;
+                }
+            }
         }
 
         /// <summary>Shows one signed Rune change and restarts the merge delay.</summary>
@@ -166,6 +192,12 @@ namespace ZZ
                     OnCurrentFocusPointsChanged;
                 m_boundNetworkManager.MaxFocusPoints.OnValueChanged +=
                     OnMaxFocusPointsChanged;
+                m_boundNetworkManager.PoisonBuildup.OnValueChanged +=
+                    OnPoisonBuildupChanged;
+                m_boundNetworkManager.BleedBuildup.OnValueChanged +=
+                    OnBleedBuildupChanged;
+                m_boundNetworkManager.BuildupCapacity.OnValueChanged +=
+                    OnBuildupCapacityChanged;
             }
 
             gameObject.SetActive(true);
@@ -364,6 +396,28 @@ namespace ZZ
             }
         }
 
+        private void OnPoisonBuildupChanged(
+            float previousBuildup,
+            float currentBuildup)
+        {
+            SetBuildupAmount(Buildup.Poison, currentBuildup);
+        }
+
+        private void OnBleedBuildupChanged(
+            float previousBuildup,
+            float currentBuildup)
+        {
+            SetBuildupAmount(Buildup.Bleed, currentBuildup);
+        }
+
+        private void OnBuildupCapacityChanged(
+            float previousCapacity,
+            float currentCapacity)
+        {
+            SetMaxBuildupValue(currentCapacity);
+            RefreshBuildupBars();
+        }
+
         private void OnRightHandWeaponChanged(WeaponItem weapon)
         {
             m_rightWeaponQuickSlot?.SetItem(weapon);
@@ -414,6 +468,23 @@ namespace ZZ
             SetMaxFocusPointsValue(m_boundNetworkManager.MaxFocusPoints.Value);
             SetNewFocusPointsValue(
                 m_boundNetworkManager.CurrentFocusPoints.Value);
+            RefreshBuildupBars();
+        }
+
+        private void RefreshBuildupBars()
+        {
+            if (m_boundNetworkManager == null)
+            {
+                return;
+            }
+
+            SetMaxBuildupValue(m_boundNetworkManager.BuildupCapacity.Value);
+            SetBuildupAmount(
+                Buildup.Poison,
+                m_boundNetworkManager.PoisonBuildup.Value);
+            SetBuildupAmount(
+                Buildup.Bleed,
+                m_boundNetworkManager.BleedBuildup.Value);
         }
 
         private void RefreshQuickSlots()
@@ -447,6 +518,12 @@ namespace ZZ
                 OnCurrentFocusPointsChanged;
             m_boundNetworkManager.MaxFocusPoints.OnValueChanged -=
                 OnMaxFocusPointsChanged;
+            m_boundNetworkManager.PoisonBuildup.OnValueChanged -=
+                OnPoisonBuildupChanged;
+            m_boundNetworkManager.BleedBuildup.OnValueChanged -=
+                OnBleedBuildupChanged;
+            m_boundNetworkManager.BuildupCapacity.OnValueChanged -=
+                OnBuildupCapacityChanged;
             m_boundNetworkManager = null;
         }
 

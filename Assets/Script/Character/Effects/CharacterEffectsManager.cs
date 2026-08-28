@@ -15,18 +15,47 @@ namespace ZZ
         [Header("Static Effects")]
         [SerializeField] private List<StaticCharacterEffect> m_staticEffects = new();
 
+        [Header("Timed Effects")]
+        [SerializeField, Min(0.01f)] private float m_defaultEffectTickTime = 1f;
+        [SerializeField] private List<TimedCharacterEffect> m_timedEffects = new();
+
         private readonly List<GameObject> m_currentActionEffects = new();
+        private float m_effectTickTimer;
 
         protected CharacterManager Character => m_character;
+
+        /// <summary>Gets the transient timed effects currently owned by this character.</summary>
+        public IReadOnlyList<TimedCharacterEffect> TimedEffects => m_timedEffects;
 
         protected virtual void Awake()
         {
             m_character ??= GetComponent<CharacterManager>();
+            m_timedEffects ??= new List<TimedCharacterEffect>();
+            m_effectTickTimer = Mathf.Max(0.01f, m_defaultEffectTickTime);
+        }
+
+        protected virtual void Update()
+        {
+            if (m_timedEffects.Count == 0 ||
+                m_character != null && m_character.IsSpawned && !m_character.IsOwner)
+            {
+                return;
+            }
+
+            m_effectTickTimer -= Time.deltaTime;
+            if (m_effectTickTimer > 0f)
+            {
+                return;
+            }
+
+            m_effectTickTimer = Mathf.Max(0.01f, m_defaultEffectTickTime);
+            ProcessTimedEffects();
         }
 
         protected virtual void OnDestroy()
         {
             DestroyAllCurrentActionEffects();
+            RemoveAllTimedEffects();
             RemoveAllStaticEffects();
         }
 
@@ -158,6 +187,127 @@ namespace ZZ
             }
         }
 
+        /// <summary>Processes authored Poison and Bleed payloads on the target owner.</summary>
+        public void ProcessBuildupEffects(float poisonBuildup, float bleedBuildup)
+        {
+            WorldCharacterEffectsManager worldEffects =
+                WorldCharacterEffectsManager.Instance;
+            ProcessBuildupEffect(
+                worldEffects?.TakePoisonBuildupEffect,
+                poisonBuildup);
+            ProcessBuildupEffect(
+                worldEffects?.TakeBleedBuildupEffect,
+                bleedBuildup);
+        }
+
+        /// <summary>Adds one owner-authoritative accumulation amount.</summary>
+        public bool AddBuildup(Buildup buildupType, float buildupAmount)
+        {
+            if (m_character == null ||
+                !m_character.IsSpawned ||
+                !m_character.IsOwner ||
+                buildupAmount <= 0f)
+            {
+                return false;
+            }
+
+            CharacterNetworkManager networkManager =
+                m_character.CharacterNetworkManager;
+            if (networkManager == null)
+            {
+                return false;
+            }
+
+            float currentBuildup = networkManager.GetBuildup(buildupType);
+            return networkManager.TrySetBuildup(
+                buildupType,
+                currentBuildup + buildupAmount);
+        }
+
+        /// <summary>Adds a runtime clone, or refreshes an active effect with the same ID.</summary>
+        public TimedCharacterEffect AddTimedEffect(TimedCharacterEffect effect)
+        {
+            m_character ??= GetComponent<CharacterManager>();
+            if (effect == null ||
+                m_character == null ||
+                m_character.IsSpawned && !m_character.IsOwner)
+            {
+                return null;
+            }
+
+            TimedCharacterEffect activeEffect =
+                CheckForTimedEffect(effect.TimedEffectID);
+            if (activeEffect != null)
+            {
+                activeEffect.RefreshDuration();
+                return activeEffect;
+            }
+
+            bool wasEmpty = m_timedEffects.Count == 0;
+            TimedCharacterEffect runtimeEffect = effect.CreateRuntimeInstance();
+            m_timedEffects.Add(runtimeEffect);
+            if (wasEmpty)
+            {
+                m_effectTickTimer = Mathf.Max(0.01f, m_defaultEffectTickTime);
+            }
+
+            runtimeEffect.ProcessEffect(m_character);
+            return runtimeEffect;
+        }
+
+        /// <summary>Removes one active effect after allowing it to clean up its state.</summary>
+        public bool RemoveTimedEffect(int timedEffectID)
+        {
+            TimedCharacterEffect activeEffect =
+                CheckForTimedEffect(timedEffectID);
+            if (activeEffect == null)
+            {
+                m_timedEffects.RemoveAll(effect => effect == null);
+                return false;
+            }
+
+            activeEffect.RemoveEffect(m_character);
+            m_timedEffects.Remove(activeEffect);
+            DestroyTimedEffect(activeEffect);
+            m_timedEffects.RemoveAll(effect => effect == null);
+            return true;
+        }
+
+        /// <summary>Finds the runtime effect matching one stable identifier.</summary>
+        public TimedCharacterEffect CheckForTimedEffect(int timedEffectID)
+        {
+            return m_timedEffects.Find(effect =>
+                effect != null && effect.TimedEffectID == timedEffectID);
+        }
+
+        /// <summary>Processes one shared tick for every currently active timed effect.</summary>
+        public void ProcessTimedEffects()
+        {
+            float tickTime = Mathf.Max(0.01f, m_defaultEffectTickTime);
+            TimedCharacterEffect[] effectsSnapshot = m_timedEffects.ToArray();
+            foreach (TimedCharacterEffect runtimeEffect in effectsSnapshot)
+            {
+                if (runtimeEffect == null || !m_timedEffects.Contains(runtimeEffect))
+                {
+                    continue;
+                }
+
+                runtimeEffect.ProcessEffect(m_character);
+                if (!m_timedEffects.Contains(runtimeEffect))
+                {
+                    continue;
+                }
+
+                runtimeEffect.AdvanceTime(tickTime);
+                if (runtimeEffect.TimeRemainingOnEffect <= 0f)
+                {
+                    RemoveTimedEffect(runtimeEffect.TimedEffectID);
+                }
+            }
+
+            m_timedEffects.RemoveAll(effect => effect == null);
+        }
+
         /// <summary>Clones and applies a static effect unless that identifier is already active.</summary>
         public bool ProcessStaticEffect(StaticCharacterEffect effect)
         {
@@ -211,7 +361,51 @@ namespace ZZ
             m_staticEffects.Clear();
         }
 
+        private void ProcessBuildupEffect(
+            TakeBuildupEffect effectTemplate,
+            float buildupAmount)
+        {
+            if (effectTemplate == null || buildupAmount <= 0f)
+            {
+                return;
+            }
+
+            ProcessRuntimeInstantEffect(
+                effectTemplate.CreateRuntimeBuildupEffect(buildupAmount));
+        }
+
+        private void RemoveAllTimedEffects()
+        {
+            for (int effectIndex = m_timedEffects.Count - 1;
+                effectIndex >= 0;
+                effectIndex--)
+            {
+                TimedCharacterEffect runtimeEffect = m_timedEffects[effectIndex];
+                runtimeEffect?.RemoveEffect(m_character);
+                DestroyTimedEffect(runtimeEffect);
+            }
+
+            m_timedEffects.Clear();
+        }
+
         private static void DestroyStaticEffect(StaticCharacterEffect runtimeEffect)
+        {
+            if (runtimeEffect == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(runtimeEffect);
+            }
+            else
+            {
+                DestroyImmediate(runtimeEffect);
+            }
+        }
+
+        private static void DestroyTimedEffect(TimedCharacterEffect runtimeEffect)
         {
             if (runtimeEffect == null)
             {

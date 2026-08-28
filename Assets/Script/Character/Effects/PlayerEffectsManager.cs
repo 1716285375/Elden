@@ -9,8 +9,9 @@ namespace ZZ
         [SerializeField] private InstantCharacterEffect m_effectToTest;
         [SerializeField] private bool m_shouldProcessEffect;
 
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
             if (!m_shouldProcessEffect)
             {
                 return;

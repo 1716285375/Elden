@@ -57,6 +57,9 @@ namespace ZZ
                 GetUpgradedDamage(weapon.LightningDamage, weapon.UpgradeLevel),
                 GetUpgradedDamage(weapon.HolyDamage, weapon.UpgradeLevel),
                 weapon.BasePoiseDamage);
+            m_meleeDamageCollider.SetBuildupValues(
+                weapon.PoisonBuildup,
+                weapon.BleedBuildup);
             m_meleeDamageCollider.CloseDamageCollider();
         }
 
@@ -106,6 +109,9 @@ namespace ZZ
                 GetUpgradedDamage(Weapon.HolyDamage, Weapon.UpgradeLevel) *
                     damageModifier,
                 Weapon.BasePoiseDamage);
+            m_meleeDamageCollider.SetBuildupValues(
+                Weapon.PoisonBuildup,
+                Weapon.BleedBuildup);
         }
 
         /// <summary>Adds reinforcement only to damage channels authored above zero.</summary>
