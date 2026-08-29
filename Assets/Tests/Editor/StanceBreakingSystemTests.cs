@@ -11,7 +11,7 @@ namespace ZZ.Tests
         private const string k_UndeadPrefabPath =
             "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_StanceBreakClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
             "core_main_stance_broken_f_01.anim";
 
         [Test]

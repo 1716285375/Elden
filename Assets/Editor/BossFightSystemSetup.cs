@@ -31,16 +31,16 @@ namespace ZZ.Editor
         private const string k_FogMaterialPath =
             "Assets/_Game/Art/Shared/Materials/Fallen Watcher Fog Wall.mat";
         private const string k_BaseAttackClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
             "zombie_light_attack_01.anim";
         private const string k_SweepAttackClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
             "zombie_swipe_attack_01.anim";
         private const string k_FrenzyAttackClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
             "zombie_swipe_attack_02.anim";
         private const string k_PhaseTransitionClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Actions/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Actions/" +
             "zombie_alert_to_aggro_02.anim";
         private const string k_LightAttackPath =
             k_BossDataFolder + "/Watcher Claw.asset";

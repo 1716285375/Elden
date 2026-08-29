@@ -20,16 +20,16 @@ namespace ZZ.Tests
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_ParriedClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
             "core_main_parry_victim_01.anim";
 
         private static readonly string[] s_parryClipPaths =
         {
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Shield/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Shield/" +
                 "shield_off_parry_01_fast_start.anim",
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Shield/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Shield/" +
                 "shield_off_parry_01_start.anim",
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Shield/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Shield/" +
                 "shield_off_parry_01_slow_start.anim"
         };
 

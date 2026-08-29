@@ -13,7 +13,7 @@ namespace ZZ.Tests
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_RipostedClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
             "core_main_riposte_victim_01.anim";
 
         [Test]

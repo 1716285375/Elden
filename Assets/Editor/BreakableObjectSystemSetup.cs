@@ -24,19 +24,19 @@ namespace ZZ.Editor
         private const string k_BreakablePrefabPath =
             k_PrefabFolder + "/Wooden Crate Breakable.prefab";
         private const string k_WholeModelPath =
-            "Assets/Art/Models/Props/SM_Prop_Crate_Wood_05.obj";
+            "Assets/_Game/Art/Environment/Props/Models/SM_Prop_Crate_Wood_05.obj";
         private const string k_FragmentModelPathPrefix =
-            "Assets/Art/Models/Props/SM_Prop_Crate_Wood_05_Breakable_";
+            "Assets/_Game/Art/Environment/Props/Models/SM_Prop_Crate_Wood_05_Breakable_";
         private static readonly string k_AreaScenePath =
             WorldScenePathLayout.GetScenePath(0, 0);
         private const string k_SceneObjectName = "Breakable Wooden Crate";
 
         private static readonly string[] s_breakSoundPaths =
         {
-            "Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_00.wav",
-            "Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_01.wav",
-            "Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_02.wav",
-            "Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_03.wav"
+            "Assets/_Game/Audio/SFX/Environment/SFX_Wood_Break_00.wav",
+            "Assets/_Game/Audio/SFX/Environment/SFX_Wood_Break_01.wav",
+            "Assets/_Game/Audio/SFX/Environment/SFX_Wood_Break_02.wav",
+            "Assets/_Game/Audio/SFX/Environment/SFX_Wood_Break_03.wav"
         };
 
         /// <summary>Configures layers, prefabs, collisions, and one additive Scene example.</summary>

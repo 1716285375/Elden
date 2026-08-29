@@ -24,11 +24,11 @@ namespace ZZ.Editor
         private const string k_BroadswordAssetPath =
             "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_UnarmedIconPath =
-            "Assets/Art/Textures/UI/Items/Hand_Slot_Icon_01.png";
+            "Assets/_Game/Art/UI/Shared/Textures/Items/Hand_Slot_Icon_01.png";
         private const string k_StraightSwordIconPath =
-            "Assets/Art/Textures/UI/Items/Straight Sword Icon.png";
+            "Assets/_Game/Art/UI/Shared/Textures/Items/Straight Sword Icon.png";
         private const string k_BroadswordIconPath =
-            "Assets/Art/Textures/UI/Items/Broadsword Icon.png";
+            "Assets/_Game/Art/UI/Shared/Textures/Items/Broadsword Icon.png";
         private const string k_QuickSlotsName = "Quick Slots";
         private const string k_LeftWeaponSlotName = "Left Weapon Slot";
         private const string k_RightWeaponSlotName = "Right Weapon Slot";

@@ -10,22 +10,22 @@ namespace ZZ.Editor
     public static class WeaponComboSystemSetup
     {
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_LightAttack01ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_light_attack_01.anim";
         private const string k_LightAttack02ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_light_attack_02.anim";
         private const string k_HeavyAttack01ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_release.anim";
         private const string k_ChargedAttack01ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_release_full.anim";
         private const string k_HeavyAttack02ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_02_release.anim";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";

@@ -28,11 +28,11 @@ namespace ZZ.Tests
 
         private static readonly string[] s_comboClipPaths =
         {
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
                 "zombie_light_attack_01.anim",
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
                 "zombie_swipe_attack_01.anim",
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
                 "zombie_swipe_attack_02.anim"
         };
 

@@ -30,12 +30,12 @@ namespace ZZ.Editor
         private const string k_ArmorPath =
             "Assets/_Game/Data/Items/Armor/Starter Armor.asset";
         private const string k_DropSoundPath =
-            "Assets/Art/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav";
+            "Assets/_Game/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav";
         private const string k_PlayerControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_PickupAnimationPath =
-            "Assets/Art/Animations/Characters/Humanoid/Interactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Interactions/" +
             "core_item_pickup_mid_01.anim";
         private const string k_ActionLayerName = "Action Override";
         private const string k_PickupStateName = "Pickup_Item_01";

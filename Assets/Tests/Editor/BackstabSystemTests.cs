@@ -13,7 +13,7 @@ namespace ZZ.Tests
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_BackstabbedClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
             "core_main_backstab_victim_01.anim";
         private const string k_UndeadPrefabPath =
             "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";

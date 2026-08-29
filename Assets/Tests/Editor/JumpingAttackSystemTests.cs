@@ -11,10 +11,10 @@ namespace ZZ.Tests
     public class JumpingAttackSystemTests
     {
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_OverrideControllerPath =
-            "Assets/Art/Animations/Controllers/Overrides/Straight Sword.overrideController";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/Overrides/Straight Sword.overrideController";
 
         private static readonly string[] s_weaponPaths =
         {
@@ -120,7 +120,7 @@ namespace ZZ.Tests
         public void JumpClipsOwnStaminaAndDamageColliderWindows()
         {
             string locomotion =
-                "Assets/Art/Animations/Characters/Humanoid/Locomotion/";
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/";
             AssertEvents(
                 locomotion + "straight_sword_main_jump_light_attack_01.anim",
                 "DrainStaminaBasedOnAttack",

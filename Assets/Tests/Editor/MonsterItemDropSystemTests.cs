@@ -23,7 +23,7 @@ namespace ZZ.Tests
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_PlayerControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
 
         [Test]

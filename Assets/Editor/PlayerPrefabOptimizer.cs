@@ -11,7 +11,7 @@ namespace ZZ.Editor
     public static class PlayerPrefabOptimizer
     {
         private const string k_ArtPrefabPath =
-            "Assets/Art/Models/Rigged/Characters/Humanoid/Player/Player.prefab";
+            "Assets/_Game/Art/Shared/Models/Rigged/Characters/Humanoid/Player/Player.prefab";
         private const string k_DataPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_BackupPath = "Assets/_Game/Prefabs/Characters/Player_Backup_Old.prefab";
         private const string k_PlayerLayerName = "Player";

@@ -17,16 +17,16 @@ namespace ZZ.Editor
         private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_TwoHandingEffectPath =
             "Assets/_Game/Data/Effects/Static Effects/Two Handing Effect.asset";
         private const string k_LightActionPath = "Assets/_Game/Data/Actions/Light Attack.asset";
         private const string k_HeavyActionPath = "Assets/_Game/Data/Actions/Heavy Attack.asset";
         private const string k_LocomotionFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/";
         private const string k_CombatFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/";
         private const string k_BaseLayerName = "Base Layer";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";

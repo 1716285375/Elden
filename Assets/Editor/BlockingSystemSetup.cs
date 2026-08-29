@@ -22,7 +22,7 @@ namespace ZZ.Editor
         private const string k_BlockedDamageEffectPath =
             k_EffectFolderPath + "/Take Blocked Damage Effect.asset";
         private const string k_BlockSoundFolder =
-            "Assets/Art/Audio/SFX/Combat/";
+            "Assets/_Game/Audio/SFX/Combat/";
 
         private static readonly string[] s_blockSoundPaths =
         {

@@ -15,10 +15,10 @@ namespace ZZ.Editor
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_StanceBreakClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
             "core_main_stance_broken_f_01.anim";
         private const string k_StanceBreakSoundPath =
-            "Assets/Art/Audio/SFX/Environment/SFX_Guard_Break_01.wav";
+            "Assets/_Game/Audio/SFX/Environment/SFX_Guard_Break_01.wav";
         private const string k_UndeadPrefabPath =
             "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =

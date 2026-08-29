@@ -11,20 +11,20 @@ namespace ZZ.Editor
     {
         private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_RiggedPlayerPrefabPath =
-            "Assets/Art/Models/Rigged/Characters/Humanoid/Player/Player.prefab";
+            "Assets/_Game/Art/Shared/Models/Rigged/Characters/Humanoid/Player/Player.prefab";
         private const string k_PlayerRigObjectName = "Zephyr";
         private const string k_PlayerAvatarPath =
-            "Assets/Art/Models/Rigged/Shared/Avatars/ZephyrPlayerAvatar.asset";
+            "Assets/_Game/Art/Shared/Models/Rigged/Shared/Avatars/ZephyrPlayerAvatar.asset";
         private const string k_LegacyPlayerModelPath =
-            "Assets/Art/Models/Md_Char_Low_Poly_Man.obj";
+            "Assets/_Game/Art/Shared/Models/Md_Char_Low_Poly_Man.obj";
         private const string k_ControllerFolderPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid";
         private const string k_ControllerPath =
             k_ControllerFolderPath + "/Humanoid Animator Controller.controller";
         private const string k_VisualObjectName = "Player Visual";
 
         private const string k_LocomotionFolderPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion";
 
         private readonly struct BlendMotion
         {

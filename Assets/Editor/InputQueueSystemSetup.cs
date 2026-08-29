@@ -14,19 +14,19 @@ namespace ZZ.Editor
         private const string k_PlayerInputManagerPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/Player Input Manager.prefab";
         private const string k_LightAttack01ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_light_attack_01.anim";
         private const string k_LightAttack02ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_light_attack_02.anim";
         private const string k_HeavyAttack01ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_release.anim";
         private const string k_ChargedAttack01ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_release_full.anim";
         private const string k_HeavyAttack02ClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_02_release.anim";
 
         private static readonly string[] s_bufferedAttackClipPaths =

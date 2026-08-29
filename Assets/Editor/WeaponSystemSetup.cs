@@ -16,12 +16,12 @@ namespace ZZ.Editor
         private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_RightSwapClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/core_oh_equip_R_01.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/core_oh_equip_R_01.anim";
         private const string k_LeftSwapClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/core_oh_equip_L_01.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/core_oh_equip_L_01.anim";
         private const string k_UpperBodyMaskPath =
             "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Upper Body Weapon Mask.mask";
         private const string k_ItemFolder =
@@ -51,9 +51,9 @@ namespace ZZ.Editor
         private const string k_BroadswordPrefabPath =
             k_WeaponPrefabFolder + "/Broadsword.prefab";
         private const string k_StraightSwordModelPath =
-            "Assets/Art/Models/Equipment/Weapons/Sword/Md_Prop_StraightSword_01.obj";
+            "Assets/_Game/Art/Equipment/Weapons/Models/Sword/Md_Prop_StraightSword_01.obj";
         private const string k_BroadswordModelPath =
-            "Assets/Art/Models/Equipment/Weapons/Sword/Md_Prop_StraightSword_03.obj";
+            "Assets/_Game/Art/Equipment/Weapons/Models/Sword/Md_Prop_StraightSword_03.obj";
         private const string k_DamageLayerName = "Damage Collider";
         private const string k_UpperBodyLayerName = "Upper Body Override";
         private const string k_EmptyStateName = "Empty";

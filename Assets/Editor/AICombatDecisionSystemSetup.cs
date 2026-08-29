@@ -26,38 +26,38 @@ namespace ZZ.Editor
         private const string k_WatcherFrenzyPath =
             "Assets/_Game/Data/AI/Boss/Fallen Watcher/Watcher Frenzy.asset";
         private const string k_ZombieAttack01Path =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
             "zombie_light_attack_01.anim";
         private const string k_ZombieAttack02Path =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
             "zombie_swipe_attack_02.anim";
         private const string k_ZombieHeavyAttackPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
             "zombie_swipe_attack_01.anim";
         private const string k_NormalLeftPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "core_main_walk_L_01.anim";
         private const string k_NormalRightPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "core_main_walk_R_01.anim";
         private const string k_BlockIdlePath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "shield_off_guard_idle_01.anim";
         private const string k_BlockForwardPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "shield_off_guard_walk_F_01.anim";
         private const string k_BlockLeftPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "shield_off_guard_walk_L_01.anim";
         private const string k_BlockRightPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "shield_off_guard_walk_R_01.anim";
         private const string k_BlockSound01Path =
-            "Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_01.wav";
+            "Assets/_Game/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_01.wav";
         private const string k_BlockSound02Path =
-            "Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_02.wav";
+            "Assets/_Game/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_02.wav";
         private const string k_BlockSound03Path =
-            "Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_03.wav";
+            "Assets/_Game/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_03.wav";
         private const string k_LocomotionStateName = "Locomotion";
         private const string k_BlockingStateName = "Blocking";
         private const string k_BlockingParameterName = "isBlocking";

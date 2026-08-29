@@ -18,10 +18,10 @@ namespace ZZ.Editor
         private const string k_WorldAIManagerPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_SleepClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Locomotion/" +
             "zombie_sit_idle_01.anim";
         private const string k_WakeClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Emotes/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Emotes/" +
             "zombie_sit_to_alert_01.anim";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";

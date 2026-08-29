@@ -13,7 +13,7 @@ namespace ZZ.Editor
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_RollClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "core_main_roll_med_to_idle_F_01.anim";
         private const string k_UndeadPrefabPath =
             "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";

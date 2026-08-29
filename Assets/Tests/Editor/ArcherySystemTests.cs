@@ -24,7 +24,7 @@ namespace ZZ.Tests
         private const string k_UIManagerPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_BowFireClipPath =
             "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow_Fire.anim";

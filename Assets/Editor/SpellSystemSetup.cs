@@ -42,18 +42,18 @@ namespace ZZ.Editor
             "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_InputAssetPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_AnimatorPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_AnimatorOverridePath =
-            "Assets/Art/Animations/Controllers/Overrides/Charm.overrideController";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/Overrides/Charm.overrideController";
         private const string k_StaffModelPath =
-            "Assets/Art/Models/Equipment/Weapons/Staff/SM_Wep_Staff_02.obj";
+            "Assets/_Game/Art/Equipment/Weapons/Models/Staff/SM_Wep_Staff_02.obj";
         private const string k_SpellIconPath =
-            "Assets/Art/Textures/UI/Abilities/Ability_Fire_Orb_Icon_01.png";
+            "Assets/_Game/Art/UI/Shared/Textures/Abilities/Ability_Fire_Orb_Icon_01.png";
         private const string k_CastSoundPath =
-            "Assets/Art/Audio/SFX/Abilities/SFX_Cast_FireBall_Base_01.wav";
+            "Assets/_Game/Audio/SFX/Abilities/SFX_Cast_FireBall_Base_01.wav";
         private const string k_ImpactSoundPath =
-            "Assets/Art/Audio/SFX/Abilities/SFX_Explosion_Fireball_Base_01.wav";
+            "Assets/_Game/Audio/SFX/Abilities/SFX_Explosion_Fireball_Base_01.wav";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_ProjectileLayerName = "Projectile";
@@ -63,35 +63,35 @@ namespace ZZ.Editor
         {
             new SpellAnimationDefinition(
                 "Cast_Spell_Right_Charge",
-                "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
                 "sphand_main_projectile_02_charge.anim"),
             new SpellAnimationDefinition(
                 "Cast_Spell_Right_Hold",
-                "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
                 "sphand_main_projectile_02_hold.anim"),
             new SpellAnimationDefinition(
                 "Cast_Spell_Right_Release",
-                "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
                 "sphand_main_projectile_02_release.anim"),
             new SpellAnimationDefinition(
                 "Cast_Spell_Right_Release_Full",
-                "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
                 "sphand_main_projectile_02_release_full.anim"),
             new SpellAnimationDefinition(
                 "Cast_Spell_Left_Charge",
-                "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
                 "sphand_off_projectile_02_charge.anim"),
             new SpellAnimationDefinition(
                 "Cast_Spell_Left_Hold",
-                "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
                 "sphand_off_projectile_02_hold.anim"),
             new SpellAnimationDefinition(
                 "Cast_Spell_Left_Release",
-                "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
                 "sphand_off_projectile_02_release.anim"),
             new SpellAnimationDefinition(
                 "Cast_Spell_Left_Release_Full",
-                "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+                "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
                 "sphand_off_projectile_02_release_full.anim")
         };
 
