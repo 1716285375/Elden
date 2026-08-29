@@ -13,7 +13,7 @@ namespace ZZ.Tests
     public class SceneOptimizationSystemTests
     {
         private const string k_ScenePath =
-            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
+            "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_OptimizationPath =
             "World/Location 01 - Ashen Crypt/EP101 Scene Optimization";
 
@@ -28,7 +28,7 @@ namespace ZZ.Tests
                 Assert.That(area, Is.Not.Null);
                 Assert.That(area.size.x, Is.GreaterThanOrEqualTo(100f));
                 FileInfo occlusionData = new(
-                    "Assets/Scenes/Levels/LV01_AbandonedMonastery/Shared/Occlusion/OcclusionCullingData.asset");
+                    "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Shared/Occlusion/OcclusionCullingData.asset");
                 Assert.That(occlusionData.Exists, Is.True);
                 Assert.That(occlusionData.Length, Is.GreaterThan(1024));
             });

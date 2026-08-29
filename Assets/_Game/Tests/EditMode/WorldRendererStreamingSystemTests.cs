@@ -206,7 +206,7 @@ namespace ZZ.Tests
         {
             return AssetDatabase.FindAssets(
                     "t:Scene",
-                    new[] { "Assets/Scenes/Levels/LV01_AbandonedMonastery" })
+                    new[] { "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery" })
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(path => path.Contains("/Regions/"))
                 .OrderBy(path => path, StringComparer.Ordinal)

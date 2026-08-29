@@ -15,7 +15,7 @@ namespace ZZ.Tests
     public class WorldStreamingSystemTests
     {
         private const string k_WorldScenePath =
-            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
+            "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_WorldLocationFolder =
             "Assets/Resources/World Locations";
         private const string k_BakingSetPath =

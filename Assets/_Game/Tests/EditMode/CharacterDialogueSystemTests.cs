@@ -30,7 +30,7 @@ namespace ZZ.Tests
         private const string k_PlayerUIManagerPath =
             "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_WorldScenePath =
-            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
+            "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
 

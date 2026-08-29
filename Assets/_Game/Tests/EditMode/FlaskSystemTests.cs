@@ -331,7 +331,7 @@ namespace ZZ.Tests
             }
 
             string mainMenuScene = File.ReadAllText(
-                "Assets/Scenes/Frontend/SCN_MainMenu.unity");
+                "Assets/_Game/Scenes/Frontend/SCN_MainMenu.unity");
             Assert.That(mainMenuScene, Does.Match(
                 @"m_healingFlaskVFX: \{fileID: (?!0)"));
             Assert.That(mainMenuScene, Does.Match(
