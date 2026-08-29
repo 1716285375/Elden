@@ -7,7 +7,6 @@ namespace ZZ
     /// <summary>
     /// Defines the shared prompt, authority policy, and trigger lifecycle for a world interaction.
     /// </summary>
-    [RequireComponent(typeof(NetworkObject))]
     [RequireComponent(typeof(Rigidbody))]
     public class Interactable : NetworkBehaviour
     {

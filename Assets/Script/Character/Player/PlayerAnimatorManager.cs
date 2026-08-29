@@ -4,6 +4,54 @@ namespace ZZ
 {
     public class PlayerAnimatorManager : CharacterAnimatorManager
     {
+        private const string k_LadderOverrideLayerName = "Ladder Override";
+        private const float k_LadderAnimationCompletionThreshold = 0.95f;
+
+        private static readonly int s_isSlidingDownLadderParameter =
+            Animator.StringToHash("isSlidingDownLadder");
+        private static readonly int s_ladderEmptyState =
+            Animator.StringToHash("Ladder Override.Empty");
+        private static readonly int s_enterBottomState =
+            Animator.StringToHash("Ladder Override.Enter Bottom");
+        private static readonly int s_enterTopState =
+            Animator.StringToHash("Ladder Override.Enter Top");
+        private static readonly int s_idleLeftState =
+            Animator.StringToHash("Ladder Override.Idle Left");
+        private static readonly int s_idleRightState =
+            Animator.StringToHash("Ladder Override.Idle Right");
+        private static readonly int s_climbUpLeftState =
+            Animator.StringToHash("Ladder Override.Climb Up Left");
+        private static readonly int s_climbUpRightState =
+            Animator.StringToHash("Ladder Override.Climb Up Right");
+        private static readonly int s_climbDownLeftState =
+            Animator.StringToHash("Ladder Override.Climb Down Left");
+        private static readonly int s_climbDownRightState =
+            Animator.StringToHash("Ladder Override.Climb Down Right");
+        private static readonly int s_exitTopLeftState =
+            Animator.StringToHash("Ladder Override.Exit Top Left");
+        private static readonly int s_exitTopRightState =
+            Animator.StringToHash("Ladder Override.Exit Top Right");
+        private static readonly int s_exitBottomLeftState =
+            Animator.StringToHash("Ladder Override.Exit Bottom Left");
+        private static readonly int s_exitBottomRightState =
+            Animator.StringToHash("Ladder Override.Exit Bottom Right");
+        private static readonly int s_slideStartState =
+            Animator.StringToHash("Ladder Override.Slide Start");
+        private static readonly int s_slideMidState =
+            Animator.StringToHash("Ladder Override.Slide Mid");
+        private static readonly int s_slideEndState =
+            Animator.StringToHash("Ladder Override.Slide End");
+        private static readonly int s_jumpOffStartState =
+            Animator.StringToHash("Ladder Override.Jump Off Start");
+        private static readonly int s_jumpOffMidState =
+            Animator.StringToHash("Ladder Override.Jump Off Mid");
+        private static readonly int s_jumpOffEndState =
+            Animator.StringToHash("Ladder Override.Jump Off End");
+        private static readonly int s_fallStartState =
+            Animator.StringToHash("Ladder Override.Fall Start");
+        private static readonly int s_fallLoopState =
+            Animator.StringToHash("Ladder Override.Fall Loop");
+
         private PlayerManager m_player;
         private CharacterController m_characterController;
 
@@ -169,20 +217,177 @@ namespace ZZ
 
         public void DeactivateMainHandWeaponTrail() { }
 
-        private void OnAnimatorMove()
+        /// <summary>Rebuilds the full-body ladder layer for state changes and late join.</summary>
+        public void SetLadderPresentation(
+            bool isClimbingLadder,
+            LadderAnimationState animationState)
         {
-            if (m_player == null ||
-                !m_player.IsOwner ||
-                !m_player.ShouldApplyRootMotion ||
-                CharacterAnimator == null ||
-                m_characterController == null ||
-                !m_characterController.enabled)
+            if (CharacterAnimator == null)
             {
                 return;
             }
 
-            m_characterController.Move(CharacterAnimator.deltaPosition);
+            int layerIndex = CharacterAnimator.GetLayerIndex(
+                k_LadderOverrideLayerName);
+            if (layerIndex < 0)
+            {
+                Debug.LogError(
+                    $"Animator {CharacterAnimator.name} is missing " +
+                    $"{k_LadderOverrideLayerName}.",
+                    CharacterAnimator);
+                return;
+            }
+
+            bool shouldShowLayer = isClimbingLadder ||
+                LadderAnimationStateUtility.RequiresLadderLayerAfterClimb(
+                    animationState);
+            CharacterAnimator.SetLayerWeight(layerIndex, shouldShowLayer ? 1f : 0f);
+            if (shouldShowLayer && animationState != LadderAnimationState.None)
+            {
+                PlayLadderAnimation(animationState);
+            }
+            else if (!shouldShowLayer &&
+                CharacterAnimator.HasState(layerIndex, s_ladderEmptyState))
+            {
+                CharacterAnimator.Play(s_ladderEmptyState, layerIndex, 0f);
+            }
+        }
+
+        /// <summary>Updates the held slide condition on every peer.</summary>
+        public void SetLadderSlidingState(bool isSlidingDownLadder)
+        {
+            CharacterAnimator?.SetBool(
+                s_isSlidingDownLadderParameter,
+                isSlidingDownLadder);
+        }
+
+        /// <summary>Immediately starts one deterministic ladder segment.</summary>
+        public bool PlayLadderAnimation(LadderAnimationState animationState)
+        {
+            if (CharacterAnimator == null)
+            {
+                return false;
+            }
+
+            int layerIndex = CharacterAnimator.GetLayerIndex(
+                k_LadderOverrideLayerName);
+            int stateHash = GetLadderStateHash(animationState);
+            if (layerIndex < 0 || stateHash == 0 ||
+                !CharacterAnimator.HasState(layerIndex, stateHash))
+            {
+                return false;
+            }
+
+            CharacterAnimator.Play(stateHash, layerIndex, 0f);
+            return true;
+        }
+
+        /// <summary>Returns whether the requested non-looping ladder segment finished.</summary>
+        public bool IsLadderAnimationComplete(LadderAnimationState animationState)
+        {
+            if (CharacterAnimator == null)
+            {
+                return false;
+            }
+
+            int layerIndex = CharacterAnimator.GetLayerIndex(
+                k_LadderOverrideLayerName);
+            int stateHash = GetLadderStateHash(animationState);
+            if (layerIndex < 0 || stateHash == 0 ||
+                CharacterAnimator.IsInTransition(layerIndex))
+            {
+                return false;
+            }
+
+            AnimatorStateInfo stateInfo =
+                CharacterAnimator.GetCurrentAnimatorStateInfo(layerIndex);
+            return stateInfo.fullPathHash == stateHash &&
+                stateInfo.normalizedTime >=
+                    k_LadderAnimationCompletionThreshold;
+        }
+
+        /// <summary>Animation Event: releases gravity after the ladder fall start.</summary>
+        public void FallFromLadderAnimationEvent()
+        {
+            m_player?.LocomotionManager?.CompleteFallFromLadder();
+        }
+
+        private void OnAnimatorMove()
+        {
+            bool usesLadderRootMotion =
+                m_player?.PlayerNetworkManager?.IsClimbingLadder.Value == true ||
+                LadderAnimationStateUtility.RequiresLadderLayerAfterClimb(
+                    m_player?.PlayerNetworkManager
+                        ?.CurrentLadderAnimationState.Value ??
+                        LadderAnimationState.None);
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                (!m_player.ShouldApplyRootMotion && !usesLadderRootMotion) ||
+                CharacterAnimator == null ||
+                m_characterController == null)
+            {
+                return;
+            }
+
+            if (m_characterController.enabled)
+            {
+                m_characterController.Move(CharacterAnimator.deltaPosition);
+            }
+            else
+            {
+                m_player.transform.position += CharacterAnimator.deltaPosition;
+            }
+
             m_player.transform.rotation *= CharacterAnimator.deltaRotation;
+        }
+
+        private static int GetLadderStateHash(LadderAnimationState state)
+        {
+            switch (state)
+            {
+                case LadderAnimationState.EnterBottom:
+                    return s_enterBottomState;
+                case LadderAnimationState.EnterTop:
+                    return s_enterTopState;
+                case LadderAnimationState.IdleLeft:
+                    return s_idleLeftState;
+                case LadderAnimationState.IdleRight:
+                    return s_idleRightState;
+                case LadderAnimationState.ClimbUpLeft:
+                    return s_climbUpLeftState;
+                case LadderAnimationState.ClimbUpRight:
+                    return s_climbUpRightState;
+                case LadderAnimationState.ClimbDownLeft:
+                    return s_climbDownLeftState;
+                case LadderAnimationState.ClimbDownRight:
+                    return s_climbDownRightState;
+                case LadderAnimationState.ExitTopLeft:
+                    return s_exitTopLeftState;
+                case LadderAnimationState.ExitTopRight:
+                    return s_exitTopRightState;
+                case LadderAnimationState.ExitBottomLeft:
+                    return s_exitBottomLeftState;
+                case LadderAnimationState.ExitBottomRight:
+                    return s_exitBottomRightState;
+                case LadderAnimationState.SlideStart:
+                    return s_slideStartState;
+                case LadderAnimationState.SlideMid:
+                    return s_slideMidState;
+                case LadderAnimationState.SlideEnd:
+                    return s_slideEndState;
+                case LadderAnimationState.JumpOffStart:
+                    return s_jumpOffStartState;
+                case LadderAnimationState.JumpOffMid:
+                    return s_jumpOffMidState;
+                case LadderAnimationState.JumpOffEnd:
+                    return s_jumpOffEndState;
+                case LadderAnimationState.FallStart:
+                    return s_fallStartState;
+                case LadderAnimationState.FallLoop:
+                    return s_fallLoopState;
+                default:
+                    return s_ladderEmptyState;
+            }
         }
     }
 }

@@ -7,5 +7,5 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Straight Sword Animator
-  m_Controller: {fileID: 9100000, guid: df07fba7b5502ca4db07300dc2496bd8, type: 2}
+  m_Controller: {fileID: 9100000, guid: 62e608eb8b759d541bf0b703474be8b0, type: 2}
   m_Clips: []

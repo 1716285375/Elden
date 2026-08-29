@@ -136,7 +136,13 @@ namespace ZZ
                 character.CharacterStatsManager.ApplyPoiseDamage(PoiseDamage);
             character.CharacterCombatManager?.RecordPoiseDamageTaken(
                 PoiseDamage);
-            PlayDirectionalBasedDamageAnimation(character, IsPoiseBroken);
+            bool handledByLadder = character is PlayerManager player &&
+                player.LocomotionManager?.RegisterLadderHit() == true;
+            if (!handledByLadder)
+            {
+                PlayDirectionalBasedDamageAnimation(character, IsPoiseBroken);
+            }
+
             CalculateStanceDamage(character);
 
             ApplyHealthDamage(character, CalculateDamage(character.CharacterStatsManager));

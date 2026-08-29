@@ -191,6 +191,22 @@ namespace ZZ
                 false,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isClimbingLadder =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isSlidingDownLadder =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<LadderAnimationState>
+            m_ladderAnimationState =
+                new NetworkVariable<LadderAnimationState>(
+                    LadderAnimationState.None,
+                    NetworkVariableReadPermission.Everyone,
+                    NetworkVariableWritePermission.Owner);
 
         private PlayerInventoryManager m_playerInventoryManager;
 
@@ -310,6 +326,17 @@ namespace ZZ
         /// <summary>Gets whether one additional drink has been requested.</summary>
         public NetworkVariable<bool> IsChugging => m_isChugging;
 
+        /// <summary>Gets the owner-authored special movement state.</summary>
+        public NetworkVariable<bool> IsClimbingLadder => m_isClimbingLadder;
+
+        /// <summary>Gets whether held Sprint currently requests a ladder slide.</summary>
+        public NetworkVariable<bool> IsSlidingDownLadder =>
+            m_isSlidingDownLadder;
+
+        /// <summary>Gets the current discrete ladder animation on every peer.</summary>
+        public NetworkVariable<LadderAnimationState> CurrentLadderAnimationState =>
+            m_ladderAnimationState;
+
         public NetworkVariable<bool> IsSprinting = new NetworkVariable<bool>(
             false,
             NetworkVariableReadPermission.Everyone,
@@ -353,6 +380,11 @@ namespace ZZ
             m_remainingFocusPointFlasks.OnValueChanged +=
                 OnRemainingFocusPointFlasksChanged;
             m_isChugging.OnValueChanged += OnIsChuggingChanged;
+            m_isClimbingLadder.OnValueChanged += OnIsClimbingLadderChanged;
+            m_isSlidingDownLadder.OnValueChanged +=
+                OnIsSlidingDownLadderChanged;
+            m_ladderAnimationState.OnValueChanged +=
+                OnLadderAnimationStateChanged;
             ApplyAppearancePresentation();
             m_playerInventoryManager?.InitializeRightWeaponFromID(
                 m_currentRightHandWeaponID.Value);
@@ -390,10 +422,12 @@ namespace ZZ
             ApplyRangedPresentation();
             GetComponent<PlayerAnimatorManager>()?.SetFlaskChuggingState(
                 m_isChugging.Value);
+            ApplyLadderPresentation();
 
             ResetOwnedSprintState();
             ResetOwnedRangedState();
             ResetOwnedQuickSlotState();
+            ResetOwnedLadderState();
         }
 
         public override void OnNetworkDespawn()
@@ -432,11 +466,17 @@ namespace ZZ
             m_remainingFocusPointFlasks.OnValueChanged -=
                 OnRemainingFocusPointFlasksChanged;
             m_isChugging.OnValueChanged -= OnIsChuggingChanged;
+            m_isClimbingLadder.OnValueChanged -= OnIsClimbingLadderChanged;
+            m_isSlidingDownLadder.OnValueChanged -=
+                OnIsSlidingDownLadderChanged;
+            m_ladderAnimationState.OnValueChanged -=
+                OnLadderAnimationStateChanged;
             if (IsOwner)
             {
                 PlayerCamera.Instance?.SetAimMode(false, true);
             }
             RemoveTwoHandingPresentation(false);
+            ApplyLadderPresentation(false, LadderAnimationState.None);
             base.OnNetworkDespawn();
         }
 
@@ -448,6 +488,50 @@ namespace ZZ
             ResetOwnedSpellState();
             ResetOwnedRangedState();
             ResetOwnedQuickSlotState();
+            ResetOwnedLadderState();
+        }
+
+        /// <summary>Writes the locally owned ladder lifecycle condition.</summary>
+        public void SetClimbingLadderState(bool isClimbingLadder)
+        {
+            if (!IsSpawned || !IsOwner ||
+                m_isClimbingLadder.Value == isClimbingLadder)
+            {
+                return;
+            }
+
+            if (isClimbingLadder)
+            {
+                IsSprinting.Value = false;
+                SetSneakingState(false);
+            }
+            else
+            {
+                m_isSlidingDownLadder.Value = false;
+            }
+
+            m_isClimbingLadder.Value = isClimbingLadder;
+        }
+
+        /// <summary>Writes the current fixed-distance ladder segment.</summary>
+        public void SetLadderAnimationState(LadderAnimationState state)
+        {
+            if (IsSpawned && IsOwner && m_ladderAnimationState.Value != state)
+            {
+                m_ladderAnimationState.Value = state;
+            }
+        }
+
+        /// <summary>Writes the held ladder-slide request without entering Sprint.</summary>
+        public void SetSlidingDownLadderState(bool isSlidingDownLadder)
+        {
+            bool resolvedState = isSlidingDownLadder &&
+                m_isClimbingLadder.Value;
+            if (IsSpawned && IsOwner &&
+                m_isSlidingDownLadder.Value != resolvedState)
+            {
+                m_isSlidingDownLadder.Value = resolvedState;
+            }
         }
 
         /// <inheritdoc />
@@ -874,6 +958,62 @@ namespace ZZ
             {
                 IsSprinting.Value = false;
             }
+        }
+
+        private void ResetOwnedLadderState()
+        {
+            if (!IsOwner || !IsSpawned)
+            {
+                return;
+            }
+
+            m_isSlidingDownLadder.Value = false;
+            m_isClimbingLadder.Value = false;
+            m_ladderAnimationState.Value = LadderAnimationState.None;
+        }
+
+        private void OnIsClimbingLadderChanged(
+            bool wasClimbingLadder,
+            bool isClimbingLadder)
+        {
+            ApplyLadderPresentation();
+        }
+
+        private void OnIsSlidingDownLadderChanged(
+            bool wasSlidingDownLadder,
+            bool isSlidingDownLadder)
+        {
+            GetComponent<PlayerAnimatorManager>()?.SetLadderSlidingState(
+                isSlidingDownLadder);
+        }
+
+        private void OnLadderAnimationStateChanged(
+            LadderAnimationState previousState,
+            LadderAnimationState currentState)
+        {
+            ApplyLadderPresentation();
+        }
+
+        private void ApplyLadderPresentation()
+        {
+            ApplyLadderPresentation(
+                m_isClimbingLadder.Value,
+                m_ladderAnimationState.Value);
+        }
+
+        private void ApplyLadderPresentation(
+            bool isClimbingLadder,
+            LadderAnimationState animationState)
+        {
+            PlayerManager player = GetComponent<PlayerManager>();
+            player?.PlayerAnimatorManager?.SetLadderPresentation(
+                isClimbingLadder,
+                animationState);
+            player?.PlayerAnimatorManager?.SetLadderSlidingState(
+                isClimbingLadder && m_isSlidingDownLadder.Value);
+            player?.EquipmentManager?.SetWeaponsHidden(isClimbingLadder);
+            player?.SetSpecialMovementIKBehavioursSuppressed(
+                isClimbingLadder);
         }
 
         private void ResetOwnedTwoHandingState()
