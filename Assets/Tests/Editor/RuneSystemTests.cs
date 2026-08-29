@@ -10,13 +10,13 @@ namespace ZZ.Tests
     public class RuneSystemTests
     {
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_PlayerUIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [Test]
         public void PlayerRunesRemainPrivatePlainDataAndAddSafely()

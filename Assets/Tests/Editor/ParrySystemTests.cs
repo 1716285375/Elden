@@ -12,13 +12,13 @@ namespace ZZ.Tests
     public class ParrySystemTests
     {
         private const string k_ParryAssetPath =
-            "Assets/Data/Items/Ashes Of War/Parry Slow.asset";
+            "Assets/_Game/Data/Items/Ashes Of War/Parry Slow.asset";
         private const string k_MediumShieldPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
         private const string k_ItemDatabasePath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_ParriedClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
             "core_main_parry_victim_01.anim";
@@ -176,7 +176,7 @@ namespace ZZ.Tests
         public void StandardUndeadAttackAcceptsParry()
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab");
+                "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab");
             Component combatManager = prefab.GetComponents<Component>()
                 .Single(component => component.GetType().Name ==
                     "AICharacterCombatManager");
@@ -189,7 +189,7 @@ namespace ZZ.Tests
         private static bool ReadParryable(string fileName)
         {
             ScriptableObject attack = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                $"Assets/Data/AI/Boss/Fallen Watcher/{fileName}");
+                $"Assets/_Game/Data/AI/Boss/Fallen Watcher/{fileName}");
             Assert.That(attack, Is.Not.Null);
             return new SerializedObject(attack)
                 .FindProperty("m_isParryable")

@@ -16,20 +16,20 @@ namespace ZZ.Editor
         private const int k_BossID = 1001;
         private const string k_BossName = "FALLEN WATCHER";
         private const string k_AIAnimatorControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_SourceAIPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_PlayerUIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_NetworkPrefabsPath = "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
-        private const string k_BossDataFolder = "Assets/Data/AI/Boss/Fallen Watcher";
+        private const string k_BossDataFolder = "Assets/_Game/Data/AI/Boss/Fallen Watcher";
         private const string k_FogMaterialPath =
-            "Assets/Data/Materials/Fallen Watcher Fog Wall.mat";
+            "Assets/_Game/Art/Shared/Materials/Fallen Watcher Fog Wall.mat";
         private const string k_BaseAttackClipPath =
             "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
             "zombie_light_attack_01.anim";
@@ -75,7 +75,7 @@ namespace ZZ.Editor
         public static void ConfigureBossFightSystem()
         {
             EnsureFolder(k_BossDataFolder);
-            EnsureFolder("Assets/Data/Materials");
+            EnsureFolder("Assets/_Game/Art/Shared/Materials");
 
             BossAttackData lightAttack = ConfigureAttack(
                 k_LightAttackPath,

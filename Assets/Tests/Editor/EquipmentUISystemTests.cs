@@ -10,13 +10,13 @@ namespace ZZ.Tests
     public class EquipmentUISystemTests
     {
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_WeaponPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
         private const string k_HeadArmorPath =
-            "Assets/Data/Items/Armor/Starter Hood.asset";
+            "Assets/_Game/Data/Items/Armor/Starter Hood.asset";
         private const string k_InventorySlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Equipment Inventory Slot.prefab";
+            "Assets/_Game/Prefabs/UI/Equipment Inventory Slot.prefab";
 
         [Test]
         public void EquipmentFilterAcceptsOnlyItemsForTheSelectedSlot()

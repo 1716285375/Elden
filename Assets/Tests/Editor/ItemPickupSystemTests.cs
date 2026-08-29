@@ -8,9 +8,9 @@ namespace ZZ.Tests
 {
     public class ItemPickupSystemTests
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_ItemPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
 
         [Test]
         public void RuntimeInventoryAddsAndRemovesItemsThroughItsPublicBoundary()

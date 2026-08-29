@@ -17,23 +17,23 @@ namespace ZZ.Editor
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
-        private const string k_ActionPath = "Assets/Data/Actions/Off Hand Block.asset";
+        private const string k_ActionPath = "Assets/_Game/Data/Actions/Off Hand Block.asset";
         private const string k_UnarmedPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
         private const string k_StraightSwordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
         private const string k_BroadswordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_ShieldPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
         private const string k_ShieldPrefabPath =
-            "Assets/Data/Prefabs/Weapons/Melee Weapons/Medium Shield.prefab";
+            "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Medium Shield.prefab";
         private const string k_ShieldControllerPath =
-            "Assets/Data/Animator Overrides/Weapons/Medium Shield Animator.overrideController";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/Medium Shield Animator.overrideController";
         private const string k_ShieldModelPath =
             "Assets/Art/Models/Equipment/Weapons/Shield/SM_Wep_Shield_02.obj";
         private const string k_ShieldMaterialPath =

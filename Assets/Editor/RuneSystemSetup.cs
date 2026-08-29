@@ -11,13 +11,13 @@ namespace ZZ.Editor
     public static class RuneSystemSetup
     {
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_PlayerUIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         private static readonly Color s_backgroundColor =
             new Color(0.015f, 0.012f, 0.01f, 0.82f);

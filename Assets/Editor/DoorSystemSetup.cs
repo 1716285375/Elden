@@ -11,11 +11,11 @@ namespace ZZ.Editor
     public static class DoorSystemSetup
     {
         private const string k_PrefabFolder =
-            "Assets/Data/Prefabs/World Objects/Doors";
+            "Assets/_Game/Prefabs/World/Objects/Doors";
         private const string k_AnimationFolder =
-            "Assets/Data/Animations/Environment/Doors";
+            "Assets/_Game/Art/Environment/Shared/Animations/Doors";
         private const string k_KeyItemFolder =
-            "Assets/Data/Items/Key Items";
+            "Assets/_Game/Data/Items/Key Items";
         private const string k_DoorPrefabPath =
             k_PrefabFolder + "/Dungeon Door.prefab";
         private const string k_LockedDoorPrefabPath =
@@ -31,11 +31,11 @@ namespace ZZ.Editor
         private const string k_KeyItemPath =
             k_KeyItemFolder + "/Old Dungeon Key.asset";
         private const string k_KeyPickupPath =
-            "Assets/Data/Prefabs/Interactables/Old Dungeon Key Pickup.prefab";
+            "Assets/_Game/Prefabs/Interactables/Old Dungeon Key Pickup.prefab";
         private const string k_ItemPickupTemplatePath =
-            "Assets/Data/Prefabs/Interactables/Item Pickup.prefab";
+            "Assets/_Game/Prefabs/Interactables/Item Pickup.prefab";
         private const string k_ItemDatabasePath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
 
         [MenuItem("Tools/Elden/Configure Door System")]
         public static void ConfigureDoorSystem()

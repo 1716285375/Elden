@@ -14,8 +14,8 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_UndeadControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
-        private const string k_AvatarMaskFolder = "Assets/Data/Animations/Avatar Masks";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
+        private const string k_AvatarMaskFolder = "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Masks";
         private const string k_AvatarMaskPath =
             k_AvatarMaskFolder + "/Head And Chest.mask";
         private const string k_PingLayerName = "Ping Damage Override";
@@ -26,12 +26,12 @@ namespace ZZ.Editor
 
         private static readonly CharacterDefinition[] s_characterDefinitions =
         {
-            new CharacterDefinition("Assets/Data/Prefabs/Player.prefab", 50f),
+            new CharacterDefinition("Assets/_Game/Prefabs/Characters/Player/Player.prefab", 50f),
             new CharacterDefinition(
-                "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab",
+                "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab",
                 30f),
             new CharacterDefinition(
-                "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab",
+                "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab",
                 80f)
         };
 

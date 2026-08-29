@@ -10,7 +10,7 @@ namespace ZZ.Tests
     public class LoadingScreenSystemTests
     {
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [Test]
         public void PlayerUIPrefabContainsPersistentLoadingOverlay()

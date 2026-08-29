@@ -15,8 +15,8 @@ namespace ZZ.EditorTools
         private const string k_ScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_LocationPath = "World/Location 01 - Ashen Crypt";
         private const string k_OptimizationRootName = "EP101 Scene Optimization";
-        private const string k_MeshFolder = "Assets/Data/Meshes/Level Design";
-        private const string k_MaterialFolder = "Assets/Data/Materials/Level Design";
+        private const string k_MeshFolder = "Assets/_Game/Art/Environment/Shared/Meshes/LevelDesign";
+        private const string k_MaterialFolder = "Assets/_Game/Art/Environment/Shared/Materials";
         private const string k_ImpostorMaterialPath =
             k_MaterialFolder + "/M_Crypt_Monument_Impostor.mat";
 

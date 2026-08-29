@@ -9,7 +9,7 @@ namespace ZZ.Editor
 {
     public static class PlayerAnimationSetup
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_RiggedPlayerPrefabPath =
             "Assets/Art/Models/Rigged/Characters/Humanoid/Player/Player.prefab";
         private const string k_PlayerRigObjectName = "Zephyr";

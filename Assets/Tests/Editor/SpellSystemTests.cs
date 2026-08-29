@@ -12,15 +12,15 @@ namespace ZZ.Tests
     public class SpellSystemTests
     {
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_FireballPath =
-            "Assets/Data/Items/Spells/Fireball.asset";
+            "Assets/_Game/Data/Items/Spells/Fireball.asset";
         private const string k_CatalystPath =
-            "Assets/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset";
+            "Assets/_Game/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset";
         private const string k_FireballPrefabPath =
-            "Assets/Data/Prefabs/Spells/Fireball.prefab";
+            "Assets/_Game/Prefabs/Abilities/Fireball.prefab";
         private const string k_InputAssetPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_AnimatorPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +

@@ -11,17 +11,17 @@ namespace ZZ.Tests
     public class QuickSlotUISystemTests
     {
         private const string k_HealthFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
         private const string k_FocusFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
         private const string k_ArrowPath =
-            "Assets/Data/Items/Projectiles/Standard Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Standard Arrow.asset";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_QuickSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Quick Slot UI.prefab";
+            "Assets/_Game/Prefabs/UI/Quick Slot UI.prefab";
         private const string k_UIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [Test]
         public void QuickSlotEquipmentEnumsUseStableTrailingValues()

@@ -13,9 +13,9 @@ namespace ZZ.Editor
     public static class InteractableSystemSetup
     {
         private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_InteractableLayerName = "Interactable";
         private const string k_PlayerLayerName = "Player";
         private const string k_PopupOrganizerName = "Popup Organizer";

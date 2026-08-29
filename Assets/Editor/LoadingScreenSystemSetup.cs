@@ -9,7 +9,7 @@ namespace ZZ.Editor
     public static class LoadingScreenSystemSetup
     {
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [MenuItem("Tools/Elden/Configure Loading Screen System")]
         public static void ConfigureLoadingScreenSystem()

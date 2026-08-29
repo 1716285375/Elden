@@ -18,7 +18,7 @@ namespace ZZ.Editor
         private const string k_WorldLocationFolder =
             "Assets/Resources/World Locations";
         private const string k_TriggerFolder =
-            "Assets/Data/Prefabs/World Streaming/World Location Triggers";
+            "Assets/_Game/Prefabs/World/Streaming/World Location Triggers";
         private const string k_BakingSetPath =
             "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
         private const string k_TagManagerPath =

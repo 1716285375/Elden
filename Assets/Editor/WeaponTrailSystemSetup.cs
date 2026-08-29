@@ -9,13 +9,13 @@ namespace ZZ.Editor
     public static class WeaponTrailSystemSetup
     {
         private const string k_TrailMaterialPath =
-            "Assets/Data/Materials/Effects/Weapon Trail.mat";
+            "Assets/_Game/Art/VFX/Combat/Weapon Trail.mat";
         private const string k_TrailPrefabPath =
-            "Assets/Data/Prefabs/Effects/Weapon Trail.prefab";
+            "Assets/_Game/Prefabs/Effects/Weapon Trail.prefab";
         private const string k_BroadswordPrefabPath =
-            "Assets/Data/Prefabs/Weapons/Melee Weapons/Broadsword.prefab";
+            "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Broadsword.prefab";
         private const string k_StraightSwordPrefabPath =
-            "Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab";
+            "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Straight Sword.prefab";
 
         private static readonly string[] s_weaponPrefabPaths =
         {

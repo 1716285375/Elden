@@ -15,9 +15,9 @@ namespace ZZ.Tests
         private const string k_PoisonedVFXPath =
             "Assets/Resources/Effects/Poisoned VFX.prefab";
         private const string k_StatusWarningPath =
-            "Assets/Data/Prefabs/UI/Status Effect Warning.prefab";
+            "Assets/_Game/Prefabs/UI/Status Effect Warning.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [Test]
         public void PoisonedEffectUsesExpectedDurationDamageAndCatalogID()

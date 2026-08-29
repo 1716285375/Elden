@@ -25,7 +25,7 @@ namespace ZZ.Editor
             "core_main_back_step_medium_02.anim";
         private const string k_RollSoundFXPath =
             "Assets/Art/Audio/SFX/General/SFX_Roll_01.wav";
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
 
         [MenuItem("Tools/Elden/Configure Player Actions")]

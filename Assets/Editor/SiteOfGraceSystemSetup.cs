@@ -30,7 +30,7 @@ namespace ZZ.Editor
         private const string k_RestSoundPath =
             "Assets/Art/Audio/SFX/General/SFX_Rest_At_Well_01.wav";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_SiteObjectName = "First Step Site of Grace";
         private const string k_SpawnPointName = "Player Spawn Point";
         private const string k_InteractableLayerName = "Interactable";

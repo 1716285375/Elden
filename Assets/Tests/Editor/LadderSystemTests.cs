@@ -12,11 +12,11 @@ namespace ZZ.Tests
     public class LadderSystemTests
     {
         private const string k_LadderPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Ladders/Standard Ladder.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Ladders/Standard Ladder.prefab";
         private const string k_RuntimeControllerPath =
-            "Assets/Data/Animations/Humanoid/Humanoid Runtime.controller";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Runtime/Humanoid Runtime.controller";
         private const string k_FallClipPath =
-            "Assets/Data/Animations/Ladders/Ladder Fall Start.anim";
+            "Assets/_Game/Art/Environment/Shared/Animations/Ladder Fall Start.anim";
         private const string k_LocomotionSourcePath =
             "Assets/_Game/Scripts/Characters/Player/PlayerLocomotionManager.cs";
         private const string k_NetworkSourcePath =
@@ -32,15 +32,15 @@ namespace ZZ.Tests
 
         private static readonly string[] s_overrideControllerPaths =
         {
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Unarmed Animator.overrideController",
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Broadsword Animator.overrideController",
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Straight Sword Animator.overrideController",
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Medium Shield Animator.overrideController",
-            "Assets/Data/Animations/Archery/Bow.overrideController"
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow.overrideController"
         };
 
         [Test]
@@ -163,7 +163,7 @@ namespace ZZ.Tests
         {
             AnimatorController controller = LoadRuntimeController();
             GameObject player = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Data/Prefabs/Player.prefab");
+                "Assets/_Game/Prefabs/Characters/Player/Player.prefab");
 
             Assert.That(
                 player.GetComponentInChildren<Animator>(true)

@@ -23,9 +23,9 @@ namespace ZZ.Editor
         private const string k_FrozenMaterialPath =
             k_EffectsFolder + "/Frozen Material.mat";
         private const string k_BuildupBarPrefabPath =
-            "Assets/Data/Prefabs/UI/Buildup Bar.prefab";
+            "Assets/_Game/Prefabs/UI/Buildup Bar.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         private static readonly Color s_frostColor =
             new(0.25f, 0.72f, 1f, 1f);

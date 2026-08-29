@@ -9,10 +9,10 @@ namespace ZZ.Editor
 {
     public static class ArmorEquipmentSystemSetup
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
-        private const string k_ArmorFolder = "Assets/Data/Items/Armor";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
+        private const string k_ArmorFolder = "Assets/_Game/Data/Items/Armor";
         private const string k_ModelFolder = k_ArmorFolder + "/Models";
         private const string k_HeadPath = k_ArmorFolder + "/Starter Hood.asset";
         private const string k_BodyPath = k_ArmorFolder + "/Starter Armor.asset";

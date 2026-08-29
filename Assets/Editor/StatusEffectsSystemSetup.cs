@@ -19,9 +19,9 @@ namespace ZZ.Editor
         private const string k_DegradeBleedPath =
             k_EffectsFolder + "/Degrade Bleed Buildup Effect.asset";
         private const string k_BuildupBarPrefabPath =
-            "Assets/Data/Prefabs/UI/Buildup Bar.prefab";
+            "Assets/_Game/Prefabs/UI/Buildup Bar.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         private static readonly Color s_backgroundColor =
             new(0.025f, 0.025f, 0.02f, 0.94f);

@@ -10,9 +10,9 @@ namespace ZZ.Editor
     public static class FocusPointsSystemSetup
     {
         private const string k_FireballPath =
-            "Assets/Data/Items/Spells/Fireball.asset";
+            "Assets/_Game/Data/Items/Spells/Fireball.asset";
         private const string k_UIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [MenuItem("ZZ/Setup/Configure EP80 Focus Points")]
         public static void ConfigureFocusPointsSystem()

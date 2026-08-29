@@ -14,21 +14,21 @@ namespace ZZ.Editor
     public static class MonsterItemDropSystemSetup
     {
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_PickupPrefabPath =
-            "Assets/Data/Prefabs/Interactables/Item Pickup.prefab";
+            "Assets/_Game/Prefabs/Interactables/Item Pickup.prefab";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_BroadswordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_ArmorPath =
-            "Assets/Data/Items/Armor/Starter Armor.asset";
+            "Assets/_Game/Data/Items/Armor/Starter Armor.asset";
         private const string k_DropSoundPath =
             "Assets/Art/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav";
         private const string k_PlayerControllerPath =

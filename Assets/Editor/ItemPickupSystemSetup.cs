@@ -16,11 +16,11 @@ namespace ZZ.Editor
     public static class ItemPickupSystemSetup
     {
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_PickupPrefabPath =
-            "Assets/Data/Prefabs/Interactables/Item Pickup.prefab";
+            "Assets/_Game/Prefabs/Interactables/Item Pickup.prefab";
         private const string k_PickupMaterialPath =
-            "Assets/Data/Materials/Item Pickup Glow.mat";
+            "Assets/_Game/Art/Shared/Materials/Item Pickup Glow.mat";
         private const string k_MainMenuScenePath =
             WorldScenePathLayout.MainMenuScenePath;
         private const string k_WorldScenePath =
@@ -28,11 +28,11 @@ namespace ZZ.Editor
         private const string k_PickupSoundPath =
             "Assets/Art/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav";
         private const string k_StraightSwordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
         private const string k_BroadswordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_MediumShieldPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
         private const string k_MediumShieldIconPath =
             "Assets/Art/Textures/UI/Items/Iron_Shield_Icon.png";
         private const string k_InteractableLayerName = "Interactable";
@@ -74,8 +74,8 @@ namespace ZZ.Editor
         [MenuItem("Tools/Elden/Configure Item Pickup System")]
         public static void ConfigureItemPickupSystem()
         {
-            EnsureFolder("Assets/Data/Prefabs/Interactables");
-            EnsureFolder("Assets/Data/Materials");
+            EnsureFolder("Assets/_Game/Prefabs/Interactables");
+            EnsureFolder("Assets/_Game/Art/Shared/Materials");
             ConfigureMediumShieldIcon();
             ConfigurePickupMaterial();
             ConfigurePickupPrefab();

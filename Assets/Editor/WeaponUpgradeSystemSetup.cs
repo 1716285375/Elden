@@ -16,7 +16,7 @@ namespace ZZ.Editor
     public static class WeaponUpgradeSystemSetup
     {
         private const string k_MaterialFolder =
-            "Assets/Data/Items/Upgrade Materials";
+            "Assets/_Game/Data/Items/Upgrade Materials";
         private const string k_SmallMaterialPath =
             k_MaterialFolder + "/Small Smithing Stone.asset";
         private const string k_MediumMaterialPath =
@@ -24,25 +24,25 @@ namespace ZZ.Editor
         private const string k_LargeMaterialPath =
             k_MaterialFolder + "/Large Smithing Stone.asset";
         private const string k_AnvilPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Weapon Upgrade Anvil.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Weapon Upgrade Anvil.prefab";
         private const string k_MaterialPickupPath =
-            "Assets/Data/Prefabs/Interactables/Small Smithing Stone Pickup.prefab";
+            "Assets/_Game/Prefabs/Interactables/Small Smithing Stone Pickup.prefab";
         private const string k_BlacksmithDialogueFolder =
-            "Assets/Data/Dialogue/Blacksmith";
+            "Assets/_Game/Data/Dialogue/Blacksmith";
         private const string k_BlacksmithDialoguePath =
             k_BlacksmithDialogueFolder + "/Blacksmith Stage 00.asset";
         private const string k_NamelessKnightPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Nameless Knight NPC.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Nameless Knight NPC.prefab";
         private const string k_BlacksmithPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Blacksmith NPC.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Blacksmith NPC.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_WorldSaveManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Save Game Manager.prefab";
         private const string k_WorldItemDatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_HoverSoundPath =
@@ -69,8 +69,8 @@ namespace ZZ.Editor
         public static void ConfigureWeaponUpgradeSystem()
         {
             EnsureFolder(k_MaterialFolder);
-            EnsureFolder("Assets/Data/Prefabs/World Objects");
-            EnsureFolder("Assets/Data/Prefabs/Interactables");
+            EnsureFolder("Assets/_Game/Prefabs/World/Objects");
+            EnsureFolder("Assets/_Game/Prefabs/Interactables");
             EnsureFolder(k_BlacksmithDialogueFolder);
 
             UpgradeMaterial smallMaterial = ConfigureUpgradeMaterial(

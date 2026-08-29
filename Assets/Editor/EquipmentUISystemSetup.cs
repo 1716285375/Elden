@@ -22,11 +22,11 @@ namespace ZZ.Editor
         private const int k_EquipmentSlotCount = 10;
         private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_EquipmentSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Equipment Slot.prefab";
+            "Assets/_Game/Prefabs/UI/Equipment Slot.prefab";
         private const string k_InventorySlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Equipment Inventory Slot.prefab";
+            "Assets/_Game/Prefabs/UI/Equipment Inventory Slot.prefab";
         private const string k_WorldScenePath =
             WorldScenePathLayout.MasterScenePath;
         private const string k_CharacterMenuName = "Character Menu";
@@ -52,16 +52,16 @@ namespace ZZ.Editor
         private static readonly ArmorIconDefinition[] s_armorIcons =
         {
             new ArmorIconDefinition(
-                "Assets/Data/Items/Armor/Starter Hood.asset",
+                "Assets/_Game/Data/Items/Armor/Starter Hood.asset",
                 "Assets/Art/Textures/UI/Items/Dark_Hood_Icon_01.png"),
             new ArmorIconDefinition(
-                "Assets/Data/Items/Armor/Starter Armor.asset",
+                "Assets/_Game/Data/Items/Armor/Starter Armor.asset",
                 "Assets/Art/Textures/UI/Items/Dark_Leather_Armor_Icon_01.png"),
             new ArmorIconDefinition(
-                "Assets/Data/Items/Armor/Starter Gauntlets.asset",
+                "Assets/_Game/Data/Items/Armor/Starter Gauntlets.asset",
                 "Assets/Art/Textures/UI/Items/Leather_Gloves_Icon_01.png"),
             new ArmorIconDefinition(
-                "Assets/Data/Items/Armor/Starter Greaves.asset",
+                "Assets/_Game/Data/Items/Armor/Starter Greaves.asset",
                 "Assets/Art/Textures/UI/Items/Assassins_Boots_Icon_01.png")
         };
 
@@ -822,9 +822,9 @@ namespace ZZ.Editor
             }
 
             Item straightSword = LoadRequiredAsset<Item>(
-                "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset");
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset");
             Item starterHood = LoadRequiredAsset<Item>(
-                "Assets/Data/Items/Armor/Starter Hood.asset");
+                "Assets/_Game/Data/Items/Armor/Starter Hood.asset");
             if (!PlayerUIEquipmentManager.IsItemCompatibleWithSlot(
                     straightSword,
                     EquipmentSlotType.RightWeapon01) ||

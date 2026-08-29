@@ -331,9 +331,9 @@ namespace ZZ.Editor
         {
             string[] weaponPaths =
             {
-                "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset",
-                "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset",
-                "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset"
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Unarmed.asset",
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset",
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset"
             };
             foreach (string weaponPath in weaponPaths)
             {

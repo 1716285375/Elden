@@ -16,7 +16,7 @@ namespace ZZ.Editor
     {
         private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_WorldNetworkManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Network Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Network Manager.prefab";
         private const string k_AnimatorControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
@@ -27,7 +27,7 @@ namespace ZZ.Editor
             "Assets/Art/Audio/SFX/Characters/Movement/" +
             "SFX_Walk_Through_Fog_01.wav";
         private const string k_FogMaterialPath =
-            "Assets/Data/Materials/Fallen Watcher Fog Wall.mat";
+            "Assets/_Game/Art/Shared/Materials/Fallen Watcher Fog Wall.mat";
         private const string k_WorldSaveManagerPath =
             "Assets/_Game/Scripts/World/Managers/WorldSaveGameManager.cs";
         private const string k_ActionLayerName = "Action Override";

@@ -14,15 +14,15 @@ namespace ZZ.Editor
     public static class TwoHandWeaponSystemSetup
     {
         private const int k_TwoHandingEffectID = 1;
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_TwoHandingEffectPath =
-            "Assets/Data/Effects/Static Effects/Two Handing Effect.asset";
-        private const string k_LightActionPath = "Assets/Data/Actions/Light Attack.asset";
-        private const string k_HeavyActionPath = "Assets/Data/Actions/Heavy Attack.asset";
+            "Assets/_Game/Data/Effects/Static Effects/Two Handing Effect.asset";
+        private const string k_LightActionPath = "Assets/_Game/Data/Actions/Light Attack.asset";
+        private const string k_HeavyActionPath = "Assets/_Game/Data/Actions/Heavy Attack.asset";
         private const string k_LocomotionFolder =
             "Assets/Art/Animations/Characters/Humanoid/Locomotion/";
         private const string k_CombatFolder =
@@ -44,19 +44,19 @@ namespace ZZ.Editor
         private static readonly WeaponDefinition[] s_weaponDefinitions =
         {
             new WeaponDefinition(
-                "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset",
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Unarmed.asset",
                 WeaponClass.Unarmed,
                 false),
             new WeaponDefinition(
-                "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset",
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset",
                 WeaponClass.StraightSword,
                 true),
             new WeaponDefinition(
-                "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset",
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset",
                 WeaponClass.StraightSword,
                 true),
             new WeaponDefinition(
-                "Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset",
+                "Assets/_Game/Data/Items/Weapons/Melee Weapons/Medium Shield.asset",
                 WeaponClass.Shield,
                 true)
         };
@@ -166,8 +166,8 @@ namespace ZZ.Editor
 
         private static TwoHandingEffect ConfigureStaticEffect()
         {
-            EnsureAssetFolder("Assets/Data/Effects");
-            EnsureAssetFolder("Assets/Data/Effects/Static Effects");
+            EnsureAssetFolder("Assets/_Game/Data/Effects");
+            EnsureAssetFolder("Assets/_Game/Data/Effects/Static Effects");
             TwoHandingEffect effect = AssetDatabase.LoadAssetAtPath<TwoHandingEffect>(
                 k_TwoHandingEffectPath);
             if (effect == null)

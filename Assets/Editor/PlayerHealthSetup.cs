@@ -10,9 +10,9 @@ namespace ZZ.Editor
 {
     public static class PlayerHealthSetup
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerUIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const float k_DefaultMaximumHealth = 150f;
         private const float k_DefaultMaximumStamina = 100f;
         private const float k_StatBarHeight = 24f;

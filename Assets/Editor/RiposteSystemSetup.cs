@@ -17,7 +17,7 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_RiposteClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
             "core_main_riposte_01.anim";
@@ -34,10 +34,10 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
             "core_main_faceup_getup_01.anim";
         private const string k_UnarmedOverridePath =
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
             "Unarmed Animator.overrideController";
         private const string k_WeaponFolderPath =
-            "Assets/Data/Items/Weapons/Melee Weapons";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons";
         private const string k_CriticalEffectPath =
             "Assets/Resources/Effects/Take Critical Damage Effect.asset";
         private const string k_MainMenuScenePath =

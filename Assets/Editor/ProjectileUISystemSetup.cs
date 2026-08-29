@@ -14,15 +14,15 @@ namespace ZZ.Editor
     {
         private const int k_EquipmentSlotCount = 12;
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_EquipmentSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Equipment Slot.prefab";
+            "Assets/_Game/Prefabs/UI/Equipment Slot.prefab";
         private const string k_QuickSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Quick Slot UI.prefab";
+            "Assets/_Game/Prefabs/UI/Quick Slot UI.prefab";
         private const string k_StandardArrowPath =
-            "Assets/Data/Items/Projectiles/Standard Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Standard Arrow.asset";
         private const string k_FireArrowPath =
-            "Assets/Data/Items/Projectiles/Fire Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Fire Arrow.asset";
         private const string k_StandardArrowIconPath =
             "Assets/Art/Textures/UI/Items/Standard Arrow Icon.png";
         private const string k_FireArrowIconPath =

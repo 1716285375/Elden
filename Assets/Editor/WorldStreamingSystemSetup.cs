@@ -19,7 +19,7 @@ namespace ZZ.Editor
         private const string k_BakingSetPath =
             "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
         private const string k_TriggerPrefabPath =
-            "Assets/Data/Prefabs/World Streaming/Area Load Trigger.prefab";
+            "Assets/_Game/Prefabs/World/Streaming/Area Load Trigger.prefab";
         private const string k_ManagerName = "World Streaming Manager";
         private const string k_SpawnTriggerName = "Spawn Area Load Trigger";
         private const string k_ProbeVolumeName =

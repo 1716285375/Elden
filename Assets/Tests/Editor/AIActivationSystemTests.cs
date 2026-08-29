@@ -10,13 +10,13 @@ namespace ZZ.Tests
     public class AIActivationSystemTests
     {
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_AICharacterPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BeaconPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/AI Activation Beacon.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/AI Activation Beacon.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
 
         [Test]
         public void NetworkStateUsesServerWriteAndMirroredSubscriptions()

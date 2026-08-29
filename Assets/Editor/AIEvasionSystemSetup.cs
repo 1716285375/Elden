@@ -11,14 +11,14 @@ namespace ZZ.Editor
     public static class AIEvasionSystemSetup
     {
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_RollClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
             "core_main_roll_med_to_idle_F_01.anim";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_RollStateName = "Roll_Forward_01";

@@ -18,17 +18,17 @@ namespace ZZ.Editor
         private const string k_PlayerControlsPath =
             "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_EquipmentSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Equipment Slot.prefab";
+            "Assets/_Game/Prefabs/UI/Equipment Slot.prefab";
         private const string k_QuickSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Quick Slot UI.prefab";
+            "Assets/_Game/Prefabs/UI/Quick Slot UI.prefab";
         private const string k_HealthFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
         private const string k_FocusFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
 
         private static readonly string[] s_equipmentSlotNames =
         {

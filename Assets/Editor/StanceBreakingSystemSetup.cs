@@ -13,16 +13,16 @@ namespace ZZ.Editor
     public static class StanceBreakingSystemSetup
     {
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_StanceBreakClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Actions/" +
             "core_main_stance_broken_f_01.anim";
         private const string k_StanceBreakSoundPath =
             "Assets/Art/Audio/SFX/Environment/SFX_Guard_Break_01.wav";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_MainMenuScenePath =
             WorldScenePathLayout.MainMenuScenePath;
         private const string k_ActionLayerName = "Action Override";

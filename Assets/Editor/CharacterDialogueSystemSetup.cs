@@ -15,24 +15,24 @@ namespace ZZ.Editor
     public static class CharacterDialogueSystemSetup
     {
         private const string k_DialogueFolder =
-            "Assets/Data/Dialogue/Nameless Knight";
+            "Assets/_Game/Data/Dialogue/Nameless Knight";
         private const string k_StageZeroPath =
             k_DialogueFolder + "/Nameless Knight Stage 00.asset";
         private const string k_StageFivePath =
             k_DialogueFolder + "/Nameless Knight Stage 05.asset";
         private const string k_DialogueInteractablePath =
-            "Assets/Data/Prefabs/World Objects/Dialogue/" +
+            "Assets/_Game/Prefabs/World/Objects/Dialogue/" +
             "Dialogue Interactable.prefab";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_NamelessKnightPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Nameless Knight NPC.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Nameless Knight NPC.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_WorldSaveManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Save Game Manager.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_WorldScenePath =
             WorldScenePathLayout.MasterScenePath;
         private const string k_NetworkPrefabsPath =
@@ -59,7 +59,7 @@ namespace ZZ.Editor
         public static void ConfigureCharacterDialogueSystem()
         {
             EnsureFolder(k_DialogueFolder);
-            EnsureFolder("Assets/Data/Prefabs/World Objects/Dialogue");
+            EnsureFolder("Assets/_Game/Prefabs/World/Objects/Dialogue");
 
             AudioClip giantDialogueOne = LoadRequiredAsset<AudioClip>(
                 k_GiantDialogueOnePath);

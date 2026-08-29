@@ -12,24 +12,24 @@ namespace ZZ.Tests
     public class FlaskSystemTests
     {
         private const string k_HealthFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
         private const string k_FocusFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_UIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_DrinkStartClipPath =
-            "Assets/Data/Animations/Flasks/Drink Start.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Drink Start.anim";
         private const string k_Drink01ClipPath =
-            "Assets/Data/Animations/Flasks/Drink 01.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Drink 01.anim";
         private const string k_Drink02ClipPath =
-            "Assets/Data/Animations/Flasks/Drink 02.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Drink 02.anim";
 
         [Test]
         public void FlaskItemsUseStableIDsAndSeparateRestorationCategories()

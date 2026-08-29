@@ -11,11 +11,11 @@ namespace ZZ.Tests
     public class FocusPointsSystemTests
     {
         private const string k_FireballPath =
-            "Assets/Data/Items/Spells/Fireball.asset";
+            "Assets/_Game/Data/Items/Spells/Fireball.asset";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_UIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [Test]
         public void MindTenProducesOneHundredFocusPoints()

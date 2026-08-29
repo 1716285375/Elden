@@ -14,13 +14,13 @@ namespace ZZ.Editor
     public static class SoundEffectSystemSetup
     {
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_AICharacterPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_MainMenuScenePath =
             WorldScenePathLayout.MainMenuScenePath;
         private const string k_WeaponFolder =
-            "Assets/Data/Items/Weapons/Melee Weapons";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons";
         private const string k_CombatAudioFolder =
             "Assets/Art/Audio/SFX/Combat";
         private const string k_UndeadAudioFolder =

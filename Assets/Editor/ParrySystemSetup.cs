@@ -15,7 +15,7 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_FastParryClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Combat/Shield/" +
             "shield_off_parry_01_fast_start.anim";
@@ -32,16 +32,16 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
             "core_main_parry_victim_01.anim";
         private const string k_ParryAssetFolder =
-            "Assets/Data/Items/Ashes Of War";
+            "Assets/_Game/Data/Items/Ashes Of War";
         private const string k_ParryAssetPath =
             k_ParryAssetFolder + "/Parry Slow.asset";
         private const string k_MediumShieldPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
         private const string k_ItemDatabasePath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_BossAttackFolder =
-            "Assets/Data/AI/Boss/Fallen Watcher";
+            "Assets/_Game/Data/AI/Boss/Fallen Watcher";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_ParriedStateName = "Parried_01";
@@ -455,7 +455,7 @@ namespace ZZ.Editor
         private static void ValidateDefaultEnemyAttack()
         {
             GameObject undeadPrefab = LoadRequiredAsset<GameObject>(
-                "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab");
+                "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab");
             AICharacterCombatManager combatManager =
                 undeadPrefab.GetComponent<AICharacterCombatManager>();
             SerializedProperty defaultParryable = combatManager != null

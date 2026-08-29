@@ -16,9 +16,9 @@ namespace ZZ.Editor
     {
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_WrapperPath = "Assets/_Game/Scripts/Generated/Input/PlayerControls.cs";
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerInputManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player Input Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player Input Manager.prefab";
         private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
         private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_RunPlayerUpdatesInEditMode =

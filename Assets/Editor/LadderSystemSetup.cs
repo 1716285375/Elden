@@ -14,13 +14,13 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_RuntimeControllerPath =
-            "Assets/Data/Animations/Humanoid/Humanoid Runtime.controller";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Runtime/Humanoid Runtime.controller";
         private const string k_LadderAnimationFolder =
-            "Assets/Data/Animations/Ladders";
+            "Assets/_Game/Art/Environment/Shared/Animations";
         private const string k_LadderPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Ladders/Standard Ladder.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Ladders/Standard Ladder.prefab";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_LadderLayerName = "Ladder Override";
         private const string k_SlidingParameter = "isSlidingDownLadder";
         private const float k_LadderHeight = 8f;
@@ -28,23 +28,23 @@ namespace ZZ.Editor
 
         private static readonly string[] s_overrideControllerPaths =
         {
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Unarmed Animator.overrideController",
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Broadsword Animator.overrideController",
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Straight Sword Animator.overrideController",
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
                 "Medium Shield Animator.overrideController",
-            "Assets/Data/Animations/Archery/Bow.overrideController"
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow.overrideController"
         };
 
         [MenuItem("Tools/ZZ/EP159-162/Configure Ladder System")]
         public static void ConfigureLadderSystem()
         {
-            EnsureFolder("Assets/Data/Animations/Humanoid");
+            EnsureFolder("Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Runtime");
             EnsureFolder(k_LadderAnimationFolder);
-            EnsureFolder("Assets/Data/Prefabs/World Objects/Ladders");
+            EnsureFolder("Assets/_Game/Prefabs/World/Objects/Ladders");
             AnimatorController controller = EnsureRuntimeController();
             ConfigureLadderLayer(controller);
             ConfigureOverrideControllers(controller);

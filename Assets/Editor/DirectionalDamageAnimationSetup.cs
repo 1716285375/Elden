@@ -9,7 +9,7 @@ namespace ZZ.Editor
 {
     public static class DirectionalDamageAnimationSetup
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_AnimatorControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";

@@ -12,27 +12,27 @@ namespace ZZ.Tests
     public class WeaponUpgradeSystemTests
     {
         private const string k_SmallMaterialPath =
-            "Assets/Data/Items/Upgrade Materials/Small Smithing Stone.asset";
+            "Assets/_Game/Data/Items/Upgrade Materials/Small Smithing Stone.asset";
         private const string k_MediumMaterialPath =
-            "Assets/Data/Items/Upgrade Materials/Medium Smithing Stone.asset";
+            "Assets/_Game/Data/Items/Upgrade Materials/Medium Smithing Stone.asset";
         private const string k_LargeMaterialPath =
-            "Assets/Data/Items/Upgrade Materials/Large Smithing Stone.asset";
+            "Assets/_Game/Data/Items/Upgrade Materials/Large Smithing Stone.asset";
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_AnvilPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Weapon Upgrade Anvil.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Weapon Upgrade Anvil.prefab";
         private const string k_MaterialPickupPath =
-            "Assets/Data/Prefabs/Interactables/Small Smithing Stone Pickup.prefab";
+            "Assets/_Game/Prefabs/Interactables/Small Smithing Stone Pickup.prefab";
         private const string k_BlacksmithDialoguePath =
-            "Assets/Data/Dialogue/Blacksmith/Blacksmith Stage 00.asset";
+            "Assets/_Game/Data/Dialogue/Blacksmith/Blacksmith Stage 00.asset";
         private const string k_BlacksmithPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Blacksmith NPC.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Blacksmith NPC.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_WorldSaveManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Save Game Manager.prefab";
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
 

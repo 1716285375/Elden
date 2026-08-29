@@ -42,9 +42,9 @@ namespace ZZ.Editor
 
         private static readonly string[] s_weaponPaths =
         {
-            "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset",
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset",
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset"
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Unarmed.asset",
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset",
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset"
         };
 
         private static readonly MovingAttackDefinition[] s_attackDefinitions =

@@ -16,22 +16,22 @@ namespace ZZ.Editor
     public static class AICharacterSystemSetup
     {
         private const string k_AIAnimatorControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_AIAvatarPath =
-            "Assets/Data/Animations/AI/Undead AI Avatar.asset";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Avatar.asset";
         private const string k_AICharacterPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossCharacterPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_NetworkPrefabsPath = "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_SourceVisualPrefabPath =
             "Assets/Art/Models/Rigged/Characters/Creatures/Undead/" +
             "Skeleton_00_Unarmed/Skeleton_00_Unarmed.prefab";
         private const string k_BloodVFXPath =
-            "Assets/Data/Prefabs/Effects/BloodSplatterVFX.prefab";
+            "Assets/_Game/Prefabs/Effects/BloodSplatterVFX.prefab";
         private const string k_IdleClipPath =
             "Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/" +
             "zombie_idle_01.anim";
@@ -139,8 +139,8 @@ namespace ZZ.Editor
         [MenuItem("Tools/Elden/Configure AI Character System")]
         public static void ConfigureAICharacterSystem()
         {
-            EnsureFolder("Assets/Data/Animations/AI");
-            EnsureFolder("Assets/Data/Prefabs/Characters/AI");
+            EnsureFolder("Assets/_Game/Art/Characters/Creatures/Undead/Animations");
+            EnsureFolder("Assets/_Game/Prefabs/Characters/AI");
 
             Avatar avatar = ConfigureAIAnimatorAvatar();
             AnimatorController controller = ConfigureAnimatorController();
@@ -175,7 +175,7 @@ namespace ZZ.Editor
         [MenuItem("Tools/Elden/Repair AI Animator Avatar")]
         public static void RepairAIAnimatorAvatar()
         {
-            EnsureFolder("Assets/Data/Animations/AI");
+            EnsureFolder("Assets/_Game/Art/Characters/Creatures/Undead/Animations");
             Avatar avatar = ConfigureAIAnimatorAvatar();
             AssignAnimatorAvatar(k_AICharacterPrefabPath, avatar);
             AssignAnimatorAvatarIfPresent(k_BossCharacterPrefabPath, avatar);
