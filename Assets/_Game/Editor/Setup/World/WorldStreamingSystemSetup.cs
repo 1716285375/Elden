@@ -17,7 +17,7 @@ namespace ZZ.Editor
         private const string k_WorldScenePath =
             WorldScenePathLayout.MasterScenePath;
         private const string k_BakingSetPath =
-            "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
+            "Assets/_Game/Settings/Rendering/Lighting/World Streaming Probe Volume Baking Set.asset";
         private const string k_TriggerPrefabPath =
             "Assets/_Game/Prefabs/World/Streaming/Area Load Trigger.prefab";
         private const string k_ManagerName = "World Streaming Manager";

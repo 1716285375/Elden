@@ -19,7 +19,7 @@ namespace ZZ.Tests
         private const string k_WorldLocationFolder =
             "Assets/_Game/Resources/World Locations";
         private const string k_BakingSetPath =
-            "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
+            "Assets/_Game/Settings/Rendering/Lighting/World Streaming Probe Volume Baking Set.asset";
         private const string k_TriggerPrefabPath =
             "Assets/_Game/Prefabs/World/Streaming/Area Load Trigger.prefab";
 
