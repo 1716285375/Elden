@@ -65,7 +65,7 @@ namespace ZZ.Tests
                 "CalculatePendingRuneTotal",
                 BindingFlags.Public | BindingFlags.Static);
             string source = File.ReadAllText(
-                "Assets/Script/Character/Player/Player UI/PlayerUIHUDManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIHUDManager.cs");
 
             Assert.That(calculate.Invoke(null, new object[] { 0, 50 }), Is.EqualTo(50));
             Assert.That(calculate.Invoke(null, new object[] { 100, 50 }), Is.EqualTo(150));
@@ -140,7 +140,7 @@ namespace ZZ.Tests
         public void DeathRewardRunsOnlyOnFalseToTrueAndTargetsTheKillerOwner()
         {
             string source = File.ReadAllText(
-                "Assets/Script/Character/AI/AICharacterNetworkManager.cs");
+                "Assets/_Game/Scripts/Characters/AI/AICharacterNetworkManager.cs");
 
             Assert.That(source, Does.Contain("if (!wasDead && IsServer)"));
             Assert.That(source, Does.Contain("TargetClientIds"));
@@ -152,9 +152,9 @@ namespace ZZ.Tests
         public void LocalPlayerCacheBindsAndClearsAtOwnershipBoundaries()
         {
             string managerSource = File.ReadAllText(
-                "Assets/Script/Character/Player/Player UI/PlayerUIManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIManager.cs");
             string playerSource = File.ReadAllText(
-                "Assets/Script/Character/Player/PlayerManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerManager.cs");
 
             Assert.That(managerSource, Does.Contain("public PlayerManager LocalPlayer"));
             Assert.That(playerSource, Does.Contain("BindLocalPlayer(this)"));

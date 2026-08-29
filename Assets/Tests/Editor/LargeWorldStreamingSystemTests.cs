@@ -14,7 +14,6 @@ namespace ZZ.Tests
     {
         private const string k_LocationFolder =
             "Assets/Resources/World Locations";
-        private const string k_SceneFolder = "Assets/Scenes/World Areas";
         private const string k_TriggerFolder =
             "Assets/Data/Prefabs/World Streaming/World Location Triggers";
 
@@ -39,11 +38,21 @@ namespace ZZ.Tests
 
                 Assert.That(ownedScenes.Count, Is.EqualTo(4));
                 Assert.That(ownedScenes[0],
-                    Is.EqualTo($"Area_01_Sub_Area_{locationIndex:00}"));
-                Assert.That(ownedScenes, Does.Contain(ownedScenes[0] + "_Props"));
-                Assert.That(ownedScenes, Does.Contain(ownedScenes[0] + "_Effects"));
+                    Is.EqualTo(WorldScenePathLayout.GetSceneID(
+                        locationIndex,
+                        0)));
                 Assert.That(ownedScenes,
-                    Does.Contain(ownedScenes[0] + "_Spawners"));
+                    Does.Contain(WorldScenePathLayout.GetSceneID(
+                        locationIndex,
+                        1)));
+                Assert.That(ownedScenes,
+                    Does.Contain(WorldScenePathLayout.GetSceneID(
+                        locationIndex,
+                        2)));
+                Assert.That(ownedScenes,
+                    Does.Contain(WorldScenePathLayout.GetSceneID(
+                        locationIndex,
+                        3)));
                 int expectedNeighbours = locationIndex == 0 ||
                     locationIndex == locations.Length - 1
                     ? 1
@@ -80,9 +89,9 @@ namespace ZZ.Tests
         public void PlayerLocationTrackingIsDictionaryDriven()
         {
             string managerSource = ReadSource(
-                "Assets/Script/World Managers/WorldSceneSubSceneManager.cs");
+                "Assets/_Game/Scripts/World/Managers/WorldSceneSubSceneManager.cs");
             string playerSource = ReadSource(
-                "Assets/Script/Character/Player/PlayerManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerManager.cs");
 
             Assert.That(managerSource, Does.Contain(
                 "Dictionary<\n            WorldLocationSceneSet,\n" +
@@ -101,7 +110,7 @@ namespace ZZ.Tests
         public void SceneQueueRetriesNetcodeBusyStateAndThrottlesOperations()
         {
             string source = ReadSource(
-                "Assets/Script/World Managers/WorldSceneManager.cs");
+                "Assets/_Game/Scripts/World/Managers/WorldSceneManager.cs");
 
             Assert.That(source, Does.Contain(
                 "SceneEventProgressStatus.SceneEventInProgress"));
@@ -133,7 +142,8 @@ namespace ZZ.Tests
                         "ScenesRequiredForThisLocation");
                 foreach (string sceneID in sceneIDs)
                 {
-                    string scenePath = $"{k_SceneFolder}/{sceneID}.unity";
+                    string scenePath =
+                        WorldScenePathLayout.GetScenePath(sceneID);
                     Assert.That(
                         AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath),
                         Is.Not.Null,
@@ -204,7 +214,7 @@ namespace ZZ.Tests
             return Enumerable.Range(0, 5)
                 .Select(locationIndex => AssetDatabase.LoadAssetAtPath(
                     $"{k_LocationFolder}/" +
-                    $"Area_01_Sub_Area_{locationIndex:00}.asset",
+                    $"{WorldScenePathLayout.GetRegionFolderName(locationIndex)}.asset",
                     locationType))
                 .Where(location => location != null)
                 .ToArray();

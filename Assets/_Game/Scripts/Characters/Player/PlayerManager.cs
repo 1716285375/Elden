@@ -16,7 +16,8 @@ namespace ZZ
     [RequireComponent(typeof(PlayerInteractionManager))]
     public class PlayerManager : CharacterManager
     {
-        private const string k_StartingGameplaySceneName = "Scene_World_01";
+        private const string k_StartingGameplaySceneName =
+            WorldScenePathLayout.MasterSceneName;
         private const string k_SpawnPointName = "Player Spawn Point";
 
         [SerializeField] private PlayerAnimatorManager m_playerAnimatorManager;

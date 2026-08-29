@@ -24,11 +24,11 @@ namespace ZZ.Tests
         private const string k_ItemDatabasePath =
             "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
         private const string k_DoorSourcePath =
-            "Assets/Script/World Managers/DoorInteractable.cs";
+            "Assets/_Game/Scripts/World/Managers/DoorInteractable.cs";
         private const string k_LeverSourcePath =
-            "Assets/Script/World Managers/ActivateOtherInteractableInteractable.cs";
+            "Assets/_Game/Scripts/World/Managers/ActivateOtherInteractableInteractable.cs";
         private const string k_MessageSourcePath =
-            "Assets/Script/World Managers/MessageInteractable.cs";
+            "Assets/_Game/Scripts/World/Managers/MessageInteractable.cs";
 
         [Test]
         public void OpenedDoorIDsRoundTripWithoutDuplicates()

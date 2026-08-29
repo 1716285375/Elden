@@ -124,9 +124,9 @@ namespace ZZ.Tests
         public void DeathTransitionCreatesOneHostDeadSpotAndStartsRevival()
         {
             string networkSource = File.ReadAllText(
-                "Assets/Script/Character/Player/PlayerNetworkManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerNetworkManager.cs");
             string combatSource = File.ReadAllText(
-                "Assets/Script/Character/Player/PlayerCombatManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerCombatManager.cs");
 
             Assert.That(
                 networkSource,
@@ -142,7 +142,7 @@ namespace ZZ.Tests
         public void SceneRestoreDoesNotChargeRunesTwiceAndUnsubscribes()
         {
             string combatSource = File.ReadAllText(
-                "Assets/Script/Character/Player/PlayerCombatManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerCombatManager.cs");
 
             Assert.That(
                 combatSource,
@@ -160,11 +160,11 @@ namespace ZZ.Tests
         public void RevivalUsesSingleCoroutineSavedCheckpointAndFallback()
         {
             string sessionSource = File.ReadAllText(
-                "Assets/Script/World Managers/WorldGameSessionManager.cs");
+                "Assets/_Game/Scripts/World/Managers/WorldGameSessionManager.cs");
             string graceSource = File.ReadAllText(
-                "Assets/Script/World Managers/SiteOfGraceInteractable.cs");
+                "Assets/_Game/Scripts/World/Managers/SiteOfGraceInteractable.cs");
             string objectSource = File.ReadAllText(
-                "Assets/Script/World Managers/WorldObjectManager.cs");
+                "Assets/_Game/Scripts/World/Managers/WorldObjectManager.cs");
 
             Assert.That(sessionSource, Does.Contain("StopRevivalCoroutine();"));
             Assert.That(
@@ -192,7 +192,7 @@ namespace ZZ.Tests
                 .Single(attribute =>
                     attribute.GetType().Name == "ServerRpcAttribute");
             string source = File.ReadAllText(
-                "Assets/Script/World Managers/PickupRunesInteractable.cs");
+                "Assets/_Game/Scripts/World/Managers/PickupRunesInteractable.cs");
 
             Assert.That(
                 (bool)serverRpcAttribute.GetType().GetField("RequireOwnership")

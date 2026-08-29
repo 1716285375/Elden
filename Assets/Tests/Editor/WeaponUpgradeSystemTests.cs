@@ -286,13 +286,13 @@ namespace ZZ.Tests
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
             string inventorySource = File.ReadAllText(Path.Combine(
                 projectRoot,
-                "Assets/Script/Character/Inventory/PlayerInventoryManager.cs"));
+                "Assets/_Game/Scripts/Characters/Common/Inventory/PlayerInventoryManager.cs"));
             string dialogueSource = File.ReadAllText(Path.Combine(
                 projectRoot,
-                "Assets/Script/Dialogue/CharacterDialogue.cs"));
+                "Assets/_Game/Scripts/Dialogue/CharacterDialogue.cs"));
             string upgradeSource = File.ReadAllText(Path.Combine(
                 projectRoot,
-                "Assets/Script/Character/Player/Player UI/" +
+                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
                 "PlayerUIWeaponUpgradeManager.cs"));
 
             Assert.That(inventorySource,

@@ -18,7 +18,8 @@ namespace ZZ
         private const float k_SceneEventRetryTimeoutSeconds = 30f;
 
         /// <summary>The world Scene that remains loaded for the whole gameplay session.</summary>
-        public const string PersistentWorldSceneID = "Scene_World_01";
+        public const string PersistentWorldSceneID =
+            WorldScenePathLayout.MasterSceneName;
 
         private static WorldSceneManager s_instance;
 

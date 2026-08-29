@@ -120,13 +120,13 @@ namespace ZZ.Tests
             string root = Directory.GetParent(Application.dataPath).FullName;
             string networkSource = ReadSource(
                 root,
-                "Assets/Script/Character/CharacterNetworkManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/CharacterNetworkManager.cs");
             string effectsSource = ReadSource(
                 root,
-                "Assets/Script/Character/Effects/CharacterEffectsManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/Effects/CharacterEffectsManager.cs");
             string poisonSource = ReadSource(
                 root,
-                "Assets/Script/Effects/Timed Effects/PoisonedEffect.cs");
+                "Assets/_Game/Scripts/Combat/Effects/Timed Effects/PoisonedEffect.cs");
 
             Assert.That(networkSource, Does.Contain(
                 "NetworkVariable<bool> IsPoisoned"));
@@ -150,10 +150,10 @@ namespace ZZ.Tests
             string root = Directory.GetParent(Application.dataPath).FullName;
             string effectsSource = ReadSource(
                 root,
-                "Assets/Script/Character/Effects/CharacterEffectsManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/Effects/CharacterEffectsManager.cs");
             string takeBuildupSource = ReadSource(
                 root,
-                "Assets/Script/Effects/Instant Effects/TakeBuildupEffect.cs");
+                "Assets/_Game/Scripts/Combat/Effects/Instant Effects/TakeBuildupEffect.cs");
 
             Assert.That(effectsSource, Does.Contain(
                 "networkManager.TrySetBuildup(Buildup.Poison, 0f)"));

@@ -14,7 +14,7 @@ namespace ZZ.Editor
     /// <summary>Configures and validates the EP53 networked fog-wall interaction.</summary>
     public static class FogWallInteractableSetup
     {
-        private const string k_WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
+        private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_WorldNetworkManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/World Network Manager.prefab";
         private const string k_AnimatorControllerPath =
@@ -29,7 +29,7 @@ namespace ZZ.Editor
         private const string k_FogMaterialPath =
             "Assets/Data/Materials/Fallen Watcher Fog Wall.mat";
         private const string k_WorldSaveManagerPath =
-            "Assets/Script/World Managers/WorldSaveGameManager.cs";
+            "Assets/_Game/Scripts/World/Managers/WorldSaveGameManager.cs";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_PassThroughStateName = "Pass Through Fog";

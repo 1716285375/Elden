@@ -159,7 +159,7 @@ namespace ZZ.Tests
         public void ElevatorSourceUsesServerAuthorityAndLateJoinState()
         {
             string source = ReadSource(
-                "Assets/Script/World Managers/ElevatorInteractable.cs");
+                "Assets/_Game/Scripts/World/Managers/ElevatorInteractable.cs");
 
             Assert.That(source, Does.Contain(
                 "NetworkVariable<Vector3> NetworkPosition"));
@@ -180,9 +180,9 @@ namespace ZZ.Tests
         public void ButtonAndLeverSourcesEnforceRequiredStateLifecycles()
         {
             string buttonSource = ReadSource(
-                "Assets/Script/World Managers/ElevatorButtonTrigger.cs");
+                "Assets/_Game/Scripts/World/Managers/ElevatorButtonTrigger.cs");
             string leverSource = ReadSource(
-                "Assets/Script/World Managers/CallElevatorLeverInteractable.cs");
+                "Assets/_Game/Scripts/World/Managers/CallElevatorLeverInteractable.cs");
 
             Assert.That(buttonSource, Does.Contain("ButtonHasBeenPressed"));
             Assert.That(buttonSource, Does.Contain("m_overlapCounts"));
@@ -200,13 +200,13 @@ namespace ZZ.Tests
         public void PassengerMotionPreservesLiftOwnedVerticalPosition()
         {
             string elevatorSource = ReadSource(
-                "Assets/Script/World Managers/ElevatorInteractable.cs");
+                "Assets/_Game/Scripts/World/Managers/ElevatorInteractable.cs");
             string occupancySource = ReadSource(
-                "Assets/Script/World Managers/IsOnElevatorTrigger.cs");
+                "Assets/_Game/Scripts/World/Managers/IsOnElevatorTrigger.cs");
             string locomotionSource = ReadSource(
-                "Assets/Script/Character/CharacterLocomotionManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/CharacterLocomotionManager.cs");
             string networkSource = ReadSource(
-                "Assets/Script/Character/CharacterNetworkManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/CharacterNetworkManager.cs");
 
             Assert.That(occupancySource, Does.Contain("m_overlapCounts"));
             Assert.That(occupancySource, Does.Contain("AddCharacter(character)"));

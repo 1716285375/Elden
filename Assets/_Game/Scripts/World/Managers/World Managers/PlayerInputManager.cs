@@ -8,7 +8,8 @@ namespace ZZ
     [DefaultExecutionOrder(-10000)]
     public class PlayerInputManager : MonoBehaviour
     {
-        private const string k_GameplaySceneName = "Scene_World_01";
+        private const string k_GameplaySceneName =
+            WorldScenePathLayout.MasterSceneName;
         private const int k_MaxQueuedAttackInputs = 2;
 
         private static PlayerInputManager s_instance;

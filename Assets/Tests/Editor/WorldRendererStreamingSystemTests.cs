@@ -14,8 +14,6 @@ namespace ZZ.Tests
     /// <summary>Focused EP151-152 Renderer/Collider decoupling validation.</summary>
     public static class WorldRendererStreamingSystemTests
     {
-        private const string k_AreaSceneFolder = "Assets/Scenes/World Areas";
-
         [Test]
         public static void RendererVisibilityDoesNotDisableColliderOrGameObject()
         {
@@ -102,9 +100,9 @@ namespace ZZ.Tests
         public static void LocalRendererRefreshUsesLoadCompleteAndCancelsOldWork()
         {
             string worldSceneManagerSource = ReadAssetText(
-                "Assets/Script/World Managers/WorldSceneManager.cs");
+                "Assets/_Game/Scripts/World/Managers/WorldSceneManager.cs");
             string locationManagerSource = ReadAssetText(
-                "Assets/Script/World Managers/WorldSceneSubSceneManager.cs");
+                "Assets/_Game/Scripts/World/Managers/WorldSceneSubSceneManager.cs");
 
             Assert.That(
                 worldSceneManagerSource,
@@ -208,11 +206,9 @@ namespace ZZ.Tests
         {
             return AssetDatabase.FindAssets(
                     "t:Scene",
-                    new[] { k_AreaSceneFolder })
+                    new[] { "Assets/Scenes/Levels/LV01_AbandonedMonastery" })
                 .Select(AssetDatabase.GUIDToAssetPath)
-                .Where(path =>
-                    Path.GetDirectoryName(path)?.Replace('\\', '/') ==
-                        k_AreaSceneFolder)
+                .Where(path => path.Contains("/Regions/"))
                 .OrderBy(path => path, StringComparer.Ordinal)
                 .ToArray();
         }

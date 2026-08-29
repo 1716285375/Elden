@@ -18,17 +18,17 @@ namespace ZZ.Tests
         private const string k_FallClipPath =
             "Assets/Data/Animations/Ladders/Ladder Fall Start.anim";
         private const string k_LocomotionSourcePath =
-            "Assets/Script/Character/Player/PlayerLocomotionManager.cs";
+            "Assets/_Game/Scripts/Characters/Player/PlayerLocomotionManager.cs";
         private const string k_NetworkSourcePath =
-            "Assets/Script/Character/Player/PlayerNetworkManager.cs";
+            "Assets/_Game/Scripts/Characters/Player/PlayerNetworkManager.cs";
         private const string k_AnimatorSourcePath =
-            "Assets/Script/Character/Player/PlayerAnimatorManager.cs";
+            "Assets/_Game/Scripts/Characters/Player/PlayerAnimatorManager.cs";
         private const string k_CharacterSourcePath =
-            "Assets/Script/Character/CharacterManager.cs";
+            "Assets/_Game/Scripts/Characters/Common/CharacterManager.cs";
         private const string k_DamageSourcePath =
-            "Assets/Script/Effects/Instant Effects/TakeDamageEffect.cs";
+            "Assets/_Game/Scripts/Combat/Effects/Instant Effects/TakeDamageEffect.cs";
         private const string k_InteractableSourcePath =
-            "Assets/Script/World Managers/LadderInteractable.cs";
+            "Assets/_Game/Scripts/World/Managers/LadderInteractable.cs";
 
         private static readonly string[] s_overrideControllerPaths =
         {

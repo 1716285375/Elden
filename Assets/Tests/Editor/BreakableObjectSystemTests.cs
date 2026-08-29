@@ -19,7 +19,7 @@ namespace ZZ.Tests
             "Assets/Data/Prefabs/World Objects/Breakables/" +
             "Wooden Crate Broken.prefab";
         private const string k_AreaScenePath =
-            "Assets/Scenes/World Areas/Area_01_Sub_Area_00.unity";
+            "Assets/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A01_Base.unity";
 
         [Test]
         public static void BreakableUsesPredictedAndServerAuthoritativeState()
@@ -225,7 +225,7 @@ namespace ZZ.Tests
 
         private static string ReadRuntimeSource(string relativePath)
         {
-            return File.ReadAllText($"Assets/Script/{relativePath}");
+            return File.ReadAllText($"Assets/_Game/Scripts/{relativePath}");
         }
 
         private static Type GetRuntimeType(string fullName)
