@@ -180,6 +180,29 @@ namespace ZZ
                 false;
         }
 
+        /// <summary>Gets whether the active save permanently opened one world door.</summary>
+        public bool IsDoorOpened(string doorID)
+        {
+            return m_currentCharacterData?.IsDoorOpened(doorID) ?? false;
+        }
+
+        /// <summary>Records one opened door and optionally writes the active slot.</summary>
+        public bool RecordOpenedDoor(string doorID, bool saveImmediately)
+        {
+            if (m_currentCharacterData == null)
+            {
+                return false;
+            }
+
+            bool didChange = m_currentCharacterData.RecordOpenedDoor(doorID);
+            if (didChange && saveImmediately && CanSaveGame)
+            {
+                SaveGame();
+            }
+
+            return didChange;
+        }
+
         /// <summary>Updates one Site of Grace and optionally writes the active save immediately.</summary>
         public bool RecordSiteOfGraceActivation(
             int siteOfGraceID,

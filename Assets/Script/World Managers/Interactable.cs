@@ -13,6 +13,7 @@ namespace ZZ
     {
         [SerializeField] private string m_interactableText = "Interact";
         [SerializeField] private Collider m_interactableCollider;
+        [SerializeField] private bool m_autoDiscoverInteractableCollider = true;
         [SerializeField] private bool m_hostOnlyInteractable = true;
         [SerializeField] private bool m_shouldDisableColliderAfterInteraction = true;
 
@@ -26,14 +27,22 @@ namespace ZZ
         protected virtual void Awake()
         {
             m_rigidbody = GetComponent<Rigidbody>();
-            m_interactableCollider ??= GetComponentInChildren<Collider>(true);
+            if (m_autoDiscoverInteractableCollider)
+            {
+                m_interactableCollider ??=
+                    GetComponentInChildren<Collider>(true);
+            }
             ConfigurePhysicsComponents();
         }
 
         protected virtual void OnValidate()
         {
             m_rigidbody = GetComponent<Rigidbody>();
-            m_interactableCollider ??= GetComponentInChildren<Collider>(true);
+            if (m_autoDiscoverInteractableCollider)
+            {
+                m_interactableCollider ??=
+                    GetComponentInChildren<Collider>(true);
+            }
             ConfigurePhysicsComponents();
         }
 
@@ -59,6 +68,14 @@ namespace ZZ
         {
         }
 
+        /// <summary>
+        /// Provides a server-only activation boundary for linked world mechanisms.
+        /// </summary>
+        public virtual bool ActivateFromServer(PlayerManager player)
+        {
+            return false;
+        }
+
         /// <summary>Saves local character state after a persistent world interaction.</summary>
         protected static void SaveGameAfterInteraction(PlayerManager player)
         {
@@ -73,11 +90,18 @@ namespace ZZ
         /// <summary>Applies the configured one-shot collider policy after a successful interaction.</summary>
         public virtual void CompleteInteraction()
         {
-            if (m_shouldDisableColliderAfterInteraction && m_interactableCollider != null)
+            if (m_shouldDisableColliderAfterInteraction &&
+                m_interactableCollider != null)
             {
                 m_interactableCollider.enabled = false;
                 ClearInteractionRegistrations();
             }
+        }
+
+        /// <summary>Enables or disables this interaction and clears stale local prompts.</summary>
+        public void SetInteractionAvailable(bool isAvailable)
+        {
+            SetInteractionColliderEnabled(isAvailable);
         }
 
         /// <summary>Updates the shared prompt and refreshes every overlapping local player.</summary>
