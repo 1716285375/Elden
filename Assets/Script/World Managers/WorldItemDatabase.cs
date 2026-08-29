@@ -21,6 +21,7 @@ namespace ZZ
         [SerializeField] private List<RangedProjectileItem> m_projectiles = new();
         [SerializeField] private List<QuickSlotItem> m_quickSlotItems = new();
         [SerializeField] private List<UpgradeMaterial> m_upgradeMaterials = new();
+        [SerializeField] private List<KeyItem> m_keys = new();
 
         [Header("World Pickups")]
         [SerializeField] private GameObject m_creatureDropPickupPrefab;
@@ -48,6 +49,9 @@ namespace ZZ
         /// <summary>Gets every authored weapon-upgrade material template.</summary>
         public IReadOnlyList<UpgradeMaterial> UpgradeMaterials =>
             m_upgradeMaterials;
+
+        /// <summary>Gets every authored key registered in the global item catalog.</summary>
+        public IReadOnlyList<KeyItem> Keys => m_keys;
 
         /// <summary>Gets the server-spawned pickup presentation used by creature loot.</summary>
         public GameObject CreatureDropPickupPrefab => m_creatureDropPickupPrefab;
@@ -144,6 +148,18 @@ namespace ZZ
         public UpgradeMaterial GetUpgradeMaterialByID(int itemID)
         {
             return GetItemByID(itemID, m_upgradeMaterials);
+        }
+
+        /// <summary>Returns a key only when its stable catalog ID is registered.</summary>
+        public KeyItem GetKeyByID(int itemID)
+        {
+            return GetItemByID(itemID, m_keys);
+        }
+
+        /// <summary>Rebuilds stable identifiers after editor catalog changes.</summary>
+        public void RefreshItemCatalog()
+        {
+            AssignItemIDs();
         }
 
         /// <summary>Returns the authored material template for one progression tier.</summary>
@@ -287,6 +303,7 @@ namespace ZZ
             AppendMissingItems(m_projectiles);
             AppendMissingItems(m_quickSlotItems);
             AppendMissingItems(m_upgradeMaterials);
+            AppendMissingItems(m_keys);
             for (int itemIndex = 0; itemIndex < m_items.Count; itemIndex++)
             {
                 m_items[itemIndex]?.AssignItemID(itemIndex);

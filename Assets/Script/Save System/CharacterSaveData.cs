@@ -27,7 +27,8 @@ namespace ZZ
         private const int k_DeadSpotDataVersion = 11;
         private const int k_DialogueDataVersion = 12;
         private const int k_WeaponUpgradeDataVersion = 13;
-        private const int k_CurrentDataVersion = 13;
+        private const int k_DoorStateDataVersion = 14;
+        private const int k_CurrentDataVersion = 14;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -123,6 +124,7 @@ namespace ZZ
         [SerializeField] private List<BossSaveData> m_bosses = new();
         [SerializeField] private List<SiteOfGraceSaveData> m_sitesOfGrace = new();
         [SerializeField] private WorldItemLootDictionary m_worldItemsLooted = new();
+        [SerializeField] private List<string> m_doorsOpened = new();
 
         public string CharacterName
         {
@@ -425,6 +427,29 @@ namespace ZZ
         /// <summary>Gets saved unequipped leg-equipment identifiers.</summary>
         public List<int> LegEquipmentInInventory =>
             m_legEquipmentInInventory ??= new List<int>();
+
+        /// <summary>Gets the stable identifiers of permanently opened world doors.</summary>
+        public List<string> DoorsOpened =>
+            m_doorsOpened ??= new List<string>();
+
+        /// <summary>Returns whether the supplied stable door identifier is already open.</summary>
+        public bool IsDoorOpened(string doorID)
+        {
+            return !string.IsNullOrWhiteSpace(doorID) &&
+                DoorsOpened.Contains(doorID);
+        }
+
+        /// <summary>Adds one opened door exactly once.</summary>
+        public bool RecordOpenedDoor(string doorID)
+        {
+            if (string.IsNullOrWhiteSpace(doorID) || IsDoorOpened(doorID))
+            {
+                return false;
+            }
+
+            DoorsOpened.Add(doorID);
+            return true;
+        }
 
         public int MainProjectileID
         {
@@ -836,6 +861,11 @@ namespace ZZ
                     new List<SerializableItemStack>();
             }
 
+            if (m_dataVersion < k_DoorStateDataVersion)
+            {
+                m_doorsOpened = new List<string>();
+            }
+
             m_bosses ??= new List<BossSaveData>();
             m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
             m_rightHandWeaponSlot01 ??= CreateLegacyWeapon(1);
@@ -860,6 +890,9 @@ namespace ZZ
             m_bodyEquipmentInInventory ??= new List<int>();
             m_handEquipmentInInventory ??= new List<int>();
             m_legEquipmentInInventory ??= new List<int>();
+            m_doorsOpened ??= new List<string>();
+            m_doorsOpened.RemoveAll(string.IsNullOrWhiteSpace);
+            m_doorsOpened = m_doorsOpened.Distinct().ToList();
             m_dataVersion = k_CurrentDataVersion;
         }
 

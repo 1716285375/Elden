@@ -42,7 +42,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f0ee4ae48513864abd1404322a1a5b3, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldItemDatabase
   m_items:
   - {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
@@ -64,6 +64,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4a3ba4d071bc6a24690b1b9c07f1ab61, type: 2}
   - {fileID: 11400000, guid: 451bfa3a2de48804b9b94d71552d1567, type: 2}
   - {fileID: 11400000, guid: c5f0f6d5f1e22454c8d7b4e93bc7f648, type: 2}
+  - {fileID: 11400000, guid: 856c17af4dbd40140bba2b395d70e55a, type: 2}
   m_headEquipment:
   - {fileID: 11400000, guid: 9eb5883dac298d244a43092a6ba95ba4, type: 2}
   m_bodyEquipment:
@@ -86,4 +87,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4a3ba4d071bc6a24690b1b9c07f1ab61, type: 2}
   - {fileID: 11400000, guid: 451bfa3a2de48804b9b94d71552d1567, type: 2}
   - {fileID: 11400000, guid: c5f0f6d5f1e22454c8d7b4e93bc7f648, type: 2}
+  m_keys:
+  - {fileID: 11400000, guid: 856c17af4dbd40140bba2b395d70e55a, type: 2}
   m_creatureDropPickupPrefab: {fileID: 4996127031911254275, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
