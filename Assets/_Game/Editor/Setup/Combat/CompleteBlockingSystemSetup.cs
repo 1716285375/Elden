@@ -1004,7 +1004,7 @@ namespace ZZ.Editor
 
             TakeBlockedDamageEffect template =
                 LoadRequiredAsset<TakeBlockedDamageEffect>(
-                    "Assets/Resources/Effects/Take Blocked Damage Effect.asset");
+                    "Assets/_Game/Resources/Effects/Take Blocked Damage Effect.asset");
             TakeBlockedDamageEffect runtimeEffect =
                 template.CreateRuntimeBlockedDamageEffect(
                     null,

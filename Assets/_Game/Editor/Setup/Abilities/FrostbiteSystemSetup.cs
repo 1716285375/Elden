@@ -9,7 +9,7 @@ namespace ZZ.Editor
     /// <summary>Creates and validates the authored assets required by EP142-144.</summary>
     public static class FrostbiteSystemSetup
     {
-        private const string k_EffectsFolder = "Assets/Resources/Effects";
+        private const string k_EffectsFolder = "Assets/_Game/Resources/Effects";
         private const string k_TakeFrostPath =
             k_EffectsFolder + "/Take Frost Buildup Effect.asset";
         private const string k_DegradeFrostPath =

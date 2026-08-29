@@ -13,13 +13,13 @@ namespace ZZ.Tests
     public class StatusEffectsSystemTests
     {
         private const string k_TakePoisonPath =
-            "Assets/Resources/Effects/Take Poison Buildup Effect.asset";
+            "Assets/_Game/Resources/Effects/Take Poison Buildup Effect.asset";
         private const string k_TakeBleedPath =
-            "Assets/Resources/Effects/Take Bleed Buildup Effect.asset";
+            "Assets/_Game/Resources/Effects/Take Bleed Buildup Effect.asset";
         private const string k_DegradePoisonPath =
-            "Assets/Resources/Effects/Degrade Poison Buildup Effect.asset";
+            "Assets/_Game/Resources/Effects/Degrade Poison Buildup Effect.asset";
         private const string k_DegradeBleedPath =
-            "Assets/Resources/Effects/Degrade Bleed Buildup Effect.asset";
+            "Assets/_Game/Resources/Effects/Degrade Bleed Buildup Effect.asset";
         private const string k_BuildupBarPrefabPath =
             "Assets/_Game/Prefabs/UI/Buildup Bar.prefab";
         private const string k_PlayerUIPrefabPath =

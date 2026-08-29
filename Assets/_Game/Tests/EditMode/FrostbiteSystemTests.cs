@@ -11,17 +11,17 @@ namespace ZZ.Tests
     public class FrostbiteSystemTests
     {
         private const string k_TakeFrostPath =
-            "Assets/Resources/Effects/Take Frost Buildup Effect.asset";
+            "Assets/_Game/Resources/Effects/Take Frost Buildup Effect.asset";
         private const string k_DegradeFrostPath =
-            "Assets/Resources/Effects/Degrade Frost Buildup Effect.asset";
+            "Assets/_Game/Resources/Effects/Degrade Frost Buildup Effect.asset";
         private const string k_StaminaModifierPath =
-            "Assets/Resources/Effects/Frostbite Stamina Regeneration Modifier.asset";
+            "Assets/_Game/Resources/Effects/Frostbite Stamina Regeneration Modifier.asset";
         private const string k_FrostbiteEffectPath =
-            "Assets/Resources/Effects/Frostbite Effect.asset";
+            "Assets/_Game/Resources/Effects/Frostbite Effect.asset";
         private const string k_FrostbiteVFXPath =
-            "Assets/Resources/Effects/Frostbite VFX.prefab";
+            "Assets/_Game/Resources/Effects/Frostbite VFX.prefab";
         private const string k_FrozenMaterialPath =
-            "Assets/Resources/Effects/Frozen Material.mat";
+            "Assets/_Game/Resources/Effects/Frozen Material.mat";
         private const string k_PlayerUIPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 

@@ -9,7 +9,7 @@ namespace ZZ.Editor
     /// <summary>Creates and validates the authored assets required by EP137-138.</summary>
     public static class StatusEffectsSystemSetup
     {
-        private const string k_EffectsFolder = "Assets/Resources/Effects";
+        private const string k_EffectsFolder = "Assets/_Game/Resources/Effects";
         private const string k_TakePoisonPath =
             k_EffectsFolder + "/Take Poison Buildup Effect.asset";
         private const string k_TakeBleedPath =

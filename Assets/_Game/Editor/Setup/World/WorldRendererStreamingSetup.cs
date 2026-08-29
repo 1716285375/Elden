@@ -15,7 +15,7 @@ namespace ZZ.Editor
         private const string k_PersistentWorldScenePath =
             WorldScenePathLayout.MasterScenePath;
         private const string k_WorldLocationFolder =
-            "Assets/Resources/World Locations";
+            "Assets/_Game/Resources/World Locations";
         private const string k_WorldStreamingManagerName =
             "World Streaming Manager";
         private const string k_RendererManagerName =

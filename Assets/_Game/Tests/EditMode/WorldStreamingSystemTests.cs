@@ -17,7 +17,7 @@ namespace ZZ.Tests
         private const string k_WorldScenePath =
             "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_WorldLocationFolder =
-            "Assets/Resources/World Locations";
+            "Assets/_Game/Resources/World Locations";
         private const string k_BakingSetPath =
             "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
         private const string k_TriggerPrefabPath =
