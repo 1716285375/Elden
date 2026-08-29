@@ -13,8 +13,7 @@ namespace ZZ.Editor
     public static class WorldRendererStreamingSetup
     {
         private const string k_PersistentWorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
-        private const string k_AreaSceneFolder = "Assets/Scenes/World Areas";
+            WorldScenePathLayout.MasterScenePath;
         private const string k_WorldLocationFolder =
             "Assets/Resources/World Locations";
         private const string k_WorldStreamingManagerName =
@@ -245,7 +244,7 @@ namespace ZZ.Editor
                     location.ScenesRequiredForThisLocation)
                 {
                     string scenePath =
-                        $"{k_AreaSceneFolder}/{sceneID}.unity";
+                        WorldScenePathLayout.GetScenePath(sceneID);
                     if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) !=
                             null &&
                         !scenePaths.Contains(scenePath))

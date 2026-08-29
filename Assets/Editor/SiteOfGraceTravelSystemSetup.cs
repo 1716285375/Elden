@@ -18,7 +18,7 @@ namespace ZZ.Editor
         private const string k_PlayerUIPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            WorldScenePathLayout.MasterScenePath;
 
         private static readonly Color s_overlayColor =
             new Color(0.015f, 0.012f, 0.009f, 0.9f);

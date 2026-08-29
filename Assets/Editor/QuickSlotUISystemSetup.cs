@@ -16,7 +16,7 @@ namespace ZZ.Editor
         private const int k_EquipmentSlotCount = 15;
         private const int k_QuickSlotCount = 3;
         private const string k_PlayerControlsPath =
-            "Assets/PlayerControls.inputactions";
+            "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerPrefabPath =
             "Assets/Data/Prefabs/Player.prefab";
         private const string k_PlayerUIPrefabPath =

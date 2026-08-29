@@ -17,7 +17,6 @@ namespace ZZ.Editor
     {
         private const string k_WorldLocationFolder =
             "Assets/Resources/World Locations";
-        private const string k_AreaSceneFolder = "Assets/Scenes/World Areas";
         private const string k_TriggerFolder =
             "Assets/Data/Prefabs/World Streaming/World Location Triggers";
         private const string k_BakingSetPath =
@@ -35,18 +34,11 @@ namespace ZZ.Editor
             WorldSceneLocation.Area01SubArea04
         };
 
-        private static readonly string[] s_sliceSuffixes =
-        {
-            "Props",
-            "Effects",
-            "Spawners"
-        };
-
         [MenuItem("Tools/Elden/Configure EP149-150 Large World Scenes")]
         public static void ConfigureLargeWorldScenes()
         {
             EnsureFolder(k_WorldLocationFolder);
-            EnsureFolder(k_AreaSceneFolder);
+            EnsureRegionFolders();
             EnsureFolder(k_TriggerFolder);
             EnsureSliceScenes();
             WorldLocationSceneSet[] locationSets =
@@ -125,8 +117,7 @@ namespace ZZ.Editor
                 locationIndex < s_locations.Length;
                 locationIndex++)
             {
-                string locationID = GetBaseSceneID(locationIndex);
-                string assetPath = GetLocationAssetPath(locationID);
+                string assetPath = GetLocationAssetPath(locationIndex);
                 WorldLocationSceneSet locationSet =
                     AssetDatabase.LoadAssetAtPath<WorldLocationSceneSet>(
                         assetPath);
@@ -134,7 +125,8 @@ namespace ZZ.Editor
                 {
                     locationSet = ScriptableObject.CreateInstance<
                         WorldLocationSceneSet>();
-                    locationSet.name = locationID;
+                    locationSet.name =
+                        WorldScenePathLayout.GetRegionFolderName(locationIndex);
                     AssetDatabase.CreateAsset(locationSet, assetPath);
                 }
 
@@ -146,7 +138,7 @@ namespace ZZ.Editor
                 locationIndex++)
             {
                 WorldLocationSceneSet locationSet = locationSets[locationIndex];
-                string locationID = GetBaseSceneID(locationIndex);
+                string locationID = GetLocationID(locationIndex);
                 SerializedObject serializedSet = new(locationSet);
                 GetRequiredProperty(serializedSet, "m_locationID").stringValue =
                     locationID;
@@ -412,18 +404,18 @@ namespace ZZ.Editor
             return s_locations
                 .Select((location, index) =>
                     AssetDatabase.LoadAssetAtPath<WorldLocationSceneSet>(
-                        GetLocationAssetPath(GetBaseSceneID(index))))
+                        GetLocationAssetPath(index)))
                 .Where(location => location != null)
                 .ToArray();
         }
 
         private static IEnumerable<string> GetOwnedSceneIDs(int locationIndex)
         {
-            string baseSceneID = GetBaseSceneID(locationIndex);
-            yield return baseSceneID;
-            foreach (string sliceSuffix in s_sliceSuffixes)
+            for (int sliceIndex = 0; sliceIndex < 4; sliceIndex++)
             {
-                yield return $"{baseSceneID}_{sliceSuffix}";
+                yield return WorldScenePathLayout.GetSceneID(
+                    locationIndex,
+                    sliceIndex);
             }
         }
 
@@ -440,19 +432,31 @@ namespace ZZ.Editor
             }
         }
 
-        private static string GetBaseSceneID(int locationIndex)
+        private static string GetLocationID(int locationIndex)
         {
             return $"Area_01_Sub_Area_{locationIndex:00}";
         }
 
         private static string GetScenePath(string sceneID)
         {
-            return $"{k_AreaSceneFolder}/{sceneID}.unity";
+            return WorldScenePathLayout.GetScenePath(sceneID);
         }
 
-        private static string GetLocationAssetPath(string locationID)
+        private static string GetLocationAssetPath(int locationIndex)
         {
-            return $"{k_WorldLocationFolder}/{locationID}.asset";
+            return $"{k_WorldLocationFolder}/" +
+                $"{WorldScenePathLayout.GetRegionFolderName(locationIndex)}.asset";
+        }
+
+        private static void EnsureRegionFolders()
+        {
+            for (int regionIndex = 0;
+                regionIndex < WorldScenePathLayout.RegionCount;
+                regionIndex++)
+            {
+                EnsureFolder(
+                    WorldScenePathLayout.GetRegionFolderPath(regionIndex));
+            }
         }
 
         private static string GetTriggerPrefabPath(

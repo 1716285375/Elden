@@ -10,7 +10,7 @@ namespace ZZ.Editor
     public static class LockOnSystemSetup
     {
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
-        private const string k_PlayerControlsPath = "Assets/PlayerControls.inputactions";
+        private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerCameraMapName = "Player Camera";
         private const string k_LockOnActionName = "Lock On";
         private const string k_PlayerLayerName = "Player";

@@ -21,7 +21,7 @@ namespace ZZ.Tests
             "Assets/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset";
         private const string k_FireballPrefabPath =
             "Assets/Data/Prefabs/Spells/Fireball.prefab";
-        private const string k_InputAssetPath = "Assets/PlayerControls.inputactions";
+        private const string k_InputAssetPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_AnimatorPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";

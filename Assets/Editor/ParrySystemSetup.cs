@@ -39,7 +39,7 @@ namespace ZZ.Editor
             "Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
         private const string k_ItemDatabasePath =
             "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
-        private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
+        private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_BossAttackFolder =
             "Assets/Data/AI/Boss/Fallen Watcher";
         private const string k_ActionLayerName = "Action Override";

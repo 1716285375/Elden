@@ -38,7 +38,7 @@ namespace ZZ.Tests
         {
             InputActionsDocument inputAsset = JsonUtility.FromJson<
                 InputActionsDocument>(
-                File.ReadAllText("Assets/PlayerControls.inputactions"));
+                File.ReadAllText("Assets/_Game/Settings/Input/PlayerControls.inputactions"));
             InputBindingData[] bindings = inputAsset.maps
                 .Single(map => map.name == "Player Movement")
                 .bindings

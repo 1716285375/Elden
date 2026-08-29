@@ -21,9 +21,9 @@ namespace Elden.Editor.ArtRecovery
     internal static class RecoveredMaterialRebuilder
     {
         private const string k_MenuPath = "Tools/Art Recovery/Rebuild Recovered Materials";
-        private const string k_PlanRelativePath = "Docs/ArtRecovery/Nephilite/MaterialRebuild/material_rebuild_plan.json";
-        private const string k_ReportRelativePath = "Docs/ArtRecovery/Nephilite/MaterialRebuild/material_rebuild_result.json";
-        private const string k_CsvRelativePath = "Docs/ArtRecovery/Nephilite/MaterialRebuild/material_rebuild_report.csv";
+        private const string k_PlanRelativePath = "Docs/ArtRecovery/Zephyr/MaterialRebuild/material_rebuild_plan.json";
+        private const string k_ReportRelativePath = "Docs/ArtRecovery/Zephyr/MaterialRebuild/material_rebuild_result.json";
+        private const string k_CsvRelativePath = "Docs/ArtRecovery/Zephyr/MaterialRebuild/material_rebuild_report.csv";
         private const string k_RecoveredLabel = "RecoveredMaterial";
         private const string k_FallbackLabel = "RecoveredMaterialFallback";
 

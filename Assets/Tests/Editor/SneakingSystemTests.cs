@@ -19,8 +19,8 @@ namespace ZZ.Tests
         [Test]
         public void NamedSneakActionSupportsKeyboardAndGamepadToggleInput()
         {
-            string inputActions = File.ReadAllText("Assets/PlayerControls.inputactions");
-            string generatedControls = File.ReadAllText("Assets/PlayerControls.cs");
+            string inputActions = File.ReadAllText("Assets/_Game/Settings/Input/PlayerControls.inputactions");
+            string generatedControls = File.ReadAllText("Assets/_Game/Scripts/Generated/Input/PlayerControls.cs");
 
             Assert.That(inputActions, Does.Contain("\"name\": \"Sneak\""));
             Assert.That(inputActions, Does.Contain("<Keyboard>/c"));
@@ -170,7 +170,53 @@ namespace ZZ.Tests
 
         private static string ReadRuntimeSource(string relativePath)
         {
+            relativePath = RemapRuntimeSourcePath(relativePath);
             return File.ReadAllText($"Assets/_Game/Scripts/{relativePath}");
+        }
+        /// <summary>Maps a pre-refactor Script-relative path to the new layout.</summary>
+        private static string RemapRuntimeSourcePath(string relativePath)
+        {
+            if (relativePath.StartsWith("Character/Player/Player UI/"))
+                return "Characters/Player/Player UI/" + relativePath.Substring("Character/Player/Player UI/".Length);
+            if (relativePath.StartsWith("Character/Player/"))
+                return "Characters/Player/" + relativePath.Substring("Character/Player/".Length);
+            if (relativePath.StartsWith("Character/AI/"))
+                return "Characters/AI/" + relativePath.Substring("Character/AI/".Length);
+            if (relativePath.StartsWith("Character/Effects/"))
+                return "Characters/Common/Effects/" + relativePath.Substring("Character/Effects/".Length);
+            if (relativePath.StartsWith("Character/Equipment/"))
+                return "Characters/Common/Equipment/" + relativePath.Substring("Character/Equipment/".Length);
+            if (relativePath.StartsWith("Character/Inventory/"))
+                return "Characters/Common/Inventory/" + relativePath.Substring("Character/Inventory/".Length);
+            if (relativePath.StartsWith("Character/Character UI/"))
+                return "Characters/Common/Character UI/" + relativePath.Substring("Character/Character UI/".Length);
+            if (relativePath.StartsWith("Character/Animation State Behaviors/"))
+                return "Characters/Common/Animation State Behaviors/" + relativePath.Substring("Character/Animation State Behaviors/".Length);
+            if (relativePath.StartsWith("Character/"))
+                return "Characters/Common/" + relativePath.Substring("Character/".Length);
+            if (relativePath.StartsWith("World Managers/AI/"))
+                return "World/Managers/AI/" + relativePath.Substring("World Managers/AI/".Length);
+            if (relativePath.StartsWith("World Managers/"))
+                return "World/Managers/" + relativePath.Substring("World Managers/".Length);
+            if (relativePath.StartsWith("World Objects/"))
+                return "World/Objects/" + relativePath.Substring("World Objects/".Length);
+            if (relativePath.StartsWith("Save System/"))
+                return "Save/" + relativePath.Substring("Save System/".Length);
+            if (relativePath.StartsWith("Menu Scene/"))
+                return "UI/Frontend/" + relativePath.Substring("Menu Scene/".Length);
+            if (relativePath.StartsWith("Effects/"))
+                return "Combat/Effects/" + relativePath.Substring("Effects/".Length);
+            if (relativePath.StartsWith("Damage/"))
+                return "Combat/Damage/" + relativePath.Substring("Damage/".Length);
+            if (relativePath.StartsWith("Actions/"))
+                return "Combat/Actions/" + relativePath.Substring("Actions/".Length);
+            if (relativePath.StartsWith("Projectiles/"))
+                return "Combat/Projectiles/" + relativePath.Substring("Projectiles/".Length);
+            if (relativePath.StartsWith("Spells/"))
+                return "Abilities/Spells/" + relativePath.Substring("Spells/".Length);
+            if (relativePath.StartsWith("Utility/"))
+                return "Utilities/" + relativePath.Substring("Utility/".Length);
+            return relativePath;
         }
 
         private static Type GetRuntimeType(string fullName)

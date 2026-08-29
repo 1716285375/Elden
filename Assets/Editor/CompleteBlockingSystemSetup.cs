@@ -20,7 +20,7 @@ namespace ZZ.Editor
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
         private const string k_DatabasePrefabPath =
             "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
-        private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
+        private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_ActionPath = "Assets/Data/Actions/Off Hand Block.asset";
         private const string k_UnarmedPath =
             "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset";

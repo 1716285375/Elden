@@ -15,9 +15,7 @@ namespace ZZ.Editor
     public static class WorldStreamingSystemSetup
     {
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
-        private const string k_AreaSceneFolder =
-            "Assets/Scenes/World Areas";
+            WorldScenePathLayout.MasterScenePath;
         private const string k_BakingSetPath =
             "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
         private const string k_TriggerPrefabPath =
@@ -30,13 +28,10 @@ namespace ZZ.Editor
             "World Streaming Probe Volume Data";
 
         private static readonly string[] s_areaSceneIDs =
-        {
-            "Area_01_Sub_Area_00",
-            "Area_01_Sub_Area_01",
-            "Area_01_Sub_Area_02",
-            "Area_01_Sub_Area_03",
-            "Area_01_Sub_Area_04"
-        };
+            Enumerable.Range(0, WorldScenePathLayout.RegionCount)
+                .Select(regionIndex =>
+                    WorldScenePathLayout.GetSceneID(regionIndex, 0))
+                .ToArray();
 
         /// <summary>Creates all area Scenes, runtime roots, build entries, and APV authoring assets.</summary>
         [MenuItem("Tools/Elden/Configure World Streaming System")]
@@ -44,7 +39,7 @@ namespace ZZ.Editor
         {
             try
             {
-                EnsureAssetFolder(k_AreaSceneFolder);
+                EnsureRegionFolders();
                 EnsureAreaScenes();
                 ConfigureBuildSettings();
                 ProbeVolumeBakingSet bakingSet = ConfigureBakingSet();
@@ -467,7 +462,18 @@ namespace ZZ.Editor
 
         private static string GetAreaScenePath(string sceneID)
         {
-            return $"{k_AreaSceneFolder}/{sceneID}.unity";
+            return WorldScenePathLayout.GetScenePath(sceneID);
+        }
+
+        private static void EnsureRegionFolders()
+        {
+            for (int regionIndex = 0;
+                regionIndex < WorldScenePathLayout.RegionCount;
+                regionIndex++)
+            {
+                EnsureAssetFolder(
+                    WorldScenePathLayout.GetRegionFolderPath(regionIndex));
+            }
         }
 
         private static GameObject FindRoot(Scene scene, string objectName)
