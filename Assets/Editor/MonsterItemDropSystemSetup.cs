@@ -24,7 +24,7 @@ namespace ZZ.Editor
         private const string k_PlayerUIPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_NetworkPrefabsPath =
-            "Assets/DefaultNetworkPrefabs.asset";
+            "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_BroadswordPath =
             "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_ArmorPath =

@@ -44,7 +44,7 @@ namespace ZZ.Editor
         private const string k_WorldItemDatabasePrefabPath =
             "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
         private const string k_NetworkPrefabsPath =
-            "Assets/DefaultNetworkPrefabs.asset";
+            "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_HoverSoundPath =
             "Assets/Art/Audio/UI/SFX_Menu_Sound_Hover_01.wav";
         private const string k_ConfirmSoundPath =

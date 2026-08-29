@@ -30,9 +30,9 @@ namespace ZZ.Tests
         private const string k_PlayerUIManagerPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_NetworkPrefabsPath =
-            "Assets/DefaultNetworkPrefabs.asset";
+            "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
 
         [Test]
         public static void RuntimeCopyOwnsIndependentDialogueProgress()

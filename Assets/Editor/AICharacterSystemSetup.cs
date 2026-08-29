@@ -25,8 +25,8 @@ namespace ZZ.Editor
             "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_WorldAIManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
-        private const string k_WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
-        private const string k_NetworkPrefabsPath = "Assets/DefaultNetworkPrefabs.asset";
+        private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
+        private const string k_NetworkPrefabsPath = "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_SourceVisualPrefabPath =
             "Assets/Art/Models/Rigged/Characters/Creatures/Undead/" +
             "Skeleton_00_Unarmed/Skeleton_00_Unarmed.prefab";

@@ -34,7 +34,7 @@ namespace ZZ.Tests
         private const string k_WorldSaveManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab";
         private const string k_NetworkPrefabsPath =
-            "Assets/DefaultNetworkPrefabs.asset";
+            "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
 
         [Test]
         public void UpgradeDamageAddsOnlyToAuthoredChannels()
