@@ -18,8 +18,8 @@ namespace ZZ.Editor
 {
     public static class SaveGameSystemSetup
     {
-        private const string k_MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
-        private const string k_PlayerControlsPath = "Assets/PlayerControls.inputactions";
+        private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
+        private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
         private const string k_PlayerUIManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
@@ -69,7 +69,10 @@ namespace ZZ.Editor
             try
             {
                 WorldSaveGameManager manager = GetOrAddComponent<WorldSaveGameManager>(managerRoot);
-                SetString(manager, "m_worldSceneName", "Scene_World_01");
+                SetString(
+                    manager,
+                    "m_worldSceneName",
+                    WorldScenePathLayout.MasterSceneName);
                 SetInteger(manager, "m_startingSceneIndex", 1);
                 EditorUtility.SetDirty(manager);
                 PrefabUtility.SaveAsPrefabAsset(managerRoot, k_WorldSaveManagerPrefabPath);

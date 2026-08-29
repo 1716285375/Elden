@@ -20,7 +20,7 @@ namespace ZZ.Editor
     public static class EquipmentUISystemSetup
     {
         private const int k_EquipmentSlotCount = 10;
-        private const string k_PlayerControlsPath = "Assets/PlayerControls.inputactions";
+        private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerUIPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_EquipmentSlotPrefabPath =
@@ -28,7 +28,7 @@ namespace ZZ.Editor
         private const string k_InventorySlotPrefabPath =
             "Assets/Data/Prefabs/UI/Equipment Inventory Slot.prefab";
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            WorldScenePathLayout.MasterScenePath;
         private const string k_CharacterMenuName = "Character Menu";
         private const string k_EquipmentMenuName = "Equipment Menu";
         private const string k_EquipmentInventoryWindowName =

@@ -19,7 +19,7 @@ namespace ZZ.Editor
         private const string k_WorldAIManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            WorldScenePathLayout.MasterScenePath;
 
         [MenuItem("Tools/Elden/Configure AI Character Spawners")]
         public static void ConfigureAICharacterSpawners()

@@ -16,7 +16,7 @@ namespace ZZ.Editor
         private const int k_SiteOfGraceID = 54001;
         private const int k_SaveValidationID = 54999;
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            WorldScenePathLayout.MasterScenePath;
         private const string k_AnimatorControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";

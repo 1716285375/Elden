@@ -24,7 +24,7 @@ namespace ZZ.Editor
         private const string k_BossPrefabPath =
             "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_MainMenuScenePath =
-            "Assets/Scenes/Scene_Main_Menu_01.unity";
+            WorldScenePathLayout.MainMenuScenePath;
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_StanceBreakStateName = "Stance_Break_01";

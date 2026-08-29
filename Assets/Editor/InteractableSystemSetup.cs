@@ -12,7 +12,7 @@ namespace ZZ.Editor
     /// <summary>Configures and validates the EP52 interaction framework.</summary>
     public static class InteractableSystemSetup
     {
-        private const string k_PlayerControlsPath = "Assets/PlayerControls.inputactions";
+        private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
         private const string k_PlayerUIPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";

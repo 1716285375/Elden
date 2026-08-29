@@ -11,8 +11,8 @@ namespace ZZ.Editor
     public static class DamageSystemSetup
     {
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
-        private const string k_MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
-        private const string k_WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
+        private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
+        private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_TagManagerPath = "ProjectSettings/TagManager.asset";
         private const string k_PhysicsManagerPath = "ProjectSettings/DynamicsManager.asset";
         private const string k_InstantEffectsFolder = "Assets/Data/Effects/Instant Effects";

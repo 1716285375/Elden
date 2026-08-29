@@ -41,7 +41,7 @@ namespace ZZ.Editor
         private const string k_CriticalEffectPath =
             "Assets/Resources/Effects/Take Critical Damage Effect.asset";
         private const string k_MainMenuScenePath =
-            "Assets/Scenes/Scene_Main_Menu_01.unity";
+            WorldScenePathLayout.MainMenuScenePath;
         private const string k_CriticalStrikeSoundPath =
             "Assets/Art/Audio/SFX/General/SFX_Critical_Strike_01.wav";
         private const string k_ActionLayerName = "Action Override";

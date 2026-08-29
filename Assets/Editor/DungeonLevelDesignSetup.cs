@@ -17,7 +17,7 @@ namespace ZZ.EditorTools
     /// <summary>Builds the EP99–100 Ashen Crypt graybox, lighting, and navigation.</summary>
     public static class DungeonLevelDesignSetup
     {
-        private const string k_ScenePath = "Assets/Scenes/Scene_World_01.unity";
+        private const string k_ScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_RootName = "World";
         private const string k_LocationName = "Location 01 - Ashen Crypt";
         private const string k_MaterialFolder = "Assets/Data/Materials/Level Design";
@@ -135,7 +135,8 @@ namespace ZZ.EditorTools
                 .FirstOrDefault();
             if (surface == null)
             {
-                throw new InvalidOperationException("Scene_World_01 has no NavMeshSurface.");
+                throw new InvalidOperationException(
+                    $"{WorldScenePathLayout.MasterSceneName} has no NavMeshSurface.");
             }
 
             surface.BuildNavMesh();

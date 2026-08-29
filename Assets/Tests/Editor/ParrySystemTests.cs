@@ -36,7 +36,7 @@ namespace ZZ.Tests
         [Test]
         public void LTBindsGamepadAndKeyboard()
         {
-            string json = File.ReadAllText("Assets/PlayerControls.inputactions");
+            string json = File.ReadAllText("Assets/_Game/Settings/Input/PlayerControls.inputactions");
 
             StringAssert.Contains("\"name\": \"LT\"", json);
             StringAssert.Contains("<Gamepad>/leftTrigger", json);

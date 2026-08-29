@@ -9,7 +9,7 @@ namespace ZZ.Editor
     public static class CharacterEffectsSystemSetup
     {
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
-        private const string k_MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
+        private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
         private const string k_InstantEffectsFolder = "Assets/Data/Effects/Instant Effects";
         private const string k_TakeStaminaDamageEffectPath =
             k_InstantEffectsFolder + "/Take Stamina Damage Effect.asset";

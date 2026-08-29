@@ -27,8 +27,8 @@ namespace ZZ.Editor
             "Assets/Art/Models/Props/SM_Prop_Crate_Wood_05.obj";
         private const string k_FragmentModelPathPrefix =
             "Assets/Art/Models/Props/SM_Prop_Crate_Wood_05_Breakable_";
-        private const string k_AreaScenePath =
-            "Assets/Scenes/World Areas/Area_01_Sub_Area_00.unity";
+        private static readonly string k_AreaScenePath =
+            WorldScenePathLayout.GetScenePath(0, 0);
         private const string k_SceneObjectName = "Breakable Wooden Crate";
 
         private static readonly string[] s_breakSoundPaths =

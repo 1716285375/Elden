@@ -16,8 +16,8 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
-        private const string k_PlayerControlsPath = "Assets/PlayerControls.inputactions";
-        private const string k_MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
+        private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
+        private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
         private const string k_LightAttackPath = "Assets/Data/Actions/Light Attack.asset";
         private const string k_HeavyAttackPath = "Assets/Data/Actions/Heavy Attack.asset";
         private const string k_ChargedAttackPath = "Assets/Data/Actions/Charged Attack.asset";

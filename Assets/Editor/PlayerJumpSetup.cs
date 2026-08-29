@@ -10,7 +10,7 @@ namespace ZZ.Editor
 {
     public static class PlayerJumpSetup
     {
-        private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
+        private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
         private const string k_TagManagerPath = "ProjectSettings/TagManager.asset";
         private const string k_PhysicsManagerPath = "ProjectSettings/DynamicsManager.asset";

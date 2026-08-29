@@ -22,9 +22,9 @@ namespace ZZ.Editor
         private const string k_PickupMaterialPath =
             "Assets/Data/Materials/Item Pickup Glow.mat";
         private const string k_MainMenuScenePath =
-            "Assets/Scenes/Scene_Main_Menu_01.unity";
+            WorldScenePathLayout.MainMenuScenePath;
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            WorldScenePathLayout.MasterScenePath;
         private const string k_PickupSoundPath =
             "Assets/Art/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav";
         private const string k_StraightSwordPath =

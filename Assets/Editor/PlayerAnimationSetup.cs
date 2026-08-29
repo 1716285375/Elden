@@ -12,9 +12,9 @@ namespace ZZ.Editor
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
         private const string k_RiggedPlayerPrefabPath =
             "Assets/Art/Models/Rigged/Characters/Humanoid/Player/Player.prefab";
-        private const string k_PlayerRigObjectName = "Nephilite";
+        private const string k_PlayerRigObjectName = "Zephyr";
         private const string k_PlayerAvatarPath =
-            "Assets/Art/Models/Rigged/Shared/Avatars/NephilitePlayerAvatar.asset";
+            "Assets/Art/Models/Rigged/Shared/Avatars/ZephyrPlayerAvatar.asset";
         private const string k_LegacyPlayerModelPath =
             "Assets/Art/Models/Md_Char_Low_Poly_Man.obj";
         private const string k_ControllerFolderPath =
@@ -210,12 +210,12 @@ namespace ZZ.Editor
                     playerAvatar = AvatarBuilder.BuildHumanAvatar(
                         rigRoot.gameObject,
                         sourceAnimator.avatar.humanDescription);
-                    playerAvatar.name = "Nephilite Player Avatar";
+                    playerAvatar.name = "Zephyr Player Avatar";
                     if (!playerAvatar.isValid || !playerAvatar.isHuman)
                     {
                         UnityEngine.Object.DestroyImmediate(playerAvatar);
                         throw new InvalidOperationException(
-                            "Could not build a valid Humanoid Avatar for the Nephilite rig.");
+                            "Could not build a valid Humanoid Avatar for the Zephyr rig.");
                     }
 
                     AssetDatabase.CreateAsset(playerAvatar, k_PlayerAvatarPath);

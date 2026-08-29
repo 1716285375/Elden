@@ -19,7 +19,7 @@ namespace ZZ.Editor
         private const string k_PlayerPrefabPath =
             "Assets/Data/Prefabs/Player.prefab";
         private const string k_MainMenuScenePath =
-            "Assets/Scenes/Scene_Main_Menu_01.unity";
+            WorldScenePathLayout.MainMenuScenePath;
         private const string k_HealthFlaskPath =
             "Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
         private const string k_FocusFlaskPath =

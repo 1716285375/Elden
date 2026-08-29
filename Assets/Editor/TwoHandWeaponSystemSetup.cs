@@ -15,7 +15,7 @@ namespace ZZ.Editor
     {
         private const int k_TwoHandingEffectID = 1;
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
-        private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
+        private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";

@@ -13,8 +13,8 @@ namespace ZZ.Editor
     public static class WeaponSystemSetup
     {
         private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
-        private const string k_MainMenuScenePath = "Assets/Scenes/Scene_Main_Menu_01.unity";
-        private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
+        private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
+        private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";

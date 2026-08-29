@@ -44,7 +44,7 @@ namespace ZZ.Editor
         private const string k_UIManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_MainMenuScenePath =
-            "Assets/Scenes/Scene_Main_Menu_01.unity";
+            WorldScenePathLayout.MainMenuScenePath;
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_HasArrowNotched = "hasArrowNotched";

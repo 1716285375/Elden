@@ -16,7 +16,7 @@ namespace ZZ.Editor
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_QuickSlotPrefabPath =
             "Assets/Data/Prefabs/UI/Quick Slot UI.prefab";
-        private const string k_InputActionsPath = "Assets/PlayerControls.inputactions";
+        private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_UnarmedAssetPath =
             "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
         private const string k_StraightSwordAssetPath =

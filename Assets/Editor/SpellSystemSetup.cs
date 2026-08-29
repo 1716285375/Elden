@@ -40,7 +40,7 @@ namespace ZZ.Editor
             "Assets/Data/Prefabs/Player.prefab";
         private const string k_DatabasePrefabPath =
             "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
-        private const string k_InputAssetPath = "Assets/PlayerControls.inputactions";
+        private const string k_InputAssetPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_AnimatorPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";

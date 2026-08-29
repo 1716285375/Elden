@@ -12,7 +12,7 @@ namespace ZZ.EditorTools
     /// <summary>Builds and bakes the EP101 scene-optimization configuration.</summary>
     public static class SceneOptimizationSetup
     {
-        private const string k_ScenePath = "Assets/Scenes/Scene_World_01.unity";
+        private const string k_ScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_LocationPath = "World/Location 01 - Ashen Crypt";
         private const string k_OptimizationRootName = "EP101 Scene Optimization";
         private const string k_MeshFolder = "Assets/Data/Meshes/Level Design";
