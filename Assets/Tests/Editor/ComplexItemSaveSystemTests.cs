@@ -198,9 +198,9 @@ namespace ZZ.Tests
         public void OwnerAndRemoteWeaponReconstructionPathsRemainDistinct()
         {
             string inventorySource = File.ReadAllText(
-                "Assets/Script/Character/Inventory/PlayerInventoryManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/Inventory/PlayerInventoryManager.cs");
             string networkSource = File.ReadAllText(
-                "Assets/Script/Character/Player/PlayerNetworkManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerNetworkManager.cs");
 
             Assert.That(inventorySource, Does.Contain("ResolveOwnedWeaponSlot"));
             Assert.That(inventorySource, Does.Contain("m_player?.IsOwner != true"));

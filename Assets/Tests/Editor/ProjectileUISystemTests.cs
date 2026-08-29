@@ -229,11 +229,11 @@ namespace ZZ.Tests
                 Is.Not.Null);
 
             string combatSource = File.ReadAllText(
-                "Assets/Script/Character/Player/PlayerCombatManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerCombatManager.cs");
             string inventorySource = File.ReadAllText(
-                "Assets/Script/Character/Inventory/PlayerInventoryManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/Inventory/PlayerInventoryManager.cs");
             string interactionSource = File.ReadAllText(
-                "Assets/Script/Character/Player/PlayerInteractionManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/PlayerInteractionManager.cs");
 
             Assert.That(
                 combatSource,

@@ -61,7 +61,7 @@ namespace ZZ.Tests
             Type managerType = GetRuntimeType(
                 "ZZ.PlayerUILoadingScreenManager");
             string source = File.ReadAllText(
-                "Assets/Script/Character/Player/Player UI/" +
+                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
                 "PlayerUILoadingScreenManager.cs");
 
             Assert.That(
@@ -84,7 +84,7 @@ namespace ZZ.Tests
         public void LoadingManagerOwnsSceneSubscriptionAndCoroutineCleanup()
         {
             string source = File.ReadAllText(
-                "Assets/Script/Character/Player/Player UI/" +
+                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
                 "PlayerUILoadingScreenManager.cs");
 
             Assert.That(
@@ -104,7 +104,7 @@ namespace ZZ.Tests
         public void LoadingIconUsesUnscaledLifecycleOwnedCoroutine()
         {
             string source = File.ReadAllText(
-                "Assets/Script/Character/Player/Player UI/" +
+                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
                 "FadeLoadingScreenIcon.cs");
 
             Assert.That(source, Does.Contain("private void OnEnable()"));
@@ -118,7 +118,7 @@ namespace ZZ.Tests
         {
             Type managerType = GetRuntimeType("ZZ.WorldAIManager");
             string source = File.ReadAllText(
-                "Assets/Script/World Managers/AI/WorldAIManager.cs");
+                "Assets/_Game/Scripts/World/Managers/AI/WorldAIManager.cs");
 
             Assert.That(managerType.GetMethod("SpawnAllCharacters"), Is.Not.Null);
             Assert.That(managerType.GetMethod("ResetAllCharacters"), Is.Not.Null);
@@ -145,7 +145,7 @@ namespace ZZ.Tests
             Type spawnerType = GetRuntimeType("ZZ.AICharacterSpawner");
             Type aiType = GetRuntimeType("ZZ.AICharacterManager");
             string source = File.ReadAllText(
-                "Assets/Script/World Managers/AI/AICharacterSpawner.cs");
+                "Assets/_Game/Scripts/World/Managers/AI/AICharacterSpawner.cs");
 
             Assert.That(spawnerType.GetMethod("ResetCharacter"), Is.Not.Null);
             Assert.That(aiType.GetMethod("ResetAtSpawnPoint"), Is.Not.Null);
@@ -157,7 +157,7 @@ namespace ZZ.Tests
         public void ReusedAIResetsHealthDeathActionsAndFloatingHPBar()
         {
             string aiSource = File.ReadAllText(
-                "Assets/Script/Character/AI/AICharacterManager.cs");
+                "Assets/_Game/Scripts/Characters/AI/AICharacterManager.cs");
             Type uiType = GetRuntimeType("ZZ.CharacterUIManager");
 
             Assert.That(
@@ -174,9 +174,9 @@ namespace ZZ.Tests
         public void SceneLoadingAndFastTravelUseLoadingOverlay()
         {
             string saveSource = File.ReadAllText(
-                "Assets/Script/World Managers/WorldSaveGameManager.cs");
+                "Assets/_Game/Scripts/World/Managers/WorldSaveGameManager.cs");
             string travelSource = File.ReadAllText(
-                "Assets/Script/Character/Player/Player UI/" +
+                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
                 "PlayerUITeleportLocationManager.cs");
 
             Assert.That(saveSource, Does.Contain("ActivateLoadingScreen()"));

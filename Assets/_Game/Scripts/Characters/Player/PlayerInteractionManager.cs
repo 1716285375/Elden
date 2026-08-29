@@ -14,6 +14,7 @@ namespace ZZ
         private PlayerManager m_player;
         private Interactable m_activeInteractable;
         private bool m_hasOpenPrompt;
+        private bool m_isRefreshingPrompt;
 
         public IReadOnlyList<Interactable> CurrentInteractableActions =>
             m_currentInteractableActions;
@@ -149,13 +150,26 @@ namespace ZZ
             if (m_player == null ||
                 !m_player.IsOwner ||
                 m_activeInteractable != interactable ||
-                !interactable.CanInteract(m_player))
+                m_isRefreshingPrompt)
             {
                 return;
             }
 
-            SendPlayerMessagePopup(interactable.InteractableText);
-            m_hasOpenPrompt = true;
+            m_isRefreshingPrompt = true;
+            try
+            {
+                if (!interactable.CanInteract(m_player))
+                {
+                    return;
+                }
+
+                SendPlayerMessagePopup(interactable.InteractableText);
+                m_hasOpenPrompt = true;
+            }
+            finally
+            {
+                m_isRefreshingPrompt = false;
+            }
         }
 
         /// <summary>Clears every candidate and closes the local interaction prompt.</summary>

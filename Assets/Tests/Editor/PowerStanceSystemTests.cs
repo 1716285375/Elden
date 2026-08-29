@@ -406,7 +406,7 @@ namespace ZZ.Tests
 
         private static string ReadRuntimeSource(string relativePath)
         {
-            return File.ReadAllText($"Assets/Script/{relativePath}");
+            return File.ReadAllText($"Assets/_Game/Scripts/{relativePath}");
         }
     }
 }

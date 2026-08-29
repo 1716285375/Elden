@@ -106,7 +106,13 @@ namespace ZZ
         /// <summary>Updates the shared prompt and refreshes every overlapping local player.</summary>
         protected void SetInteractableText(string interactableText)
         {
-            m_interactableText = interactableText ?? string.Empty;
+            string updatedText = interactableText ?? string.Empty;
+            if (m_interactableText == updatedText)
+            {
+                return;
+            }
+
+            m_interactableText = updatedText;
             foreach (PlayerInteractionManager interactionManager in m_registeredPlayers)
             {
                 interactionManager?.RefreshInteractionPrompt(this);

@@ -14,7 +14,8 @@ namespace ZZ
         private static WorldSaveGameManager s_instance;
 
         [FormerlySerializedAs("worldSceneName")]
-        [SerializeField] private string m_worldSceneName = "Scene_World_01";
+        [SerializeField] private string m_worldSceneName =
+            WorldScenePathLayout.MasterSceneName;
         [SerializeField] private int m_startingSceneIndex = 1;
 
         [Header("Dialogue")]
@@ -704,7 +705,8 @@ namespace ZZ
         /// </summary>
         public int GetWorldSceneIndex()
         {
-            return SceneUtility.GetBuildIndexByScenePath($"Assets/Scenes/{m_worldSceneName}.unity");
+            return SceneUtility.GetBuildIndexByScenePath(
+                $"{WorldScenePathLayout.LevelFolder}/{m_worldSceneName}.unity");
         }
 
         private SaveFileDataWriter CreateWriter(CharacterSlot characterSlot)

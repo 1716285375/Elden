@@ -16,7 +16,7 @@ namespace ZZ.Tests
         private const string k_PlayerUIPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
 
         [Test]
         public void WorldObjectManagerExposesSiteRegistryByStableID()
@@ -200,9 +200,9 @@ namespace ZZ.Tests
         public void RestCompletionOpensGraceMenuAndTravelClosesModalInput()
         {
             string siteSource = File.ReadAllText(
-                "Assets/Script/World Managers/SiteOfGraceInteractable.cs");
+                "Assets/_Game/Scripts/World/Managers/SiteOfGraceInteractable.cs");
             string uiSource = File.ReadAllText(
-                "Assets/Script/Character/Player/Player UI/PlayerUIManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIManager.cs");
 
             Assert.That(siteSource, Does.Contain("OpenSiteOfGraceMenu()"));
             Assert.That(siteSource, Does.Contain("TeleportLocalPlayer()"));
@@ -217,7 +217,7 @@ namespace ZZ.Tests
         public void WeaponSwitchingCancelsTwoHandingBeforeSelection()
         {
             string inventorySource = File.ReadAllText(
-                "Assets/Script/Character/Inventory/PlayerInventoryManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/Inventory/PlayerInventoryManager.cs");
             Type networkType = GetRuntimeType("ZZ.PlayerNetworkManager");
 
             Assert.That(networkType.GetMethod("CancelTwoHanding"), Is.Not.Null);

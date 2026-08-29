@@ -13,7 +13,7 @@ namespace ZZ.Tests
     public class SceneOptimizationSystemTests
     {
         private const string k_ScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
+            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_OptimizationPath =
             "World/Location 01 - Ashen Crypt/EP101 Scene Optimization";
 
@@ -28,7 +28,7 @@ namespace ZZ.Tests
                 Assert.That(area, Is.Not.Null);
                 Assert.That(area.size.x, Is.GreaterThanOrEqualTo(100f));
                 FileInfo occlusionData = new(
-                    "Assets/Scenes/Scene_World_01/OcclusionCullingData.asset");
+                    "Assets/Scenes/Levels/LV01_AbandonedMonastery/Shared/Occlusion/OcclusionCullingData.asset");
                 Assert.That(occlusionData.Exists, Is.True);
                 Assert.That(occlusionData.Length, Is.GreaterThan(1024));
             });
@@ -117,7 +117,7 @@ namespace ZZ.Tests
         public void OptimizationUsesStaticBatchingWithoutPerFrameLightPolling()
         {
             string source = File.ReadAllText(
-                "Assets/Script/World Managers/AreaLightActivationTrigger.cs");
+                "Assets/_Game/Scripts/World/Managers/AreaLightActivationTrigger.cs");
             WithWorldScene(scene =>
             {
                 Transform floor = FindTransform(

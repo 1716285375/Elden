@@ -189,19 +189,19 @@ namespace ZZ.Tests
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
             string networkSource = ReadSource(
                 projectRoot,
-                "Assets/Script/Character/CharacterNetworkManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/CharacterNetworkManager.cs");
             string characterSource = ReadSource(
                 projectRoot,
-                "Assets/Script/Character/CharacterManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/CharacterManager.cs");
             string effectsSource = ReadSource(
                 projectRoot,
-                "Assets/Script/Character/Effects/CharacterEffectsManager.cs");
+                "Assets/_Game/Scripts/Characters/Common/Effects/CharacterEffectsManager.cs");
             string damageSource = ReadSource(
                 projectRoot,
-                "Assets/Script/Damage/DamageCollider.cs");
+                "Assets/_Game/Scripts/Combat/Damage/DamageCollider.cs");
             string hudSource = ReadSource(
                 projectRoot,
-                "Assets/Script/Character/Player/Player UI/PlayerUIHUDManager.cs");
+                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIHUDManager.cs");
 
             Assert.That(networkSource,
                 Does.Contain("IsFrostbitten.OnValueChanged +="));

@@ -15,9 +15,7 @@ namespace ZZ.Tests
     public class WorldStreamingSystemTests
     {
         private const string k_WorldScenePath =
-            "Assets/Scenes/Scene_World_01.unity";
-        private const string k_AreaSceneFolder =
-            "Assets/Scenes/World Areas";
+            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_WorldLocationFolder =
             "Assets/Resources/World Locations";
         private const string k_BakingSetPath =
@@ -39,16 +37,18 @@ namespace ZZ.Tests
         {
             Assert.That(
                 GetSceneID(0),
-                Is.EqualTo("Scene_World_01"));
+                Is.EqualTo(WorldScenePathLayout.MasterSceneName));
             for (int areaIndex = 0; areaIndex < s_areaLocations.Length; areaIndex++)
             {
-                string expectedID = $"Area_01_Sub_Area_{areaIndex:00}";
+                string expectedID = WorldScenePathLayout.GetSceneID(
+                    areaIndex,
+                    0);
                 Assert.That(
                     GetSceneID(s_areaLocations[areaIndex]),
                     Is.EqualTo(expectedID));
                 Assert.That(
                     AssetDatabase.LoadAssetAtPath<SceneAsset>(
-                        $"{k_AreaSceneFolder}/{expectedID}.unity"),
+                        WorldScenePathLayout.GetScenePath(expectedID)),
                     Is.Not.Null);
             }
         }
@@ -102,7 +102,7 @@ namespace ZZ.Tests
                 ((IList)playersInLocation[area04]).Add(playerB);
 
                 CollectionAssert.AreEquivalent(
-                    new[] { "Scene_World_01" }
+                    new[] { WorldScenePathLayout.MasterSceneName }
                         .Concat(GetOwnedSceneIDs(0))
                         .Concat(GetOwnedSceneIDs(1))
                         .Concat(GetOwnedSceneIDs(4))
@@ -206,7 +206,8 @@ namespace ZZ.Tests
             {
                 foreach (string sceneID in GetOwnedSceneIDs(locationIndex))
                 {
-                    string scenePath = $"{k_AreaSceneFolder}/{sceneID}.unity";
+                    string scenePath =
+                        WorldScenePathLayout.GetScenePath(sceneID);
                     Assert.That(enabledScenePaths, Does.Contain(scenePath));
                     Assert.That(
                         sceneGUIDs,
@@ -299,21 +300,23 @@ namespace ZZ.Tests
 
         private static UnityEngine.Object LoadLocationAsset(int locationIndex)
         {
-            string locationID = $"Area_01_Sub_Area_{locationIndex:00}";
+            string assetName =
+                WorldScenePathLayout.GetRegionFolderName(locationIndex);
             UnityEngine.Object location = AssetDatabase.LoadAssetAtPath(
-                $"{k_WorldLocationFolder}/{locationID}.asset",
+                $"{k_WorldLocationFolder}/{assetName}.asset",
                 GetRuntimeType("ZZ.WorldLocationSceneSet"));
-            Assert.That(location, Is.Not.Null, locationID);
+            Assert.That(location, Is.Not.Null, assetName);
             return location;
         }
 
         private static IEnumerable<string> GetOwnedSceneIDs(int locationIndex)
         {
-            string locationID = $"Area_01_Sub_Area_{locationIndex:00}";
-            yield return locationID;
-            yield return locationID + "_Props";
-            yield return locationID + "_Effects";
-            yield return locationID + "_Spawners";
+            for (int sliceIndex = 0; sliceIndex < 4; sliceIndex++)
+            {
+                yield return WorldScenePathLayout.GetSceneID(
+                    locationIndex,
+                    sliceIndex);
+            }
         }
 
         private static string GetSceneID(int locationValue)
@@ -351,7 +354,7 @@ namespace ZZ.Tests
 
         private static string ReadRuntimeSource(string relativePath)
         {
-            return File.ReadAllText($"Assets/Script/{relativePath}");
+            return File.ReadAllText($"Assets/_Game/Scripts/{relativePath}");
         }
     }
 }

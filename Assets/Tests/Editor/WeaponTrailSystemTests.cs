@@ -14,11 +14,11 @@ namespace ZZ.Tests
         private const string k_StraightSwordPrefabPath =
             "Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab";
         private const string k_WeaponManagerPath =
-            "Assets/Script/Items/WeaponManager.cs";
+            "Assets/_Game/Scripts/Items/WeaponManager.cs";
         private const string k_PlayerEquipmentManagerPath =
-            "Assets/Script/Character/Equipment/PlayerEquipmentManager.cs";
+            "Assets/_Game/Scripts/Characters/Common/Equipment/PlayerEquipmentManager.cs";
         private const string k_PlayerCombatManagerPath =
-            "Assets/Script/Character/Player/PlayerCombatManager.cs";
+            "Assets/_Game/Scripts/Characters/Player/PlayerCombatManager.cs";
 
         [Test]
         public void WeaponManagerExposesNullSafeUnifiedTrailToggle()
