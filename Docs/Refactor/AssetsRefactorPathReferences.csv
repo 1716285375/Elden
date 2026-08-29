@@ -1,0 +1,812 @@
+File,Line,Path,OldRoot
+Assets/Editor/AIActivationSystemSetup.cs,20,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/AIActivationSystemSetup.cs,22,Assets/Data/Prefabs/Characters/AI/AI Activation Beacon.prefab,Assets/Data
+Assets/Editor/AIActivationSystemSetup.cs,24,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/AICharacterSpawnerSystemSetup.cs,18,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/AICharacterSpawnerSystemSetup.cs,20,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,19,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,21,Assets/Data/Animations/AI/Undead AI Avatar.asset,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,23,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,25,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,27,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,31,Assets/Art/Models/Rigged/Characters/Creatures/Undead/,Assets/Art
+Assets/Editor/AICharacterSystemSetup.cs,34,Assets/Data/Prefabs/Effects/BloodSplatterVFX.prefab,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,36,Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/,Assets/Art
+Assets/Editor/AICharacterSystemSetup.cs,39,Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/,Assets/Art
+Assets/Editor/AICharacterSystemSetup.cs,42,Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/,Assets/Art
+Assets/Editor/AICharacterSystemSetup.cs,45,Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/,Assets/Art
+Assets/Editor/AICharacterSystemSetup.cs,48,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Editor/AICharacterSystemSetup.cs,51,Assets/Art/Animations/Characters/Creatures/Undead/Reactions/,Assets/Art
+Assets/Editor/AICharacterSystemSetup.cs,142,Assets/Data/Animations/AI,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,143,Assets/Data/Prefabs/Characters/AI,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,178,Assets/Data/Animations/AI,Assets/Data
+Assets/Editor/AICharacterSystemSetup.cs,1587,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,14,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/AICombatDecisionSystemSetup.cs,16,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/AICombatDecisionSystemSetup.cs,18,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/AICombatDecisionSystemSetup.cs,19,Assets/Data/AI/Combat,Assets/Data
+Assets/Editor/AICombatDecisionSystemSetup.cs,25,Assets/Data/AI/Boss/Fallen Watcher/Watcher Claw.asset,Assets/Data
+Assets/Editor/AICombatDecisionSystemSetup.cs,27,Assets/Data/AI/Boss/Fallen Watcher/Watcher Frenzy.asset,Assets/Data
+Assets/Editor/AICombatDecisionSystemSetup.cs,29,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,32,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,35,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,38,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,41,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,44,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,47,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,50,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,53,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,56,Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_01.wav,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,58,Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_02.wav,Assets/Art
+Assets/Editor/AICombatDecisionSystemSetup.cs,60,Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_03.wav,Assets/Art
+Assets/Editor/AIEnvironmentalBehaviorSetup.cs,15,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/AIEnvironmentalBehaviorSetup.cs,17,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/AIEnvironmentalBehaviorSetup.cs,19,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/AIEnvironmentalBehaviorSetup.cs,21,Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/,Assets/Art
+Assets/Editor/AIEnvironmentalBehaviorSetup.cs,24,Assets/Art/Animations/Characters/Creatures/Undead/Emotes/,Assets/Art
+Assets/Editor/AIEvasionSystemSetup.cs,14,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/AIEvasionSystemSetup.cs,16,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/AIEvasionSystemSetup.cs,19,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/AIEvasionSystemSetup.cs,21,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,16,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/ArcherySystemSetup.cs,19,Assets/Data/Animations/Archery/Bow.overrideController,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,21,Assets/Data/Animations/Archery/Bow Weapon.controller,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,23,Assets/Data/Prefabs/Weapons/Longbow.prefab,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,25,Assets/Data/Prefabs/Projectiles/Draw Arrow.prefab,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,27,Assets/Data/Prefabs/Projectiles/Released Arrow.prefab,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,29,Assets/Data/Items/Weapons/Ranged Weapons/Longbow.asset,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,31,Assets/Data/Items/Projectiles/Standard Arrow.asset,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,33,Assets/Data/Items/Projectiles/Fire Arrow.asset,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,35,Assets/Data/Actions/Ranged/Fire Main Projectile.asset,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,37,Assets/Data/Actions/Ranged/Fire Secondary Projectile.asset,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,39,Assets/Data/Actions/Ranged/Aim Bow.asset,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,41,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,43,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,45,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,55,Assets/Data/Animations/Archery/Bow_Draw.anim,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,57,Assets/Data/Animations/Archery/Bow_Aim.anim,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,59,Assets/Data/Animations/Archery/Bow_Fire.anim,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,61,Assets/Data/Animations/Archery/Bow_Out_Of_Ammo.anim,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,63,Assets/Data/Animations/Archery/BowModel_Draw.anim,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,65,Assets/Data/Animations/Archery/BowModel_Aim.anim,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,67,Assets/Data/Animations/Archery/BowModel_Fire.anim,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,104,Assets/Data/Animations,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,105,Assets/Data/Prefabs,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,106,Assets/Data/Prefabs,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,107,Assets/Data/Items/Weapons,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,108,Assets/Data/Items,Assets/Data
+Assets/Editor/ArcherySystemSetup.cs,109,Assets/Data/Actions,Assets/Data
+Assets/Editor/ArmorEquipmentSystemSetup.cs,12,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/ArmorEquipmentSystemSetup.cs,14,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/ArmorEquipmentSystemSetup.cs,15,Assets/Data/Items/Armor,Assets/Data
+Assets/Editor/BackstabSystemSetup.cs,14,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,17,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/BackstabSystemSetup.cs,19,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,22,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,25,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,28,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,31,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,34,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,37,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/BackstabSystemSetup.cs,40,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Editor/BackstabSystemSetup.cs,43,Assets/Data/Items/Weapons/Melee Weapons,Assets/Data
+Assets/Editor/BackstabSystemSetup.cs,45,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/BackstabSystemSetup.cs,47,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/BlockingSystemSetup.cs,20,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/BlockingSystemSetup.cs,21,Assets/Resources/Effects,Assets/Resources
+Assets/Editor/BlockingSystemSetup.cs,25,Assets/Art/Audio/SFX/Combat/,Assets/Art
+Assets/Editor/BodyHitboxSetup.cs,14,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,19,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,21,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,23,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,25,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,27,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,30,Assets/Data/AI/Boss/Fallen Watcher,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,32,Assets/Data/Materials/Fallen Watcher Fog Wall.mat,Assets/Data
+Assets/Editor/BossFightSystemSetup.cs,34,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Editor/BossFightSystemSetup.cs,37,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Editor/BossFightSystemSetup.cs,40,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Editor/BossFightSystemSetup.cs,43,Assets/Art/Animations/Characters/Creatures/Undead/Actions/,Assets/Art
+Assets/Editor/BossFightSystemSetup.cs,78,Assets/Data/Materials,Assets/Data
+Assets/Editor/BreakableObjectSystemSetup.cs,21,Assets/Data/Prefabs/World Objects/Breakables,Assets/Data
+Assets/Editor/BreakableObjectSystemSetup.cs,27,Assets/Art/Models/Props/SM_Prop_Crate_Wood_05.obj,Assets/Art
+Assets/Editor/BreakableObjectSystemSetup.cs,29,Assets/Art/Models/Props/SM_Prop_Crate_Wood_05_Breakable_,Assets/Art
+Assets/Editor/BreakableObjectSystemSetup.cs,36,Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_00.wav,Assets/Art
+Assets/Editor/BreakableObjectSystemSetup.cs,37,Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_01.wav,Assets/Art
+Assets/Editor/BreakableObjectSystemSetup.cs,38,Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_02.wav,Assets/Art
+Assets/Editor/BreakableObjectSystemSetup.cs,39,Assets/Art/Audio/SFX/Environment/SFX_Wood_Break_03.wav,Assets/Art
+Assets/Editor/CharacterDialogueSystemSetup.cs,18,Assets/Data/Dialogue/Nameless Knight,Assets/Data
+Assets/Editor/CharacterDialogueSystemSetup.cs,24,Assets/Data/Prefabs/World Objects/Dialogue/,Assets/Data
+Assets/Editor/CharacterDialogueSystemSetup.cs,27,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/CharacterDialogueSystemSetup.cs,29,Assets/Data/Prefabs/Characters/AI/Nameless Knight NPC.prefab,Assets/Data
+Assets/Editor/CharacterDialogueSystemSetup.cs,31,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/CharacterDialogueSystemSetup.cs,33,Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab,Assets/Data
+Assets/Editor/CharacterDialogueSystemSetup.cs,35,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/CharacterDialogueSystemSetup.cs,41,Assets/Art/Audio/Creatures/Giant/SFX_Hill_Giant_Dialogue_01.wav,Assets/Art
+Assets/Editor/CharacterDialogueSystemSetup.cs,43,Assets/Art/Audio/Creatures/Giant/SFX_Hill_Giant_Dialogue_02.wav,Assets/Art
+Assets/Editor/CharacterDialogueSystemSetup.cs,45,Assets/Art/Audio/SFX/Characters/Voice/SFX_Rickart_Line_Coughing.wav,Assets/Art
+Assets/Editor/CharacterDialogueSystemSetup.cs,47,Assets/Art/Audio/SFX/General/SFX_Luna_Line_Farewell_Wanderer.wav,Assets/Art
+Assets/Editor/CharacterDialogueSystemSetup.cs,62,Assets/Data/Prefabs/World Objects/Dialogue,Assets/Data
+Assets/Editor/CharacterEffectsSystemSetup.cs,11,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/CharacterEffectsSystemSetup.cs,13,Assets/Data/Effects/Instant Effects,Assets/Data
+Assets/Editor/CharacterHPBarSystemSetup.cs,14,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/CharacterHPBarSystemSetup.cs,16,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/CharacterHPBarSystemSetup.cs,18,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/CharacterHPBarSystemSetup.cs,20,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,16,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/ChargedAttackSystemSetup.cs,18,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,21,Assets/Data/Actions/Light Attack.asset,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,22,Assets/Data/Actions/Heavy Attack.asset,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,23,Assets/Data/Actions/Charged Attack.asset,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,25,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,27,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,29,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/ChargedAttackSystemSetup.cs,31,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/ChargedAttackSystemSetup.cs,34,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/ChargedAttackSystemSetup.cs,37,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/ChargedAttackSystemSetup.cs,40,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,18,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,20,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,22,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,24,Assets/Data/Actions/Off Hand Block.asset,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,26,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,28,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,30,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,32,Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,34,Assets/Data/Prefabs/Weapons/Melee Weapons/Medium Shield.prefab,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,36,Assets/Data/Animator Overrides/Weapons/Medium Shield Animator.overrideController,Assets/Data
+Assets/Editor/CompleteBlockingSystemSetup.cs,38,Assets/Art/Models/Equipment/Weapons/Shield/SM_Wep_Shield_02.obj,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,40,Assets/Art/Materials/Equipment/Weapons/Shield/Iron_Shield_Material_01.mat,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,60,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,62,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,67,Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_01.wav,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,68,Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_02.wav,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,69,Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_03.wav,Assets/Art
+Assets/Editor/CompleteBlockingSystemSetup.cs,1007,Assets/Resources/Effects/Take Blocked Damage Effect.asset,Assets/Resources
+Assets/Editor/DamageSystemSetup.cs,13,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/DamageSystemSetup.cs,18,Assets/Data/Effects/Instant Effects,Assets/Data
+Assets/Editor/DeadSpotSystemSetup.cs,13,Assets/Resources/Effects/Dead Spot.prefab,Assets/Resources
+Assets/Editor/DeadSpotSystemSetup.cs,15,Assets/Data/Materials/Effects/Dead Spot.mat,Assets/Data
+Assets/Editor/DeadSpotSystemSetup.cs,22,Assets/Resources/Effects,Assets/Resources
+Assets/Editor/DeadSpotSystemSetup.cs,23,Assets/Data/Materials/Effects,Assets/Data
+Assets/Editor/DeathSystemSetup.cs,17,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/DeathSystemSetup.cs,20,Assets/Art/Animations/Characters/Humanoid/Actions/You_Died_01.anim,Assets/Art
+Assets/Editor/DeathSystemSetup.cs,22,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/DirectionalDamageAnimationSetup.cs,12,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/DirectionalDamageAnimationSetup.cs,14,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,28,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,30,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,32,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,40,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,42,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,44,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,52,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,54,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,56,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,64,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,66,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DirectionalDamageAnimationSetup.cs,68,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/DoorSystemSetup.cs,14,Assets/Data/Prefabs/World Objects/Doors,Assets/Data
+Assets/Editor/DoorSystemSetup.cs,16,Assets/Data/Animations/Environment/Doors,Assets/Data
+Assets/Editor/DoorSystemSetup.cs,18,Assets/Data/Items/Key Items,Assets/Data
+Assets/Editor/DoorSystemSetup.cs,34,Assets/Data/Prefabs/Interactables/Old Dungeon Key Pickup.prefab,Assets/Data
+Assets/Editor/DoorSystemSetup.cs,36,Assets/Data/Prefabs/Interactables/Item Pickup.prefab,Assets/Data
+Assets/Editor/DoorSystemSetup.cs,38,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/DungeonLevelDesignSetup.cs,23,Assets/Data/Materials/Level Design,Assets/Data
+Assets/Editor/DungeonLevelDesignSetup.cs,24,Assets/Data/Settings/Level Design,Assets/Data
+Assets/Editor/DungeonLevelDesignSetup.cs,792,Assets/Data/Prefabs/Interactables/Item Pickup.prefab,Assets/Data
+Assets/Editor/ElevatorSystemSetup.cs,14,Assets/Data/Prefabs/World Objects/Elevator,Assets/Data
+Assets/Editor/ElevatorSystemSetup.cs,16,Assets/Data/Animations/Environment/Elevator,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,25,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,27,Assets/Data/Prefabs/UI/Equipment Slot.prefab,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,29,Assets/Data/Prefabs/UI/Equipment Inventory Slot.prefab,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,55,Assets/Data/Items/Armor/Starter Hood.asset,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,56,Assets/Art/Textures/UI/Items/Dark_Hood_Icon_01.png,Assets/Art
+Assets/Editor/EquipmentUISystemSetup.cs,58,Assets/Data/Items/Armor/Starter Armor.asset,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,59,Assets/Art/Textures/UI/Items/Dark_Leather_Armor_Icon_01.png,Assets/Art
+Assets/Editor/EquipmentUISystemSetup.cs,61,Assets/Data/Items/Armor/Starter Gauntlets.asset,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,62,Assets/Art/Textures/UI/Items/Leather_Gloves_Icon_01.png,Assets/Art
+Assets/Editor/EquipmentUISystemSetup.cs,64,Assets/Data/Items/Armor/Starter Greaves.asset,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,65,Assets/Art/Textures/UI/Items/Assassins_Boots_Icon_01.png,Assets/Art
+Assets/Editor/EquipmentUISystemSetup.cs,825,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/EquipmentUISystemSetup.cs,827,Assets/Data/Items/Armor/Starter Hood.asset,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,15,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/FlaskSystemSetup.cs,18,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,20,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,24,Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,26,Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,28,Assets/Data/Prefabs/Quick Slot Items/Health Flask.prefab,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,30,Assets/Data/Prefabs/Quick Slot Items/Focus Flask.prefab,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,32,Assets/Data/Prefabs/Quick Slot Items/Empty Flask.prefab,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,34,Assets/Data/Prefabs/Effects/Health Flask VFX.prefab,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,36,Assets/Data/Prefabs/Effects/Focus Flask VFX.prefab,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,38,Assets/Data/Icons/Health Flask Icon.asset,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,40,Assets/Data/Icons/Focus Flask Icon.asset,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,47,Assets/Data/Animations/Flasks/Drink Start.anim,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,49,Assets/Data/Animations/Flasks/Drink 01.anim,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,51,Assets/Data/Animations/Flasks/Drink 02.anim,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,53,Assets/Data/Animations/Flasks/Drink End.anim,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,55,Assets/Data/Animations/Flasks/Empty Flask.anim,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,88,Assets/Data/Animations,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,89,Assets/Data/Items,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,90,Assets/Data/Prefabs,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,91,Assets/Data/Prefabs,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,92,Assets/Data,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,93,Assets/Data/Materials,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,217,Assets/Data/Materials/Flasks/Health Flask.mat,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,220,Assets/Data/Materials/Flasks/Focus Flask.mat,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,223,Assets/Data/Materials/Flasks/Empty Flask.mat,Assets/Data
+Assets/Editor/FlaskSystemSetup.cs,510,Assets/Art/Audio/SFX/Abilities/SFX_Heal_01.wav,Assets/Art
+Assets/Editor/FlaskSystemSetup.cs,515,Assets/Art/Audio/SFX/Abilities/,Assets/Art
+Assets/Editor/FocusPointsSystemSetup.cs,13,Assets/Data/Items/Spells/Fireball.asset,Assets/Data
+Assets/Editor/FocusPointsSystemSetup.cs,15,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/FogWallInteractableSetup.cs,19,Assets/Data/Prefabs/Word Managers/World Network Manager.prefab,Assets/Data
+Assets/Editor/FogWallInteractableSetup.cs,21,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/FogWallInteractableSetup.cs,24,Assets/Art/Animations/Characters/Humanoid/Interactions/,Assets/Art
+Assets/Editor/FogWallInteractableSetup.cs,27,Assets/Art/Audio/SFX/Characters/Movement/,Assets/Art
+Assets/Editor/FogWallInteractableSetup.cs,30,Assets/Data/Materials/Fallen Watcher Fog Wall.mat,Assets/Data
+Assets/Editor/FogWallInteractableSetup.cs,32,Assets/Script/World Managers/WorldSaveGameManager.cs,Assets/Script
+Assets/Editor/FrostbiteSystemSetup.cs,12,Assets/Resources/Effects,Assets/Resources
+Assets/Editor/FrostbiteSystemSetup.cs,26,Assets/Data/Prefabs/UI/Buildup Bar.prefab,Assets/Data
+Assets/Editor/FrostbiteSystemSetup.cs,28,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/InputQueueSystemSetup.cs,15,Assets/Data/Prefabs/Word Managers/Player Input Manager.prefab,Assets/Data
+Assets/Editor/InputQueueSystemSetup.cs,17,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/InputQueueSystemSetup.cs,20,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/InputQueueSystemSetup.cs,23,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/InputQueueSystemSetup.cs,26,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/InputQueueSystemSetup.cs,29,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/InteractableSystemSetup.cs,16,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/InteractableSystemSetup.cs,18,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,19,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,21,Assets/Data/Prefabs/Interactables/Item Pickup.prefab,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,23,Assets/Data/Materials/Item Pickup Glow.mat,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,29,Assets/Art/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav,Assets/Art
+Assets/Editor/ItemPickupSystemSetup.cs,31,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,33,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,35,Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,37,Assets/Art/Textures/UI/Items/Iron_Shield_Icon.png,Assets/Art
+Assets/Editor/ItemPickupSystemSetup.cs,77,Assets/Data/Prefabs/Interactables,Assets/Data
+Assets/Editor/ItemPickupSystemSetup.cs,78,Assets/Data/Materials,Assets/Data
+Assets/Editor/JumpingAttackSystemSetup.cs,15,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/JumpingAttackSystemSetup.cs,18,Assets/Art/Animations/Controllers/Overrides/Straight Sword.overrideController,Assets/Art
+Assets/Editor/JumpingAttackSystemSetup.cs,20,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/JumpingAttackSystemSetup.cs,27,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/JumpingAttackSystemSetup.cs,28,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/JumpingAttackSystemSetup.cs,29,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,14,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/LadderSystemSetup.cs,17,Assets/Data/Animations/Humanoid/Humanoid Runtime.controller,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,19,Assets/Data/Animations/Ladders,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,21,Assets/Data/Prefabs/World Objects/Ladders/Standard Ladder.prefab,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,23,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,31,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,33,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,35,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,37,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,39,Assets/Data/Animations/Archery/Bow.overrideController,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,45,Assets/Data/Animations/Humanoid,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,47,Assets/Data/Prefabs/World Objects/Ladders,Assets/Data
+Assets/Editor/LadderSystemSetup.cs,328,Assets/Art/Animations/Characters/Humanoid/,Assets/Art
+Assets/Editor/LargeWorldSceneSetup.cs,19,Assets/Resources/World Locations,Assets/Resources
+Assets/Editor/LargeWorldSceneSetup.cs,21,Assets/Data/Prefabs/World Streaming/World Location Triggers,Assets/Data
+Assets/Editor/LargeWorldSceneSetup.cs,23,Assets/Settings/World Streaming Probe Volume Baking Set.asset,Assets/Settings
+Assets/Editor/LevelUpSystemSetup.cs,16,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/LoadingScreenSystemSetup.cs,12,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/LockOnSystemSetup.cs,12,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,17,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,19,Assets/Data/Prefabs/Interactables/Item Pickup.prefab,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,21,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,23,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,25,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,29,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,31,Assets/Data/Items/Armor/Starter Armor.asset,Assets/Data
+Assets/Editor/MonsterItemDropSystemSetup.cs,33,Assets/Art/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav,Assets/Art
+Assets/Editor/MonsterItemDropSystemSetup.cs,35,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/MonsterItemDropSystemSetup.cs,38,Assets/Art/Animations/Characters/Humanoid/Interactions/,Assets/Art
+Assets/Editor/MovingAttackSystemSetup.cs,14,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/MovingAttackSystemSetup.cs,17,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/MovingAttackSystemSetup.cs,20,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/MovingAttackSystemSetup.cs,23,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/MovingAttackSystemSetup.cs,26,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/MovingAttackSystemSetup.cs,29,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/MovingAttackSystemSetup.cs,45,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/MovingAttackSystemSetup.cs,46,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/MovingAttackSystemSetup.cs,47,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/ParrySystemSetup.cs,15,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/ParrySystemSetup.cs,18,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/ParrySystemSetup.cs,20,Assets/Art/Animations/Characters/Humanoid/Combat/Shield/,Assets/Art
+Assets/Editor/ParrySystemSetup.cs,23,Assets/Art/Animations/Characters/Humanoid/Combat/Shield/,Assets/Art
+Assets/Editor/ParrySystemSetup.cs,26,Assets/Art/Animations/Characters/Humanoid/Combat/Shield/,Assets/Art
+Assets/Editor/ParrySystemSetup.cs,29,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/ParrySystemSetup.cs,32,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/ParrySystemSetup.cs,35,Assets/Data/Items/Ashes Of War,Assets/Data
+Assets/Editor/ParrySystemSetup.cs,39,Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset,Assets/Data
+Assets/Editor/ParrySystemSetup.cs,41,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/ParrySystemSetup.cs,44,Assets/Data/AI/Boss/Fallen Watcher,Assets/Data
+Assets/Editor/ParrySystemSetup.cs,458,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/PlayerActionSetup.cs,19,Assets/Art/Animations/Animator Controllers/Humanoid/Humanoid Animator Controller.controller,Assets/Art
+Assets/Editor/PlayerActionSetup.cs,21,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/PlayerActionSetup.cs,24,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/PlayerActionSetup.cs,27,Assets/Art/Audio/SFX/General/SFX_Roll_01.wav,Assets/Art
+Assets/Editor/PlayerActionSetup.cs,28,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PlayerAnimationSetup.cs,12,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PlayerAnimationSetup.cs,14,Assets/Art/Models/Rigged/Characters/Humanoid/Player/Player.prefab,Assets/Art
+Assets/Editor/PlayerAnimationSetup.cs,17,Assets/Art/Models/Rigged/Shared/Avatars/ZephyrPlayerAvatar.asset,Assets/Art
+Assets/Editor/PlayerAnimationSetup.cs,19,Assets/Art/Models/Md_Char_Low_Poly_Man.obj,Assets/Art
+Assets/Editor/PlayerAnimationSetup.cs,21,Assets/Art/Animations/Animator Controllers/Humanoid,Assets/Art
+Assets/Editor/PlayerAnimationSetup.cs,27,Assets/Art/Animations/Characters/Humanoid/Locomotion,Assets/Art
+Assets/Editor/PlayerHealthSetup.cs,13,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PlayerHealthSetup.cs,15,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/PlayerJumpSetup.cs,14,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PlayerJumpSetup.cs,18,Assets/Art/Animations/Animator Controllers/Humanoid/Humanoid Animator Controller.controller,Assets/Art
+Assets/Editor/PlayerJumpSetup.cs,20,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/PlayerMovementSetup.cs,19,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PlayerMovementSetup.cs,21,Assets/Data/Prefabs/Word Managers/Player Input Manager.prefab,Assets/Data
+Assets/Editor/PlayerPrefabOptimizer.cs,14,Assets/Art/Models/Rigged/Characters/Humanoid/Player/Player.prefab,Assets/Art
+Assets/Editor/PlayerPrefabOptimizer.cs,15,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PlayerPrefabOptimizer.cs,16,Assets/Data/Prefabs/Player_Backup_Old.prefab,Assets/Data
+Assets/Editor/PlayerStaminaSetup.cs,12,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PlayerStaminaSetup.cs,14,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/PoiseSystemSetup.cs,14,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/PoiseSystemSetup.cs,17,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/PoiseSystemSetup.cs,18,Assets/Data/Animations/Avatar Masks,Assets/Data
+Assets/Editor/PoiseSystemSetup.cs,29,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/PoiseSystemSetup.cs,31,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/PoiseSystemSetup.cs,34,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/PoiseSystemSetup.cs,643,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/PoisonStatusSystemSetup.cs,13,Assets/Resources/Effects/Poisoned Effect.asset,Assets/Resources
+Assets/Editor/PoisonStatusSystemSetup.cs,15,Assets/Resources/Effects/Poisoned VFX.prefab,Assets/Resources
+Assets/Editor/PoisonStatusSystemSetup.cs,17,Assets/Data/Prefabs/UI/Status Effect Warning.prefab,Assets/Data
+Assets/Editor/PoisonStatusSystemSetup.cs,19,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/PowerStanceSystemSetup.cs,15,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/PowerStanceSystemSetup.cs,21,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/PowerStanceSystemSetup.cs,23,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/PowerStanceSystemSetup.cs,27,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/PowerStanceSystemSetup.cs,28,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/PowerStanceSystemSetup.cs,29,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/ProjectileUISystemSetup.cs,17,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/ProjectileUISystemSetup.cs,19,Assets/Data/Prefabs/UI/Equipment Slot.prefab,Assets/Data
+Assets/Editor/ProjectileUISystemSetup.cs,21,Assets/Data/Prefabs/UI/Quick Slot UI.prefab,Assets/Data
+Assets/Editor/ProjectileUISystemSetup.cs,23,Assets/Data/Items/Projectiles/Standard Arrow.asset,Assets/Data
+Assets/Editor/ProjectileUISystemSetup.cs,25,Assets/Data/Items/Projectiles/Fire Arrow.asset,Assets/Data
+Assets/Editor/ProjectileUISystemSetup.cs,27,Assets/Art/Textures/UI/Items/Standard Arrow Icon.png,Assets/Art
+Assets/Editor/ProjectileUISystemSetup.cs,29,Assets/Art/Textures/UI/Items/Fire Arrow Icon.png,Assets/Art
+Assets/Editor/QuickSlotUISystemSetup.cs,21,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/QuickSlotUISystemSetup.cs,23,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/QuickSlotUISystemSetup.cs,25,Assets/Data/Prefabs/UI/Equipment Slot.prefab,Assets/Data
+Assets/Editor/QuickSlotUISystemSetup.cs,27,Assets/Data/Prefabs/UI/Quick Slot UI.prefab,Assets/Data
+Assets/Editor/QuickSlotUISystemSetup.cs,29,Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset,Assets/Data
+Assets/Editor/QuickSlotUISystemSetup.cs,31,Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset,Assets/Data
+Assets/Editor/RiposteSystemSetup.cs,17,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/RiposteSystemSetup.cs,20,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/RiposteSystemSetup.cs,22,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/RiposteSystemSetup.cs,25,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/RiposteSystemSetup.cs,28,Assets/Art/Animations/Characters/Humanoid/Combat/Mace/,Assets/Art
+Assets/Editor/RiposteSystemSetup.cs,31,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/RiposteSystemSetup.cs,34,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Editor/RiposteSystemSetup.cs,37,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Editor/RiposteSystemSetup.cs,40,Assets/Data/Items/Weapons/Melee Weapons,Assets/Data
+Assets/Editor/RiposteSystemSetup.cs,42,Assets/Resources/Effects/Take Critical Damage Effect.asset,Assets/Resources
+Assets/Editor/RiposteSystemSetup.cs,46,Assets/Art/Audio/SFX/General/SFX_Critical_Strike_01.wav,Assets/Art
+Assets/Editor/RuneSystemSetup.cs,14,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/RuneSystemSetup.cs,16,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/RuneSystemSetup.cs,18,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/RuneSystemSetup.cs,20,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/SaveGameSystemSetup.cs,23,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/SaveGameSystemSetup.cs,25,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/SaveGameSystemSetup.cs,27,Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab,Assets/Data
+Assets/Editor/SceneOptimizationSetup.cs,18,Assets/Data/Meshes/Level Design,Assets/Data
+Assets/Editor/SceneOptimizationSetup.cs,19,Assets/Data/Materials/Level Design,Assets/Data
+Assets/Editor/SiteOfGraceSystemSetup.cs,21,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/SiteOfGraceSystemSetup.cs,24,Assets/Art/Animations/Characters/Humanoid/Emotes/,Assets/Art
+Assets/Editor/SiteOfGraceSystemSetup.cs,27,Assets/Art/Models/Props/SM_Prop_Camp_Firepit_01.obj,Assets/Art
+Assets/Editor/SiteOfGraceSystemSetup.cs,29,Assets/Art/Materials/VFX/Fire_Additive_Emission_Mat_01.mat,Assets/Art
+Assets/Editor/SiteOfGraceSystemSetup.cs,31,Assets/Art/Audio/SFX/General/SFX_Rest_At_Well_01.wav,Assets/Art
+Assets/Editor/SiteOfGraceSystemSetup.cs,33,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/SiteOfGraceTravelSystemSetup.cs,19,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/SneakingSystemSetup.cs,13,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/SneakingSystemSetup.cs,16,Assets/Art/Animations/Controllers/Runtime/Yosif.controller,Assets/Art
+Assets/Editor/SneakingSystemSetup.cs,18,Assets/Data/Prefabs/World Objects/Stealth Object.prefab,Assets/Data
+Assets/Editor/SoundEffectSystemSetup.cs,17,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/SoundEffectSystemSetup.cs,19,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/SoundEffectSystemSetup.cs,23,Assets/Data/Items/Weapons/Melee Weapons,Assets/Data
+Assets/Editor/SoundEffectSystemSetup.cs,25,Assets/Art/Audio/SFX/Combat,Assets/Art
+Assets/Editor/SoundEffectSystemSetup.cs,27,Assets/Art/Audio/Creatures/Undead,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,16,Assets/Data/Actions/Spells/Cast Incantation.asset,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,18,Assets/Data/Items/Spells/Fireball.asset,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,20,Assets/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,22,Assets/Data/Prefabs/Spells/Incantation Catalyst.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,24,Assets/Data/Prefabs/Spells/Fireball.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,26,Assets/Data/Prefabs/Spells/Fireball Warm Up.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,28,Assets/Data/Prefabs/Spells/Fireball Release.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,30,Assets/Data/Prefabs/Spells/Fireball Full Charge.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,32,Assets/Data/Prefabs/Spells/Fireball Impact.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,34,Assets/Data/Prefabs/Spells/Fireball Full Impact.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,36,Assets/Data/Materials/Spells/Fireball.mat,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,38,Assets/Data/Materials/Spells/Fireball Full Charge.mat,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,40,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,42,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/SpellSystemSetup.cs,45,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,48,Assets/Art/Animations/Controllers/Overrides/Charm.overrideController,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,50,Assets/Art/Models/Equipment/Weapons/Staff/SM_Wep_Staff_02.obj,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,52,Assets/Art/Textures/UI/Abilities/Ability_Fire_Orb_Icon_01.png,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,54,Assets/Art/Audio/SFX/Abilities/SFX_Cast_FireBall_Base_01.wav,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,56,Assets/Art/Audio/SFX/Abilities/SFX_Explosion_Fireball_Base_01.wav,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,66,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,70,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,74,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,78,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,82,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,86,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,90,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/SpellSystemSetup.cs,94,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/StanceBreakingSystemSetup.cs,16,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Editor/StanceBreakingSystemSetup.cs,18,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Editor/StanceBreakingSystemSetup.cs,21,Assets/Art/Audio/SFX/Environment/SFX_Guard_Break_01.wav,Assets/Art
+Assets/Editor/StanceBreakingSystemSetup.cs,23,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Editor/StanceBreakingSystemSetup.cs,25,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Editor/StatusEffectsSystemSetup.cs,12,Assets/Resources/Effects,Assets/Resources
+Assets/Editor/StatusEffectsSystemSetup.cs,22,Assets/Data/Prefabs/UI/Buildup Bar.prefab,Assets/Data
+Assets/Editor/StatusEffectsSystemSetup.cs,24,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,17,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,20,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/TwoHandWeaponSystemSetup.cs,23,Assets/Data/Effects/Static Effects/Two Handing Effect.asset,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,24,Assets/Data/Actions/Light Attack.asset,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,25,Assets/Data/Actions/Heavy Attack.asset,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,27,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/TwoHandWeaponSystemSetup.cs,29,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/TwoHandWeaponSystemSetup.cs,47,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,51,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,55,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,59,Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,169,Assets/Data/Effects,Assets/Data
+Assets/Editor/TwoHandWeaponSystemSetup.cs,170,Assets/Data/Effects/Static Effects,Assets/Data
+Assets/Editor/WeaponAnimatorControllerSetup.cs,15,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/WeaponAnimatorControllerSetup.cs,18,Assets/Data/Animator Overrides/Weapons,Assets/Data
+Assets/Editor/WeaponAnimatorControllerSetup.cs,26,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/WeaponAnimatorControllerSetup.cs,28,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/WeaponAnimatorControllerSetup.cs,30,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/WeaponAnimatorControllerSetup.cs,32,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/WeaponAnimatorControllerSetup.cs,34,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Editor/WeaponAnimatorControllerSetup.cs,36,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Editor/WeaponComboSystemSetup.cs,13,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/WeaponComboSystemSetup.cs,16,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/WeaponComboSystemSetup.cs,19,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/WeaponComboSystemSetup.cs,22,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/WeaponComboSystemSetup.cs,25,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/WeaponComboSystemSetup.cs,28,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Editor/WeaponComboSystemSetup.cs,334,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/WeaponComboSystemSetup.cs,335,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/WeaponComboSystemSetup.cs,336,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/WeaponQuickSlotUISetup.cs,14,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/WeaponQuickSlotUISetup.cs,16,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/WeaponQuickSlotUISetup.cs,18,Assets/Data/Prefabs/UI/Quick Slot UI.prefab,Assets/Data
+Assets/Editor/WeaponQuickSlotUISetup.cs,21,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Editor/WeaponQuickSlotUISetup.cs,23,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Editor/WeaponQuickSlotUISetup.cs,25,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Editor/WeaponQuickSlotUISetup.cs,27,Assets/Art/Textures/UI/Items/Hand_Slot_Icon_01.png,Assets/Art
+Assets/Editor/WeaponQuickSlotUISetup.cs,29,Assets/Art/Textures/UI/Items/Straight Sword Icon.png,Assets/Art
+Assets/Editor/WeaponQuickSlotUISetup.cs,31,Assets/Art/Textures/UI/Items/Broadsword Icon.png,Assets/Art
+Assets/Editor/WeaponQuickSlotUISetup.cs,118,Assets/Data/Prefabs/UI,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,15,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,19,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Editor/WeaponSystemSetup.cs,22,Assets/Art/Animations/Characters/Humanoid/Actions/core_oh_equip_R_01.anim,Assets/Art
+Assets/Editor/WeaponSystemSetup.cs,24,Assets/Art/Animations/Characters/Humanoid/Actions/core_oh_equip_L_01.anim,Assets/Art
+Assets/Editor/WeaponSystemSetup.cs,26,Assets/Data/Animations/Upper Body Weapon Mask.mask,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,28,Assets/Data/Items/Weapons/Melee Weapons,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,30,Assets/Data/Prefabs/Weapons/Melee Weapons,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,32,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,40,Assets/Data/Items/Armor/Starter Hood.asset,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,42,Assets/Data/Items/Armor/Starter Armor.asset,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,44,Assets/Data/Items/Armor/Starter Gauntlets.asset,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,46,Assets/Data/Items/Armor/Starter Greaves.asset,Assets/Data
+Assets/Editor/WeaponSystemSetup.cs,54,Assets/Art/Models/Equipment/Weapons/Sword/Md_Prop_StraightSword_01.obj,Assets/Art
+Assets/Editor/WeaponSystemSetup.cs,56,Assets/Art/Models/Equipment/Weapons/Sword/Md_Prop_StraightSword_03.obj,Assets/Art
+Assets/Editor/WeaponSystemSetup.cs,71,Assets/Data/Animations,Assets/Data
+Assets/Editor/WeaponTrailSystemSetup.cs,12,Assets/Data/Materials/Effects/Weapon Trail.mat,Assets/Data
+Assets/Editor/WeaponTrailSystemSetup.cs,14,Assets/Data/Prefabs/Effects/Weapon Trail.prefab,Assets/Data
+Assets/Editor/WeaponTrailSystemSetup.cs,16,Assets/Data/Prefabs/Weapons/Melee Weapons/Broadsword.prefab,Assets/Data
+Assets/Editor/WeaponTrailSystemSetup.cs,18,Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,19,Assets/Data/Items/Upgrade Materials,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,27,Assets/Data/Prefabs/World Objects/Weapon Upgrade Anvil.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,29,Assets/Data/Prefabs/Interactables/Small Smithing Stone Pickup.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,31,Assets/Data/Dialogue/Blacksmith,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,35,Assets/Data/Prefabs/Characters/AI/Nameless Knight NPC.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,37,Assets/Data/Prefabs/Characters/AI/Blacksmith NPC.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,39,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,41,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,43,Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,45,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,49,Assets/Art/Audio/UI/SFX_Menu_Sound_Hover_01.wav,Assets/Art
+Assets/Editor/WeaponUpgradeSystemSetup.cs,51,Assets/Art/Audio/UI/SFX_Menu_Sound_Press_01.wav,Assets/Art
+Assets/Editor/WeaponUpgradeSystemSetup.cs,53,Assets/Art/Audio/UI/SFX_Menu_Raise_Stat_01.wav,Assets/Art
+Assets/Editor/WeaponUpgradeSystemSetup.cs,55,Assets/Art/Audio/Creatures/Jireh/SFX_Jireh_Line_02.wav,Assets/Art
+Assets/Editor/WeaponUpgradeSystemSetup.cs,57,Assets/Art/Audio/SFX/General/SFX_Luna_Line_Farewell_Wanderer.wav,Assets/Art
+Assets/Editor/WeaponUpgradeSystemSetup.cs,72,Assets/Data/Prefabs/World Objects,Assets/Data
+Assets/Editor/WeaponUpgradeSystemSetup.cs,73,Assets/Data/Prefabs/Interactables,Assets/Data
+Assets/Editor/WorldRendererStreamingSetup.cs,18,Assets/Resources/World Locations,Assets/Resources
+Assets/Editor/WorldStreamingSystemSetup.cs,20,Assets/Settings/World Streaming Probe Volume Baking Set.asset,Assets/Settings
+Assets/Editor/WorldStreamingSystemSetup.cs,22,Assets/Data/Prefabs/World Streaming/Area Load Trigger.prefab,Assets/Data
+Assets/Script/Save System/WorldScenePathLayout.cs,8,Assets/Scenes,Assets/Scenes
+Assets/Tests/Editor/AIActivationSystemTests.cs,13,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/AIActivationSystemTests.cs,15,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/AIActivationSystemTests.cs,17,Assets/Data/Prefabs/Characters/AI/AI Activation Beacon.prefab,Assets/Data
+Assets/Tests/Editor/AIActivationSystemTests.cs,19,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Tests/Editor/AIActivationSystemTests.cs,195,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/AIAnimatorAvatarTests.cs,10,Assets/Data/Animations/AI/Undead AI Avatar.asset,Assets/Data
+Assets/Tests/Editor/AIAnimatorAvatarTests.cs,12,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/AIAnimatorAvatarTests.cs,13,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,15,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,17,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,19,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,21,Assets/Data/AI/Combat/Undead Swipe 01.asset,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,23,Assets/Data/AI/Combat/Undead Swipe 02.asset,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,25,Assets/Data/AI/Boss/Fallen Watcher/Watcher Claw.asset,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,27,Assets/Data/AI/Boss/Fallen Watcher/Watcher Frenzy.asset,Assets/Data
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,31,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,33,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,35,Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/,Assets/Art
+Assets/Tests/Editor/AICombatDecisionSystemTests.cs,286,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/AIEnvironmentalBehaviorTests.cs,17,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Tests/Editor/AIEnvironmentalBehaviorTests.cs,19,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/AIEnvironmentalBehaviorTests.cs,21,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Tests/Editor/AIEnvironmentalBehaviorTests.cs,259,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/AIEvasionSystemTests.cs,15,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Tests/Editor/AIEvasionSystemTests.cs,17,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Tests/Editor/AIEvasionSystemTests.cs,20,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/AIEvasionSystemTests.cs,22,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Tests/Editor/AIEvasionSystemTests.cs,172,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/ArcherySystemTests.cs,15,Assets/Data/Items/Weapons/Ranged Weapons/Longbow.asset,Assets/Data
+Assets/Tests/Editor/ArcherySystemTests.cs,17,Assets/Data/Items/Projectiles/Standard Arrow.asset,Assets/Data
+Assets/Tests/Editor/ArcherySystemTests.cs,19,Assets/Data/Items/Projectiles/Fire Arrow.asset,Assets/Data
+Assets/Tests/Editor/ArcherySystemTests.cs,21,Assets/Data/Prefabs/Projectiles/Released Arrow.prefab,Assets/Data
+Assets/Tests/Editor/ArcherySystemTests.cs,23,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/ArcherySystemTests.cs,25,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/ArcherySystemTests.cs,27,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Tests/Editor/ArcherySystemTests.cs,30,Assets/Data/Animations/Archery/Bow_Fire.anim,Assets/Data
+Assets/Tests/Editor/BackstabSystemTests.cs,14,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Tests/Editor/BackstabSystemTests.cs,16,Assets/Art/Animations/Characters/Humanoid/Reactions/,Assets/Art
+Assets/Tests/Editor/BackstabSystemTests.cs,19,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/BackstabSystemTests.cs,21,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Tests/Editor/BossResetAwakeningSystemTests.cs,145,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/BreakableObjectSystemTests.cs,16,Assets/Data/Prefabs/World Objects/Breakables/,Assets/Data
+Assets/Tests/Editor/BreakableObjectSystemTests.cs,19,Assets/Data/Prefabs/World Objects/Breakables/,Assets/Data
+Assets/Tests/Editor/BreakableObjectSystemTests.cs,22,Assets/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A01_Base.unity,Assets/Scenes
+Assets/Tests/Editor/BreakableObjectSystemTests.cs,228,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,16,Assets/Data/Dialogue/Nameless Knight/,Assets/Data
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,19,Assets/Data/Dialogue/Nameless Knight/,Assets/Data
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,22,Assets/Data/Prefabs/World Objects/Dialogue/,Assets/Data
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,25,Assets/Data/Prefabs/Characters/AI/Nameless Knight NPC.prefab,Assets/Data
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,27,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,29,Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab,Assets/Data
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,31,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,33,Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity,Assets/Scenes
+Assets/Tests/Editor/CharacterDialogueSystemTests.cs,400,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/ComplexItemSaveSystemTests.cs,13,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Tests/Editor/ComplexItemSaveSystemTests.cs,201,Assets/Script/Character/Inventory/PlayerInventoryManager.cs,Assets/Script
+Assets/Tests/Editor/ComplexItemSaveSystemTests.cs,203,Assets/Script/Character/Player/PlayerNetworkManager.cs,Assets/Script
+Assets/Tests/Editor/DeadSpotSystemTests.cs,14,Assets/Resources/Effects/Dead Spot.prefab,Assets/Resources
+Assets/Tests/Editor/DeadSpotSystemTests.cs,127,Assets/Script/Character/Player/PlayerNetworkManager.cs,Assets/Script
+Assets/Tests/Editor/DeadSpotSystemTests.cs,129,Assets/Script/Character/Player/PlayerCombatManager.cs,Assets/Script
+Assets/Tests/Editor/DeadSpotSystemTests.cs,145,Assets/Script/Character/Player/PlayerCombatManager.cs,Assets/Script
+Assets/Tests/Editor/DeadSpotSystemTests.cs,163,Assets/Script/World Managers/WorldGameSessionManager.cs,Assets/Script
+Assets/Tests/Editor/DeadSpotSystemTests.cs,165,Assets/Script/World Managers/SiteOfGraceInteractable.cs,Assets/Script
+Assets/Tests/Editor/DeadSpotSystemTests.cs,167,Assets/Script/World Managers/WorldObjectManager.cs,Assets/Script
+Assets/Tests/Editor/DeadSpotSystemTests.cs,195,Assets/Script/World Managers/PickupRunesInteractable.cs,Assets/Script
+Assets/Tests/Editor/DoorSystemTests.cs,15,Assets/Data/Prefabs/World Objects/Doors/Dungeon Door.prefab,Assets/Data
+Assets/Tests/Editor/DoorSystemTests.cs,17,Assets/Data/Prefabs/World Objects/Doors/Locked Dungeon Door.prefab,Assets/Data
+Assets/Tests/Editor/DoorSystemTests.cs,19,Assets/Data/Prefabs/World Objects/Doors/Lever Gate.prefab,Assets/Data
+Assets/Tests/Editor/DoorSystemTests.cs,21,Assets/Data/Items/Key Items/Old Dungeon Key.asset,Assets/Data
+Assets/Tests/Editor/DoorSystemTests.cs,23,Assets/Data/Prefabs/Interactables/Old Dungeon Key Pickup.prefab,Assets/Data
+Assets/Tests/Editor/DoorSystemTests.cs,25,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Tests/Editor/DoorSystemTests.cs,27,Assets/Script/World Managers/DoorInteractable.cs,Assets/Script
+Assets/Tests/Editor/DoorSystemTests.cs,29,Assets/Script/World Managers/ActivateOtherInteractableInteractable.cs,Assets/Script
+Assets/Tests/Editor/DoorSystemTests.cs,31,Assets/Script/World Managers/MessageInteractable.cs,Assets/Script
+Assets/Tests/Editor/DoorSystemTests.cs,199,Assets/Data/Animations/Environment/Doors/,Assets/Data
+Assets/Tests/Editor/DungeonLevelDesignSystemTests.cs,16,Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity,Assets/Scenes
+Assets/Tests/Editor/DungeonLevelDesignSystemTests.cs,20,Assets/Data/Settings/Level Design,Assets/Data
+Assets/Tests/Editor/DungeonLevelDesignSystemTests.cs,126,Assets/Scenes/Levels/LV01_AbandonedMonastery/Shared/Lighting/Baked/LightingData.asset,Assets/Scenes
+Assets/Tests/Editor/DungeonLevelDesignSystemTests.cs,130,Assets/Scenes/Levels/LV01_AbandonedMonastery/Shared/Lighting/Baked,Assets/Scenes
+Assets/Tests/Editor/ElevatorSystemTests.cs,15,Assets/Data/Prefabs/World Objects/Elevator,Assets/Data
+Assets/Tests/Editor/ElevatorSystemTests.cs,17,Assets/Data/Animations/Environment/Elevator,Assets/Data
+Assets/Tests/Editor/ElevatorSystemTests.cs,162,Assets/Script/World Managers/ElevatorInteractable.cs,Assets/Script
+Assets/Tests/Editor/ElevatorSystemTests.cs,183,Assets/Script/World Managers/ElevatorButtonTrigger.cs,Assets/Script
+Assets/Tests/Editor/ElevatorSystemTests.cs,185,Assets/Script/World Managers/CallElevatorLeverInteractable.cs,Assets/Script
+Assets/Tests/Editor/ElevatorSystemTests.cs,203,Assets/Script/World Managers/ElevatorInteractable.cs,Assets/Script
+Assets/Tests/Editor/ElevatorSystemTests.cs,205,Assets/Script/World Managers/IsOnElevatorTrigger.cs,Assets/Script
+Assets/Tests/Editor/ElevatorSystemTests.cs,207,Assets/Script/Character/CharacterLocomotionManager.cs,Assets/Script
+Assets/Tests/Editor/ElevatorSystemTests.cs,209,Assets/Script/Character/CharacterNetworkManager.cs,Assets/Script
+Assets/Tests/Editor/EquipmentUISystemTests.cs,13,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/EquipmentUISystemTests.cs,15,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Tests/Editor/EquipmentUISystemTests.cs,17,Assets/Data/Items/Armor/Starter Hood.asset,Assets/Data
+Assets/Tests/Editor/EquipmentUISystemTests.cs,19,Assets/Data/Prefabs/UI/Equipment Inventory Slot.prefab,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,15,Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,17,Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,19,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,21,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,23,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,25,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Tests/Editor/FlaskSystemTests.cs,28,Assets/Data/Animations/Flasks/Drink Start.anim,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,30,Assets/Data/Animations/Flasks/Drink 01.anim,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,32,Assets/Data/Animations/Flasks/Drink 02.anim,Assets/Data
+Assets/Tests/Editor/FlaskSystemTests.cs,334,Assets/Scenes/Frontend/SCN_MainMenu.unity,Assets/Scenes
+Assets/Tests/Editor/FocusPointsSystemTests.cs,14,Assets/Data/Items/Spells/Fireball.asset,Assets/Data
+Assets/Tests/Editor/FocusPointsSystemTests.cs,16,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/FocusPointsSystemTests.cs,18,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/FrostbiteSystemTests.cs,14,Assets/Resources/Effects/Take Frost Buildup Effect.asset,Assets/Resources
+Assets/Tests/Editor/FrostbiteSystemTests.cs,16,Assets/Resources/Effects/Degrade Frost Buildup Effect.asset,Assets/Resources
+Assets/Tests/Editor/FrostbiteSystemTests.cs,18,Assets/Resources/Effects/Frostbite Stamina Regeneration Modifier.asset,Assets/Resources
+Assets/Tests/Editor/FrostbiteSystemTests.cs,20,Assets/Resources/Effects/Frostbite Effect.asset,Assets/Resources
+Assets/Tests/Editor/FrostbiteSystemTests.cs,22,Assets/Resources/Effects/Frostbite VFX.prefab,Assets/Resources
+Assets/Tests/Editor/FrostbiteSystemTests.cs,24,Assets/Resources/Effects/Frozen Material.mat,Assets/Resources
+Assets/Tests/Editor/FrostbiteSystemTests.cs,26,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/FrostbiteSystemTests.cs,192,Assets/Script/Character/CharacterNetworkManager.cs,Assets/Script
+Assets/Tests/Editor/FrostbiteSystemTests.cs,195,Assets/Script/Character/CharacterManager.cs,Assets/Script
+Assets/Tests/Editor/FrostbiteSystemTests.cs,198,Assets/Script/Character/Effects/CharacterEffectsManager.cs,Assets/Script
+Assets/Tests/Editor/FrostbiteSystemTests.cs,201,Assets/Script/Damage/DamageCollider.cs,Assets/Script
+Assets/Tests/Editor/FrostbiteSystemTests.cs,204,Assets/Script/Character/Player/Player UI/PlayerUIHUDManager.cs,Assets/Script
+Assets/Tests/Editor/ItemPickupSystemTests.cs,11,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/ItemPickupSystemTests.cs,13,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Tests/Editor/JumpingAttackSystemTests.cs,14,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Tests/Editor/JumpingAttackSystemTests.cs,17,Assets/Art/Animations/Controllers/Overrides/Straight Sword.overrideController,Assets/Art
+Assets/Tests/Editor/JumpingAttackSystemTests.cs,21,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Tests/Editor/JumpingAttackSystemTests.cs,22,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Tests/Editor/JumpingAttackSystemTests.cs,23,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Tests/Editor/JumpingAttackSystemTests.cs,123,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Tests/Editor/LadderSystemTests.cs,15,Assets/Data/Prefabs/World Objects/Ladders/Standard Ladder.prefab,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,17,Assets/Data/Animations/Humanoid/Humanoid Runtime.controller,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,19,Assets/Data/Animations/Ladders/Ladder Fall Start.anim,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,21,Assets/Script/Character/Player/PlayerLocomotionManager.cs,Assets/Script
+Assets/Tests/Editor/LadderSystemTests.cs,23,Assets/Script/Character/Player/PlayerNetworkManager.cs,Assets/Script
+Assets/Tests/Editor/LadderSystemTests.cs,25,Assets/Script/Character/Player/PlayerAnimatorManager.cs,Assets/Script
+Assets/Tests/Editor/LadderSystemTests.cs,27,Assets/Script/Character/CharacterManager.cs,Assets/Script
+Assets/Tests/Editor/LadderSystemTests.cs,29,Assets/Script/Effects/Instant Effects/TakeDamageEffect.cs,Assets/Script
+Assets/Tests/Editor/LadderSystemTests.cs,31,Assets/Script/World Managers/LadderInteractable.cs,Assets/Script
+Assets/Tests/Editor/LadderSystemTests.cs,35,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,37,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,39,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,41,Assets/Data/Animator Overrides/Weapons/,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,43,Assets/Data/Animations/Archery/Bow.overrideController,Assets/Data
+Assets/Tests/Editor/LadderSystemTests.cs,166,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/LargeWorldStreamingSystemTests.cs,16,Assets/Resources/World Locations,Assets/Resources
+Assets/Tests/Editor/LargeWorldStreamingSystemTests.cs,18,Assets/Data/Prefabs/World Streaming/World Location Triggers,Assets/Data
+Assets/Tests/Editor/LargeWorldStreamingSystemTests.cs,92,Assets/Script/World Managers/WorldSceneSubSceneManager.cs,Assets/Script
+Assets/Tests/Editor/LargeWorldStreamingSystemTests.cs,94,Assets/Script/Character/Player/PlayerManager.cs,Assets/Script
+Assets/Tests/Editor/LargeWorldStreamingSystemTests.cs,113,Assets/Script/World Managers/WorldSceneManager.cs,Assets/Script
+Assets/Tests/Editor/LevelUpSystemTests.cs,15,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/LevelUpSystemTests.cs,241,Assets/Script/Character/Player/Player UI/PlayerUILevelUpManager.cs,Assets/Script
+Assets/Tests/Editor/LevelUpSystemTests.cs,243,Assets/Script/Character/Player/PlayerManager.cs,Assets/Script
+Assets/Tests/Editor/LevelUpSystemTests.cs,245,Assets/Script/World Managers/DungeonOneWayGate.cs,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,13,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,64,Assets/Script/Character/Player/Player UI/,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,87,Assets/Script/Character/Player/Player UI/,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,107,Assets/Script/Character/Player/Player UI/,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,121,Assets/Script/World Managers/AI/WorldAIManager.cs,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,148,Assets/Script/World Managers/AI/AICharacterSpawner.cs,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,160,Assets/Script/Character/AI/AICharacterManager.cs,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,177,Assets/Script/World Managers/WorldSaveGameManager.cs,Assets/Script
+Assets/Tests/Editor/LoadingScreenSystemTests.cs,179,Assets/Script/Character/Player/Player UI/,Assets/Script
+Assets/Tests/Editor/MonsterItemDropSystemTests.cs,14,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Tests/Editor/MonsterItemDropSystemTests.cs,16,Assets/Data/Prefabs/Interactables/Item Pickup.prefab,Assets/Data
+Assets/Tests/Editor/MonsterItemDropSystemTests.cs,18,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/MonsterItemDropSystemTests.cs,20,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Tests/Editor/MonsterItemDropSystemTests.cs,22,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/MonsterItemDropSystemTests.cs,26,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Tests/Editor/ParrySystemTests.cs,15,Assets/Data/Items/Ashes Of War/Parry Slow.asset,Assets/Data
+Assets/Tests/Editor/ParrySystemTests.cs,17,Assets/Data/Items/Weapons/Melee Weapons/Medium Shield.asset,Assets/Data
+Assets/Tests/Editor/ParrySystemTests.cs,19,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Tests/Editor/ParrySystemTests.cs,21,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Tests/Editor/ParrySystemTests.cs,23,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Tests/Editor/ParrySystemTests.cs,28,Assets/Art/Animations/Characters/Humanoid/Combat/Shield/,Assets/Art
+Assets/Tests/Editor/ParrySystemTests.cs,30,Assets/Art/Animations/Characters/Humanoid/Combat/Shield/,Assets/Art
+Assets/Tests/Editor/ParrySystemTests.cs,32,Assets/Art/Animations/Characters/Humanoid/Combat/Shield/,Assets/Art
+Assets/Tests/Editor/ParrySystemTests.cs,179,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/ParrySystemTests.cs,192,Assets/Data/AI/Boss/Fallen Watcher/{fileName},Assets/Data
+Assets/Tests/Editor/PlayerBodyManagerTests.cs,13,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,14,Assets/Resources/Effects/Poisoned Effect.asset,Assets/Resources
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,16,Assets/Resources/Effects/Poisoned VFX.prefab,Assets/Resources
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,18,Assets/Data/Prefabs/UI/Status Effect Warning.prefab,Assets/Data
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,20,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,123,Assets/Script/Character/CharacterNetworkManager.cs,Assets/Script
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,126,Assets/Script/Character/Effects/CharacterEffectsManager.cs,Assets/Script
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,129,Assets/Script/Effects/Timed Effects/PoisonedEffect.cs,Assets/Script
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,153,Assets/Script/Character/Effects/CharacterEffectsManager.cs,Assets/Script
+Assets/Tests/Editor/PoisonStatusSystemTests.cs,156,Assets/Script/Effects/Instant Effects/TakeBuildupEffect.cs,Assets/Script
+Assets/Tests/Editor/PowerStanceSystemTests.cs,15,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Tests/Editor/PowerStanceSystemTests.cs,18,Assets/Art/Animations/Characters/Humanoid/Combat/Sword/,Assets/Art
+Assets/Tests/Editor/PowerStanceSystemTests.cs,20,Assets/Art/Animations/Characters/Humanoid/Locomotion/,Assets/Art
+Assets/Tests/Editor/PowerStanceSystemTests.cs,24,Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset,Assets/Data
+Assets/Tests/Editor/PowerStanceSystemTests.cs,25,Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset,Assets/Data
+Assets/Tests/Editor/PowerStanceSystemTests.cs,26,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Tests/Editor/PowerStanceSystemTests.cs,409,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/ProjectileUISystemTests.cs,14,Assets/Data/Items/Projectiles/Standard Arrow.asset,Assets/Data
+Assets/Tests/Editor/ProjectileUISystemTests.cs,16,Assets/Data/Items/Projectiles/Fire Arrow.asset,Assets/Data
+Assets/Tests/Editor/ProjectileUISystemTests.cs,18,Assets/Data/Items/Weapons/Ranged Weapons/Longbow.asset,Assets/Data
+Assets/Tests/Editor/ProjectileUISystemTests.cs,20,Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset,Assets/Data
+Assets/Tests/Editor/ProjectileUISystemTests.cs,22,Assets/Data/Prefabs/UI/Equipment Slot.prefab,Assets/Data
+Assets/Tests/Editor/ProjectileUISystemTests.cs,24,Assets/Data/Prefabs/UI/Quick Slot UI.prefab,Assets/Data
+Assets/Tests/Editor/ProjectileUISystemTests.cs,26,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/ProjectileUISystemTests.cs,232,Assets/Script/Character/Player/PlayerCombatManager.cs,Assets/Script
+Assets/Tests/Editor/ProjectileUISystemTests.cs,234,Assets/Script/Character/Inventory/PlayerInventoryManager.cs,Assets/Script
+Assets/Tests/Editor/ProjectileUISystemTests.cs,236,Assets/Script/Character/Player/PlayerInteractionManager.cs,Assets/Script
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,14,Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset,Assets/Data
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,16,Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset,Assets/Data
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,18,Assets/Data/Items/Projectiles/Standard Arrow.asset,Assets/Data
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,20,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,22,Assets/Data/Prefabs/UI/Quick Slot UI.prefab,Assets/Data
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,24,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,289,Assets/Script/Character/Inventory/PlayerInventoryManager.cs,Assets/Script
+Assets/Tests/Editor/QuickSlotUISystemTests.cs,291,Assets/Script/World Managers/PlayerInputManager.cs,Assets/Script
+Assets/Tests/Editor/RiposteSystemTests.cs,14,Assets/Data/Animations/AI/Undead AI Animator.controller,Assets/Data
+Assets/Tests/Editor/RiposteSystemTests.cs,16,Assets/Art/Animations/Characters/Humanoid/Combat/General/,Assets/Art
+Assets/Tests/Editor/RuneSystemTests.cs,13,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/RuneSystemTests.cs,15,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/RuneSystemTests.cs,17,Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab,Assets/Data
+Assets/Tests/Editor/RuneSystemTests.cs,19,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/RuneSystemTests.cs,68,Assets/Script/Character/Player/Player UI/PlayerUIHUDManager.cs,Assets/Script
+Assets/Tests/Editor/RuneSystemTests.cs,143,Assets/Script/Character/AI/AICharacterNetworkManager.cs,Assets/Script
+Assets/Tests/Editor/RuneSystemTests.cs,155,Assets/Script/Character/Player/Player UI/PlayerUIManager.cs,Assets/Script
+Assets/Tests/Editor/RuneSystemTests.cs,157,Assets/Script/Character/Player/PlayerManager.cs,Assets/Script
+Assets/Tests/Editor/SceneOptimizationSystemTests.cs,16,Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity,Assets/Scenes
+Assets/Tests/Editor/SceneOptimizationSystemTests.cs,31,Assets/Scenes/Levels/LV01_AbandonedMonastery/Shared/Occlusion/OcclusionCullingData.asset,Assets/Scenes
+Assets/Tests/Editor/SceneOptimizationSystemTests.cs,120,Assets/Script/World Managers/AreaLightActivationTrigger.cs,Assets/Script
+Assets/Tests/Editor/SiteOfGraceTravelSystemTests.cs,17,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/SiteOfGraceTravelSystemTests.cs,19,Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity,Assets/Scenes
+Assets/Tests/Editor/SiteOfGraceTravelSystemTests.cs,203,Assets/Script/World Managers/SiteOfGraceInteractable.cs,Assets/Script
+Assets/Tests/Editor/SiteOfGraceTravelSystemTests.cs,205,Assets/Script/Character/Player/Player UI/PlayerUIManager.cs,Assets/Script
+Assets/Tests/Editor/SiteOfGraceTravelSystemTests.cs,220,Assets/Script/Character/Inventory/PlayerInventoryManager.cs,Assets/Script
+Assets/Tests/Editor/SlopeSlidingContinuationSystemTests.cs,180,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/SlopeSlidingSystemTests.cs,156,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/SneakingSystemTests.cs,14,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Tests/Editor/SneakingSystemTests.cs,17,Assets/Data/Prefabs/World Objects/Stealth Object.prefab,Assets/Data
+Assets/Tests/Editor/SneakingSystemTests.cs,173,Assets/Script/{relativePath},Assets/Script
+Assets/Tests/Editor/SpellSystemTests.cs,15,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Tests/Editor/SpellSystemTests.cs,17,Assets/Data/Prefabs/Player.prefab,Assets/Data
+Assets/Tests/Editor/SpellSystemTests.cs,19,Assets/Data/Items/Spells/Fireball.asset,Assets/Data
+Assets/Tests/Editor/SpellSystemTests.cs,21,Assets/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset,Assets/Data
+Assets/Tests/Editor/SpellSystemTests.cs,23,Assets/Data/Prefabs/Spells/Fireball.prefab,Assets/Data
+Assets/Tests/Editor/SpellSystemTests.cs,26,Assets/Art/Animations/Animator Controllers/Humanoid/,Assets/Art
+Assets/Tests/Editor/StanceBreakingSystemTests.cs,12,Assets/Data/Prefabs/Characters/AI/Undead AI.prefab,Assets/Data
+Assets/Tests/Editor/StanceBreakingSystemTests.cs,14,Assets/Art/Animations/Characters/Humanoid/Actions/,Assets/Art
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,16,Assets/Resources/Effects/Take Poison Buildup Effect.asset,Assets/Resources
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,18,Assets/Resources/Effects/Take Bleed Buildup Effect.asset,Assets/Resources
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,20,Assets/Resources/Effects/Degrade Poison Buildup Effect.asset,Assets/Resources
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,22,Assets/Resources/Effects/Degrade Bleed Buildup Effect.asset,Assets/Resources
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,24,Assets/Data/Prefabs/UI/Buildup Bar.prefab,Assets/Data
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,26,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,214,Assets/Script/Character/Effects/CharacterEffectsManager.cs,Assets/Script
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,217,Assets/Script/Character/Effects/PlayerEffectsManager.cs,Assets/Script
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,220,Assets/Script/Character/Player/Player UI/PlayerUIHUDManager.cs,Assets/Script
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,223,Assets/Script/Damage/DamageCollider.cs,Assets/Script
+Assets/Tests/Editor/StatusEffectsSystemTests.cs,226,Assets/Script/Effects/Instant Effects/TakeBuildupEffect.cs,Assets/Script
+Assets/Tests/Editor/WeaponTrailSystemTests.cs,13,Assets/Data/Prefabs/Weapons/Melee Weapons/Broadsword.prefab,Assets/Data
+Assets/Tests/Editor/WeaponTrailSystemTests.cs,15,Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab,Assets/Data
+Assets/Tests/Editor/WeaponTrailSystemTests.cs,17,Assets/Script/Items/WeaponManager.cs,Assets/Script
+Assets/Tests/Editor/WeaponTrailSystemTests.cs,19,Assets/Script/Character/Equipment/PlayerEquipmentManager.cs,Assets/Script
+Assets/Tests/Editor/WeaponTrailSystemTests.cs,21,Assets/Script/Character/Player/PlayerCombatManager.cs,Assets/Script
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,15,Assets/Data/Items/Upgrade Materials/Small Smithing Stone.asset,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,17,Assets/Data/Items/Upgrade Materials/Medium Smithing Stone.asset,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,19,Assets/Data/Items/Upgrade Materials/Large Smithing Stone.asset,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,21,Assets/Data/Prefabs/Word Managers/World Item Database.prefab,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,23,Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,25,Assets/Data/Prefabs/World Objects/Weapon Upgrade Anvil.prefab,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,27,Assets/Data/Prefabs/Interactables/Small Smithing Stone Pickup.prefab,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,29,Assets/Data/Dialogue/Blacksmith/Blacksmith Stage 00.asset,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,31,Assets/Data/Prefabs/Characters/AI/Blacksmith NPC.prefab,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,33,Assets/Data/Prefabs/Word Managers/World AI Manager.prefab,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,35,Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab,Assets/Data
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,289,Assets/Script/Character/Inventory/PlayerInventoryManager.cs,Assets/Script
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,292,Assets/Script/Dialogue/CharacterDialogue.cs,Assets/Script
+Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,295,Assets/Script/Character/Player/Player UI/,Assets/Script
+Assets/Tests/Editor/WorldRendererStreamingSystemTests.cs,103,Assets/Script/World Managers/WorldSceneManager.cs,Assets/Script
+Assets/Tests/Editor/WorldRendererStreamingSystemTests.cs,105,Assets/Script/World Managers/WorldSceneSubSceneManager.cs,Assets/Script
+Assets/Tests/Editor/WorldRendererStreamingSystemTests.cs,209,Assets/Scenes/Levels/LV01_AbandonedMonastery,Assets/Scenes
+Assets/Tests/Editor/WorldStreamingSystemTests.cs,18,Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity,Assets/Scenes
+Assets/Tests/Editor/WorldStreamingSystemTests.cs,20,Assets/Resources/World Locations,Assets/Resources
+Assets/Tests/Editor/WorldStreamingSystemTests.cs,22,Assets/Settings/World Streaming Probe Volume Baking Set.asset,Assets/Settings
+Assets/Tests/Editor/WorldStreamingSystemTests.cs,24,Assets/Data/Prefabs/World Streaming/Area Load Trigger.prefab,Assets/Data
+Assets/Tests/Editor/WorldStreamingSystemTests.cs,357,Assets/Script/{relativePath},Assets/Script
+Assets/_GameTestShader/Editor/VFX/SwordSlashCoreConfigurator.cs,179,Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab,Assets/Data
+Assets/_GameTestShader/Editor/VFX/SwordSlashCoreConfigurator.cs,180,Assets/Data/Prefabs/Weapons/Melee Weapons/Broadsword.prefab,Assets/Data
+Assets/_GameTestShader/Editor/VFX/SwordSlashCoreConfigurator.cs,286,Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab,Assets/Data
+Assets/_GameTestShader/Editor/VFX/SwordSlashCoreConfigurator.cs,360,Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab,Assets/Data
+Assets/_GameTestShader/Editor/VFX/SwordSlashCoreConfigurator.cs,362,Assets/Data/Prefabs/Weapons/Melee Weapons/Broadsword.prefab,Assets/Data

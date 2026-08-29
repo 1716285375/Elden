@@ -1,0 +1,191 @@
+ M .gitignore
+ M .mcp.json
+ M "Assets/Art/UI Sprites/Title_Screen_UI.png"
+ M "Assets/Data/Materials/Effects/Weapon Trail.mat"
+ M "Assets/Data/Materials/Item Pickup Glow.mat"
+ M "Assets/Data/Materials/Level Design/M_Crypt_Monument_Impostor.mat"
+ M "Assets/Data/Materials/Spells/Fireball Full Charge.mat"
+ M Assets/Data/Materials/Spells/Fireball.mat
+ M Assets/Data/Prefabs/Player.prefab
+ M "Assets/Data/Prefabs/Spells/Fireball Full Charge.prefab"
+ M "Assets/Data/Prefabs/Spells/Fireball Full Impact.prefab"
+ M "Assets/Data/Prefabs/Spells/Fireball Release.prefab"
+ M "Assets/Data/Prefabs/Spells/Fireball Warm Up.prefab"
+ M Assets/Data/Prefabs/Spells/Fireball.prefab
+ M "Assets/Data/Prefabs/Weapons/Melee Weapons/Broadsword.prefab"
+ M "Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab"
+ M "Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab"
+ M Assets/DefaultNetworkPrefabs.asset
+ M Assets/Editor/AICharacterSpawnerSystemSetup.cs
+ M Assets/Editor/AICharacterSystemSetup.cs
+ M Assets/Editor/ArcherySystemSetup.cs
+ M Assets/Editor/ArtRecovery/RecoveredMaterialRebuilder.cs
+ M Assets/Editor/BossFightSystemSetup.cs
+ M Assets/Editor/BreakableObjectSystemSetup.cs
+ M Assets/Editor/CharacterDialogueSystemSetup.cs
+ M Assets/Editor/CharacterEffectsSystemSetup.cs
+ M Assets/Editor/ChargedAttackSystemSetup.cs
+ M Assets/Editor/DamageSystemSetup.cs
+ M Assets/Editor/DungeonLevelDesignSetup.cs
+ M Assets/Editor/EquipmentUISystemSetup.cs
+ M Assets/Editor/FlaskSystemSetup.cs
+ M Assets/Editor/FogWallInteractableSetup.cs
+ M Assets/Editor/ItemPickupSystemSetup.cs
+ M Assets/Editor/LargeWorldSceneSetup.cs
+ M Assets/Editor/PlayerActionSetup.cs
+ M Assets/Editor/PlayerAnimationSetup.cs
+ M Assets/Editor/PlayerMovementSetup.cs
+ M Assets/Editor/PlayerStaminaSetup.cs
+ M Assets/Editor/RiposteSystemSetup.cs
+ M Assets/Editor/SaveGameSystemSetup.cs
+ M Assets/Editor/SceneOptimizationSetup.cs
+ M Assets/Editor/SiteOfGraceSystemSetup.cs
+ M Assets/Editor/SiteOfGraceTravelSystemSetup.cs
+ M Assets/Editor/SoundEffectSystemSetup.cs
+ M Assets/Editor/StanceBreakingSystemSetup.cs
+ M Assets/Editor/WeaponSystemSetup.cs
+ M Assets/Editor/WorldRendererStreamingSetup.cs
+ M Assets/Editor/WorldStreamingSystemSetup.cs
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_00.asset"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_00.asset.meta"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_01.asset"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_01.asset.meta"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_02.asset"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_02.asset.meta"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_03.asset"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_03.asset.meta"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_04.asset"
+ D "Assets/Resources/World Locations/Area_01_Sub_Area_04.asset.meta"
+ D Assets/Scenes/Scene_Main_Menu_01.unity
+ D Assets/Scenes/Scene_Main_Menu_01.unity.meta
+ D Assets/Scenes/Scene_World_01.meta
+ D Assets/Scenes/Scene_World_01.unity
+ D Assets/Scenes/Scene_World_01.unity.meta
+ D Assets/Scenes/Scene_World_01/LightingData.asset
+ D Assets/Scenes/Scene_World_01/LightingData.asset.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-0_comp_dir.png
+ D Assets/Scenes/Scene_World_01/Lightmap-0_comp_dir.png.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-0_comp_light.exr
+ D Assets/Scenes/Scene_World_01/Lightmap-0_comp_light.exr.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-0_comp_shadowmask.png
+ D Assets/Scenes/Scene_World_01/Lightmap-0_comp_shadowmask.png.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-1_comp_dir.png
+ D Assets/Scenes/Scene_World_01/Lightmap-1_comp_dir.png.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-1_comp_light.exr
+ D Assets/Scenes/Scene_World_01/Lightmap-1_comp_light.exr.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-1_comp_shadowmask.png
+ D Assets/Scenes/Scene_World_01/Lightmap-1_comp_shadowmask.png.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-2_comp_dir.png
+ D Assets/Scenes/Scene_World_01/Lightmap-2_comp_dir.png.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-2_comp_light.exr
+ D Assets/Scenes/Scene_World_01/Lightmap-2_comp_light.exr.meta
+ D Assets/Scenes/Scene_World_01/Lightmap-2_comp_shadowmask.png
+ D Assets/Scenes/Scene_World_01/Lightmap-2_comp_shadowmask.png.meta
+ D Assets/Scenes/Scene_World_01/OcclusionCullingData.asset
+ D Assets/Scenes/Scene_World_01/OcclusionCullingData.asset.meta
+ D Assets/Scenes/Scene_World_01/ReflectionProbe-0.exr
+ D Assets/Scenes/Scene_World_01/ReflectionProbe-0.exr.meta
+ D "Assets/Scenes/World Areas.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00_Effects.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00_Effects.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00_Props.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00_Props.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00_Spawners.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_00_Spawners.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01_Effects.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01_Effects.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01_Props.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01_Props.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01_Spawners.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_01_Spawners.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02_Effects.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02_Effects.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02_Props.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02_Props.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02_Spawners.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_02_Spawners.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03_Effects.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03_Effects.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03_Props.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03_Props.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03_Spawners.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_03_Spawners.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04_Effects.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04_Effects.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04_Props.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04_Props.unity.meta"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04_Spawners.unity"
+ D "Assets/Scenes/World Areas/Area_01_Sub_Area_04_Spawners.unity.meta"
+ M Assets/Script/Character/Player/PlayerInteractionManager.cs
+ M Assets/Script/Character/Player/PlayerManager.cs
+ M "Assets/Script/World Managers/Interactable.cs"
+ M "Assets/Script/World Managers/PlayerInputManager.cs"
+ M "Assets/Script/World Managers/WorldSaveGameManager.cs"
+ M "Assets/Script/World Managers/WorldSceneManager.cs"
+ M Assets/Settings/DefaultVolumeProfile.asset
+ M Assets/Settings/Mobile_RPAsset.asset
+ M Assets/Tests/Editor/BreakableObjectSystemTests.cs
+ M Assets/Tests/Editor/CharacterDialogueSystemTests.cs
+ M Assets/Tests/Editor/ComplexItemSaveSystemTests.cs
+ M Assets/Tests/Editor/DungeonLevelDesignSystemTests.cs
+ M Assets/Tests/Editor/FlaskSystemTests.cs
+ M Assets/Tests/Editor/LargeWorldStreamingSystemTests.cs
+ M Assets/Tests/Editor/SaveFileDataWriterTests.cs
+ M Assets/Tests/Editor/SceneOptimizationSystemTests.cs
+ M Assets/Tests/Editor/SiteOfGraceTravelSystemTests.cs
+ M Assets/Tests/Editor/WorldRendererStreamingSystemTests.cs
+ M Assets/Tests/Editor/WorldStreamingSystemTests.cs
+ M CLAUDE.md
+ M Docs/AI/UnityProjectContext.md
+ M Elden.slnx
+ M Packages/manifest.json
+ M Packages/packages-lock.json
+ M ProjectSettings/EditorBuildSettings.asset
+ M ProjectSettings/Packages/com.unity.probuilder/Settings.json
+ M ProjectSettings/ProjectSettings.asset
+ D Tools/ArtRecovery/apply_semantic_move_filesystem.py
+ D Tools/ArtRecovery/generate_rebuilt_materials.py
+ D Tools/ArtRecovery/organize_recovered_art.py
+ D Tools/ArtRecovery/prepare_material_rebuild.py
+ D Tools/ArtRecovery/rebuild_animation_bindings.py
+ D Tools/ArtRecovery/recover_nephilite_art.py
+ D Tools/ArtRecovery/validate_animation_bindings.py
+ D Tools/ArtRecovery/validate_rebuilt_materials.py
+?? Assets/Data/Animations/Humanoid.meta
+?? "Assets/Resources/World Locations/R01_MonasteryOutskirts.asset"
+?? "Assets/Resources/World Locations/R01_MonasteryOutskirts.asset.meta"
+?? "Assets/Resources/World Locations/R02_MonasteryInterior.asset"
+?? "Assets/Resources/World Locations/R02_MonasteryInterior.asset.meta"
+?? "Assets/Resources/World Locations/R03_Catacombs.asset"
+?? "Assets/Resources/World Locations/R03_Catacombs.asset.meta"
+?? "Assets/Resources/World Locations/R04_BellTower.asset"
+?? "Assets/Resources/World Locations/R04_BellTower.asset.meta"
+?? "Assets/Resources/World Locations/R05_BossSanctum.asset"
+?? "Assets/Resources/World Locations/R05_BossSanctum.asset.meta"
+?? Assets/Scenes/Bootstrap.meta
+?? Assets/Scenes/Frontend.meta
+?? Assets/Scenes/Frontend/
+?? Assets/Scenes/Levels.meta
+?? Assets/Scenes/Levels/
+?? Assets/Scenes/Persistent.meta
+?? Assets/Scenes/Tests.meta
+?? Assets/Scenes/Tests/
+?? "Assets/Script/Character/Animation State Behaviors.meta"
+?? "Assets/Script/Save System/WorldScenePathLayout.cs"
+?? "Assets/Script/Save System/WorldScenePathLayout.cs.meta"
+?? Assets/_GameTestShader.meta
+?? Assets/_GameTestShader/
+?? Docs/AI/CodeAnalysisRules.md
+?? Docs/AI/DiagramRules.md
+?? Docs/Diagrams/
+?? Docs/Refactor/
