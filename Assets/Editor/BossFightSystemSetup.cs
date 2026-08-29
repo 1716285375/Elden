@@ -25,8 +25,8 @@ namespace ZZ.Editor
             "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
         private const string k_PlayerUIManagerPrefabPath =
             "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
-        private const string k_NetworkPrefabsPath = "Assets/DefaultNetworkPrefabs.asset";
-        private const string k_WorldScenePath = "Assets/Scenes/Scene_World_01.unity";
+        private const string k_NetworkPrefabsPath = "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
+        private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_BossDataFolder = "Assets/Data/AI/Boss/Fallen Watcher";
         private const string k_FogMaterialPath =
             "Assets/Data/Materials/Fallen Watcher Fog Wall.mat";

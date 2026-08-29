@@ -14,7 +14,7 @@ namespace ZZ.Editor
         private const string k_DeadSpotMaterialPath =
             "Assets/Data/Materials/Effects/Dead Spot.mat";
         private const string k_NetworkPrefabsPath =
-            "Assets/DefaultNetworkPrefabs.asset";
+            "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
 
         [MenuItem("Tools/Elden/Configure Dead Spot System")]
         public static void ConfigureDeadSpotSystem()

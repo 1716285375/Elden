@@ -13,7 +13,7 @@ namespace ZZ.Tests
         private const string k_DeadSpotPrefabPath =
             "Assets/Resources/Effects/Dead Spot.prefab";
         private const string k_NetworkPrefabsPath =
-            "Assets/DefaultNetworkPrefabs.asset";
+            "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
 
         [Test]
         public void DeadSpotStateSurvivesJsonAndVersionTenMigratesSafely()
