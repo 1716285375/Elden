@@ -14,10 +14,10 @@ namespace ZZ.Editor
         private const string k_DeadStateName = "Dead_01";
         private const string k_DeadParameterName = "isDead";
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_DeathClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/You_Died_01.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/You_Died_01.anim";
         private const string k_PlayerUIManagerPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 

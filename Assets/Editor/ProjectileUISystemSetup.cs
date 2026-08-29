@@ -24,9 +24,9 @@ namespace ZZ.Editor
         private const string k_FireArrowPath =
             "Assets/_Game/Data/Items/Projectiles/Fire Arrow.asset";
         private const string k_StandardArrowIconPath =
-            "Assets/Art/Textures/UI/Items/Standard Arrow Icon.png";
+            "Assets/_Game/Art/UI/Shared/Textures/Items/Standard Arrow Icon.png";
         private const string k_FireArrowIconPath =
-            "Assets/Art/Textures/UI/Items/Fire Arrow Icon.png";
+            "Assets/_Game/Art/UI/Shared/Textures/Items/Fire Arrow Icon.png";
         private const string k_ProjectileContainerName = "Projectile Quick Slots";
 
         private static readonly string[] s_equipmentSlotNames =

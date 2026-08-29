@@ -11,7 +11,7 @@ namespace ZZ.Editor
     {
         private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_AnimatorControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
@@ -25,11 +25,11 @@ namespace ZZ.Editor
                 "m_hitForwardAnimations",
                 new[]
                 {
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_f_01.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_f_02.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_f_03.anim"
                 }),
             new ReactionDefinition(
@@ -37,11 +37,11 @@ namespace ZZ.Editor
                 "m_hitBackwardAnimations",
                 new[]
                 {
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_B_01.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_B_02.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_B_03.anim"
                 }),
             new ReactionDefinition(
@@ -49,11 +49,11 @@ namespace ZZ.Editor
                 "m_hitLeftAnimations",
                 new[]
                 {
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_L_01.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_L_02.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_L_03.anim"
                 }),
             new ReactionDefinition(
@@ -61,11 +61,11 @@ namespace ZZ.Editor
                 "m_hitRightAnimations",
                 new[]
                 {
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_R_01.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_R_02.anim",
-                    "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+                    "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                         "core_oh_hit_reaction_medium_R_03.anim"
                 })
         };

@@ -22,9 +22,9 @@ namespace ZZ.Editor
         private const string k_WeaponFolder =
             "Assets/_Game/Data/Items/Weapons/Melee Weapons";
         private const string k_CombatAudioFolder =
-            "Assets/Art/Audio/SFX/Combat";
+            "Assets/_Game/Audio/SFX/Combat";
         private const string k_UndeadAudioFolder =
-            "Assets/Art/Audio/Creatures/Undead";
+            "Assets/_Game/Audio/Creatures/Undead";
 
         private static readonly SoundCollectionDefinition[] s_weaponSounds =
         {

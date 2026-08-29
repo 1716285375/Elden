@@ -12,24 +12,24 @@ namespace ZZ.Editor
     public static class ParrySystemSetup
     {
         private const string k_PlayerControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_FastParryClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Shield/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Shield/" +
             "shield_off_parry_01_fast_start.anim";
         private const string k_MediumParryClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Shield/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Shield/" +
             "shield_off_parry_01_start.anim";
         private const string k_SlowParryClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Shield/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Shield/" +
             "shield_off_parry_01_slow_start.anim";
         private const string k_ParryLandClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "shield_off_parry_01_land.anim";
         private const string k_ParriedClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
             "core_main_parry_victim_01.anim";
         private const string k_ParryAssetFolder =
             "Assets/_Game/Data/Items/Ashes Of War";

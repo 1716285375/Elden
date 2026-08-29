@@ -18,17 +18,17 @@ namespace ZZ.Editor
         private const string k_WorldScenePath =
             WorldScenePathLayout.MasterScenePath;
         private const string k_AnimatorControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_RestClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Emotes/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Emotes/" +
             "core_stand_to_sit_02.anim";
         private const string k_SiteModelPath =
-            "Assets/Art/Models/Props/SM_Prop_Camp_Firepit_01.obj";
+            "Assets/_Game/Art/Environment/Props/Models/SM_Prop_Camp_Firepit_01.obj";
         private const string k_ParticleMaterialPath =
-            "Assets/Art/Materials/VFX/Fire_Additive_Emission_Mat_01.mat";
+            "Assets/_Game/Art/VFX/Shared/Materials/Fire_Additive_Emission_Mat_01.mat";
         private const string k_RestSoundPath =
-            "Assets/Art/Audio/SFX/General/SFX_Rest_At_Well_01.wav";
+            "Assets/_Game/Audio/SFX/General/SFX_Rest_At_Well_01.wav";
         private const string k_WorldAIManagerPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_SiteObjectName = "First Step Site of Grace";

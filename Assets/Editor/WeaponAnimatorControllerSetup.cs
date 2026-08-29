@@ -12,7 +12,7 @@ namespace ZZ.Editor
     public static class WeaponAnimatorControllerSetup
     {
         private const string k_BaseControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_OutputFolder =
             "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides";
@@ -29,11 +29,11 @@ namespace ZZ.Editor
         private const string k_BroadswordWeaponPath =
             "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_SwordCombatFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/";
         private const string k_UnarmedCombatFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/General/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/";
         private const string k_LocomotionFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/";
 
         private static readonly ClipOverrideDefinition[] s_unarmedOverrides =
         {

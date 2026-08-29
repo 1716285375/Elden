@@ -18,13 +18,13 @@ namespace ZZ.Editor
         private const string k_WorldNetworkManagerPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/World Network Manager.prefab";
         private const string k_AnimatorControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_PassThroughClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Interactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Interactions/" +
             "core_main_fog_door_01.anim";
         private const string k_PassThroughSoundPath =
-            "Assets/Art/Audio/SFX/Characters/Movement/" +
+            "Assets/_Game/Audio/SFX/Characters/Movement/" +
             "SFX_Walk_Through_Fog_01.wav";
         private const string k_FogMaterialPath =
             "Assets/_Game/Art/Shared/Materials/Fallen Watcher Fog Wall.mat";

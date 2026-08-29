@@ -13,7 +13,7 @@ namespace ZZ.Editor
     public static class ChargedAttackSystemSetup
     {
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
@@ -28,16 +28,16 @@ namespace ZZ.Editor
         private const string k_BroadswordPath =
             "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_ChargeClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_charge.anim";
         private const string k_HoldClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_hold.anim";
         private const string k_HeavyReleaseClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_release.anim";
         private const string k_ChargedReleaseClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_release_full.anim";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";

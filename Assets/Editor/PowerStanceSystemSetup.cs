@@ -12,15 +12,15 @@ namespace ZZ.Editor
     public static class PowerStanceSystemSetup
     {
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_GroundedParameter = "isGrounded";
         private const string k_CombatSwordFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Sword/";
         private const string k_LocomotionFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/";
 
         private static readonly string[] s_weaponPaths =
         {

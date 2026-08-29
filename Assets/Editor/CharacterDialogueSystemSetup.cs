@@ -38,13 +38,13 @@ namespace ZZ.Editor
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_GiantDialogueOnePath =
-            "Assets/Art/Audio/Creatures/Giant/SFX_Hill_Giant_Dialogue_01.wav";
+            "Assets/_Game/Audio/Creatures/Giant/SFX_Hill_Giant_Dialogue_01.wav";
         private const string k_GiantDialogueTwoPath =
-            "Assets/Art/Audio/Creatures/Giant/SFX_Hill_Giant_Dialogue_02.wav";
+            "Assets/_Game/Audio/Creatures/Giant/SFX_Hill_Giant_Dialogue_02.wav";
         private const string k_CoughingPath =
-            "Assets/Art/Audio/SFX/Characters/Voice/SFX_Rickart_Line_Coughing.wav";
+            "Assets/_Game/Audio/SFX/Characters/Voice/SFX_Rickart_Line_Coughing.wav";
         private const string k_FarewellPath =
-            "Assets/Art/Audio/SFX/General/SFX_Luna_Line_Farewell_Wanderer.wav";
+            "Assets/_Game/Audio/SFX/General/SFX_Luna_Line_Farewell_Wanderer.wav";
         private const string k_DialoguePopupName = "Dialogue Popup";
         private const string k_DialogueSubtitleName = "Dialogue Subtitle";
         private const string k_DialogueSpawnerName =

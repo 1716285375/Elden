@@ -121,9 +121,17 @@ InitTestScene*.unity*
 .codebuddy
 .agent
 
+# Local code intelligence indexes
+.codegraph/
+.code-review-graph/
+
+
+# Audio assets (kept out of git alongside recovered art)
+/[Aa]ssets/_Game/Audio/
+/[Aa]ssets/_Game/Audio*
 # Recovered art assets and recovery data (kept out of git)
-/[Aa]ssets/Art/
-/[Aa]ssets/Art*
+/[Aa]ssets/_Game/Art/
+/[Aa]ssets/_Game/Art*
 /Docs/ArtRecovery/
 
 # Third-party plugin binaries (reinstalled via the MCP/package installers)

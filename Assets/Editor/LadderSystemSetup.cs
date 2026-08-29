@@ -11,7 +11,7 @@ namespace ZZ.Editor
     public static class LadderSystemSetup
     {
         private const string k_SourceControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_RuntimeControllerPath =
             "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Runtime/Humanoid Runtime.controller";
@@ -325,7 +325,7 @@ namespace ZZ.Editor
 
         private static string GetHumanoidClipPath(string relativePath)
         {
-            return "Assets/Art/Animations/Characters/Humanoid/" +
+            return "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/" +
                 relativePath;
         }
 

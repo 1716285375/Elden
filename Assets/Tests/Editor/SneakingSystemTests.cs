@@ -11,7 +11,7 @@ namespace ZZ.Tests
     public class SneakingSystemTests
     {
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_StealthObjectPrefabPath =
             "Assets/_Game/Prefabs/World/Objects/Stealth Object.prefab";

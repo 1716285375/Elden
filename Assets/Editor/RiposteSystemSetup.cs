@@ -14,24 +14,24 @@ namespace ZZ.Editor
     public static class RiposteSystemSetup
     {
         private const string k_PlayerControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_RiposteClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
             "core_main_riposte_01.anim";
         private const string k_UnarmedRiposteClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
             "unarmed_main_riposte_01.anim";
         private const string k_MaceRiposteClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/Mace/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Mace/" +
             "mace_main_riposte_01.anim";
         private const string k_RipostedClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/General/" +
             "core_main_riposte_victim_01.anim";
         private const string k_GetUpClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
             "core_main_faceup_getup_01.anim";
         private const string k_UnarmedOverridePath =
             "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
@@ -43,7 +43,7 @@ namespace ZZ.Editor
         private const string k_MainMenuScenePath =
             WorldScenePathLayout.MainMenuScenePath;
         private const string k_CriticalStrikeSoundPath =
-            "Assets/Art/Audio/SFX/General/SFX_Critical_Strike_01.wav";
+            "Assets/_Game/Audio/SFX/General/SFX_Critical_Strike_01.wav";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_RiposteStateName = "Riposte_01";

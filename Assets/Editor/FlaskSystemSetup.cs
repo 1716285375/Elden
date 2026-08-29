@@ -12,7 +12,7 @@ namespace ZZ.Editor
     public static class FlaskSystemSetup
     {
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_DatabasePrefabPath =
             "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
@@ -507,12 +507,12 @@ namespace ZZ.Editor
                 serializedSounds,
                 "m_flaskRestorationSoundEffect",
                 LoadRequiredAsset<AudioClip>(
-                    "Assets/Art/Audio/SFX/Abilities/SFX_Heal_01.wav"));
+                    "Assets/_Game/Audio/SFX/Abilities/SFX_Heal_01.wav"));
             SetObject(
                 serializedSounds,
                 "m_emptyFlaskSoundEffect",
                 LoadRequiredAsset<AudioClip>(
-                    "Assets/Art/Audio/SFX/Abilities/" +
+                    "Assets/_Game/Audio/SFX/Abilities/" +
                     "SFX_Fail_Corpse_Revival_01.wav"));
             serializedSounds.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(effectsManager);

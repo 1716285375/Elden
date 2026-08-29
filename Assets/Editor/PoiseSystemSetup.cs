@@ -11,7 +11,7 @@ namespace ZZ.Editor
     public static class PoiseSystemSetup
     {
         private const string k_BaseControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_UndeadControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
@@ -640,7 +640,7 @@ namespace ZZ.Editor
 
         private static string ReactionPath(string animationName)
         {
-            return "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+            return "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
                 animationName;
         }
 

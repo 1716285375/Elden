@@ -46,15 +46,15 @@ namespace ZZ.Editor
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_HoverSoundPath =
-            "Assets/Art/Audio/UI/SFX_Menu_Sound_Hover_01.wav";
+            "Assets/_Game/Audio/UI/SFX_Menu_Sound_Hover_01.wav";
         private const string k_ConfirmSoundPath =
-            "Assets/Art/Audio/UI/SFX_Menu_Sound_Press_01.wav";
+            "Assets/_Game/Audio/UI/SFX_Menu_Sound_Press_01.wav";
         private const string k_UnableSoundPath =
-            "Assets/Art/Audio/UI/SFX_Menu_Raise_Stat_01.wav";
+            "Assets/_Game/Audio/UI/SFX_Menu_Raise_Stat_01.wav";
         private const string k_BlacksmithVoicePath =
-            "Assets/Art/Audio/Creatures/Jireh/SFX_Jireh_Line_02.wav";
+            "Assets/_Game/Audio/Creatures/Jireh/SFX_Jireh_Line_02.wav";
         private const string k_BlacksmithFarewellPath =
-            "Assets/Art/Audio/SFX/General/SFX_Luna_Line_Farewell_Wanderer.wav";
+            "Assets/_Game/Audio/SFX/General/SFX_Luna_Line_Farewell_Wanderer.wav";
 
         private static readonly Color s_backgroundColor =
             new(0.015f, 0.015f, 0.015f, 0.92f);

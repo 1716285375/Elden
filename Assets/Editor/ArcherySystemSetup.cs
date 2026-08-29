@@ -13,7 +13,7 @@ namespace ZZ.Editor
     public static class ArcherySystemSetup
     {
         private const string k_HumanoidControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_BowOverridePath =
             "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow.overrideController";

@@ -23,7 +23,7 @@ namespace ZZ.Tests
             "Assets/_Game/Prefabs/Abilities/Fireball.prefab";
         private const string k_InputAssetPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_AnimatorPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
 
         [Test]

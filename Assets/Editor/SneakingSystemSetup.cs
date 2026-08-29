@@ -10,10 +10,10 @@ namespace ZZ.Editor
     public static class SneakingSystemSetup
     {
         private const string k_TargetControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_SourceControllerPath =
-            "Assets/Art/Animations/Controllers/Runtime/Yosif.controller";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/Runtime/Yosif.controller";
         private const string k_StealthObjectPrefabPath =
             "Assets/_Game/Prefabs/World/Objects/Stealth Object.prefab";
         private const string k_BaseLayerName = "Base Layer";

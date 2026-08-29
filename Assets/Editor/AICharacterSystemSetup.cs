@@ -28,27 +28,27 @@ namespace ZZ.Editor
         private const string k_WorldScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_NetworkPrefabsPath = "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
         private const string k_SourceVisualPrefabPath =
-            "Assets/Art/Models/Rigged/Characters/Creatures/Undead/" +
+            "Assets/_Game/Art/Shared/Models/Rigged/Characters/Creatures/Undead/" +
             "Skeleton_00_Unarmed/Skeleton_00_Unarmed.prefab";
         private const string k_BloodVFXPath =
             "Assets/_Game/Prefabs/Effects/BloodSplatterVFX.prefab";
         private const string k_IdleClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Locomotion/" +
             "zombie_idle_01.anim";
         private const string k_WalkClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Locomotion/" +
             "zombie_walk_01.anim";
         private const string k_PivotLeftClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Locomotion/" +
             "zombie_turn_L90_01.anim";
         private const string k_PivotRightClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Locomotion/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Locomotion/" +
             "zombie_turn_R90_01.anim";
         private const string k_AttackClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Combat/General/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Combat/General/" +
             "zombie_light_attack_01.anim";
         private const string k_DeathClipPath =
-            "Assets/Art/Animations/Characters/Creatures/Undead/Reactions/" +
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Reactions/" +
             "zombie_death_UP_01.anim";
         private const string k_DamageableLayerName = "Damageable Character";
         private const string k_DamageColliderLayerName = "Damage Collider";
@@ -1584,7 +1584,7 @@ namespace ZZ.Editor
 
         private static string GetHumanoidReactionPath(string fileName)
         {
-            return "Assets/Art/Animations/Characters/Humanoid/Reactions/" + fileName;
+            return "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" + fileName;
         }
 
         private sealed class ReactionDefinition

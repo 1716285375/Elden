@@ -15,7 +15,7 @@ namespace ZZ.Editor
     {
         private const int k_ShieldItemID = 3;
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_DatabasePrefabPath =
@@ -35,9 +35,9 @@ namespace ZZ.Editor
         private const string k_ShieldControllerPath =
             "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/Medium Shield Animator.overrideController";
         private const string k_ShieldModelPath =
-            "Assets/Art/Models/Equipment/Weapons/Shield/SM_Wep_Shield_02.obj";
+            "Assets/_Game/Art/Equipment/Weapons/Models/Shield/SM_Wep_Shield_02.obj";
         private const string k_ShieldMaterialPath =
-            "Assets/Art/Materials/Equipment/Weapons/Shield/Iron_Shield_Material_01.mat";
+            "Assets/_Game/Art/Equipment/Weapons/Materials/Shield/Iron_Shield_Material_01.mat";
         private const string k_DamageLayerName = "Damage Collider";
         private const string k_BaseLayerName = "Base Layer";
         private const string k_ActionLayerName = "Action Override";
@@ -57,16 +57,16 @@ namespace ZZ.Editor
         private const string k_VerticalParameter = "Vertical";
         private const string k_EmptyStateName = "Empty";
         private const string k_LocomotionFolder =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/";
         private const string k_GuardBreakClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
             "shield_off_guard_break_01.anim";
 
         private static readonly string[] s_blockSoundPaths =
         {
-            "Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_01.wav",
-            "Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_02.wav",
-            "Assets/Art/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_03.wav"
+            "Assets/_Game/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_01.wav",
+            "Assets/_Game/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_02.wav",
+            "Assets/_Game/Audio/SFX/Combat/SFX_Metal_Shield_Medium_Impact_03.wav"
         };
 
         private static readonly WeaponBlockingDefinition[] s_weaponDefinitions =

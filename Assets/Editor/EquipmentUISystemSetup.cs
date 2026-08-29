@@ -53,16 +53,16 @@ namespace ZZ.Editor
         {
             new ArmorIconDefinition(
                 "Assets/_Game/Data/Items/Armor/Starter Hood.asset",
-                "Assets/Art/Textures/UI/Items/Dark_Hood_Icon_01.png"),
+                "Assets/_Game/Art/UI/Shared/Textures/Items/Dark_Hood_Icon_01.png"),
             new ArmorIconDefinition(
                 "Assets/_Game/Data/Items/Armor/Starter Armor.asset",
-                "Assets/Art/Textures/UI/Items/Dark_Leather_Armor_Icon_01.png"),
+                "Assets/_Game/Art/UI/Shared/Textures/Items/Dark_Leather_Armor_Icon_01.png"),
             new ArmorIconDefinition(
                 "Assets/_Game/Data/Items/Armor/Starter Gauntlets.asset",
-                "Assets/Art/Textures/UI/Items/Leather_Gloves_Icon_01.png"),
+                "Assets/_Game/Art/UI/Shared/Textures/Items/Leather_Gloves_Icon_01.png"),
             new ArmorIconDefinition(
                 "Assets/_Game/Data/Items/Armor/Starter Greaves.asset",
-                "Assets/Art/Textures/UI/Items/Assassins_Boots_Icon_01.png")
+                "Assets/_Game/Art/UI/Shared/Textures/Items/Assassins_Boots_Icon_01.png")
         };
 
         private static readonly Color s_menuBackgroundColor =

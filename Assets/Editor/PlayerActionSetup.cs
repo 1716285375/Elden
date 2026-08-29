@@ -16,15 +16,15 @@ namespace ZZ.Editor
         private const string k_RollStateName = "Roll_Forward_01";
         private const string k_BackStepStateName = "Back_Step_01";
         private const string k_ControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/Humanoid Animator Controller.controller";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/Humanoid Animator Controller.controller";
         private const string k_RollClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Locomotion/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Locomotion/" +
             "core_main_roll_med_to_idle_F_01.anim";
         private const string k_BackStepClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
             "core_main_back_step_medium_02.anim";
         private const string k_RollSoundFXPath =
-            "Assets/Art/Audio/SFX/General/SFX_Roll_01.wav";
+            "Assets/_Game/Audio/SFX/General/SFX_Roll_01.wav";
         private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
 

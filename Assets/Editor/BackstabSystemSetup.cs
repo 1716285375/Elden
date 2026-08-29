@@ -11,30 +11,30 @@ namespace ZZ.Editor
     public static class BackstabSystemSetup
     {
         private const string k_PlayerControllerPath =
-            "Assets/Art/Animations/Animator Controllers/Humanoid/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_AIControllerPath =
             "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_BackstabClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
             "core_main_backstab_01.anim";
         private const string k_UnarmedBackstabClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
             "unarmed_main_backstab_01.anim";
         private const string k_MaceBackstabClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Actions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Actions/" +
             "mace_main_backstab_01.anim";
         private const string k_BackstabbedClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
             "core_main_backstab_victim_01.anim";
         private const string k_BackstabGetUpClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
             "core_main_facedown_getup_180_01.anim";
         private const string k_BackstabDeathClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
             "core_down_death_01.anim";
         private const string k_RiposteDeathClipPath =
-            "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Reactions/" +
             "core_up_death_01.anim";
         private const string k_UnarmedOverridePath =
             "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +

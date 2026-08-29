@@ -26,7 +26,7 @@ namespace ZZ.Editor
         private const string k_WorldScenePath =
             WorldScenePathLayout.MasterScenePath;
         private const string k_PickupSoundPath =
-            "Assets/Art/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav";
+            "Assets/_Game/Audio/SFX/General/SFX_Pick_Up_Rare_Item_01.wav";
         private const string k_StraightSwordPath =
             "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
         private const string k_BroadswordPath =
@@ -34,7 +34,7 @@ namespace ZZ.Editor
         private const string k_MediumShieldPath =
             "Assets/_Game/Data/Items/Weapons/Melee Weapons/Medium Shield.asset";
         private const string k_MediumShieldIconPath =
-            "Assets/Art/Textures/UI/Items/Iron_Shield_Icon.png";
+            "Assets/_Game/Art/UI/Shared/Textures/Items/Iron_Shield_Icon.png";
         private const string k_InteractableLayerName = "Interactable";
         private const string k_PlayerSpawnPointName = "Player Spawn Point";
         private const string k_PopupOrganizerName = "Popup Organizer";
