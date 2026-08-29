@@ -198,6 +198,30 @@ namespace ZZ.Tests
         }
 
         [Test]
+        public void FlaskDrinkEventHasReceiverOnTheAnimatorGameObject()
+        {
+            GameObject root = PrefabUtility.LoadPrefabContents(k_PlayerPrefabPath);
+            try
+            {
+                Animator animator = root.GetComponentInChildren<Animator>(true);
+                Assert.That(animator, Is.Not.Null);
+                Component receiver = animator.GetComponents<Component>()
+                    .FirstOrDefault(component =>
+                        component.GetType().Name == "PlayerAnimatorManager");
+                Assert.That(receiver, Is.Not.Null,
+                    "Drink animation events fire on the Animator's GameObject, " +
+                    "which requires the PlayerAnimatorManager receiver.");
+                Assert.That(
+                    receiver.GetType().GetMethod("SuccessfullyUseQuickSlotItem"),
+                    Is.Not.Null);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
+        [Test]
         public void FlaskSuccessOccursOnlyAtDrinkAnimationEvents()
         {
             string[] startEvents = AnimationUtility.GetAnimationEvents(

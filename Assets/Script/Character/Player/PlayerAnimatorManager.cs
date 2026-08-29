@@ -142,6 +142,12 @@ namespace ZZ
             m_player?.PlayerCombatManager?.ReleaseArrow();
         }
 
+        /// <summary>Animation Event: resolves the presented quick-slot item's success frame.</summary>
+        public void SuccessfullyUseQuickSlotItem()
+        {
+            m_player?.PlayerCombatManager?.SuccessfullyUseQuickSlotItem();
+        }
+
         /// <summary>Receives the warm-up event already authored in the source spell clips.</summary>
         public void EnableSpellWarmUpFX()
         {

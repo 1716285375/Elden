@@ -308,7 +308,12 @@ namespace ZZ
                  hairstyleIndex++)
             {
                 GameObject hairObject = m_hairObjects[hairstyleIndex];
-                hairObject?.SetActive(
+                if (hairObject == null)
+                {
+                    continue;
+                }
+
+                hairObject.SetActive(
                     m_isHairVisible &&
                     hairstyleIndex > 0 &&
                     hairstyleIndex == m_hairstyleID);
