@@ -1,68 +1,13 @@
 OldPath,NewPath,Guid,Type,Phase,Status
-Assets/DefaultNetworkPrefabs.asset,Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset,,Asset,2,Planned
-Assets/InputSystem_Actions.inputactions,Assets/_Game/Settings/Input/InputSystem_Actions.inputactions,,Asset,2,Planned
-Assets/PlayerControls.inputactions,Assets/_Game/Settings/Input/PlayerControls.inputactions,,Asset,2,Planned
-Assets/PlayerControls.cs,Assets/_Game/Scripts/Generated/Input/PlayerControls.cs,,Script,2,Planned
-Assets/Script,Assets/_Game/Scripts,Folder,3,Planned
-Assets/Script/Actions,Assets/_Game/Scripts/Combat/Actions,Folder,3,Planned
-Assets/Script/Character,Assets/_Game/Scripts/Characters,Folder,3,Planned
-Assets/Script/Character/Player,Assets/_Game/Scripts/Characters/Player,Folder,3,Planned
-Assets/Script/Character/AI,Assets/_Game/Scripts/Characters/AI,Folder,3,Planned
-Assets/Script/Damage,Assets/_Game/Scripts/Combat/Damage,Folder,3,Planned
-Assets/Script/Projectiles,Assets/_Game/Scripts/Combat/Projectiles,Folder,3,Planned
-Assets/Script/Effects,Assets/_Game/Scripts/Combat/Effects,Folder,3,Planned
-Assets/Script/Dialogue,Assets/_Game/Scripts/Dialogue,Folder,3,Planned
-Assets/Script/Items,Assets/_Game/Scripts/Items,Folder,3,Planned
-Assets/Script/Spells,Assets/_Game/Scripts/Abilities/Spells,Folder,3,Planned
-Assets/Script/Input,Assets/_Game/Scripts/Input,Folder,3,Planned
-Assets/Script/Menu Scene,Assets/_Game/Scripts/UI/Frontend,Folder,3,Planned
-Assets/Script/Save System,Assets/_Game/Scripts/Save,Folder,3,Planned
-Assets/Script/Utility,Assets/_Game/Scripts/Utilities,Folder,3,Planned
-Assets/Script/World Managers,Assets/_Game/Scripts/World/Managers,Folder,3,Planned
-Assets/Script/World Objects,Assets/_Game/Scripts/World/Objects,Folder,3,Planned
-Assets/Data/Prefabs,Assets/_Game/Prefabs,Folder,4,Planned
-Assets/Data/AI,Assets/_Game/Data/AI,Folder,4,Planned
-Assets/Data/Actions,Assets/_Game/Data/Actions,Folder,4,Planned
-Assets/Data/Dialogue,Assets/_Game/Data/Dialogue,Folder,4,Planned
-Assets/Data/Effects,Assets/_Game/Data/Effects,Folder,4,Planned
-Assets/Data/Items,Assets/_Game/Data/Items,Folder,4,Planned
-Assets/Data/Materials,Assets/_Game/Art,Materials,4,Planned
-Assets/Data/Meshes,Assets/_Game/Art/Meshes,4,Planned
-Assets/Data/Icons,Assets/_Game/Art/UI/Icons,Folder,4,Planned
-Assets/Data/Animations,Assets/_Game/Art,Animations,4,Planned
-Assets/Data/Animator Overrides,Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides,Folder,4,Planned
-Assets/Data/Settings,Assets/_Game/Settings,Folder,4,Planned
-Assets/Art/Audio,Assets/_Game/Audio,Folder,5,Planned
-Assets/Art/Fonts,Assets/_Game/Art/UI/Fonts,Folder,5,Planned
-Assets/Art/UI Sprites,Assets/_Game/Art/UI,Folder,5,Planned
-Assets/Art/Animations/Characters/Creatures,Assets/_Game/Art/Characters/Creatures,Folder,5,Planned
-Assets/Art/Animations/Characters/Humanoid,Assets/_Game/Art/Characters/Shared/Humanoid/Animations,Folder,5,Planned
-Assets/Art/Animations/Animator Controllers,Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Base,Folder,5,Planned
-Assets/Art/Animations/Controllers,Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides,Folder,5,Planned
-Assets/Art/Animations/Cameras,Assets/_Game/Art/Cinematics/Animations/Cameras,Folder,5,Planned
-Assets/Art/Animations/Environment,Assets/_Game/Art/Environment/Shared/Animations,Folder,5,Planned
-Assets/Art/Animations/Props,Assets/_Game/Art/Environment/Props/Animations,Folder,5,Planned
-Assets/Art/Models,Assets/_Game/Art/Models,Folder,5,Planned
-Assets/Art/Textures,Assets/_Game/Art/Textures,Folder,5,Planned
-Assets/Art/Materials,Assets/_Game/Art/Materials,Folder,5,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Materials,Assets/_Game/Art/VFX/Combat/SwordSlash/Materials,Folder,6,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Meshes,Assets/_Game/Art/VFX/Combat/SwordSlash/Meshes,Folder,6,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Shaders,Assets/_Game/Art/VFX/Combat/SwordSlash/Shaders,Folder,6,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Textures,Assets/_Game/Art/VFX/Combat/SwordSlash/Textures,Folder,6,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/VFX_SwordSlash_Hit_Blue.prefab,Assets/_Game/Prefabs/VFX/Combat/SwordSlash/VFX_SwordSlash_Hit_Blue.prefab,c3b472422383f6a45b4d82a2ab597fbf,Prefab,6,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/VFX_SwordSlash_Swing_Blue.prefab,Assets/_Game/Prefabs/VFX/Combat/SwordSlash/VFX_SwordSlash_Swing_Blue.prefab,f6f340ae666771a41a7a53453530cc89,Prefab,6,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/Broadsword.prefab,Assets/_Dev/VFXAuthoring/SwordSlash/Fixtures/Weapons/Broadsword.prefab,34f00405902c9f04cbd9361b1c4bc208,Prefab,6,Planned
-Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/Straight Sword.prefab,Assets/_Dev/VFXAuthoring/SwordSlash/Fixtures/Weapons/Straight Sword.prefab,b90e5649b4f8b9d47a404581030748f9,Prefab,6,Planned
-Assets/_GameTestShader/Script/VFX/Combat/SwordSlash/SwordSlashTestDriver.cs,Assets/_Dev/VFXAuthoring/SwordSlash/Scripts/SwordSlashTestDriver.cs,d2c544e58211a3044aa8039c5d28e823,Script,6,Planned
-Assets/_GameTestShader/Script/VFX/Combat/SwordSlash/SwordSlashVFXPlayer.cs,Assets/_Game/Scripts/VFX/Combat/SwordSlash/SwordSlashVFXPlayer.cs,eff2692837a1dda4ab4e9b58a5c52f23,Script,6,Planned
-Assets/_GameTestShader/Script/VFX/Combat/SwordSlash/SwordSlashHitVFXSpawner.cs,Assets/_Game/Scripts/VFX/Combat/SwordSlash/SwordSlashHitVFXSpawner.cs,4de9cd9126829484481955c7533b3307,Script,6,Planned
-Assets/_GameTestShader/Editor/VFX/SwordSlashCoreConfigurator.cs,Assets/_Dev/VFXAuthoring/SwordSlash/Editor/SwordSlashCoreConfigurator.cs,,Script,6,Planned
-Assets/_GameTestShader/Scenes/Combat/Sword_Slash,Assets/_Dev/VFXAuthoring/SwordSlash/Scenes,Folder,6,Planned
-Assets/_GameTestShader/Rendering,Assets/_Dev/VFXAuthoring/SwordSlash/Settings/Rendering,Folder,6,Planned
-Assets/Editor,Assets/_Game/Editor,Folder,7,Planned
-Assets/Editor/ArtRecovery,Assets/_Game/Editor/Art/Recovery,Folder,7,Planned
-Assets/Tests/Editor,Assets/_Game/Tests/EditMode,Folder,8,Planned
-Assets/Scenes,Assets/_Game/Scenes,Folder,9,Planned
-Assets/Resources,Assets/_Game/Resources,Folder,10,Planned
-Assets/Screenshots,Docs/Screenshots,Screenshots,11,Planned
-Assets/Thirdparty,Assets/ThirdParty,Folder,12,Planned
+Assets/DefaultNetworkPrefabs.asset,Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset,,Asset,2,Moved
+Assets/InputSystem_Actions.inputactions,Assets/_Game/Settings/Input/InputSystem_Actions.inputactions,,Asset,2,Moved
+Assets/PlayerControls.inputactions,Assets/_Game/Settings/Input/PlayerControls.inputactions,,Asset,2,Moved
+Assets/PlayerControls.cs,Assets/_Game/Scripts/Generated/Input/PlayerControls.cs,,Script,2,Moved
+Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/VFX_SwordSlash_Hit_Blue.prefab,Assets/_Game/Prefabs/VFX/Combat/SwordSlash/VFX_SwordSlash_Hit_Blue.prefab,c3b472422383f6a45b4d82a2ab597fbf,Prefab,6,Moved
+Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/VFX_SwordSlash_Swing_Blue.prefab,Assets/_Game/Prefabs/VFX/Combat/SwordSlash/VFX_SwordSlash_Swing_Blue.prefab,f6f340ae666771a41a7a53453530cc89,Prefab,6,Moved
+Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/Broadsword.prefab,Assets/_Dev/VFXAuthoring/SwordSlash/Fixtures/Weapons/Broadsword.prefab,34f00405902c9f04cbd9361b1c4bc208,Prefab,6,Moved
+Assets/_GameTestShader/VFX/Combat/SwordSlash/Prefabs/Straight Sword.prefab,Assets/_Dev/VFXAuthoring/SwordSlash/Fixtures/Weapons/Straight Sword.prefab,b90e5649b4f8b9d47a404581030748f9,Prefab,6,Moved
+Assets/_GameTestShader/Script/VFX/Combat/SwordSlash/SwordSlashTestDriver.cs,Assets/_Dev/VFXAuthoring/SwordSlash/Scripts/SwordSlashTestDriver.cs,d2c544e58211a3044aa8039c5d28e823,Script,6,Moved
+Assets/_GameTestShader/Script/VFX/Combat/SwordSlash/SwordSlashVFXPlayer.cs,Assets/_Game/Scripts/VFX/Combat/SwordSlash/SwordSlashVFXPlayer.cs,eff2692837a1dda4ab4e9b58a5c52f23,Script,6,Moved
+Assets/_GameTestShader/Script/VFX/Combat/SwordSlash/SwordSlashHitVFXSpawner.cs,Assets/_Game/Scripts/VFX/Combat/SwordSlash/SwordSlashHitVFXSpawner.cs,4de9cd9126829484481955c7533b3307,Script,6,Moved
+Assets/_GameTestShader/Editor/VFX/SwordSlashCoreConfigurator.cs,Assets/_Dev/VFXAuthoring/SwordSlash/Editor/SwordSlashCoreConfigurator.cs,,Script,6,Moved
