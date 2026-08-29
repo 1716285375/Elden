@@ -20,7 +20,7 @@ namespace ZZ.Editor
         private const string k_TriggerFolder =
             "Assets/_Game/Prefabs/World/Streaming/World Location Triggers";
         private const string k_BakingSetPath =
-            "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
+            "Assets/_Game/Settings/Rendering/Lighting/World Streaming Probe Volume Baking Set.asset";
         private const string k_TagManagerPath =
             "ProjectSettings/TagManager.asset";
         private const string k_EventTriggerLayerName = "Event Trigger";
