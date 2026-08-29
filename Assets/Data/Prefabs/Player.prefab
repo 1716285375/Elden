@@ -113119,7 +113119,7 @@ Animator:
   m_GameObject: {fileID: 767646093220999042}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 616b0561584abe1489887556080583c6, type: 2}
-  m_Controller: {fileID: 9100000, guid: df07fba7b5502ca4db07300dc2496bd8, type: 2}
+  m_Controller: {fileID: 9100000, guid: 62e608eb8b759d541bf0b703474be8b0, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -146424,6 +146424,11 @@ MonoBehaviour:
   m_sprintingStaminaCost: 10
   m_dodgeStaminaCost: 25
   m_jumpStaminaCost: 25
+  m_ladderInputThreshold: 0.2
+  m_ladderHorizontalSmoothTime: 0.08
+  m_topExitMinimumHeightDelay: 0.45
+  m_knockOffLadderWindow: 1.25
+  m_jumpOffLadderUpwardVelocity: 2
 --- !u!114 &1203088054556932684
 MonoBehaviour:
   m_ObjectHideFlags: 0

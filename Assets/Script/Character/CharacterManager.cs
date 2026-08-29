@@ -45,6 +45,9 @@ namespace ZZ
         private float m_animatorSpeedBeforeFrozen = 1f;
         private readonly List<FrozenRendererState> m_frozenRendererStates = new();
         private readonly List<FrozenBehaviourState> m_frozenBehaviourStates = new();
+        private readonly List<FrozenBehaviourState> m_specialMovementIKStates =
+            new();
+        private bool m_areSpecialMovementIKBehavioursSuppressed;
 
         public CharacterAnimatorManager CharacterAnimatorManager => m_characterAnimatorManager;
         public CharacterEffectsManager CharacterEffectsManager => m_characterEffectsManager;
@@ -125,6 +128,7 @@ namespace ZZ
         public override void OnNetworkDespawn()
         {
             SetFrozenState(false);
+            SetSpecialMovementIKBehavioursSuppressed(false);
             m_characterUIManager?.UnbindNetworkHealth();
             base.OnNetworkDespawn();
         }
@@ -214,6 +218,31 @@ namespace ZZ
             }
 
             m_canMove = canMove;
+        }
+
+        /// <summary>Suspends hand, foot, and weapon IK during authored special movement.</summary>
+        public void SetSpecialMovementIKBehavioursSuppressed(bool isSuppressed)
+        {
+            if (m_areSpecialMovementIKBehavioursSuppressed == isSuppressed)
+            {
+                return;
+            }
+
+            m_areSpecialMovementIKBehavioursSuppressed = isSuppressed;
+            if (isSuppressed)
+            {
+                if (!m_hasFrozenStateSnapshot)
+                {
+                    CaptureAndDisableSpecialMovementIKBehaviours();
+                }
+
+                return;
+            }
+
+            if (!m_hasFrozenStateSnapshot)
+            {
+                RestoreSpecialMovementIKBehaviours();
+            }
         }
 
         /// <summary>
@@ -391,6 +420,46 @@ namespace ZZ
             m_characterLocomotionManager?.SetCanRun(m_canRunBeforeFrozen);
             m_characterLocomotionManager?.SetCanRoll(m_canRollBeforeFrozen);
             m_hasFrozenStateSnapshot = false;
+            if (m_areSpecialMovementIKBehavioursSuppressed &&
+                m_specialMovementIKStates.Count == 0)
+            {
+                CaptureAndDisableSpecialMovementIKBehaviours();
+            }
+            else if (!m_areSpecialMovementIKBehavioursSuppressed)
+            {
+                RestoreSpecialMovementIKBehaviours();
+            }
+        }
+
+        private void CaptureAndDisableSpecialMovementIKBehaviours()
+        {
+            m_specialMovementIKStates.Clear();
+            foreach (Behaviour behaviour in
+                GetComponentsInChildren<Behaviour>(true))
+            {
+                if (behaviour == null || !IsIKBehaviour(behaviour))
+                {
+                    continue;
+                }
+
+                m_specialMovementIKStates.Add(new FrozenBehaviourState(
+                    behaviour,
+                    behaviour.enabled));
+                behaviour.enabled = false;
+            }
+        }
+
+        private void RestoreSpecialMovementIKBehaviours()
+        {
+            foreach (FrozenBehaviourState state in m_specialMovementIKStates)
+            {
+                if (state.Behaviour != null)
+                {
+                    state.Behaviour.enabled = state.WasEnabled;
+                }
+            }
+
+            m_specialMovementIKStates.Clear();
         }
 
         private void DisableIKBehaviours()
