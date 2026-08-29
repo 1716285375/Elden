@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4be6e517beba5304a80021fecb631d5e, type: 3}
-  m_Name: Area_01_Sub_Area_03
+  m_Name: R04_BellTower
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldLocationSceneSet
   m_locationID: Area_01_Sub_Area_03
   m_legacyLocation: 4
   m_scenesRequiredForThisLocation:
-  - Area_01_Sub_Area_03
-  - Area_01_Sub_Area_03_Props
-  - Area_01_Sub_Area_03_Effects
-  - Area_01_Sub_Area_03_Spawners
+  - SCN_LV01_R04_A01_Base
+  - SCN_LV01_R04_A01_Props
+  - SCN_LV01_R04_A01_Effects
+  - SCN_LV01_R04_A01_Spawners
   m_requiredLocations:
   - {fileID: 11400000, guid: ab90b9d0e73ea374fa3dc77e1caf1039, type: 2}
   - {fileID: 11400000, guid: 6d6a5ae48571c474e933907137705072, type: 2}

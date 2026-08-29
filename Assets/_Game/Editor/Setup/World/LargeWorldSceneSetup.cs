@@ -16,7 +16,7 @@ namespace ZZ.Editor
     public static class LargeWorldSceneSetup
     {
         private const string k_WorldLocationFolder =
-            "Assets/Resources/World Locations";
+            "Assets/_Game/Resources/World Locations";
         private const string k_TriggerFolder =
             "Assets/_Game/Prefabs/World/Streaming/World Location Triggers";
         private const string k_BakingSetPath =

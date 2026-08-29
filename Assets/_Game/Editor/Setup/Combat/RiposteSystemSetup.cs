@@ -39,7 +39,7 @@ namespace ZZ.Editor
         private const string k_WeaponFolderPath =
             "Assets/_Game/Data/Items/Weapons/Melee Weapons";
         private const string k_CriticalEffectPath =
-            "Assets/Resources/Effects/Take Critical Damage Effect.asset";
+            "Assets/_Game/Resources/Effects/Take Critical Damage Effect.asset";
         private const string k_MainMenuScenePath =
             WorldScenePathLayout.MainMenuScenePath;
         private const string k_CriticalStrikeSoundPath =

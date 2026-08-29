@@ -10,7 +10,7 @@ namespace ZZ.Editor
     public static class DeadSpotSystemSetup
     {
         private const string k_DeadSpotPrefabPath =
-            "Assets/Resources/Effects/Dead Spot.prefab";
+            "Assets/_Game/Resources/Effects/Dead Spot.prefab";
         private const string k_DeadSpotMaterialPath =
             "Assets/_Game/Art/VFX/Combat/Dead Spot.mat";
         private const string k_NetworkPrefabsPath =
@@ -19,7 +19,7 @@ namespace ZZ.Editor
         [MenuItem("Tools/Elden/Configure Dead Spot System")]
         public static void ConfigureDeadSpotSystem()
         {
-            EnsureFolder("Assets/Resources/Effects");
+            EnsureFolder("Assets/_Game/Resources/Effects");
             EnsureFolder("Assets/_Game/Art/VFX/Combat");
             Material material = ConfigureMaterial();
             GameObject deadSpotPrefab = ConfigureDeadSpotPrefab(material);

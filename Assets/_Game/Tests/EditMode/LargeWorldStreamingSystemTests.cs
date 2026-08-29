@@ -13,7 +13,7 @@ namespace ZZ.Tests
     public class LargeWorldStreamingSystemTests
     {
         private const string k_LocationFolder =
-            "Assets/Resources/World Locations";
+            "Assets/_Game/Resources/World Locations";
         private const string k_TriggerFolder =
             "Assets/_Game/Prefabs/World/Streaming/World Location Triggers";
 

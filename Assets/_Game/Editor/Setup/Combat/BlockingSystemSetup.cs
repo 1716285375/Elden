@@ -18,7 +18,7 @@ namespace ZZ.Editor
         private const float k_HolyAbsorption = 35f;
         private const string k_PlayerPrefabPath =
             "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
-        private const string k_EffectFolderPath = "Assets/Resources/Effects";
+        private const string k_EffectFolderPath = "Assets/_Game/Resources/Effects";
         private const string k_BlockedDamageEffectPath =
             k_EffectFolderPath + "/Take Blocked Damage Effect.asset";
         private const string k_BlockSoundFolder =

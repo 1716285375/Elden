@@ -10,9 +10,9 @@ namespace ZZ.Editor
     public static class PoisonStatusSystemSetup
     {
         private const string k_PoisonedEffectPath =
-            "Assets/Resources/Effects/Poisoned Effect.asset";
+            "Assets/_Game/Resources/Effects/Poisoned Effect.asset";
         private const string k_PoisonedVFXPath =
-            "Assets/Resources/Effects/Poisoned VFX.prefab";
+            "Assets/_Game/Resources/Effects/Poisoned VFX.prefab";
         private const string k_StatusWarningPath =
             "Assets/_Game/Prefabs/UI/Status Effect Warning.prefab";
         private const string k_PlayerUIPrefabPath =

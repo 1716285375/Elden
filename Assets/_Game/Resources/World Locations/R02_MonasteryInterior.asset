@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4be6e517beba5304a80021fecb631d5e, type: 3}
-  m_Name: Area_01_Sub_Area_02
+  m_Name: R02_MonasteryInterior
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldLocationSceneSet
-  m_locationID: Area_01_Sub_Area_02
-  m_legacyLocation: 3
+  m_locationID: Area_01_Sub_Area_01
+  m_legacyLocation: 2
   m_scenesRequiredForThisLocation:
-  - Area_01_Sub_Area_02
-  - Area_01_Sub_Area_02_Props
-  - Area_01_Sub_Area_02_Effects
-  - Area_01_Sub_Area_02_Spawners
+  - SCN_LV01_R02_A01_Base
+  - SCN_LV01_R02_A01_Props
+  - SCN_LV01_R02_A01_Effects
+  - SCN_LV01_R02_A01_Spawners
   m_requiredLocations:
-  - {fileID: 11400000, guid: 1fd2525c420a96640ae19dae1e99842f, type: 2}
-  - {fileID: 11400000, guid: e98de531558112b4391c44f480c7e840, type: 2}
+  - {fileID: 11400000, guid: db6d7bcc8a96b02448198ae5fce75032, type: 2}
+  - {fileID: 11400000, guid: ab90b9d0e73ea374fa3dc77e1caf1039, type: 2}
