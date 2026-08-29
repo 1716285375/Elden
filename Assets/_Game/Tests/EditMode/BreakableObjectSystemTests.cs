@@ -19,7 +19,7 @@ namespace ZZ.Tests
             "Assets/_Game/Prefabs/World/Objects/Breakables/" +
             "Wooden Crate Broken.prefab";
         private const string k_AreaScenePath =
-            "Assets/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A01_Base.unity";
+            "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A01_Base.unity";
 
         [Test]
         public static void BreakableUsesPredictedAndServerAuthoritativeState()

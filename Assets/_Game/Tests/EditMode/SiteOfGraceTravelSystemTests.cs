@@ -16,7 +16,7 @@ namespace ZZ.Tests
         private const string k_PlayerUIPrefabPath =
             "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_WorldScenePath =
-            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
+            "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
 
         [Test]
         public void WorldObjectManagerExposesSiteRegistryByStableID()

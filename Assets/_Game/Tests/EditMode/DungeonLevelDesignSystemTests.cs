@@ -13,7 +13,7 @@ namespace ZZ.Tests
     public class DungeonLevelDesignSystemTests
     {
         private const string k_ScenePath =
-            "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
+            "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_LocationPath =
             "World/Location 01 - Ashen Crypt";
         private const string k_SettingsFolder =
@@ -123,11 +123,11 @@ namespace ZZ.Tests
             Assert.That(volumeAssets, Has.Length.EqualTo(5));
             Assert.That(volumeAssets, Has.None.Null);
             Assert.That(
-                File.Exists("Assets/Scenes/Levels/LV01_AbandonedMonastery/Shared/Lighting/Baked/LightingData.asset"),
+                File.Exists("Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Shared/Lighting/Baked/LightingData.asset"),
                 Is.True);
             Assert.That(
                 Directory.GetFiles(
-                    "Assets/Scenes/Levels/LV01_AbandonedMonastery/Shared/Lighting/Baked",
+                    "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Shared/Lighting/Baked",
                     "*shadowmask.png").Length,
                 Is.GreaterThan(0));
         }

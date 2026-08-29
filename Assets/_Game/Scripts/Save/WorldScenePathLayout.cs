@@ -5,7 +5,7 @@ namespace ZZ
     /// </summary>
     public static class WorldScenePathLayout
     {
-        public const string ScenesRoot = "Assets/Scenes";
+        public const string ScenesRoot = "Assets/_Game/Scenes";
         public const string RegionsFolder = LevelFolder + "/Regions";
         public const string MasterSceneName = "SCN_LV01_AbandonedMonastery";
         public const string LevelFolderName = "LV01_AbandonedMonastery";
