@@ -10,7 +10,7 @@ namespace ZZ.Tests
     public class PlayerBodyManagerTests
     {
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
 
         [TestCase(0)]
         [TestCase(1)]

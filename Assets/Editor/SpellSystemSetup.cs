@@ -13,33 +13,33 @@ namespace ZZ.Editor
     public static class SpellSystemSetup
     {
         private const string k_ActionPath =
-            "Assets/Data/Actions/Spells/Cast Incantation.asset";
+            "Assets/_Game/Data/Actions/Spells/Cast Incantation.asset";
         private const string k_FireballPath =
-            "Assets/Data/Items/Spells/Fireball.asset";
+            "Assets/_Game/Data/Items/Spells/Fireball.asset";
         private const string k_CatalystPath =
-            "Assets/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset";
+            "Assets/_Game/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset";
         private const string k_CatalystPrefabPath =
-            "Assets/Data/Prefabs/Spells/Incantation Catalyst.prefab";
+            "Assets/_Game/Prefabs/Abilities/Incantation Catalyst.prefab";
         private const string k_FireballPrefabPath =
-            "Assets/Data/Prefabs/Spells/Fireball.prefab";
+            "Assets/_Game/Prefabs/Abilities/Fireball.prefab";
         private const string k_WarmUpPrefabPath =
-            "Assets/Data/Prefabs/Spells/Fireball Warm Up.prefab";
+            "Assets/_Game/Prefabs/Abilities/Fireball Warm Up.prefab";
         private const string k_ReleasePrefabPath =
-            "Assets/Data/Prefabs/Spells/Fireball Release.prefab";
+            "Assets/_Game/Prefabs/Abilities/Fireball Release.prefab";
         private const string k_FullChargePrefabPath =
-            "Assets/Data/Prefabs/Spells/Fireball Full Charge.prefab";
+            "Assets/_Game/Prefabs/Abilities/Fireball Full Charge.prefab";
         private const string k_ImpactPrefabPath =
-            "Assets/Data/Prefabs/Spells/Fireball Impact.prefab";
+            "Assets/_Game/Prefabs/Abilities/Fireball Impact.prefab";
         private const string k_FullImpactPrefabPath =
-            "Assets/Data/Prefabs/Spells/Fireball Full Impact.prefab";
+            "Assets/_Game/Prefabs/Abilities/Fireball Full Impact.prefab";
         private const string k_FireMaterialPath =
-            "Assets/Data/Materials/Spells/Fireball.mat";
+            "Assets/_Game/Art/VFX/Abilities/Spells/Fireball.mat";
         private const string k_FullChargeMaterialPath =
-            "Assets/Data/Materials/Spells/Fireball Full Charge.mat";
+            "Assets/_Game/Art/VFX/Abilities/Spells/Fireball Full Charge.mat";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_InputAssetPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_AnimatorPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +

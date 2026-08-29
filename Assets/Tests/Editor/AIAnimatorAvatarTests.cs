@@ -7,10 +7,10 @@ namespace ZZ.Tests
     public class AIAnimatorAvatarTests
     {
         private const string k_AIAvatarPath =
-            "Assets/Data/Animations/AI/Undead AI Avatar.asset";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Avatar.asset";
 
-        [TestCase("Assets/Data/Prefabs/Characters/AI/Undead AI.prefab")]
-        [TestCase("Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab")]
+        [TestCase("Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab")]
+        [TestCase("Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab")]
         public void AIAnimatorUsesValidDedicatedAvatarAndCanEvaluate(
             string prefabPath)
         {

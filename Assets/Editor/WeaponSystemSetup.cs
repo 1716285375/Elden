@@ -12,7 +12,7 @@ namespace ZZ.Editor
 {
     public static class WeaponSystemSetup
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_ControllerPath =
@@ -23,13 +23,13 @@ namespace ZZ.Editor
         private const string k_LeftSwapClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Actions/core_oh_equip_L_01.anim";
         private const string k_UpperBodyMaskPath =
-            "Assets/Data/Animations/Upper Body Weapon Mask.mask";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Upper Body Weapon Mask.mask";
         private const string k_ItemFolder =
-            "Assets/Data/Items/Weapons/Melee Weapons";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons";
         private const string k_WeaponPrefabFolder =
-            "Assets/Data/Prefabs/Weapons/Melee Weapons";
+            "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons";
         private const string k_WorldItemDatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_UnarmedAssetPath = k_ItemFolder + "/Unarmed.asset";
         private const string k_StraightSwordAssetPath =
             k_ItemFolder + "/Straight Sword.asset";
@@ -37,13 +37,13 @@ namespace ZZ.Editor
         private const string k_MediumShieldAssetPath =
             k_ItemFolder + "/Medium Shield.asset";
         private const string k_HeadEquipmentAssetPath =
-            "Assets/Data/Items/Armor/Starter Hood.asset";
+            "Assets/_Game/Data/Items/Armor/Starter Hood.asset";
         private const string k_BodyEquipmentAssetPath =
-            "Assets/Data/Items/Armor/Starter Armor.asset";
+            "Assets/_Game/Data/Items/Armor/Starter Armor.asset";
         private const string k_HandEquipmentAssetPath =
-            "Assets/Data/Items/Armor/Starter Gauntlets.asset";
+            "Assets/_Game/Data/Items/Armor/Starter Gauntlets.asset";
         private const string k_LegEquipmentAssetPath =
-            "Assets/Data/Items/Armor/Starter Greaves.asset";
+            "Assets/_Game/Data/Items/Armor/Starter Greaves.asset";
         private const string k_UnarmedPrefabPath =
             k_WeaponPrefabFolder + "/Unarmed.prefab";
         private const string k_StraightSwordPrefabPath =
@@ -68,7 +68,7 @@ namespace ZZ.Editor
         {
             EnsureFolder(k_ItemFolder);
             EnsureFolder(k_WeaponPrefabFolder);
-            EnsureFolder("Assets/Data/Animations");
+            EnsureFolder("Assets/_Game/Art/Characters/Shared/Humanoid/Animations");
 
             GameObject unarmedPrefab = ConfigureWeaponPrefab(
                 k_UnarmedPrefabPath,

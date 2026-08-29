@@ -15,7 +15,7 @@ namespace ZZ.Editor
         private const string k_SourceControllerPath =
             "Assets/Art/Animations/Controllers/Runtime/Yosif.controller";
         private const string k_StealthObjectPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Stealth Object.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Stealth Object.prefab";
         private const string k_BaseLayerName = "Base Layer";
         private const string k_ActionLayerName = "Action Override";
         private const string k_IsSneakingParameter = "isSneaking";

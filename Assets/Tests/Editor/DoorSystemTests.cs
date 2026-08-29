@@ -12,17 +12,17 @@ namespace ZZ.Tests
     public class DoorSystemTests
     {
         private const string k_DoorPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Doors/Dungeon Door.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Doors/Dungeon Door.prefab";
         private const string k_LockedDoorPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Doors/Locked Dungeon Door.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Doors/Locked Dungeon Door.prefab";
         private const string k_GatePrefabPath =
-            "Assets/Data/Prefabs/World Objects/Doors/Lever Gate.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Doors/Lever Gate.prefab";
         private const string k_KeyItemPath =
-            "Assets/Data/Items/Key Items/Old Dungeon Key.asset";
+            "Assets/_Game/Data/Items/Key Items/Old Dungeon Key.asset";
         private const string k_KeyPickupPath =
-            "Assets/Data/Prefabs/Interactables/Old Dungeon Key Pickup.prefab";
+            "Assets/_Game/Prefabs/Interactables/Old Dungeon Key Pickup.prefab";
         private const string k_ItemDatabasePath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_DoorSourcePath =
             "Assets/_Game/Scripts/World/Managers/DoorInteractable.cs";
         private const string k_LeverSourcePath =
@@ -196,7 +196,7 @@ namespace ZZ.Tests
             params string[] expectedStates)
         {
             string controllerPath =
-                "Assets/Data/Animations/Environment/Doors/" + controllerName;
+                "Assets/_Game/Art/Environment/Shared/Animations/Doors/" + controllerName;
             AnimatorController controller =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(
                     controllerPath);

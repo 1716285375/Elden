@@ -9,7 +9,7 @@ namespace ZZ.Tests
     public class StanceBreakingSystemTests
     {
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_StanceBreakClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Actions/" +
             "core_main_stance_broken_f_01.anim";

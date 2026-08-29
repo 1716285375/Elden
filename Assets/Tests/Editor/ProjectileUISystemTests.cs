@@ -11,19 +11,19 @@ namespace ZZ.Tests
     public class ProjectileUISystemTests
     {
         private const string k_StandardArrowPath =
-            "Assets/Data/Items/Projectiles/Standard Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Standard Arrow.asset";
         private const string k_FireArrowPath =
-            "Assets/Data/Items/Projectiles/Fire Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Fire Arrow.asset";
         private const string k_BowPath =
-            "Assets/Data/Items/Weapons/Ranged Weapons/Longbow.asset";
+            "Assets/_Game/Data/Items/Weapons/Ranged Weapons/Longbow.asset";
         private const string k_SwordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_EquipmentSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Equipment Slot.prefab";
+            "Assets/_Game/Prefabs/UI/Equipment Slot.prefab";
         private const string k_QuickSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Quick Slot UI.prefab";
+            "Assets/_Game/Prefabs/UI/Quick Slot UI.prefab";
         private const string k_UIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [Test]
         public void ProjectileEquipmentSlotsUseStableTrailingEnumValues()

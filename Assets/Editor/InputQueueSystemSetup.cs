@@ -12,7 +12,7 @@ namespace ZZ.Editor
     {
         private const float k_InputBufferDuration = 0.3f;
         private const string k_PlayerInputManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player Input Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player Input Manager.prefab";
         private const string k_LightAttack01ClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
             "straight_sword_main_light_attack_01.anim";

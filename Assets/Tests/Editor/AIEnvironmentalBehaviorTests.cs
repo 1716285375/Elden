@@ -14,11 +14,11 @@ namespace ZZ.Tests
     {
         private const int k_PatrolPathID = 10801;
         private const string k_AIAnimatorControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_AICharacterPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
 
         [Test]
         public void PatrolPathCollectsHierarchyOrderAndFindsClosestPoint()

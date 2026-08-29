@@ -11,18 +11,18 @@ namespace ZZ.Editor
 {
     public static class WeaponQuickSlotUISetup
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_QuickSlotPrefabPath =
-            "Assets/Data/Prefabs/UI/Quick Slot UI.prefab";
+            "Assets/_Game/Prefabs/UI/Quick Slot UI.prefab";
         private const string k_InputActionsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_UnarmedAssetPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
         private const string k_StraightSwordAssetPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
         private const string k_BroadswordAssetPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_UnarmedIconPath =
             "Assets/Art/Textures/UI/Items/Hand_Slot_Icon_01.png";
         private const string k_StraightSwordIconPath =
@@ -115,7 +115,7 @@ namespace ZZ.Editor
 
         private static GameObject ConfigureQuickSlotPrefab()
         {
-            EnsureFolder("Assets/Data/Prefabs/UI");
+            EnsureFolder("Assets/_Game/Prefabs/UI");
             GameObject root = CreateUIObject("Quick Slot UI", null);
             try
             {

@@ -12,22 +12,22 @@ namespace ZZ.Tests
     public class ArcherySystemTests
     {
         private const string k_BowPath =
-            "Assets/Data/Items/Weapons/Ranged Weapons/Longbow.asset";
+            "Assets/_Game/Data/Items/Weapons/Ranged Weapons/Longbow.asset";
         private const string k_StandardArrowPath =
-            "Assets/Data/Items/Projectiles/Standard Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Standard Arrow.asset";
         private const string k_FireArrowPath =
-            "Assets/Data/Items/Projectiles/Fire Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Fire Arrow.asset";
         private const string k_ReleaseArrowPrefabPath =
-            "Assets/Data/Prefabs/Projectiles/Released Arrow.prefab";
+            "Assets/_Game/Prefabs/Projectiles/Released Arrow.prefab";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_UIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_BowFireClipPath =
-            "Assets/Data/Animations/Archery/Bow_Fire.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow_Fire.anim";
 
         [Test]
         public void BowAndArrowAssetsRemainSeparateAndCompatible()

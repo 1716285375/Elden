@@ -20,11 +20,11 @@ namespace ZZ.Editor
     {
         private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
         private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerUIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_WorldSaveManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Save Game Manager.prefab";
 
         private static readonly Color s_menuOverlayColor = new Color(0f, 0f, 0f, 0.82f);
         private static readonly Color s_panelColor = new Color(0.06f, 0.06f, 0.06f, 0.98f);

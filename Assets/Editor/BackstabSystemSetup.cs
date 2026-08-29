@@ -14,7 +14,7 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_BackstabClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Actions/" +
             "core_main_backstab_01.anim";
@@ -37,14 +37,14 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Characters/Humanoid/Reactions/" +
             "core_up_death_01.anim";
         private const string k_UnarmedOverridePath =
-            "Assets/Data/Animator Overrides/Weapons/" +
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides/" +
             "Unarmed Animator.overrideController";
         private const string k_WeaponFolderPath =
-            "Assets/Data/Items/Weapons/Melee Weapons";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_ActionLayerName = "Action Override";
         private const string k_EmptyStateName = "Empty";
         private const string k_BackstabStateName = "Backstab_01";

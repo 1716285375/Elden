@@ -20,8 +20,8 @@ namespace ZZ.EditorTools
         private const string k_ScenePath = WorldScenePathLayout.MasterScenePath;
         private const string k_RootName = "World";
         private const string k_LocationName = "Location 01 - Ashen Crypt";
-        private const string k_MaterialFolder = "Assets/Data/Materials/Level Design";
-        private const string k_SettingsFolder = "Assets/Data/Settings/Level Design";
+        private const string k_MaterialFolder = "Assets/_Game/Art/Environment/Shared/Materials";
+        private const string k_SettingsFolder = "Assets/_Game/Settings/LevelDesign";
         private const string k_VolumeProfilePath =
             k_SettingsFolder + "/EP99-100 Ashen Crypt Volume.asset";
         private const string k_LightingSettingsPath =
@@ -789,7 +789,7 @@ namespace ZZ.EditorTools
             Material rewardMaterial)
         {
             GameObject pickupPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Data/Prefabs/Interactables/Item Pickup.prefab");
+                "Assets/_Game/Prefabs/Interactables/Item Pickup.prefab");
             if (pickupPrefab != null &&
                 PrefabUtility.InstantiatePrefab(pickupPrefab, parent) is GameObject pickup)
             {

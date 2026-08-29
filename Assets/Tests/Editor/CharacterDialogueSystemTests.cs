@@ -13,22 +13,22 @@ namespace ZZ.Tests
     public class CharacterDialogueSystemTests
     {
         private const string k_StageZeroPath =
-            "Assets/Data/Dialogue/Nameless Knight/" +
+            "Assets/_Game/Data/Dialogue/Nameless Knight/" +
             "Nameless Knight Stage 00.asset";
         private const string k_StageFivePath =
-            "Assets/Data/Dialogue/Nameless Knight/" +
+            "Assets/_Game/Data/Dialogue/Nameless Knight/" +
             "Nameless Knight Stage 05.asset";
         private const string k_DialogueInteractablePath =
-            "Assets/Data/Prefabs/World Objects/Dialogue/" +
+            "Assets/_Game/Prefabs/World/Objects/Dialogue/" +
             "Dialogue Interactable.prefab";
         private const string k_NamelessKnightPath =
-            "Assets/Data/Prefabs/Characters/AI/Nameless Knight NPC.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Nameless Knight NPC.prefab";
         private const string k_WorldAIManagerPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_WorldSaveManagerPath =
-            "Assets/Data/Prefabs/Word Managers/World Save Game Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Save Game Manager.prefab";
         private const string k_PlayerUIManagerPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_WorldScenePath =
             "Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity";
         private const string k_NetworkPrefabsPath =

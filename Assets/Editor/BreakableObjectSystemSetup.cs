@@ -18,7 +18,7 @@ namespace ZZ.Editor
         private const string k_BreakableObjectLayerName = "Breakable Object";
         private const string k_BrokenObjectLayerName = "Broken Object";
         private const string k_PrefabFolder =
-            "Assets/Data/Prefabs/World Objects/Breakables";
+            "Assets/_Game/Prefabs/World/Objects/Breakables";
         private const string k_BrokenPrefabPath =
             k_PrefabFolder + "/Wooden Crate Broken.prefab";
         private const string k_BreakablePrefabPath =

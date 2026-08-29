@@ -13,7 +13,7 @@ namespace ZZ.Editor
     public static class LevelUpSystemSetup
     {
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         private static readonly Color s_overlayColor =
             new Color(0f, 0f, 0f, 0.76f);

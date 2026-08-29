@@ -11,7 +11,7 @@ namespace ZZ.Tests
     public class RiposteSystemTests
     {
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_RipostedClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Combat/General/" +
             "core_main_riposte_victim_01.anim";

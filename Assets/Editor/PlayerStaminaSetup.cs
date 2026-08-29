@@ -9,9 +9,9 @@ namespace ZZ.Editor
 {
     public static class PlayerStaminaSetup
     {
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerUIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         private static readonly Color s_staminaBackgroundColor = new Color(0f, 0f, 0f, 0.8f);
         private static readonly Color s_staminaFillColor = new Color(0.12f, 0.75f, 0.2f, 1f);

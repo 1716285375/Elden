@@ -14,7 +14,7 @@ namespace ZZ.Tests
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_StealthObjectPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Stealth Object.prefab";
+            "Assets/_Game/Prefabs/World/Objects/Stealth Object.prefab";
 
         [Test]
         public void NamedSneakActionSupportsKeyboardAndGamepadToggleInput()

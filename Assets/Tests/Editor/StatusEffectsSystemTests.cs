@@ -21,9 +21,9 @@ namespace ZZ.Tests
         private const string k_DegradeBleedPath =
             "Assets/Resources/Effects/Degrade Bleed Buildup Effect.asset";
         private const string k_BuildupBarPrefabPath =
-            "Assets/Data/Prefabs/UI/Buildup Bar.prefab";
+            "Assets/_Game/Prefabs/UI/Buildup Bar.prefab";
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [Test]
         public void VitalityCalculatesSharedBuildupCapacity()

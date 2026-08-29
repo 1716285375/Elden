@@ -12,7 +12,7 @@ namespace ZZ.Editor
         private const string k_DeadSpotPrefabPath =
             "Assets/Resources/Effects/Dead Spot.prefab";
         private const string k_DeadSpotMaterialPath =
-            "Assets/Data/Materials/Effects/Dead Spot.mat";
+            "Assets/_Game/Art/VFX/Combat/Dead Spot.mat";
         private const string k_NetworkPrefabsPath =
             "Assets/_Game/Settings/Networking/DefaultNetworkPrefabs.asset";
 
@@ -20,7 +20,7 @@ namespace ZZ.Editor
         public static void ConfigureDeadSpotSystem()
         {
             EnsureFolder("Assets/Resources/Effects");
-            EnsureFolder("Assets/Data/Materials/Effects");
+            EnsureFolder("Assets/_Game/Art/VFX/Combat");
             Material material = ConfigureMaterial();
             GameObject deadSpotPrefab = ConfigureDeadSpotPrefab(material);
             RegisterNetworkPrefab(deadSpotPrefab);

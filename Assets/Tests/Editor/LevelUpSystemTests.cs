@@ -12,7 +12,7 @@ namespace ZZ.Tests
     public class LevelUpSystemTests
     {
         private const string k_PlayerUIPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         [TestCase(10, 10, 10, 10, 10, 10, 10, 1)]
         [TestCase(11, 11, 11, 11, 10, 10, 11, 6)]

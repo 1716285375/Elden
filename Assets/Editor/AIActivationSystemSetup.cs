@@ -17,11 +17,11 @@ namespace ZZ.Editor
         private const string k_DamageableCharacterLayerName =
             "Damageable Character";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_AIActivationBeaconPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/AI Activation Beacon.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/AI Activation Beacon.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
 
         /// <summary>Builds the layers, collision matrix, and shared activation prefabs.</summary>
         [MenuItem("Tools/ZZ/AI/Configure EP111 Activation System")]

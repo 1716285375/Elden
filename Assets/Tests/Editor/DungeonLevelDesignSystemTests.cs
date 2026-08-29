@@ -17,7 +17,7 @@ namespace ZZ.Tests
         private const string k_LocationPath =
             "World/Location 01 - Ashen Crypt";
         private const string k_SettingsFolder =
-            "Assets/Data/Settings/Level Design";
+            "Assets/_Game/Settings/LevelDesign";
 
         [Test]
         public void WorldSceneContainsCompleteAshenCryptRouteStructure()

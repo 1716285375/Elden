@@ -15,7 +15,7 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_OutputFolder =
-            "Assets/Data/Animator Overrides/Weapons";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/AnimationControllers/Overrides";
         private const string k_UnarmedControllerPath =
             k_OutputFolder + "/Unarmed Animator.overrideController";
         private const string k_StraightSwordControllerPath =
@@ -23,11 +23,11 @@ namespace ZZ.Editor
         private const string k_BroadswordControllerPath =
             k_OutputFolder + "/Broadsword Animator.overrideController";
         private const string k_UnarmedWeaponPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
         private const string k_StraightSwordWeaponPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
         private const string k_BroadswordWeaponPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_SwordCombatFolder =
             "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/";
         private const string k_UnarmedCombatFolder =

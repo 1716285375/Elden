@@ -11,9 +11,9 @@ namespace ZZ.Editor
     public static class ElevatorSystemSetup
     {
         private const string k_PrefabFolder =
-            "Assets/Data/Prefabs/World Objects/Elevator";
+            "Assets/_Game/Prefabs/World/Objects/Elevator";
         private const string k_AnimationFolder =
-            "Assets/Data/Animations/Environment/Elevator";
+            "Assets/_Game/Art/Environment/Shared/Animations/Elevator";
         private const string k_ElevatorPrefabPath =
             k_PrefabFolder + "/Elevator.prefab";
         private const string k_CallStationPrefabPath =

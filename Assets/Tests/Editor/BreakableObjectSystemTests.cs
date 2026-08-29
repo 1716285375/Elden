@@ -13,10 +13,10 @@ namespace ZZ.Tests
     public class BreakableObjectSystemTests
     {
         private const string k_BreakablePrefabPath =
-            "Assets/Data/Prefabs/World Objects/Breakables/" +
+            "Assets/_Game/Prefabs/World/Objects/Breakables/" +
             "Wooden Crate Breakable.prefab";
         private const string k_BrokenPrefabPath =
-            "Assets/Data/Prefabs/World Objects/Breakables/" +
+            "Assets/_Game/Prefabs/World/Objects/Breakables/" +
             "Wooden Crate Broken.prefab";
         private const string k_AreaScenePath =
             "Assets/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A01_Base.unity";

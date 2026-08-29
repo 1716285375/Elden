@@ -21,7 +21,7 @@ namespace ZZ.Tests
         private const string k_BakingSetPath =
             "Assets/Settings/World Streaming Probe Volume Baking Set.asset";
         private const string k_TriggerPrefabPath =
-            "Assets/Data/Prefabs/World Streaming/Area Load Trigger.prefab";
+            "Assets/_Game/Prefabs/World/Streaming/Area Load Trigger.prefab";
 
         private static readonly int[] s_areaLocations =
         {

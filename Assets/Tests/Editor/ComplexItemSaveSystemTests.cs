@@ -10,7 +10,7 @@ namespace ZZ.Tests
     public class ComplexItemSaveSystemTests
     {
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
 
         [Test]
         public void ComplexEquipmentAndInventorySurviveJsonRoundTrip()

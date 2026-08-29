@@ -15,7 +15,7 @@ namespace ZZ.Tests
         private const string k_LocationFolder =
             "Assets/Resources/World Locations";
         private const string k_TriggerFolder =
-            "Assets/Data/Prefabs/World Streaming/World Location Triggers";
+            "Assets/_Game/Prefabs/World/Streaming/World Location Triggers";
 
         [Test]
         public void SceneSetsOwnFourPhysicalSlicesAndDirectNeighbours()

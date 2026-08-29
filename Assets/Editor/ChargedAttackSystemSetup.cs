@@ -15,18 +15,18 @@ namespace ZZ.Editor
         private const string k_ControllerPath =
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
-        private const string k_PlayerPrefabPath = "Assets/Data/Prefabs/Player.prefab";
+        private const string k_PlayerPrefabPath = "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_PlayerControlsPath = "Assets/_Game/Settings/Input/PlayerControls.inputactions";
         private const string k_MainMenuScenePath = WorldScenePathLayout.MainMenuScenePath;
-        private const string k_LightAttackPath = "Assets/Data/Actions/Light Attack.asset";
-        private const string k_HeavyAttackPath = "Assets/Data/Actions/Heavy Attack.asset";
-        private const string k_ChargedAttackPath = "Assets/Data/Actions/Charged Attack.asset";
+        private const string k_LightAttackPath = "Assets/_Game/Data/Actions/Light Attack.asset";
+        private const string k_HeavyAttackPath = "Assets/_Game/Data/Actions/Heavy Attack.asset";
+        private const string k_ChargedAttackPath = "Assets/_Game/Data/Actions/Charged Attack.asset";
         private const string k_UnarmedPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Unarmed.asset";
         private const string k_StraightSwordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Straight Sword.asset";
         private const string k_BroadswordPath =
-            "Assets/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
+            "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset";
         private const string k_ChargeClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Combat/Sword/" +
             "straight_sword_main_charged_attack_01_charge.anim";

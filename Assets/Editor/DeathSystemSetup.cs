@@ -19,7 +19,7 @@ namespace ZZ.Editor
         private const string k_DeathClipPath =
             "Assets/Art/Animations/Characters/Humanoid/Actions/You_Died_01.anim";
         private const string k_PlayerUIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
 
         private static readonly Color s_backgroundColor = new Color(0f, 0f, 0f, 0.72f);
         private static readonly Color s_shadowTextColor = new Color(0.2f, 0.005f, 0.005f, 0.7f);

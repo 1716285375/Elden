@@ -15,9 +15,9 @@ namespace ZZ.Editor
         private const int k_ExpectedSpawnerCount = 3;
         private const int k_PersistenceValidationBossID = 42001;
         private const string k_AICharacterPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_WorldAIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World AI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World AI Manager.prefab";
         private const string k_WorldScenePath =
             WorldScenePathLayout.MasterScenePath;
 

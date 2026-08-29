@@ -12,19 +12,19 @@ namespace ZZ.Tests
     public class AICombatDecisionSystemTests
     {
         private const string k_AIControllerPath =
-            "Assets/Data/Animations/AI/Undead AI Animator.controller";
+            "Assets/_Game/Art/Characters/Creatures/Undead/Animations/Undead AI Animator.controller";
         private const string k_UndeadPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Undead AI.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Undead AI.prefab";
         private const string k_BossPrefabPath =
-            "Assets/Data/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
+            "Assets/_Game/Prefabs/Characters/AI/Fallen Watcher Boss.prefab";
         private const string k_UndeadAttack01Path =
-            "Assets/Data/AI/Combat/Undead Swipe 01.asset";
+            "Assets/_Game/Data/AI/Combat/Undead Swipe 01.asset";
         private const string k_UndeadAttack02Path =
-            "Assets/Data/AI/Combat/Undead Swipe 02.asset";
+            "Assets/_Game/Data/AI/Combat/Undead Swipe 02.asset";
         private const string k_WatcherClawPath =
-            "Assets/Data/AI/Boss/Fallen Watcher/Watcher Claw.asset";
+            "Assets/_Game/Data/AI/Boss/Fallen Watcher/Watcher Claw.asset";
         private const string k_WatcherFrenzyPath =
-            "Assets/Data/AI/Boss/Fallen Watcher/Watcher Frenzy.asset";
+            "Assets/_Game/Data/AI/Boss/Fallen Watcher/Watcher Frenzy.asset";
 
         private static readonly string[] s_comboClipPaths =
         {

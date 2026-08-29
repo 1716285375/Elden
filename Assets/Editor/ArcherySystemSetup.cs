@@ -16,33 +16,33 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_BowOverridePath =
-            "Assets/Data/Animations/Archery/Bow.overrideController";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow.overrideController";
         private const string k_BowWeaponControllerPath =
-            "Assets/Data/Animations/Archery/Bow Weapon.controller";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow Weapon.controller";
         private const string k_BowPrefabPath =
-            "Assets/Data/Prefabs/Weapons/Longbow.prefab";
+            "Assets/_Game/Prefabs/Equipment/Weapons/Longbow.prefab";
         private const string k_DrawArrowPrefabPath =
-            "Assets/Data/Prefabs/Projectiles/Draw Arrow.prefab";
+            "Assets/_Game/Prefabs/Projectiles/Draw Arrow.prefab";
         private const string k_ReleaseArrowPrefabPath =
-            "Assets/Data/Prefabs/Projectiles/Released Arrow.prefab";
+            "Assets/_Game/Prefabs/Projectiles/Released Arrow.prefab";
         private const string k_BowItemPath =
-            "Assets/Data/Items/Weapons/Ranged Weapons/Longbow.asset";
+            "Assets/_Game/Data/Items/Weapons/Ranged Weapons/Longbow.asset";
         private const string k_StandardArrowPath =
-            "Assets/Data/Items/Projectiles/Standard Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Standard Arrow.asset";
         private const string k_FireArrowPath =
-            "Assets/Data/Items/Projectiles/Fire Arrow.asset";
+            "Assets/_Game/Data/Items/Projectiles/Fire Arrow.asset";
         private const string k_MainFireActionPath =
-            "Assets/Data/Actions/Ranged/Fire Main Projectile.asset";
+            "Assets/_Game/Data/Actions/Ranged/Fire Main Projectile.asset";
         private const string k_SecondaryFireActionPath =
-            "Assets/Data/Actions/Ranged/Fire Secondary Projectile.asset";
+            "Assets/_Game/Data/Actions/Ranged/Fire Secondary Projectile.asset";
         private const string k_AimActionPath =
-            "Assets/Data/Actions/Ranged/Aim Bow.asset";
+            "Assets/_Game/Data/Actions/Ranged/Aim Bow.asset";
         private const string k_WorldItemDatabasePath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_UIManagerPrefabPath =
-            "Assets/Data/Prefabs/Word Managers/Player UI Manager.prefab";
+            "Assets/_Game/Prefabs/World/Managers/Player UI Manager.prefab";
         private const string k_MainMenuScenePath =
             WorldScenePathLayout.MainMenuScenePath;
         private const string k_ActionLayerName = "Action Override";
@@ -52,19 +52,19 @@ namespace ZZ.Editor
         private const string k_IsAiming = "isAiming";
 
         private const string k_BowDrawClipPath =
-            "Assets/Data/Animations/Archery/Bow_Draw.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow_Draw.anim";
         private const string k_BowAimClipPath =
-            "Assets/Data/Animations/Archery/Bow_Aim.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow_Aim.anim";
         private const string k_BowFireClipPath =
-            "Assets/Data/Animations/Archery/Bow_Fire.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow_Fire.anim";
         private const string k_BowOutOfAmmoClipPath =
-            "Assets/Data/Animations/Archery/Bow_Out_Of_Ammo.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/Bow_Out_Of_Ammo.anim";
         private const string k_ModelDrawClipPath =
-            "Assets/Data/Animations/Archery/BowModel_Draw.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/BowModel_Draw.anim";
         private const string k_ModelAimClipPath =
-            "Assets/Data/Animations/Archery/BowModel_Aim.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/BowModel_Aim.anim";
         private const string k_ModelFireClipPath =
-            "Assets/Data/Animations/Archery/BowModel_Fire.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Combat/Bow/BowModel_Fire.anim";
 
         [MenuItem("Tools/Elden/Configure Archery System")]
         public static void ConfigureArcherySystem()
@@ -101,12 +101,12 @@ namespace ZZ.Editor
 
         private static void EnsureFolders()
         {
-            EnsureFolder("Assets/Data/Animations", "Archery");
-            EnsureFolder("Assets/Data/Prefabs", "Weapons");
-            EnsureFolder("Assets/Data/Prefabs", "Projectiles");
-            EnsureFolder("Assets/Data/Items/Weapons", "Ranged Weapons");
-            EnsureFolder("Assets/Data/Items", "Projectiles");
-            EnsureFolder("Assets/Data/Actions", "Ranged");
+            EnsureFolder("Assets/_Game/Art/Characters/Shared/Humanoid/Animations", "Archery");
+            EnsureFolder("Assets/_Game/Prefabs", "Weapons");
+            EnsureFolder("Assets/_Game/Prefabs", "Projectiles");
+            EnsureFolder("Assets/_Game/Data/Items/Weapons", "Ranged Weapons");
+            EnsureFolder("Assets/_Game/Data/Items", "Projectiles");
+            EnsureFolder("Assets/_Game/Data/Actions", "Ranged");
         }
 
         private static void ConfigureProjectileLayerCollisions()

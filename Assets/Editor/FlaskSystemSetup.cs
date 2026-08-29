@@ -15,44 +15,44 @@ namespace ZZ.Editor
             "Assets/Art/Animations/Animator Controllers/Humanoid/" +
             "Humanoid Animator Controller.controller";
         private const string k_DatabasePrefabPath =
-            "Assets/Data/Prefabs/Word Managers/World Item Database.prefab";
+            "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_PlayerPrefabPath =
-            "Assets/Data/Prefabs/Player.prefab";
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
         private const string k_MainMenuScenePath =
             WorldScenePathLayout.MainMenuScenePath;
         private const string k_HealthFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Crimson Tears.asset";
         private const string k_FocusFlaskPath =
-            "Assets/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
+            "Assets/_Game/Data/Items/Quick Slot Items/Flask of Cerulean Tears.asset";
         private const string k_HealthModelPath =
-            "Assets/Data/Prefabs/Quick Slot Items/Health Flask.prefab";
+            "Assets/_Game/Prefabs/Items/Health Flask.prefab";
         private const string k_FocusModelPath =
-            "Assets/Data/Prefabs/Quick Slot Items/Focus Flask.prefab";
+            "Assets/_Game/Prefabs/Items/Focus Flask.prefab";
         private const string k_EmptyModelPath =
-            "Assets/Data/Prefabs/Quick Slot Items/Empty Flask.prefab";
+            "Assets/_Game/Prefabs/Items/Empty Flask.prefab";
         private const string k_HealthVFXPath =
-            "Assets/Data/Prefabs/Effects/Health Flask VFX.prefab";
+            "Assets/_Game/Prefabs/Effects/Health Flask VFX.prefab";
         private const string k_FocusVFXPath =
-            "Assets/Data/Prefabs/Effects/Focus Flask VFX.prefab";
+            "Assets/_Game/Prefabs/Effects/Focus Flask VFX.prefab";
         private const string k_HealthIconPath =
-            "Assets/Data/Icons/Health Flask Icon.asset";
+            "Assets/_Game/Art/UI/Icons/Health Flask Icon.asset";
         private const string k_FocusIconPath =
-            "Assets/Data/Icons/Focus Flask Icon.asset";
+            "Assets/_Game/Art/UI/Icons/Focus Flask Icon.asset";
         private const string k_UpperBodyLayerName = "Upper Body Override";
         private const string k_ChuggingParameter = "isChuggingFlask";
         private const int k_HealthFlaskID = 14;
         private const int k_FocusFlaskID = 15;
 
         private const string k_DrinkStartClipPath =
-            "Assets/Data/Animations/Flasks/Drink Start.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Drink Start.anim";
         private const string k_Drink01ClipPath =
-            "Assets/Data/Animations/Flasks/Drink 01.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Drink 01.anim";
         private const string k_Drink02ClipPath =
-            "Assets/Data/Animations/Flasks/Drink 02.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Drink 02.anim";
         private const string k_DrinkEndClipPath =
-            "Assets/Data/Animations/Flasks/Drink End.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Drink End.anim";
         private const string k_EmptyFlaskClipPath =
-            "Assets/Data/Animations/Flasks/Empty Flask.anim";
+            "Assets/_Game/Art/Characters/Shared/Humanoid/Animations/Empty Flask.anim";
 
         [MenuItem("Tools/Elden/Configure Flask System")]
         public static void ConfigureFlaskSystem()
@@ -85,12 +85,12 @@ namespace ZZ.Editor
 
         private static void EnsureFolders()
         {
-            EnsureFolder("Assets/Data/Animations", "Flasks");
-            EnsureFolder("Assets/Data/Items", "Quick Slot Items");
-            EnsureFolder("Assets/Data/Prefabs", "Quick Slot Items");
-            EnsureFolder("Assets/Data/Prefabs", "Effects");
-            EnsureFolder("Assets/Data", "Icons");
-            EnsureFolder("Assets/Data/Materials", "Flasks");
+            EnsureFolder("Assets/_Game/Art/Characters/Shared/Humanoid/Animations", "Flasks");
+            EnsureFolder("Assets/_Game/Data/Items", "Quick Slot Items");
+            EnsureFolder("Assets/_Game/Prefabs", "Quick Slot Items");
+            EnsureFolder("Assets/_Game/Prefabs", "Effects");
+            EnsureFolder("Assets/_Game/Art/UI", "Icons");
+            EnsureFolder("Assets/_Game/Art/Shared/Materials", "Flasks");
         }
 
         private static void ConfigureAnimationClips()
@@ -214,13 +214,13 @@ namespace ZZ.Editor
         private static void ConfigurePresentationAssets()
         {
             Material healthMaterial = ConfigureMaterial(
-                "Assets/Data/Materials/Flasks/Health Flask.mat",
+                "Assets/_Game/Art/Shared/Materials/Health Flask.mat",
                 new Color(0.65f, 0.05f, 0.03f));
             Material focusMaterial = ConfigureMaterial(
-                "Assets/Data/Materials/Flasks/Focus Flask.mat",
+                "Assets/_Game/Art/Shared/Materials/Focus Flask.mat",
                 new Color(0.04f, 0.18f, 0.75f));
             Material emptyMaterial = ConfigureMaterial(
-                "Assets/Data/Materials/Flasks/Empty Flask.mat",
+                "Assets/_Game/Art/Shared/Materials/Empty Flask.mat",
                 new Color(0.25f, 0.25f, 0.25f));
             CreateFlaskPrefab(k_HealthModelPath, "Health Flask", healthMaterial);
             CreateFlaskPrefab(k_FocusModelPath, "Focus Flask", focusMaterial);
