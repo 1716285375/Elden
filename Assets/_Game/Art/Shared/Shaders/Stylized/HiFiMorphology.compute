@@ -1,0 +1,38 @@
+#pragma kernel DilateDual
+
+Texture2D<float2> _InputMask;
+RWTexture2D<float2> _OutputMask;
+
+int2 _TextureSize;
+int2 _DilationAxis;
+float2 _DilationRadius;
+
+[numthreads(8, 8, 1)]
+void DilateDual(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    int2 pixel = int2(dispatchThreadId.xy);
+    if (any(pixel >= _TextureSize))
+    {
+        return;
+    }
+
+    float radiusR = max(_DilationRadius.x, 0.5);
+    float radiusG = max(_DilationRadius.y, 0.5);
+    int maximumRadius = min((int)ceil(max(radiusR, radiusG)) + 1, 33);
+
+    float2 result = 0.0;
+    for (int offset = -maximumRadius; offset <= maximumRadius; ++offset)
+    {
+        int2 samplePixel = clamp(
+            pixel + _DilationAxis * offset,
+            int2(0, 0),
+            _TextureSize - 1);
+        float2 mask = _InputMask.Load(int3(samplePixel, 0));
+        float distance = abs((float)offset);
+        float coverageR = 1.0 - smoothstep(radiusR - 0.75, radiusR + 0.75, distance);
+        float coverageG = 1.0 - smoothstep(radiusG - 0.75, radiusG + 0.75, distance);
+        result = max(result, mask * float2(coverageR, coverageG));
+    }
+
+    _OutputMask[pixel] = saturate(result);
+}
