@@ -468,6 +468,7 @@ MonoBehaviour:
   - {fileID: -6288072647309666549}
   - {fileID: 7518938298396184218}
   - {fileID: -1410297666881709256}
+  - {fileID: 4025690975902394684}
 --- !u!114 &853819529557874667
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -824,6 +825,52 @@ MonoBehaviour:
   bladeRotation:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &4025690975902394684
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fa3d5c5b8774c39b2f23fe22e8a9034, type: 3}
+  m_Name: HiFiStyleVolume
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.Rendering.Stylized.HiFiStyleVolume
+  active: 1
+  Enable:
+    m_OverrideState: 1
+    m_Value: 1
+  BloomThreshold:
+    m_OverrideState: 1
+    m_Value: 0.8
+  BloomIntensity:
+    m_OverrideState: 1
+    m_Value: 0.8
+  DotDensity:
+    m_OverrideState: 1
+    m_Value: 48
+  DotRadius:
+    m_OverrideState: 1
+    m_Value: 0.35
+  DotRotation:
+    m_OverrideState: 1
+    m_Value: 0.7853982
+  DotSoftness:
+    m_OverrideState: 1
+    m_Value: 0.06
+  DotBloomMin:
+    m_OverrideState: 1
+    m_Value: 0.4
+  DotBloomMax:
+    m_OverrideState: 1
+    m_Value: 2
+  AOLineStrength:
+    m_OverrideState: 1
+    m_Value: 0.25
+  HatchingScale:
+    m_OverrideState: 1
+    m_Value: 8
 --- !u!114 &4251301726029935498
 MonoBehaviour:
   m_ObjectHideFlags: 3
