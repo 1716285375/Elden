@@ -6,7 +6,6 @@ namespace ZZ
     /// <summary>
     /// Owns gender roots and restores default modular body features around armor changes.
     /// </summary>
-    [RequireComponent(typeof(PlayerManager))]
     public class PlayerBodyManager : MonoBehaviour
     {
         private const string k_MalePartsName = "Male_Parts";

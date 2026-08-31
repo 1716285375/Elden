@@ -21,16 +21,18 @@ namespace ZZ
         /// <summary>Gets the embedded female modular mesh name.</summary>
         public string FemaleModelName => m_femaleModelName;
 
-        /// <summary>Loads the body-type-specific model on the supplied player.</summary>
-        public bool LoadModel(PlayerManager player, bool isMale)
+        /// <summary>Loads the body-type-specific model through its actual presentation owner.</summary>
+        public bool LoadModel(
+            PlayerEquipmentManager equipmentManager,
+            bool isMale)
         {
-            if (player?.EquipmentManager == null)
+            if (equipmentManager == null)
             {
                 return false;
             }
 
             string modelName = isMale ? m_maleModelName : m_femaleModelName;
-            return player.EquipmentManager.LoadArmorModel(
+            return equipmentManager.LoadArmorModel(
                 m_equipmentModelType,
                 modelName);
         }

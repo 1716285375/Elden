@@ -7,7 +7,6 @@ namespace ZZ
     /// <summary>
     /// Discovers player hand slots and presents the weapons selected by inventory state.
     /// </summary>
-    [RequireComponent(typeof(PlayerManager))]
     [RequireComponent(typeof(PlayerBodyManager))]
     public class PlayerEquipmentManager : CharacterEquipmentManager
     {
@@ -103,7 +102,7 @@ namespace ZZ
         }
 
         /// <summary>Loads a head item after removing its prior models and feature rules.</summary>
-        public void LoadHeadEquipment(HeadEquipmentItem equipment)
+        public virtual void LoadHeadEquipment(HeadEquipmentItem equipment)
         {
             UnloadArmorItem(m_loadedHeadEquipment);
             m_playerBodyManager?.ResetHeadFeatures();
@@ -118,7 +117,7 @@ namespace ZZ
         }
 
         /// <summary>Loads a body item after removing its prior modular models.</summary>
-        public void LoadBodyEquipment(BodyEquipmentItem equipment)
+        public virtual void LoadBodyEquipment(BodyEquipmentItem equipment)
         {
             UnloadArmorItem(m_loadedBodyEquipment);
             m_loadedBodyEquipment = equipment;
@@ -592,10 +591,12 @@ namespace ZZ
                 return;
             }
 
-            armorItem.OnItemEquipped(Character);
+            ApplyArmorGameplayEffect(armorItem);
             foreach (EquipmentModel equipmentModel in armorItem.EquipmentModels)
             {
-                equipmentModel?.LoadModel(m_player, m_playerBodyManager?.IsMale != false);
+                equipmentModel?.LoadModel(
+                    this,
+                    m_playerBodyManager?.IsMale != false);
             }
         }
 
@@ -606,7 +607,7 @@ namespace ZZ
                 return;
             }
 
-            armorItem.OnItemUnequipped(Character);
+            RemoveArmorGameplayEffect(armorItem);
             foreach (EquipmentModel equipmentModel in armorItem.EquipmentModels)
             {
                 if (equipmentModel == null)
@@ -628,11 +629,25 @@ namespace ZZ
 
             foreach (EquipmentModel equipmentModel in armorItem.EquipmentModels)
             {
-                equipmentModel?.LoadModel(m_player, m_playerBodyManager?.IsMale != false);
+                equipmentModel?.LoadModel(
+                    this,
+                    m_playerBodyManager?.IsMale != false);
             }
         }
 
-        private void RecalculateArmorValues()
+        /// <summary>Applies gameplay-only equipment effects on complete player objects.</summary>
+        protected virtual void ApplyArmorGameplayEffect(ArmorItem armorItem)
+        {
+            armorItem?.OnItemEquipped(Character);
+        }
+
+        /// <summary>Removes gameplay-only equipment effects on complete player objects.</summary>
+        protected virtual void RemoveArmorGameplayEffect(ArmorItem armorItem)
+        {
+            armorItem?.OnItemUnequipped(Character);
+        }
+
+        protected virtual void RecalculateArmorValues()
         {
             PlayerInventoryManager inventory = m_player?.InventoryManager;
             m_player?.PlayerStatsManager?.CalculateTotalArmorValues(
