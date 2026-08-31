@@ -36,8 +36,19 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_attackDistance = 2.1f;
         [SerializeField, Min(0f)] private float m_attackCooldown = 2.6f;
         [SerializeField] private AICharacterAttackAction m_defaultAttackAction;
+        [SerializeField] private List<AICharacterAttackAction>
+            m_combatStanceAttacks = new();
+        [SerializeField, Range(0.1f, 1f)] private float
+            m_minimumPursuitDistanceRatio = 0.75f;
 
         [Header("Combat Movement")]
+        [SerializeField] private PursuitMode m_pursuitTargetMode =
+            PursuitMode.Run;
+        [SerializeField] private PursuitMode m_combatStanceMode =
+            PursuitMode.Walk;
+        [SerializeField, Min(0f)] private float m_walkSpeed = 1.35f;
+        [SerializeField, Min(0f)] private float m_runSpeed = 3.5f;
+        [SerializeField, Min(0f)] private float m_sprintSpeed = 5.5f;
         [SerializeField] private bool m_willCircleTarget;
         [SerializeField, Range(0f, 1f)] private float
             m_combatStrafeAnimationAmount = 0.5f;
@@ -147,9 +158,18 @@ namespace ZZ
         internal bool HasValidTarget => IsValidTarget(m_currentTarget);
         internal bool IsTargetBeyondLoseDistance =>
             GetTargetDistanceSquared() > m_loseTargetRadius * m_loseTargetRadius;
-        internal bool IsTargetWithinCombatRange =>
+        internal float MaximumEngagementDistance =>
+            GetMaximumEngagementDistance();
+        internal float MinimumDistanceToEndPursuit =>
+            GetMinimumPursuitDistance(
+                MaximumEngagementDistance,
+                m_minimumPursuitDistanceRatio);
+        internal bool CanEndPursuit =>
             GetTargetDistanceSquared() <=
-            GetCombatStanceDistance() * GetCombatStanceDistance();
+            MinimumDistanceToEndPursuit * MinimumDistanceToEndPursuit;
+        internal bool ShouldResumePursuit =>
+            GetTargetDistanceSquared() >
+            MaximumEngagementDistance * MaximumEngagementDistance;
         internal bool CanStartAttack =>
             HasValidTarget &&
             !IsPerformingAction &&
@@ -645,15 +665,25 @@ namespace ZZ
             m_aiNetworkManager?.ReplicateTargetRelationship(previousTarget, null);
         }
 
-        internal void MoveTowardsTarget()
+        internal void MoveTowardsTarget(PursuitMode pursuitMode)
         {
+            if (pursuitMode == PursuitMode.None)
+            {
+                StopAtCurrentPosition();
+                FaceTarget();
+                return;
+            }
+
             if (!HasValidTarget || !CanUseNavMeshAgent())
             {
                 StopMoving();
                 return;
             }
 
-            UseNavigationMovementAnimation();
+            ApplyNavigationSpeed(pursuitMode);
+            SetMovementAnimationParameters(
+                0f,
+                GetMovementAnimationValue(pursuitMode));
             m_navMeshAgent.isStopped = false;
             m_navMeshAgent.SetDestination(m_currentTarget.transform.position);
             Vector3 facingDirection = m_navMeshAgent.desiredVelocity;
@@ -665,8 +695,18 @@ namespace ZZ
             RotateTowards(facingDirection, true);
         }
 
-        internal void MoveAroundTarget(float strafeAmount, float deltaTime)
+        internal void MoveAroundTarget(
+            float strafeAmount,
+            float deltaTime,
+            PursuitMode pursuitMode)
         {
+            if (pursuitMode == PursuitMode.None)
+            {
+                StopAtCurrentPosition();
+                FaceTarget();
+                return;
+            }
+
             if (!HasValidTarget || !CanUseNavMeshAgent())
             {
                 StopMoving();
@@ -675,8 +715,10 @@ namespace ZZ
 
             if (IsStrafePathBlocked())
             {
-                MoveTowardsTarget();
-                SetMovementAnimationParameters(0f, Mathf.Abs(strafeAmount));
+                MoveTowardsTarget(pursuitMode);
+                SetMovementAnimationParameters(
+                    0f,
+                    Mathf.Abs(GetStrafeAnimationValue(pursuitMode)));
                 return;
             }
 
@@ -686,7 +728,9 @@ namespace ZZ
             m_navMeshAgent.Move(
                 strafeDirection * m_combatStrafeSpeed * Mathf.Max(0f, deltaTime));
             FaceTarget();
-            SetMovementAnimationParameters(strafeAmount, 0f);
+            SetMovementAnimationParameters(
+                Mathf.Sign(strafeAmount) * GetStrafeAnimationValue(pursuitMode),
+                0f);
         }
 
         internal bool IsStrafePathBlocked()
@@ -877,10 +921,57 @@ namespace ZZ
             m_navMeshAgent.ResetPath();
         }
 
+        internal void StopAtCurrentPosition()
+        {
+            SetMovementAnimationParameters(0f, 0f);
+            if (!CanUseNavMeshAgent())
+            {
+                return;
+            }
+
+            m_navMeshAgent.isStopped = false;
+            m_navMeshAgent.SetDestination(transform.position);
+        }
+
         internal void ResetMovementAnimationForPursuit()
         {
-            m_useExplicitMovementAnimation = false;
-            PublishMovementAnimation(0f, 1f);
+            PursuitMode pursuitMode = GetPursuitMode(
+                AICharacterStateId.PursueTarget);
+            m_useExplicitMovementAnimation = true;
+            PublishMovementAnimation(
+                0f,
+                GetMovementAnimationValue(pursuitMode));
+        }
+
+        internal virtual PursuitMode GetPursuitMode(AICharacterStateId stateId)
+        {
+            return stateId switch
+            {
+                AICharacterStateId.PursueTarget => m_pursuitTargetMode,
+                AICharacterStateId.CombatStance => m_combatStanceMode,
+                _ => PursuitMode.None
+            };
+        }
+
+        internal static float GetMovementAnimationValue(PursuitMode pursuitMode)
+        {
+            return pursuitMode switch
+            {
+                PursuitMode.Walk => 0.5f,
+                PursuitMode.Run => 1f,
+                PursuitMode.Sprint => 2f,
+                _ => 0f
+            };
+        }
+
+        internal static float GetStrafeAnimationValue(PursuitMode pursuitMode)
+        {
+            return pursuitMode switch
+            {
+                PursuitMode.Walk => 0.5f,
+                PursuitMode.Run or PursuitMode.Sprint => 1f,
+                _ => 0f
+            };
         }
 
         internal void SetMovementAnimationParameters(
@@ -945,10 +1036,10 @@ namespace ZZ
                 return false;
             }
 
-            AICharacterAttackAction attackAction = m_bossCharacter != null
-                ? m_bossCharacter.SelectAttack(TargetDistance)
-                : m_defaultAttackAction;
-            if (m_bossCharacter != null && attackAction == null)
+            AICharacterAttackAction attackAction = SelectAttackAtDistance(
+                TargetDistance);
+            if ((m_bossCharacter != null || HasConfiguredAttackActions) &&
+                attackAction == null)
             {
                 return false;
             }
@@ -1125,23 +1216,133 @@ namespace ZZ
             return targetOffset.sqrMagnitude;
         }
 
-        private float GetCombatStanceDistance()
+        private bool HasConfiguredAttackActions =>
+            m_defaultAttackAction != null ||
+            m_combatStanceAttacks?.Exists(attack => attack != null) == true;
+
+        private float GetMaximumEngagementDistance()
         {
-            return m_bossCharacter != null
+            float maximumRange = m_bossCharacter != null
                 ? m_bossCharacter.GetMaximumAttackRange(m_combatStanceDistance)
                 : m_combatStanceDistance;
+            if (m_defaultAttackAction != null)
+            {
+                maximumRange = Mathf.Max(
+                    maximumRange,
+                    m_defaultAttackAction.MaximumRange);
+            }
+
+            return GetMaximumAttackRange(
+                m_combatStanceAttacks,
+                maximumRange);
         }
 
         private bool IsAttackAvailableAtTargetDistance()
         {
-            float targetDistanceSquared = GetTargetDistanceSquared();
+            float targetDistance = Mathf.Sqrt(GetTargetDistanceSquared());
             if (m_bossCharacter != null)
             {
-                return m_bossCharacter.HasAttackInRange(
-                    Mathf.Sqrt(targetDistanceSquared));
+                return m_bossCharacter.HasAttackInRange(targetDistance);
             }
 
-            return targetDistanceSquared <= m_attackDistance * m_attackDistance;
+            if (m_combatStanceAttacks == null)
+            {
+                return m_defaultAttackAction != null
+                    ? m_defaultAttackAction.IsInRange(targetDistance)
+                    : targetDistance <= m_attackDistance;
+            }
+
+            foreach (AICharacterAttackAction attack in m_combatStanceAttacks)
+            {
+                if (attack?.IsInRange(targetDistance) == true)
+                {
+                    return true;
+                }
+            }
+
+            if (m_defaultAttackAction != null)
+            {
+                return m_defaultAttackAction.IsInRange(targetDistance);
+            }
+
+            return targetDistance <= m_attackDistance;
+        }
+
+        internal static float GetMaximumAttackRange(
+            IReadOnlyList<AICharacterAttackAction> attacks,
+            float fallbackRange)
+        {
+            float maximumRange = Mathf.Max(0f, fallbackRange);
+            if (attacks == null)
+            {
+                return maximumRange;
+            }
+
+            foreach (AICharacterAttackAction attack in attacks)
+            {
+                if (attack != null)
+                {
+                    maximumRange = Mathf.Max(
+                        maximumRange,
+                        attack.MaximumRange);
+                }
+            }
+
+            return maximumRange;
+        }
+
+        internal static float GetMinimumPursuitDistance(
+            float maximumEngagementDistance,
+            float ratio = 0.75f)
+        {
+            return Mathf.Max(0f, maximumEngagementDistance) *
+                Mathf.Clamp(ratio, 0.1f, 1f);
+        }
+
+        private AICharacterAttackAction SelectAttackAtDistance(float distance)
+        {
+            if (m_bossCharacter != null)
+            {
+                return m_bossCharacter.SelectAttack(distance);
+            }
+
+            if (m_combatStanceAttacks == null)
+            {
+                return m_defaultAttackAction?.IsInRange(distance) == true
+                    ? m_defaultAttackAction
+                    : null;
+            }
+
+            float totalWeight = 0f;
+            foreach (AICharacterAttackAction attack in m_combatStanceAttacks)
+            {
+                if (attack?.IsInRange(distance) == true)
+                {
+                    totalWeight += Mathf.Max(0f, attack.SelectionWeight);
+                }
+            }
+
+            if (totalWeight > 0f)
+            {
+                float roll = Random.Range(0f, totalWeight);
+                foreach (AICharacterAttackAction attack in m_combatStanceAttacks)
+                {
+                    if (attack?.IsInRange(distance) != true)
+                    {
+                        continue;
+                    }
+
+                    roll -= Mathf.Max(0f, attack.SelectionWeight);
+                    if (roll <= 0f)
+                    {
+                        return attack;
+                    }
+                }
+            }
+
+            return m_defaultAttackAction?.IsInRange(distance) == true
+                ? m_defaultAttackAction
+                : null;
         }
 
         private void RotateTowards(Vector3 direction, bool playPivot)
@@ -1259,6 +1460,22 @@ namespace ZZ
         private void UseNavigationMovementAnimation()
         {
             m_useExplicitMovementAnimation = false;
+        }
+
+        private void ApplyNavigationSpeed(PursuitMode pursuitMode)
+        {
+            if (m_navMeshAgent == null)
+            {
+                return;
+            }
+
+            m_navMeshAgent.speed = pursuitMode switch
+            {
+                PursuitMode.Walk => m_walkSpeed,
+                PursuitMode.Run => m_runSpeed,
+                PursuitMode.Sprint => m_sprintSpeed,
+                _ => 0f
+            };
         }
 
         private void UpdateMovementAnimation()

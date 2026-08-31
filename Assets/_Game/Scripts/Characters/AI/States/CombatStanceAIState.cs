@@ -28,7 +28,7 @@ namespace ZZ
 
         internal override void Enter(AICharacterManager character)
         {
-            character.StopMoving();
+            character.StopAtCurrentPosition();
             ChooseStrafePath(character);
             RollForBlocking(character);
             RollForCombo(character);
@@ -50,7 +50,7 @@ namespace ZZ
                 return AICharacterStateId.Idle;
             }
 
-            if (!character.IsTargetWithinCombatRange)
+            if (character.ShouldResumePursuit)
             {
                 return AICharacterStateId.PursueTarget;
             }
@@ -63,10 +63,14 @@ namespace ZZ
 
             if (character.WillCircleTarget && m_hasChosenPath)
             {
-                character.MoveAroundTarget(m_strafeAmount, deltaTime);
+                character.MoveAroundTarget(
+                    m_strafeAmount,
+                    deltaTime,
+                    character.GetPursuitMode(StateId));
             }
             else
             {
+                character.StopAtCurrentPosition();
                 character.FaceTarget();
             }
 

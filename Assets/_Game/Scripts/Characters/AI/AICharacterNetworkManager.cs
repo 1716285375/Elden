@@ -185,6 +185,15 @@ namespace ZZ
             }
         }
 
+        /// <inheritdoc />
+        protected override void ApplyRangedPresentation()
+        {
+            base.ApplyRangedPresentation();
+            GetComponent<AIRangerEquipmentManager>()?.SetRangedWeaponState(
+                HasArrowNotched.Value,
+                IsHoldingArrow.Value);
+        }
+
         private void AwardRunesToKiller()
         {
             AICharacterCombatManager combatManager =
@@ -287,6 +296,19 @@ namespace ZZ
             PlayPivotClientRpc(turnLeft);
         }
 
+        /// <summary>Replicates one server-authoritative ranger projectile snapshot.</summary>
+        public void ReplicateRangedProjectile(
+            int projectileID,
+            UnityEngine.Vector3 releaseDirection)
+        {
+            if (!IsSpawned || !IsServer)
+            {
+                return;
+            }
+
+            PresentRangedProjectileClientRpc(projectileID, releaseDirection);
+        }
+
         [ClientRpc]
         private void PlayPivotClientRpc(bool turnLeft)
         {
@@ -297,6 +319,22 @@ namespace ZZ
 
             GetComponentInChildren<AICharacterAnimatorManager>(true)
                 ?.PlayPivotTurn(turnLeft);
+        }
+
+        [ClientRpc]
+        private void PresentRangedProjectileClientRpc(
+            int projectileID,
+            UnityEngine.Vector3 releaseDirection)
+        {
+            if (IsServer)
+            {
+                return;
+            }
+
+            GetComponent<AIRangerCombatManager>()
+                ?.PerformReleaseProjectileFromRpc(
+                    projectileID,
+                    releaseDirection);
         }
 
         [ClientRpc]

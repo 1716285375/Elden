@@ -203,6 +203,22 @@ namespace ZZ
                 false,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_hasArrowNotched =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_isHoldingArrow =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+
+        /// <summary>Gets whether a drawn projectile is attached to this character.</summary>
+        public NetworkVariable<bool> HasArrowNotched => m_hasArrowNotched;
+
+        /// <summary>Gets whether this character is still holding its ranged attack.</summary>
+        public NetworkVariable<bool> IsHoldingArrow => m_isHoldingArrow;
 
         [FormerlySerializedAs("networkPositionSmoothTime")]
         [SerializeField, Min(0.001f)] private float m_networkPositionSmoothTime = 0.1f;
@@ -267,6 +283,8 @@ namespace ZZ
             IsBlocking.OnValueChanged += OnIsBlockingChanged;
             IsParrying.OnValueChanged += OnIsParryingChanged;
             IsSneaking.OnValueChanged += OnIsSneakingChanged;
+            m_hasArrowNotched.OnValueChanged += OnRangedStateChanged;
+            m_isHoldingArrow.OnValueChanged += OnRangedStateChanged;
 
             if (IsOwner)
             {
@@ -282,6 +300,8 @@ namespace ZZ
                 IsParryable.Value = false;
                 IsRipostable.Value = false;
                 IsBeingCriticallyDamaged.Value = false;
+                m_hasArrowNotched.Value = false;
+                m_isHoldingArrow.Value = false;
             }
 
             if (IsServer)
@@ -292,6 +312,7 @@ namespace ZZ
             ApplyChargingAttackState(IsChargingAttack.Value);
             ApplyBlockingState(IsBlocking.Value);
             ApplySneakingState(IsSneaking.Value);
+            ApplyRangedPresentation();
             m_characterAnimatorManager?.SetDeadState(IsDead.Value);
             OnIsPoisonedChanged(false, IsPoisoned.Value);
             OnIsFrostbittenChanged(false, IsFrostbitten.Value);
@@ -311,9 +332,12 @@ namespace ZZ
             IsBlocking.OnValueChanged -= OnIsBlockingChanged;
             IsParrying.OnValueChanged -= OnIsParryingChanged;
             IsSneaking.OnValueChanged -= OnIsSneakingChanged;
+            m_hasArrowNotched.OnValueChanged -= OnRangedStateChanged;
+            m_isHoldingArrow.OnValueChanged -= OnRangedStateChanged;
             ApplyChargingAttackState(false);
             ApplyBlockingState(false);
             ApplySneakingState(false);
+            m_characterAnimatorManager?.SetRangedWeaponState(false, false, false);
             m_characterManager?.CharacterEffectsManager?.SetFrostbittenState(
                 false);
             m_characterManager?.SetFrozenState(false);
@@ -332,6 +356,8 @@ namespace ZZ
             SetParryableState(false);
             IsRipostable.Value = false;
             IsBeingCriticallyDamaged.Value = false;
+            m_hasArrowNotched.Value = false;
+            m_isHoldingArrow.Value = false;
         }
 
         private void Update()
@@ -468,6 +494,32 @@ namespace ZZ
             }
 
             IsAttacking.Value = isAttacking;
+        }
+
+        /// <summary>Writes the owner's replicated projectile notch and hold state.</summary>
+        public void SetNotchedProjectileState(
+            bool hasArrowNotched,
+            bool isHoldingArrow)
+        {
+            if (!IsSpawned || !IsOwner)
+            {
+                return;
+            }
+
+            m_hasArrowNotched.Value = hasArrowNotched;
+            m_isHoldingArrow.Value = hasArrowNotched && isHoldingArrow;
+        }
+
+        /// <summary>Releases held input while retaining the arrow until its fire event.</summary>
+        public void SetHoldingArrowState(bool isHoldingArrow)
+        {
+            if (IsSpawned &&
+                IsOwner &&
+                m_hasArrowNotched.Value &&
+                m_isHoldingArrow.Value != isHoldingArrow)
+            {
+                m_isHoldingArrow.Value = isHoldingArrow;
+            }
         }
 
         /// <summary>Writes whether the owner is currently inside Parry active frames.</summary>
@@ -1379,6 +1431,11 @@ namespace ZZ
             ApplySneakingState(isSneaking);
         }
 
+        private void OnRangedStateChanged(bool previousValue, bool currentValue)
+        {
+            ApplyRangedPresentation();
+        }
+
         private void OnIsParryingChanged(bool wasParrying, bool isParrying)
         {
             if (!isParrying)
@@ -1413,6 +1470,22 @@ namespace ZZ
             m_characterAnimatorManager ??=
                 GetComponentInChildren<CharacterAnimatorManager>(true);
             m_characterAnimatorManager?.SetSneakingState(isSneaking);
+        }
+
+        /// <summary>Applies replicated ranged state for this character type.</summary>
+        protected virtual void ApplyRangedPresentation()
+        {
+            m_characterAnimatorManager ??=
+                GetComponentInChildren<CharacterAnimatorManager>(true);
+            m_characterAnimatorManager?.SetRangedWeaponState(
+                m_hasArrowNotched.Value,
+                m_isHoldingArrow.Value,
+                false);
+            if (!m_hasArrowNotched.Value)
+            {
+                m_characterManager?.CharacterEffectsManager
+                    ?.DestroyAllCurrentActionEffects();
+            }
         }
     }
 }

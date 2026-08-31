@@ -136,12 +136,6 @@ namespace ZZ
             m_player?.PlayerCombatManager?.CompleteSpellCast();
         }
 
-        /// <summary>Animation Event: releases the owner-authoritative notched arrow.</summary>
-        public void ReleaseArrow()
-        {
-            m_player?.PlayerCombatManager?.ReleaseArrow();
-        }
-
         /// <summary>Animation Event: resolves the presented quick-slot item's success frame.</summary>
         public void SuccessfullyUseQuickSlotItem()
         {

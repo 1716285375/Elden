@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 794448893d67eb64ca608ce9ad394be7, type: 3}
+  m_Name: Ranger_Attack_01
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterAttackAction
+  m_attackType: 0
+  m_isParryable: 0
+  m_useCharacterActionAnimation: 1
+  m_characterActionAnimation: 23
+  m_minimumRange: 1
+  m_maximumRange: 20
+  m_selectionWeight: 1
+  m_recoveryTime: 2
+  m_comboAction: {fileID: 0}
+  m_physicalDamage: 25
+  m_magicDamage: 0
+  m_fireDamage: 0
+  m_lightningDamage: 0
+  m_holyDamage: 0
+  m_poiseDamage: 15

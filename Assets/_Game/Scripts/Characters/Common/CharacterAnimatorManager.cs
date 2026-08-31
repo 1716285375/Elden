@@ -340,6 +340,18 @@ namespace ZZ
             m_animator.SetBool(s_isAimingParameter, isAiming);
         }
 
+        /// <summary>Animation Event: attaches the current projectile to this character.</summary>
+        public void DrawProjectile()
+        {
+            m_characterManager?.CharacterCombatManager?.DrawProjectile();
+        }
+
+        /// <summary>Animation Event: releases this character's current projectile.</summary>
+        public void ReleaseArrow()
+        {
+            m_characterManager?.CharacterCombatManager?.ReleaseArrow();
+        }
+
         /// <summary>Applies the replicated request for another authored flask sip.</summary>
         public void SetFlaskChuggingState(bool isChugging)
         {
