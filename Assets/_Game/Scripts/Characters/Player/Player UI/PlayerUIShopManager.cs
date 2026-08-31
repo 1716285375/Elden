@@ -547,9 +547,18 @@ namespace ZZ
             categoryLayout.childControlWidth = true;
             categoryLayout.childForceExpandWidth = true;
             categoryRow.AddComponent<LayoutElement>().preferredHeight = 52f;
-            CreateButton(categoryRow.transform, "All", SetAllCategory);
-            CreateButton(categoryRow.transform, "Armor", SetArmorCategory);
-            CreateButton(categoryRow.transform, "Weapons", SetWeaponsCategory);
+            CreateCategoryButton(
+                categoryRow.transform,
+                "All",
+                ShopItemCategory.All);
+            CreateCategoryButton(
+                categoryRow.transform,
+                "Armor",
+                ShopItemCategory.Armor);
+            CreateCategoryButton(
+                categoryRow.transform,
+                "Weapons",
+                ShopItemCategory.Weapons);
             m_categoryText = CreateText(
                 "Current Category",
                 m_shopPanel.transform,
@@ -620,6 +629,16 @@ namespace ZZ
                 ShopItemCategory.Weapons => item is WeaponItem,
                 _ => true
             };
+        }
+
+        private void CreateCategoryButton(
+            Transform parent,
+            string label,
+            ShopItemCategory category)
+        {
+            Button button = CreateButton(parent, label, null);
+            button.gameObject.AddComponent<UIItemCategory>()
+                .Initialize(category, SetCategory);
         }
 
         private static GameObject CreatePanel(

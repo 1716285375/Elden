@@ -355,6 +355,7 @@ namespace ZZ
                     this);
             currentData.QuickSlotItemIndex = InventoryManager.QuickSlotItemIndex;
             SaveInventoryData(currentData);
+            SaveStorageData(currentData);
             currentData.IsMale = PlayerNetworkManager.IsMale.Value;
             currentData.HairstyleID = PlayerNetworkManager.HairstyleID.Value;
             currentData.HairColorRed = PlayerNetworkManager.HairColorRed.Value;
@@ -405,6 +406,7 @@ namespace ZZ
             PlayerNetworkManager.HairColorGreen.Value = currentData.HairColorGreen;
             PlayerNetworkManager.HairColorBlue.Value = currentData.HairColorBlue;
             InventoryManager.RestoreInventory(currentData);
+            InventoryManager.RestoreStorage(currentData);
             PlayerNetworkManager.RemainingHealthFlasks.Value =
                 currentData.CurrentHealthFlasksRemaining;
             PlayerNetworkManager.RemainingFocusPointFlasks.Value =
@@ -542,6 +544,49 @@ namespace ZZ
                     case LegEquipmentItem legEquipment:
                         currentData.LegEquipmentInInventory.Add(
                             legEquipment.ItemID);
+                        break;
+                }
+            }
+        }
+
+        private void SaveStorageData(CharacterSaveData currentData)
+        {
+            SerializableInventoryData storage = currentData.StorageInventory;
+            storage.Clear();
+            foreach (Item item in InventoryManager.ItemsInStorage)
+            {
+                switch (item)
+                {
+                    case WeaponItem weapon:
+                        storage.Weapons.Add(WorldSaveGameManager
+                            .GetSerializableWeaponFromWeaponItem(weapon));
+                        break;
+                    case RangedProjectileItem projectile:
+                        storage.Projectiles.Add(WorldSaveGameManager
+                            .GetSerializableProjectileFromProjectileItem(
+                                projectile));
+                        break;
+                    case QuickSlotItem quickSlotItem:
+                        storage.QuickSlotItems.Add(WorldSaveGameManager
+                            .GetSerializableQuickSlotItemFromQuickSlotItem(
+                                quickSlotItem,
+                                this));
+                        break;
+                    case Item stackableItem when stackableItem.IsStackable:
+                        storage.StackableItems.Add(WorldSaveGameManager
+                            .GetSerializableItemStackFromItem(stackableItem));
+                        break;
+                    case HeadEquipmentItem headEquipment:
+                        storage.HeadEquipment.Add(headEquipment.ItemID);
+                        break;
+                    case BodyEquipmentItem bodyEquipment:
+                        storage.BodyEquipment.Add(bodyEquipment.ItemID);
+                        break;
+                    case HandEquipmentItem handEquipment:
+                        storage.HandEquipment.Add(handEquipment.ItemID);
+                        break;
+                    case LegEquipmentItem legEquipment:
+                        storage.LegEquipment.Add(legEquipment.ItemID);
                         break;
                 }
             }

@@ -32,71 +32,13 @@ namespace ZZ
         /// <summary>Adds one runtime item, merging a compatible stack when possible.</summary>
         public bool AddItemToInventory(Item item)
         {
-            if (item == null)
-            {
-                return false;
-            }
-
-            InventoryItems.RemoveAll(candidate => candidate == null);
-            if (item.IsStackable)
-            {
-                Item existingStack = InventoryItems.Find(candidate =>
-                    candidate.ItemID == item.ItemID &&
-                    candidate.GetType() == item.GetType() &&
-                    candidate.IsStackable);
-                if (existingStack != null)
-                {
-                    if (existingStack.CurrentItemAmount + item.CurrentItemAmount >
-                        existingStack.MaxItemAmount)
-                    {
-                        Debug.LogWarning(
-                            $"Inventory stack {item.ItemName} reached its maximum; " +
-                            $"{item.CurrentItemAmount} item(s) could not be added.",
-                            this);
-                        return false;
-                    }
-
-                    existingStack.AddItemAmount(item.CurrentItemAmount);
-                    DestroyRuntimeItem(item);
-                    return true;
-                }
-            }
-
-            InventoryItems.Add(item);
-            return true;
+            return AddItemToCollection(InventoryItems, item, "Inventory");
         }
 
         /// <summary>Removes one matching runtime item or the requested stack amount.</summary>
         public bool RemoveItemFromInventory(Item item)
         {
-            InventoryItems.RemoveAll(candidate => candidate == null);
-            if (item == null)
-            {
-                return false;
-            }
-
-            if (!item.IsStackable)
-            {
-                return InventoryItems.Remove(item);
-            }
-
-            Item inventoryStack = InventoryItems.Find(candidate =>
-                candidate.ItemID == item.ItemID &&
-                candidate.GetType() == item.GetType() &&
-                candidate.IsStackable);
-            if (inventoryStack == null ||
-                !inventoryStack.TryRemoveItemAmount(item.CurrentItemAmount))
-            {
-                return false;
-            }
-
-            if (inventoryStack.CurrentItemAmount <= 0)
-            {
-                InventoryItems.Remove(inventoryStack);
-                DestroyRuntimeItem(inventoryStack);
-            }
-
-            return true;
+            return RemoveItemFromCollection(InventoryItems, item);
         }
 
         /// <summary>Returns the total owned amount for one stable catalog item.</summary>
@@ -124,12 +66,7 @@ namespace ZZ
         /// <summary>Destroys every owned runtime item and empties the inventory.</summary>
         public void ClearRuntimeInventory()
         {
-            foreach (Item item in InventoryItems)
-            {
-                DestroyRuntimeItem(item);
-            }
-
-            InventoryItems.Clear();
+            ClearRuntimeCollection(InventoryItems);
         }
 
         /// <summary>Releases one transient item created from the item database.</summary>
@@ -139,6 +76,146 @@ namespace ZZ
             {
                 Destroy(item);
             }
+        }
+
+        /// <summary>Adds one item to a runtime container using shared stack rules.</summary>
+        protected bool AddItemToCollection(
+            List<Item> items,
+            Item item,
+            string collectionName)
+        {
+            if (items == null || item == null)
+            {
+                return false;
+            }
+
+            items.RemoveAll(candidate => candidate == null);
+            Item existingStack = FindCompatibleStack(items, item);
+            if (existingStack != null)
+            {
+                if (existingStack.CurrentItemAmount + item.CurrentItemAmount >
+                    existingStack.MaxItemAmount)
+                {
+                    Debug.LogWarning(
+                        $"{collectionName} stack {item.ItemName} reached its maximum; " +
+                        $"{item.CurrentItemAmount} item(s) could not be added.",
+                        this);
+                    return false;
+                }
+
+                existingStack.AddItemAmount(item.CurrentItemAmount);
+                DestroyRuntimeItem(item);
+                return true;
+            }
+
+            items.Add(item);
+            return true;
+        }
+
+        /// <summary>Removes one item or requested stack amount from a runtime container.</summary>
+        protected static bool RemoveItemFromCollection(
+            List<Item> items,
+            Item item)
+        {
+            if (items == null || item == null)
+            {
+                return false;
+            }
+
+            items.RemoveAll(candidate => candidate == null);
+            if (!item.IsStackable)
+            {
+                return items.Remove(item);
+            }
+
+            Item existingStack = FindCompatibleStack(items, item);
+            if (existingStack == null ||
+                !existingStack.TryRemoveItemAmount(item.CurrentItemAmount))
+            {
+                return false;
+            }
+
+            if (existingStack.CurrentItemAmount <= 0)
+            {
+                items.Remove(existingStack);
+                DestroyRuntimeItem(existingStack);
+            }
+
+            return true;
+        }
+
+        /// <summary>Moves one complete runtime entry between containers without cloning it.</summary>
+        protected bool TransferItemBetweenCollections(
+            List<Item> sourceItems,
+            List<Item> destinationItems,
+            Item item,
+            string destinationName)
+        {
+            if (sourceItems == null ||
+                destinationItems == null ||
+                item == null)
+            {
+                return false;
+            }
+
+            sourceItems.RemoveAll(candidate => candidate == null);
+            destinationItems.RemoveAll(candidate => candidate == null);
+            if (!sourceItems.Contains(item) ||
+                !CanAddItemToCollection(destinationItems, item))
+            {
+                return false;
+            }
+
+            sourceItems.Remove(item);
+            if (AddItemToCollection(destinationItems, item, destinationName))
+            {
+                return true;
+            }
+
+            sourceItems.Add(item);
+            return false;
+        }
+
+        /// <summary>Destroys every transient item owned by one runtime container.</summary>
+        protected static void ClearRuntimeCollection(List<Item> items)
+        {
+            if (items == null)
+            {
+                return;
+            }
+
+            foreach (Item item in items)
+            {
+                DestroyRuntimeItem(item);
+            }
+
+            items.Clear();
+        }
+
+        private static bool CanAddItemToCollection(
+            List<Item> items,
+            Item item)
+        {
+            Item existingStack = FindCompatibleStack(items, item);
+            return existingStack == null ||
+                existingStack.CurrentItemAmount + item.CurrentItemAmount <=
+                    existingStack.MaxItemAmount;
+        }
+
+        private static Item FindCompatibleStack(
+            List<Item> items,
+            Item item)
+        {
+            if (item?.IsStackable != true)
+            {
+                return null;
+            }
+
+            return items.Find(candidate =>
+                candidate != null &&
+                candidate.ItemID == item.ItemID &&
+                candidate.GetType() == item.GetType() &&
+                candidate.IsStackable);
         }
     }
 }

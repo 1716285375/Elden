@@ -28,6 +28,7 @@ namespace ZZ
         [SerializeField] private PlayerUIWeaponUpgradeManager
             m_playerUIWeaponUpgradeManager;
         [SerializeField] private PlayerUIShopManager m_playerUIShopManager;
+        [SerializeField] private PlayerUIStorageManager m_playerUIStorageManager;
         [SerializeField] private PlayerUILoadingScreenManager
             m_playerUILoadingScreenManager;
         [SerializeField] private GameObject m_menuEventSystem;
@@ -90,6 +91,10 @@ namespace ZZ
         /// <summary>Gets the shared NPC context and merchant UI.</summary>
         public PlayerUIShopManager PlayerUIShopManager => m_playerUIShopManager;
 
+        /// <summary>Gets the Site of Grace item-storage controller.</summary>
+        public PlayerUIStorageManager PlayerUIStorageManager =>
+            m_playerUIStorageManager;
+
         /// <summary>Gets the persistent world-transition loading-screen controller.</summary>
         public PlayerUILoadingScreenManager PlayerUILoadingScreenManager =>
             m_playerUILoadingScreenManager;
@@ -129,6 +134,10 @@ namespace ZZ
                     GetComponentInChildren<PlayerUIShopManager>(true);
                 m_playerUIShopManager ??=
                     gameObject.AddComponent<PlayerUIShopManager>();
+                m_playerUIStorageManager ??=
+                    GetComponentInChildren<PlayerUIStorageManager>(true);
+                m_playerUIStorageManager ??=
+                    gameObject.AddComponent<PlayerUIStorageManager>();
                 m_playerUILoadingScreenManager ??=
                     GetComponentInChildren<PlayerUILoadingScreenManager>(true);
                 m_uiAudioSource ??= GetComponent<AudioSource>();
@@ -179,6 +188,7 @@ namespace ZZ
             m_playerUILevelUpManager?.CloseMenu();
             m_playerUIWeaponUpgradeManager?.CloseMenu();
             m_playerUIShopManager?.CloseMenu();
+            m_playerUIStorageManager?.CloseMenu();
             ReleaseMenuInput();
         }
 
@@ -241,6 +251,7 @@ namespace ZZ
             hasOpenMenu |=
                 m_playerUIWeaponUpgradeManager?.IsMenuOpen == true;
             hasOpenMenu |= m_playerUIShopManager?.IsMenuOpen == true;
+            hasOpenMenu |= m_playerUIStorageManager?.IsMenuOpen == true;
             if (hasOpenMenu)
             {
                 NotifyMenuWindowOpened();
