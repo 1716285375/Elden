@@ -95,7 +95,9 @@ namespace ZZ
         }
 
         /// <inheritdoc />
-        public override void ProcessEffect(CharacterManager character)
+        public override void ProcessDamage(
+            CharacterManager character,
+            DamageProcessingMode processingMode)
         {
             if (character == null || character.IsDead)
             {
@@ -112,19 +114,21 @@ namespace ZZ
             DamageIntensity =
                 WorldUtilityManager.GetDamageIntensityBasedOnPoiseDamage(
                     PoiseDamage);
-            character.CharacterSoundFXManager?.PlayBlockingSoundEffect();
-            ApplyHealthDamage(character, CalculateBlockedDamage());
-            character.CharacterStatsManager?.ApplyBlockingStaminaDamage(
-                PoiseDamage,
-                BlockingStability);
-        }
+            int resolvedDamage = CalculateBlockedDamage();
+            UpdateProjectedState(character, resolvedDamage);
+            if (ProjectedHealth <= 0f)
+            {
+                character.SetPredictedDead(true);
+            }
 
-        private static float CalculateAbsorbedDamage(
-            float damage,
-            float absorption)
-        {
-            return Mathf.Max(0f, damage) *
-                (1f - ClampAbsorption(absorption) / 100f);
+            character.CharacterSoundFXManager?.PlayBlockingSoundEffect();
+            if (processingMode == DamageProcessingMode.Authoritative)
+            {
+                ApplyHealthDamage(character, resolvedDamage);
+                character.CharacterStatsManager?.ApplyBlockingStaminaDamage(
+                    PoiseDamage,
+                    BlockingStability);
+            }
         }
 
         private static float ClampAbsorption(float absorption)

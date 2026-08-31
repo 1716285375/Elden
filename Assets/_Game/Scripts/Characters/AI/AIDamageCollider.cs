@@ -19,7 +19,8 @@ namespace ZZ
 
             m_combatManager ??= GetComponentInParent<AICharacterCombatManager>();
             if (m_combatManager != null &&
-                !m_combatManager.TryRegisterDamageTarget(damageTarget))
+                !m_combatManager.TryRegisterDamageTarget(damageTarget) &&
+                !damageTarget.IsOwner)
             {
                 return true;
             }
@@ -33,14 +34,23 @@ namespace ZZ
             bool wasBlocked)
         {
             m_combatManager ??= GetComponentInParent<AICharacterCombatManager>();
-            if (m_combatManager == null ||
-                !m_combatManager.TryRegisterDamageTarget(target))
+            if (m_combatManager == null)
+            {
+                return;
+            }
+
+            bool wasRegisteredByServer =
+                m_combatManager.TryRegisterDamageTarget(target);
+            if (!wasRegisteredByServer && !target.IsOwner)
             {
                 return;
             }
 
             base.Damage(target, contactPoint, wasBlocked);
-            m_combatManager.RecordSuccessfulHit(target);
+            if (wasRegisteredByServer)
+            {
+                m_combatManager.RecordSuccessfulHit(target);
+            }
         }
     }
 }

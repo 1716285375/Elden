@@ -453,6 +453,22 @@ namespace ZZ
                 actionLayerIndex);
         }
 
+        /// <summary>Plays an action only on this peer for prediction or reconciliation.</summary>
+        public void PlayLocalAnimation(
+            CharacterActionAnimation targetAnimation,
+            bool isPerformingAction,
+            bool shouldApplyRootMotion = false,
+            bool canRotate = false,
+            bool canMove = false)
+        {
+            PlayTargetActionAnimation(
+                targetAnimation,
+                isPerformingAction,
+                shouldApplyRootMotion,
+                canRotate,
+                canMove);
+        }
+
         /// <summary>
         /// Starts an attack action and cross-fades the action override layer to its attack state.
         /// </summary>
@@ -537,6 +553,22 @@ namespace ZZ
                 canRotate,
                 canMove);
             m_animator.Play(actionStateHash, actionLayerIndex, 0f);
+        }
+
+        /// <summary>Immediately plays an action only on this peer.</summary>
+        public void PlayLocalAnimationInstantly(
+            CharacterActionAnimation targetAnimation,
+            bool isPerformingAction,
+            bool shouldApplyRootMotion = false,
+            bool canRotate = false,
+            bool canMove = false)
+        {
+            PlayTargetActionAnimationInstantly(
+                targetAnimation,
+                isPerformingAction,
+                shouldApplyRootMotion,
+                canRotate,
+                canMove);
         }
 
         /// <summary>Updates the death branch used by Critical victim states.</summary>

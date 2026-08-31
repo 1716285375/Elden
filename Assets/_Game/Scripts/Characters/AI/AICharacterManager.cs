@@ -209,6 +209,7 @@ namespace ZZ
 
             if (IsServer)
             {
+                m_aiCombatManager?.InitializeNetworkStance();
                 CreateActivationBeacon();
                 SetNavigationEnabled(true);
                 PlaceOnNavMesh();

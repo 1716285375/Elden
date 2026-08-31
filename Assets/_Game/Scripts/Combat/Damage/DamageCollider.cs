@@ -53,14 +53,18 @@ namespace ZZ
             CharacterManager target = other.GetComponentInParent<CharacterManager>();
             if (target == null ||
                 target == m_characterCausingDamage ||
-                m_charactersDamaged.Contains(target))
+                m_charactersDamaged.Contains(target) ||
+                !CanInitiateDamage(target))
             {
                 return;
             }
 
-            if (!WorldUtilityManager.CanDamageCharacter(
+            bool canDamageTarget = m_characterCausingDamage == null
+                ? !target.IsDead
+                : WorldUtilityManager.CanDamageCharacter(
                     m_characterCausingDamage,
-                    target) ||
+                    target);
+            if (!canDamageTarget ||
                 target.IsInvulnerable)
             {
                 return;
@@ -269,12 +273,23 @@ namespace ZZ
             bool wasBlocked)
         {
             CharacterNetworkManager networkManager =
-                m_characterCausingDamage?.CharacterNetworkManager;
+                m_characterCausingDamage?.CharacterNetworkManager ??
+                target?.CharacterNetworkManager;
             if (networkManager != null && networkManager.IsSpawned)
             {
+                ApplyDamageLocally(
+                    target,
+                    contactPoint,
+                    wasBlocked,
+                    target.IsOwner
+                        ? DamageProcessingMode.Authoritative
+                        : DamageProcessingMode.PredictedPresentation);
                 networkManager.RequestCharacterDamageServerRpc(
                     target.NetworkObjectId,
-                    m_characterCausingDamage.NetworkObjectId,
+                    m_characterCausingDamage != null
+                        ? m_characterCausingDamage.NetworkObjectId
+                        : 0,
+                    m_characterCausingDamage != null,
                     m_physicalDamage,
                     m_magicDamage,
                     m_fireDamage,
@@ -289,13 +304,39 @@ namespace ZZ
                 return;
             }
 
-            ApplyDamageLocally(target, contactPoint, wasBlocked);
+            ApplyDamageLocally(
+                target,
+                contactPoint,
+                wasBlocked,
+                DamageProcessingMode.Authoritative);
+        }
+
+        /// <summary>
+        /// Selects one peer to initiate prediction: defender for AI/environment hits,
+        /// otherwise the damage source owner.
+        /// </summary>
+        protected bool CanInitiateDamage(CharacterManager target)
+        {
+            if (target == null || !target.IsSpawned)
+            {
+                return true;
+            }
+
+            if (m_characterCausingDamage == null ||
+                m_characterCausingDamage is AICharacterManager &&
+                target is PlayerManager)
+            {
+                return target.IsOwner;
+            }
+
+            return m_characterCausingDamage.IsOwner;
         }
 
         private void ApplyDamageLocally(
             CharacterManager target,
             Vector3 contactPoint,
-            bool wasBlocked)
+            bool wasBlocked,
+            DamageProcessingMode processingMode)
         {
             CharacterEffectsManager effectsManager = target.CharacterEffectsManager;
             if (effectsManager == null)
@@ -306,7 +347,7 @@ namespace ZZ
                 return;
             }
 
-            InstantCharacterEffect runtimeEffect = CreateRuntimeDamageEffect(
+            DamageEffect runtimeEffect = CreateRuntimeDamageEffect(
                 target,
                 contactPoint,
                 wasBlocked);
@@ -318,8 +359,11 @@ namespace ZZ
                 return;
             }
 
-            effectsManager.ProcessRuntimeInstantEffect(runtimeEffect);
-            if (!wasBlocked)
+            effectsManager.ProcessRuntimeDamageEffect(
+                runtimeEffect,
+                processingMode);
+            if (!wasBlocked &&
+                processingMode == DamageProcessingMode.Authoritative)
             {
                 effectsManager.ProcessBuildupEffects(
                     m_poisonBuildup,
@@ -328,7 +372,7 @@ namespace ZZ
             }
         }
 
-        private InstantCharacterEffect CreateRuntimeDamageEffect(
+        private DamageEffect CreateRuntimeDamageEffect(
             CharacterManager target,
             Vector3 contactPoint,
             bool wasBlocked)

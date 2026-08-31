@@ -34,6 +34,8 @@ namespace ZZ
         private bool m_canRotate = true;
         private bool m_shouldApplyRootMotion;
         private bool m_isDeathEventRunning;
+        private bool m_isDeadLocal;
+        private bool m_hasPlayedDeathAnimation;
         private bool m_isInvulnerable;
         private bool m_hasFrozenStateSnapshot;
         private bool m_canMoveBeforeFrozen;
@@ -82,8 +84,12 @@ namespace ZZ
         /// <summary>
         /// Gets the replicated death state owned by this character's network authority.
         /// </summary>
-        public bool IsDead => m_characterNetworkManager != null &&
+        public bool IsDead => IsNetworkDead || m_isDeadLocal;
+        /// <summary>Gets the latest replicated owner-authoritative death state.</summary>
+        public bool IsNetworkDead => m_characterNetworkManager != null &&
             m_characterNetworkManager.IsDead.Value;
+        /// <summary>Gets whether immediate damage prediction has entered local death.</summary>
+        public bool IsDeadLocal => m_isDeadLocal;
         public bool IsPerformingAction => m_isPerformingAction;
         public bool CanMove => m_canMove;
         public bool CanRotate => m_canRotate;
@@ -361,9 +367,75 @@ namespace ZZ
             SetFrozenState(false);
 
             m_isDeathEventRunning = false;
+            m_isDeadLocal = false;
+            m_hasPlayedDeathAnimation = false;
             m_isInvulnerable = false;
             m_characterAnimatorManager?.PlayEmptyActionAnimation();
             ResetActionFlags();
+        }
+
+        /// <summary>Updates local predicted death and presents it once without an RPC.</summary>
+        public void SetPredictedDead(bool isDead)
+        {
+            m_isDeadLocal = isDead;
+            if (isDead)
+            {
+                CheckForDeathAnimation();
+                return;
+            }
+
+            if (!IsNetworkDead)
+            {
+                m_hasPlayedDeathAnimation = false;
+            }
+        }
+
+        /// <summary>Reconciles prediction against the latest synchronized Health and death flag.</summary>
+        public void ReconcilePredictedDeath(
+            bool authoritativeIsDead,
+            float authoritativeHealth)
+        {
+            if (authoritativeIsDead || authoritativeHealth <= 0f)
+            {
+                m_isDeadLocal = true;
+                CheckForDeathAnimation(
+                    m_characterNetworkManager?.IsBeingCriticallyDamaged.Value == true);
+                return;
+            }
+
+            if (!m_isDeadLocal)
+            {
+                return;
+            }
+
+            m_isDeadLocal = false;
+            m_hasPlayedDeathAnimation = false;
+            if (!m_isDeathEventRunning)
+            {
+                m_characterAnimatorManager?.PlayEmptyActionAnimation();
+                ResetActionFlags();
+            }
+        }
+
+        /// <summary>Plays default local death once unless a Critical animation owns the frame.</summary>
+        public bool CheckForDeathAnimation(
+            bool manuallySelectDeathAnimation = false)
+        {
+            if (!IsDead || m_hasPlayedDeathAnimation)
+            {
+                return false;
+            }
+
+            m_hasPlayedDeathAnimation = true;
+            if (manuallySelectDeathAnimation)
+            {
+                return false;
+            }
+
+            m_characterAnimatorManager?.PlayLocalAnimation(
+                CharacterActionAnimation.Death,
+                true);
+            return true;
         }
 
         private void ApplyFrozenState()
@@ -612,6 +684,7 @@ namespace ZZ
             }
 
             m_isDeathEventRunning = true;
+            m_isDeadLocal = true;
             if (IsSpawned && IsOwner && m_characterNetworkManager != null)
             {
                 m_characterNetworkManager.CurrentHealth.Value = 0f;
@@ -620,12 +693,7 @@ namespace ZZ
 
             SetActionState(true, false, false, false);
             EndJump();
-            if (!manuallySelectDeathAnimation)
-            {
-                m_characterAnimatorManager?.PlayTargetActionAnimation(
-                    CharacterActionAnimation.Death,
-                    true);
-            }
+            CheckForDeathAnimation(manuallySelectDeathAnimation);
 
             return true;
         }
