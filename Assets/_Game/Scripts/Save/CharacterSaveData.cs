@@ -29,7 +29,8 @@ namespace ZZ
         private const int k_WeaponUpgradeDataVersion = 13;
         private const int k_DoorStateDataVersion = 14;
         private const int k_ShopInventoryDataVersion = 15;
-        private const int k_CurrentDataVersion = 15;
+        private const int k_StorageDataVersion = 16;
+        private const int k_CurrentDataVersion = 16;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -99,6 +100,9 @@ namespace ZZ
         [SerializeField] private List<int> m_bodyEquipmentInInventory = new();
         [SerializeField] private List<int> m_handEquipmentInInventory = new();
         [SerializeField] private List<int> m_legEquipmentInInventory = new();
+
+        [Header("Storage State")]
+        [SerializeField] private SerializableInventoryData m_storageInventory = new();
 
         // Retained solely so version-7 and earlier JSON can be migrated safely.
         [SerializeField] private int m_mainProjectileID = 12;
@@ -431,6 +435,10 @@ namespace ZZ
         /// <summary>Gets saved unequipped leg-equipment identifiers.</summary>
         public List<int> LegEquipmentInInventory =>
             m_legEquipmentInInventory ??= new List<int>();
+
+        /// <summary>Gets the persistent item container kept at Sites of Grace.</summary>
+        public SerializableInventoryData StorageInventory =>
+            m_storageInventory ??= new SerializableInventoryData();
 
         /// <summary>Gets the stable identifiers of permanently opened world doors.</summary>
         public List<string> DoorsOpened =>
@@ -921,6 +929,11 @@ namespace ZZ
                 m_shopsGenerated = new List<int>();
             }
 
+            if (m_dataVersion < k_StorageDataVersion)
+            {
+                m_storageInventory = new SerializableInventoryData();
+            }
+
             m_bosses ??= new List<BossSaveData>();
             m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
             m_rightHandWeaponSlot01 ??= CreateLegacyWeapon(1);
@@ -945,6 +958,7 @@ namespace ZZ
             m_bodyEquipmentInInventory ??= new List<int>();
             m_handEquipmentInInventory ??= new List<int>();
             m_legEquipmentInInventory ??= new List<int>();
+            m_storageInventory ??= new SerializableInventoryData();
             m_doorsOpened ??= new List<string>();
             m_doorsOpened.RemoveAll(string.IsNullOrWhiteSpace);
             m_doorsOpened = m_doorsOpened.Distinct().ToList();

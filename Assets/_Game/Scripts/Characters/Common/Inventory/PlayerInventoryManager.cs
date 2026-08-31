@@ -44,6 +44,9 @@ namespace ZZ
         [SerializeField, Range(0, k_QuickSlotCount - 1)]
         private int m_quickSlotItemIndex;
 
+        [Header("Runtime Storage")]
+        [SerializeField] private List<Item> m_itemsInStorage = new();
+
         private PlayerManager m_player;
         private PlayerEquipmentManager m_equipmentManager;
         private WeaponItem m_currentRightHandWeapon;
@@ -96,6 +99,12 @@ namespace ZZ
         /// <summary>Gets the three equipped gameplay item slots.</summary>
         public IReadOnlyList<QuickSlotItem> QuickSlotItemsInQuickSlots =>
             m_quickSlotItemsInQuickSlots;
+
+        /// <summary>Gets the runtime item instances held in this character's storage.</summary>
+        public IReadOnlyList<Item> ItemsInStorage => StorageItems;
+
+        private List<Item> StorageItems =>
+            m_itemsInStorage ??= new List<Item>();
 
         /// <summary>Gets the selected right-hand quick-slot index.</summary>
         public int RightHandWeaponIndex => m_rightHandWeaponIndex;
@@ -434,7 +443,46 @@ namespace ZZ
             DestroyRuntimeItems(m_weaponsInRightHandSlots);
             DestroyRuntimeItems(m_weaponsInLeftHandSlots);
             DestroyRuntimeItems(m_quickSlotItemsInQuickSlots);
+            ClearRuntimeStorage();
             base.OnDestroy();
+        }
+
+        /// <summary>Adds one runtime item to storage using normal inventory stack rules.</summary>
+        public bool AddItemToStorage(Item item)
+        {
+            return AddItemToCollection(StorageItems, item, "Storage");
+        }
+
+        /// <summary>Removes one runtime item or stack amount from storage.</summary>
+        public bool RemoveItemFromStorage(Item item)
+        {
+            return RemoveItemFromCollection(StorageItems, item);
+        }
+
+        /// <summary>Moves one complete inventory entry into storage atomically.</summary>
+        public bool MoveItemToStorage(Item item)
+        {
+            return TransferItemBetweenCollections(
+                InventoryItems,
+                StorageItems,
+                item,
+                "Storage");
+        }
+
+        /// <summary>Moves one complete storage entry back into inventory atomically.</summary>
+        public bool MoveItemToInventory(Item item)
+        {
+            return TransferItemBetweenCollections(
+                StorageItems,
+                InventoryItems,
+                item,
+                "Inventory");
+        }
+
+        /// <summary>Destroys every runtime item held in storage.</summary>
+        public void ClearRuntimeStorage()
+        {
+            ClearRuntimeCollection(StorageItems);
         }
 
         /// <summary>Returns the stable item ID saved for one right-hand quick slot.</summary>
@@ -635,21 +683,66 @@ namespace ZZ
 
             WorldItemDatabase database = WorldItemDatabase.Instance;
             AddRuntimeItems(saveData.WeaponsInInventory,
-                database.GetWeaponFromSerializedData);
+                database.GetWeaponFromSerializedData,
+                AddItemToInventory);
             AddRuntimeItems(saveData.ProjectilesInInventory,
-                database.GetProjectileFromSerializedData);
+                database.GetProjectileFromSerializedData,
+                AddItemToInventory);
             AddRuntimeItems(saveData.QuickSlotItemsInInventory,
-                database.GetQuickSlotItemFromSerializedData);
+                database.GetQuickSlotItemFromSerializedData,
+                AddItemToInventory);
             AddRuntimeItems(saveData.StackableItemsInInventory,
-                database.GetItemStackFromSerializedData);
+                database.GetItemStackFromSerializedData,
+                AddItemToInventory);
             AddRuntimeItems(saveData.HeadEquipmentInInventory,
-                database.GetRuntimeHeadEquipmentByID);
+                database.GetRuntimeHeadEquipmentByID,
+                AddItemToInventory);
             AddRuntimeItems(saveData.BodyEquipmentInInventory,
-                database.GetRuntimeBodyEquipmentByID);
+                database.GetRuntimeBodyEquipmentByID,
+                AddItemToInventory);
             AddRuntimeItems(saveData.HandEquipmentInInventory,
-                database.GetRuntimeHandEquipmentByID);
+                database.GetRuntimeHandEquipmentByID,
+                AddItemToInventory);
             AddRuntimeItems(saveData.LegEquipmentInInventory,
-                database.GetRuntimeLegEquipmentByID);
+                database.GetRuntimeLegEquipmentByID,
+                AddItemToInventory);
+        }
+
+        /// <summary>Clears and reconstructs the complete persistent storage container.</summary>
+        public void RestoreStorage(CharacterSaveData saveData)
+        {
+            ClearRuntimeStorage();
+            SerializableInventoryData storage = saveData?.StorageInventory;
+            if (storage == null || WorldItemDatabase.Instance == null)
+            {
+                return;
+            }
+
+            WorldItemDatabase database = WorldItemDatabase.Instance;
+            AddRuntimeItems(storage.Weapons,
+                database.GetWeaponFromSerializedData,
+                AddItemToStorage);
+            AddRuntimeItems(storage.Projectiles,
+                database.GetProjectileFromSerializedData,
+                AddItemToStorage);
+            AddRuntimeItems(storage.QuickSlotItems,
+                database.GetQuickSlotItemFromSerializedData,
+                AddItemToStorage);
+            AddRuntimeItems(storage.StackableItems,
+                database.GetItemStackFromSerializedData,
+                AddItemToStorage);
+            AddRuntimeItems(storage.HeadEquipment,
+                database.GetRuntimeHeadEquipmentByID,
+                AddItemToStorage);
+            AddRuntimeItems(storage.BodyEquipment,
+                database.GetRuntimeBodyEquipmentByID,
+                AddItemToStorage);
+            AddRuntimeItems(storage.HandEquipment,
+                database.GetRuntimeHandEquipmentByID,
+                AddItemToStorage);
+            AddRuntimeItems(storage.LegEquipment,
+                database.GetRuntimeLegEquipmentByID,
+                AddItemToStorage);
         }
 
         private static SerializableWeapon[] CreateStartingWeapons(WeaponItem[] weapons)
@@ -1782,10 +1875,13 @@ namespace ZZ
 
         private void AddRuntimeItems<TData, TItem>(
             IEnumerable<TData> savedItems,
-            Func<TData, TItem> createRuntimeItem)
+            Func<TData, TItem> createRuntimeItem,
+            Func<Item, bool> addRuntimeItem)
             where TItem : Item
         {
-            if (savedItems == null || createRuntimeItem == null)
+            if (savedItems == null ||
+                createRuntimeItem == null ||
+                addRuntimeItem == null)
             {
                 return;
             }
@@ -1795,7 +1891,7 @@ namespace ZZ
                 TItem runtimeItem = createRuntimeItem(savedItem);
                 if (runtimeItem != null)
                 {
-                    AddItemToInventory(runtimeItem);
+                    addRuntimeItem(runtimeItem);
                 }
             }
         }
