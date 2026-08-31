@@ -75,7 +75,11 @@ namespace ZZ
             m_player?.PlayerNetworkManager?.IsClimbingLadder.Value == true;
 
         public bool IsExitingLadder => m_isExitingLadder;
-        public bool CanBeKnockedOffLadder => m_canBeKnockedOffLadder;
+        public bool CanBeKnockedOffLadder => m_player != null &&
+            m_player.IsSpawned &&
+            m_player.CharacterNetworkManager != null
+                ? m_player.CharacterNetworkManager.CanBeKnockedOffLadder.Value
+                : m_canBeKnockedOffLadder;
 
         protected override void Awake()
         {
@@ -176,7 +180,7 @@ namespace ZZ
             m_isExitingLadder = false;
             m_canExitWithLeftHand = false;
             m_canExitWithRightHand = false;
-            m_canBeKnockedOffLadder = false;
+            SetCanBeKnockedOffLadder(false);
             m_finishLadderAfterSlide = false;
             m_ladderHorizontalVelocity = Vector3.zero;
             StopSprinting();
@@ -304,13 +308,13 @@ namespace ZZ
                 return true;
             }
 
-            if (m_canBeKnockedOffLadder)
+            if (CanBeKnockedOffLadder)
             {
                 FallFromLadder();
                 return true;
             }
 
-            m_canBeKnockedOffLadder = true;
+            SetCanBeKnockedOffLadder(true);
             if (m_knockOffLadderRoutine != null)
             {
                 StopCoroutine(m_knockOffLadderRoutine);
@@ -798,7 +802,7 @@ namespace ZZ
             }
 
             m_isExitingLadder = true;
-            m_canBeKnockedOffLadder = false;
+            SetCanBeKnockedOffLadder(false);
             if (m_knockOffLadderRoutine != null)
             {
                 StopCoroutine(m_knockOffLadderRoutine);
@@ -811,10 +815,25 @@ namespace ZZ
             m_player.SetActionState(true, true, false, false);
         }
 
+        private void SetCanBeKnockedOffLadder(bool canBeKnockedOffLadder)
+        {
+            m_canBeKnockedOffLadder = canBeKnockedOffLadder;
+            CharacterNetworkManager networkManager =
+                m_player?.CharacterNetworkManager;
+            if (m_player != null &&
+                m_player.IsSpawned &&
+                m_player.IsOwner &&
+                networkManager != null)
+            {
+                networkManager.CanBeKnockedOffLadder.Value =
+                    canBeKnockedOffLadder;
+            }
+        }
+
         private IEnumerator ResetKnockOffLadderWindow()
         {
             yield return new WaitForSeconds(m_knockOffLadderWindow);
-            m_canBeKnockedOffLadder = false;
+            SetCanBeKnockedOffLadder(false);
             m_knockOffLadderRoutine = null;
         }
 
@@ -938,7 +957,7 @@ namespace ZZ
             m_isExitingLadder = false;
             m_canExitWithLeftHand = false;
             m_canExitWithRightHand = false;
-            m_canBeKnockedOffLadder = false;
+            SetCanBeKnockedOffLadder(false);
             m_finishLadderAfterSlide = false;
             m_ladderHorizontalVelocity = Vector3.zero;
         }

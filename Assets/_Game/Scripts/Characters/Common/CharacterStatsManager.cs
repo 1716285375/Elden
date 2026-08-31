@@ -100,31 +100,60 @@ namespace ZZ
         public float BlockingStability => Mathf.Clamp(m_blockingStability, 0f, 100f);
 
         /// <summary>Gets the accumulated negative Poise modifier from recent hits.</summary>
-        public float TotalPoiseDamage => Mathf.Min(0f, m_totalPoiseDamage);
+        public float TotalPoiseDamage => Mathf.Min(
+            0f,
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.TotalPoiseDamage,
+                m_totalPoiseDamage));
 
         /// <summary>Gets the passive Poise defense supplied by the character and future armor.</summary>
-        public float BasePoiseDefense =>
-            Mathf.Max(0f, m_basePoiseDefense) + Mathf.Max(0f, m_armorPoiseDefense);
+        public float BasePoiseDefense => Mathf.Max(
+                0f,
+                GetReplicatedOrLocal(
+                    m_characterNetworkManager?.BasePoiseDefense,
+                    m_basePoiseDefense)) +
+            Mathf.Max(
+                0f,
+                GetReplicatedOrLocal(
+                    m_characterNetworkManager?.ArmorPoiseDefense,
+                    m_armorPoiseDefense));
 
         /// <summary>Gets passive Poise contributed only by equipped armor.</summary>
-        public float ArmorPoiseDefense => Mathf.Max(0f, m_armorPoiseDefense);
+        public float ArmorPoiseDefense => Mathf.Max(
+            0f,
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.ArmorPoiseDefense,
+                m_armorPoiseDefense));
 
         /// <summary>Gets Physical absorption contributed only by equipped armor.</summary>
         public float ArmorPhysicalAbsorption => ClampArmorAbsorption(
-            m_armorPhysicalAbsorption);
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.ArmorPhysicalAbsorption,
+                m_armorPhysicalAbsorption));
 
         /// <summary>Gets Magic absorption contributed only by equipped armor.</summary>
-        public float ArmorMagicAbsorption => ClampArmorAbsorption(m_armorMagicAbsorption);
+        public float ArmorMagicAbsorption => ClampArmorAbsorption(
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.ArmorMagicAbsorption,
+                m_armorMagicAbsorption));
 
         /// <summary>Gets Fire absorption contributed only by equipped armor.</summary>
-        public float ArmorFireAbsorption => ClampArmorAbsorption(m_armorFireAbsorption);
+        public float ArmorFireAbsorption => ClampArmorAbsorption(
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.ArmorFireAbsorption,
+                m_armorFireAbsorption));
 
         /// <summary>Gets Lightning absorption contributed only by equipped armor.</summary>
         public float ArmorLightningAbsorption => ClampArmorAbsorption(
-            m_armorLightningAbsorption);
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.ArmorLightningAbsorption,
+                m_armorLightningAbsorption));
 
         /// <summary>Gets Holy absorption contributed only by equipped armor.</summary>
-        public float ArmorHolyAbsorption => ClampArmorAbsorption(m_armorHolyAbsorption);
+        public float ArmorHolyAbsorption => ClampArmorAbsorption(
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.ArmorHolyAbsorption,
+                m_armorHolyAbsorption));
 
         /// <summary>Gets Immunity contributed only by equipped armor.</summary>
         public float ArmorImmunity => Mathf.Max(0f, m_armorImmunity);
@@ -139,7 +168,11 @@ namespace ZZ
         public float ArmorVitality => Mathf.Max(0f, m_armorVitality);
 
         /// <summary>Gets the temporary Poise bonus reserved for offensive actions.</summary>
-        public float OffensivePoiseBonus => Mathf.Max(0f, m_offensivePoiseBonus);
+        public float OffensivePoiseBonus => Mathf.Max(
+            0f,
+            GetReplicatedOrLocal(
+                m_characterNetworkManager?.OffensivePoiseBonus,
+                m_offensivePoiseBonus));
 
         /// <summary>Gets the Poise remaining after defense, bonuses, and recent damage.</summary>
         public float RemainingPoise => CalculateRemainingPoise(
@@ -188,6 +221,7 @@ namespace ZZ
             if (IsOwner)
             {
                 InitializeResources();
+                SynchronizePredictionStats();
             }
 
             ResetPoise();
@@ -412,9 +446,10 @@ namespace ZZ
                 return false;
             }
 
-            m_totalPoiseDamage = Mathf.Min(
+            float updatedPoiseDamage = Mathf.Min(
                 0f,
-                m_totalPoiseDamage - resolvedPoiseDamage);
+                TotalPoiseDamage - resolvedPoiseDamage);
+            SetTotalPoiseDamage(updatedPoiseDamage);
             m_poiseResetTimer = Mathf.Max(0f, m_defaultPoiseResetTime);
             return IsPoiseBroken(RemainingPoise);
         }
@@ -438,14 +473,14 @@ namespace ZZ
             if (m_poiseResetTimer <= k_PoiseTimerEpsilon)
             {
                 m_poiseResetTimer = 0f;
-                m_totalPoiseDamage = 0f;
+                SetTotalPoiseDamage(0f);
             }
         }
 
         /// <summary>Restores full Poise and clears its recovery countdown.</summary>
         public void ResetPoise()
         {
-            m_totalPoiseDamage = 0f;
+            SetTotalPoiseDamage(0f);
             m_poiseResetTimer = 0f;
         }
 
@@ -453,6 +488,7 @@ namespace ZZ
         public void SetBasePoiseDefense(float basePoiseDefense)
         {
             m_basePoiseDefense = Mathf.Max(0f, basePoiseDefense);
+            SynchronizePredictionStats();
         }
 
         /// <summary>Rebuilds armor-only defense values from the currently equipped slots.</summary>
@@ -461,6 +497,7 @@ namespace ZZ
             ResetArmorValues();
             if (armorItems == null)
             {
+                SynchronizePredictionStats();
                 return;
             }
 
@@ -490,6 +527,7 @@ namespace ZZ
             m_armorLightningAbsorption = ClampArmorAbsorption(
                 m_armorLightningAbsorption);
             m_armorHolyAbsorption = ClampArmorAbsorption(m_armorHolyAbsorption);
+            SynchronizePredictionStats();
         }
 
         /// <summary>Clears armor contributions without modifying blocking or base Poise values.</summary>
@@ -505,12 +543,14 @@ namespace ZZ
             m_armorFocus = 0f;
             m_armorVitality = 0f;
             m_armorPoiseDefense = 0f;
+            SynchronizePredictionStats();
         }
 
         /// <summary>Updates the temporary Poise bonus granted by an offensive action.</summary>
         public void SetOffensivePoiseBonus(float offensivePoiseBonus)
         {
             m_offensivePoiseBonus = Mathf.Max(0f, offensivePoiseBonus);
+            SynchronizePredictionStats();
         }
 
         /// <summary>Adds or removes an independent Strength modifier.</summary>
@@ -528,6 +568,52 @@ namespace ZZ
             return Mathf.Max(0f, basePoiseDefense) +
                 Mathf.Max(0f, offensivePoiseBonus) +
                 Mathf.Min(0f, totalPoiseDamage);
+        }
+
+        private float GetReplicatedOrLocal(
+            NetworkVariable<float> networkValue,
+            float localValue)
+        {
+            return IsSpawned && networkValue != null
+                ? networkValue.Value
+                : localValue;
+        }
+
+        private void SetTotalPoiseDamage(float totalPoiseDamage)
+        {
+            m_totalPoiseDamage = Mathf.Min(0f, totalPoiseDamage);
+            if (IsSpawned && IsOwner && m_characterNetworkManager != null)
+            {
+                m_characterNetworkManager.TotalPoiseDamage.Value =
+                    m_totalPoiseDamage;
+            }
+        }
+
+        private void SynchronizePredictionStats()
+        {
+            if (!IsSpawned || !IsOwner || m_characterNetworkManager == null)
+            {
+                return;
+            }
+
+            m_characterNetworkManager.ArmorPhysicalAbsorption.Value =
+                ClampArmorAbsorption(m_armorPhysicalAbsorption);
+            m_characterNetworkManager.ArmorMagicAbsorption.Value =
+                ClampArmorAbsorption(m_armorMagicAbsorption);
+            m_characterNetworkManager.ArmorFireAbsorption.Value =
+                ClampArmorAbsorption(m_armorFireAbsorption);
+            m_characterNetworkManager.ArmorLightningAbsorption.Value =
+                ClampArmorAbsorption(m_armorLightningAbsorption);
+            m_characterNetworkManager.ArmorHolyAbsorption.Value =
+                ClampArmorAbsorption(m_armorHolyAbsorption);
+            m_characterNetworkManager.BasePoiseDefense.Value =
+                Mathf.Max(0f, m_basePoiseDefense);
+            m_characterNetworkManager.ArmorPoiseDefense.Value =
+                Mathf.Max(0f, m_armorPoiseDefense);
+            m_characterNetworkManager.OffensivePoiseBonus.Value =
+                Mathf.Max(0f, m_offensivePoiseBonus);
+            m_characterNetworkManager.TotalPoiseDamage.Value =
+                Mathf.Min(0f, m_totalPoiseDamage);
         }
 
         /// <summary>Returns whether the supplied remaining Poise has reached its break point.</summary>

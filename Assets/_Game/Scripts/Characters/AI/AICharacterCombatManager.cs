@@ -41,7 +41,11 @@ namespace ZZ
         private PlayerManager m_runeRewardCandidate;
 
         public int MaximumStance => m_maximumStance;
-        public int CurrentStance => m_currentStance;
+        public int CurrentStance => m_aiCharacter != null &&
+            m_aiCharacter.IsSpawned &&
+            m_aiCharacter.CharacterNetworkManager != null
+                ? m_aiCharacter.CharacterNetworkManager.CurrentStance.Value
+                : m_currentStance;
         public float StanceRegenerationTimer => m_stanceRegenerationTimer;
         public bool IgnoreStanceBreak => m_ignoreStanceBreak;
         public AICharacterAttackAction CurrentAttackAction =>
@@ -123,7 +127,33 @@ namespace ZZ
             m_stanceRegenerationTimer =
                 m_defaultTimeUntilStanceRegenerationBegins;
             m_stanceTickTimer = 0f;
-            m_currentStance -= stanceDamage;
+            SetCurrentStance(CurrentStance - stanceDamage);
+        }
+
+        /// <summary>Initializes the replicated Stance snapshot owned by this AI.</summary>
+        public void InitializeNetworkStance()
+        {
+            if (m_aiCharacter == null ||
+                !m_aiCharacter.IsSpawned ||
+                !m_aiCharacter.IsOwner)
+            {
+                return;
+            }
+
+            SetCurrentStance(Mathf.Max(1, m_maximumStance));
+        }
+
+        /// <summary>Predicts whether this hit should show the local Stance break reaction.</summary>
+        public bool WouldBreakStance(int stanceDamage)
+        {
+            CharacterNetworkManager networkManager =
+                m_aiCharacter?.CharacterNetworkManager;
+            return stanceDamage > 0 &&
+                CurrentStance - stanceDamage <= 0 &&
+                !m_ignoreStanceBreak &&
+                WorldUtilityManager.GetDamageIntensityBasedOnPoiseDamage(
+                    stanceDamage) != DamageIntensity.Colossal &&
+                networkManager?.IsBeingCriticallyDamaged.Value != true;
         }
 
         /// <summary>Allows authored transitions to consume a break without playing it.</summary>
@@ -399,7 +429,7 @@ namespace ZZ
 
         private void HandleStanceBreak()
         {
-            if (m_currentStance > 0)
+            if (CurrentStance > 0)
             {
                 return;
             }
@@ -412,11 +442,11 @@ namespace ZZ
             if (previousDamageIntensity == DamageIntensity.Colossal ||
                 networkManager?.IsBeingCriticallyDamaged.Value == true)
             {
-                m_currentStance = 1;
+                SetCurrentStance(1);
                 return;
             }
 
-            m_currentStance = Mathf.Max(1, m_maximumStance);
+            SetCurrentStance(Mathf.Max(1, m_maximumStance));
             m_stanceRegenerationTimer = 0f;
             m_stanceTickTimer = 0f;
             if (m_ignoreStanceBreak)
@@ -427,7 +457,7 @@ namespace ZZ
             m_aiCharacter.CloseAttackDamageColliders();
             m_aiCharacter.StopMoving();
             m_aiCharacter.CharacterAnimatorManager
-                ?.PlayTargetActionAnimationInstantly(
+                ?.PlayLocalAnimationInstantly(
                     CharacterActionAnimation.StanceBreak,
                     true);
             if (m_aiCharacter.IsSpawned)
@@ -443,9 +473,9 @@ namespace ZZ
 
         private void RegenerateStance(float deltaTime)
         {
-            if (m_currentStance >= m_maximumStance)
+            if (CurrentStance >= m_maximumStance)
             {
-                m_currentStance = m_maximumStance;
+                SetCurrentStance(m_maximumStance);
                 m_stanceRegenerationTimer = 0f;
                 m_stanceTickTimer = 0f;
                 return;
@@ -463,9 +493,23 @@ namespace ZZ
             while (m_stanceTickTimer >= 1f)
             {
                 m_stanceTickTimer -= 1f;
-                m_currentStance = Mathf.Min(
+                SetCurrentStance(Mathf.Min(
                     m_maximumStance,
-                    m_currentStance + m_stanceRegeneratedPerSecond);
+                    CurrentStance + m_stanceRegeneratedPerSecond));
+            }
+        }
+
+        private void SetCurrentStance(int currentStance)
+        {
+            m_currentStance = currentStance;
+            CharacterNetworkManager networkManager =
+                m_aiCharacter?.CharacterNetworkManager;
+            if (m_aiCharacter != null &&
+                m_aiCharacter.IsSpawned &&
+                m_aiCharacter.IsOwner &&
+                networkManager != null)
+            {
+                networkManager.CurrentStance.Value = currentStance;
             }
         }
 

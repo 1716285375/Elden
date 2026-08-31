@@ -193,6 +193,43 @@ namespace ZZ
             }
         }
 
+        /// <summary>Executes a transient damage payload in one explicit network phase.</summary>
+        public void ProcessRuntimeDamageEffect(
+            DamageEffect runtimeEffect,
+            DamageProcessingMode processingMode)
+        {
+            if (runtimeEffect == null)
+            {
+                Debug.LogWarning("A runtime damage effect is required.", this);
+                return;
+            }
+
+            if ((runtimeEffect.hideFlags & HideFlags.DontSave) !=
+                HideFlags.DontSave)
+            {
+                Debug.LogWarning(
+                    "ProcessRuntimeDamageEffect only accepts transient effects.",
+                    this);
+                return;
+            }
+
+            if (m_character == null)
+            {
+                Debug.LogWarning("A target character is required.", this);
+                DestroyRuntimeEffect(runtimeEffect);
+                return;
+            }
+
+            try
+            {
+                runtimeEffect.ProcessDamage(m_character, processingMode);
+            }
+            finally
+            {
+                DestroyRuntimeEffect(runtimeEffect);
+            }
+        }
+
         /// <summary>Processes authored status buildup payloads on the target owner.</summary>
         public void ProcessBuildupEffects(
             float poisonBuildup,

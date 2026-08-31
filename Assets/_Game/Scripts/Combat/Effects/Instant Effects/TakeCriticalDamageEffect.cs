@@ -33,9 +33,13 @@ namespace ZZ
         }
 
         /// <inheritdoc />
-        public override void ProcessEffect(CharacterManager character)
+        public override void ProcessDamage(
+            CharacterManager character,
+            DamageProcessingMode processingMode)
         {
-            if (character == null || character.IsDead)
+            if (character == null ||
+                character.IsDead ||
+                processingMode != DamageProcessingMode.Authoritative)
             {
                 return;
             }

@@ -5,20 +5,8 @@ namespace ZZ
     [CreateAssetMenu(
         fileName = "Take Damage Effect",
         menuName = "ZZ/Character Effects/Instant/Take Damage")]
-    public class TakeDamageEffect : InstantCharacterEffect
+    public class TakeDamageEffect : DamageEffect
     {
-        public CharacterManager CharacterCausingDamage { get; private set; }
-        public float PhysicalDamage { get; private set; }
-        public float MagicDamage { get; private set; }
-        public float FireDamage { get; private set; }
-        public float LightningDamage { get; private set; }
-        public float HolyDamage { get; private set; }
-        public int FinalDamageDealt { get; protected set; }
-        public Vector3 ContactPoint { get; private set; }
-
-        public bool WasBlocked { get; protected set; }
-        public bool WasTargetInvulnerable { get; protected set; }
-        public float PoiseDamage { get; private set; }
         public AnimationClip DamageAnimation { get; private set; }
         public float HitAngle { get; private set; }
         public bool IsPoiseBroken { get; private set; }
@@ -55,64 +43,10 @@ namespace ZZ
             return runtimeEffect;
         }
 
-        /// <summary>Assigns sanitized hit data to a transient derived damage effect.</summary>
-        protected void ConfigureRuntimeDamage(
-            CharacterManager characterCausingDamage,
-            float physicalDamage,
-            float magicDamage,
-            float fireDamage,
-            float lightningDamage,
-            float holyDamage,
-            Vector3 contactPoint,
-            float poiseDamage)
-        {
-            CharacterCausingDamage = characterCausingDamage;
-            PhysicalDamage = Mathf.Max(0f, physicalDamage);
-            MagicDamage = Mathf.Max(0f, magicDamage);
-            FireDamage = Mathf.Max(0f, fireDamage);
-            LightningDamage = Mathf.Max(0f, lightningDamage);
-            HolyDamage = Mathf.Max(0f, holyDamage);
-            ContactPoint = contactPoint;
-            PoiseDamage = Mathf.Max(0f, poiseDamage);
-        }
-
-        /// <summary>
-        /// Calculates the combined damage, rounded to an integer with a minimum of one.
-        /// </summary>
-        public virtual int CalculateDamage()
-        {
-            float combinedDamage = PhysicalDamage +
-                MagicDamage +
-                FireDamage +
-                LightningDamage +
-                HolyDamage;
-            FinalDamageDealt = Mathf.Max(1, Mathf.RoundToInt(combinedDamage));
-            return FinalDamageDealt;
-        }
-
-        /// <summary>Calculates incoming damage after applying armor-only absorption.</summary>
-        public virtual int CalculateDamage(CharacterStatsManager statsManager)
-        {
-            if (statsManager == null)
-            {
-                return CalculateDamage();
-            }
-
-            float combinedDamage = CalculateAbsorbedDamage(
-                    PhysicalDamage,
-                    statsManager.ArmorPhysicalAbsorption) +
-                CalculateAbsorbedDamage(MagicDamage, statsManager.ArmorMagicAbsorption) +
-                CalculateAbsorbedDamage(FireDamage, statsManager.ArmorFireAbsorption) +
-                CalculateAbsorbedDamage(
-                    LightningDamage,
-                    statsManager.ArmorLightningAbsorption) +
-                CalculateAbsorbedDamage(HolyDamage, statsManager.ArmorHolyAbsorption);
-            FinalDamageDealt = Mathf.Max(1, Mathf.RoundToInt(combinedDamage));
-            return FinalDamageDealt;
-        }
-
         /// <inheritdoc />
-        public override void ProcessEffect(CharacterManager character)
+        public override void ProcessDamage(
+            CharacterManager character,
+            DamageProcessingMode processingMode)
         {
             if (character == null || character.IsDead)
             {
@@ -125,6 +59,14 @@ namespace ZZ
                 return;
             }
 
+            int resolvedDamage = CalculateDamage(
+                character.CharacterStatsManager);
+            UpdateProjectedState(character, resolvedDamage);
+            if (ProjectedHealth <= 0f)
+            {
+                character.SetPredictedDead(true);
+            }
+
             Vector3 hitDirection = CharacterCausingDamage != null
                 ? (character.transform.position - CharacterCausingDamage.transform.position).normalized
                 : Vector3.zero;
@@ -132,53 +74,43 @@ namespace ZZ
                 ContactPoint,
                 hitDirection);
             character.CharacterSoundFXManager?.PlayDamageGrunt();
-            IsPoiseBroken = character.CharacterStatsManager == null ||
-                character.CharacterStatsManager.ApplyPoiseDamage(PoiseDamage);
-            character.CharacterCombatManager?.RecordPoiseDamageTaken(
-                PoiseDamage);
+            IsPoiseBroken = ProjectedPoise <= 0f;
+            if (processingMode == DamageProcessingMode.Authoritative)
+            {
+                IsPoiseBroken = character.CharacterStatsManager == null ||
+                    character.CharacterStatsManager.ApplyPoiseDamage(PoiseDamage);
+                character.CharacterCombatManager?.RecordPoiseDamageTaken(
+                    PoiseDamage);
+                CalculateStanceDamage(character);
+                ApplyHealthDamage(character, resolvedDamage);
+            }
+
+            if (ProjectedHealth <= 0f)
+            {
+                return;
+            }
+
             bool handledByLadder = character is PlayerManager player &&
                 player.LocomotionManager?.RegisterLadderHit() == true;
-            if (!handledByLadder)
-            {
-                PlayDirectionalBasedDamageAnimation(character, IsPoiseBroken);
-            }
-
-            CalculateStanceDamage(character);
-
-            ApplyHealthDamage(character, CalculateDamage(character.CharacterStatsManager));
-        }
-
-        /// <summary>Applies resolved damage only on the target's owning peer.</summary>
-        protected void ApplyHealthDamage(CharacterManager character, int damage)
-        {
-            if (character == null || !character.IsOwner)
+            if (handledByLadder)
             {
                 return;
             }
 
-            CharacterNetworkManager networkManager = character.CharacterNetworkManager;
-            if (networkManager == null)
+            AICharacterCombatManager aiCombatManager =
+                character.CharacterCombatManager as AICharacterCombatManager;
+            if (processingMode != DamageProcessingMode.Authoritative &&
+                aiCombatManager?.WouldBreakStance(
+                    Mathf.RoundToInt(PoiseDamage)) == true)
             {
+                character.CharacterAnimatorManager
+                    ?.PlayLocalAnimationInstantly(
+                        CharacterActionAnimation.StanceBreak,
+                        true);
                 return;
             }
 
-            float maximumHealth = Mathf.Max(0f, networkManager.MaxHealth.Value);
-            float currentHealth = Mathf.Clamp(
-                networkManager.CurrentHealth.Value,
-                0f,
-                maximumHealth);
-            float remainingHealth = Mathf.Max(
-                0f,
-                currentHealth - Mathf.Max(0, damage));
-            if (damage > 0 &&
-                character.CharacterCombatManager is
-                    AICharacterCombatManager aiCombatManager)
-            {
-                aiCombatManager.RecordRuneRewardCandidate(
-                    CharacterCausingDamage as PlayerManager);
-            }
-
-            networkManager.CurrentHealth.Value = remainingHealth;
+            PlayDirectionalBasedDamageAnimation(character, IsPoiseBroken);
         }
 
         /// <summary>
@@ -264,12 +196,6 @@ namespace ZZ
             }
 
             return DamageDirection.Front;
-        }
-
-        private static float CalculateAbsorbedDamage(float damage, float absorption)
-        {
-            return Mathf.Max(0f, damage) *
-                (1f - Mathf.Clamp(absorption, 0f, 100f) / 100f);
         }
 
         private void CalculateStanceDamage(CharacterManager character)

@@ -92,6 +92,35 @@ namespace ZZ
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
+        [Header("Damage Prediction")]
+        public NetworkVariable<float> ArmorPhysicalAbsorption =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> ArmorMagicAbsorption =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> ArmorFireAbsorption =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> ArmorLightningAbsorption =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> ArmorHolyAbsorption =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> BasePoiseDefense =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> ArmorPoiseDefense =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> OffensivePoiseBonus =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<float> TotalPoiseDamage =
+            CreateOwnerFloatVariable();
+        public NetworkVariable<int> CurrentStance = new NetworkVariable<int>(
+            0,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+        public NetworkVariable<bool> CanBeKnockedOffLadder =
+            new NetworkVariable<bool>(
+                false,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+
         [Header("Status Buildup")]
         public NetworkVariable<float> PoisonBuildup = new NetworkVariable<float>(
             0f,
@@ -185,6 +214,14 @@ namespace ZZ
         private CharacterCombatManager m_characterCombatManager;
         private Vector3 m_networkPositionVelocity;
         private bool m_hasResolvedCurrentParry;
+
+        private static NetworkVariable<float> CreateOwnerFloatVariable()
+        {
+            return new NetworkVariable<float>(
+                0f,
+                NetworkVariableReadPermission.Everyone,
+                NetworkVariableWritePermission.Owner);
+        }
 
         private void Awake()
         {
@@ -353,6 +390,9 @@ namespace ZZ
             bool hasInitializedHealth = maximumHealth > 0f;
             bool shouldProcessDeath = IsDead.Value ||
                 hasInitializedHealth && CurrentHealth.Value <= 0f;
+            m_characterManager.ReconcilePredictedDeath(
+                shouldProcessDeath,
+                CurrentHealth.Value);
             if (shouldProcessDeath && !m_characterManager.IsDeathEventRunning)
             {
                 StartCoroutine(m_characterManager.ProcessDeathEvent(
@@ -1014,6 +1054,7 @@ namespace ZZ
         public void RequestCharacterDamageServerRpc(
             ulong targetNetworkObjectId,
             ulong attackerNetworkObjectId,
+            bool attackerIsPresent,
             float physicalDamage,
             float magicDamage,
             float fireDamage,
@@ -1027,14 +1068,32 @@ namespace ZZ
             bool wasBlocked,
             ServerRpcParams serverRpcParams = default)
         {
-            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            CharacterManager target = ResolveCharacter(targetNetworkObjectId);
+            CharacterManager attacker = attackerIsPresent
+                ? ResolveCharacter(attackerNetworkObjectId)
+                : null;
+            ulong senderClientId = serverRpcParams.Receive.SenderClientId;
+            if (!IsAuthorizedDamageSender(
+                    senderClientId,
+                    target,
+                    attacker,
+                    attackerIsPresent))
             {
                 return;
+            }
+
+            if (attacker?.CharacterCombatManager is
+                    AICharacterCombatManager aiCombatManager &&
+                aiCombatManager.TryRegisterDamageTarget(target))
+            {
+                aiCombatManager.RecordSuccessfulHit(target);
             }
 
             ApplyCharacterDamageClientRpc(
                 targetNetworkObjectId,
                 attackerNetworkObjectId,
+                attackerIsPresent,
+                senderClientId,
                 physicalDamage,
                 magicDamage,
                 fireDamage,
@@ -1052,6 +1111,8 @@ namespace ZZ
         private void ApplyCharacterDamageClientRpc(
             ulong targetNetworkObjectId,
             ulong attackerNetworkObjectId,
+            bool attackerIsPresent,
+            ulong initiatingClientId,
             float physicalDamage,
             float magicDamage,
             float fireDamage,
@@ -1064,15 +1125,22 @@ namespace ZZ
             Vector3 contactPoint,
             bool wasBlocked)
         {
+            if (NetworkManager != null &&
+                NetworkManager.LocalClientId == initiatingClientId)
+            {
+                return;
+            }
+
             CharacterManager target = ResolveCharacter(targetNetworkObjectId);
             if (target == null)
             {
                 return;
             }
 
-            InstantCharacterEffect runtimeEffect = CreateRuntimeDamageEffect(
+            DamageEffect runtimeEffect = CreateRuntimeDamageEffect(
                 target,
                 attackerNetworkObjectId,
+                attackerIsPresent,
                 physicalDamage,
                 magicDamage,
                 fireDamage,
@@ -1086,8 +1154,14 @@ namespace ZZ
                 return;
             }
 
-            target.CharacterEffectsManager?.ProcessRuntimeInstantEffect(runtimeEffect);
-            if (!wasBlocked)
+            DamageProcessingMode processingMode = target.IsOwner
+                ? DamageProcessingMode.Authoritative
+                : DamageProcessingMode.ReplicatedPresentation;
+            target.CharacterEffectsManager?.ProcessRuntimeDamageEffect(
+                runtimeEffect,
+                processingMode);
+            if (!wasBlocked &&
+                processingMode == DamageProcessingMode.Authoritative)
             {
                 target.CharacterEffectsManager?.ProcessBuildupEffects(
                     poisonBuildup,
@@ -1096,9 +1170,10 @@ namespace ZZ
             }
         }
 
-        private InstantCharacterEffect CreateRuntimeDamageEffect(
+        private DamageEffect CreateRuntimeDamageEffect(
             CharacterManager target,
             ulong attackerNetworkObjectId,
+            bool attackerIsPresent,
             float physicalDamage,
             float magicDamage,
             float fireDamage,
@@ -1110,7 +1185,9 @@ namespace ZZ
         {
             WorldCharacterEffectsManager effectsManager =
                 WorldCharacterEffectsManager.Instance;
-            CharacterManager attacker = ResolveCharacter(attackerNetworkObjectId);
+            CharacterManager attacker = attackerIsPresent
+                ? ResolveCharacter(attackerNetworkObjectId)
+                : null;
             if (wasBlocked)
             {
                 TakeBlockedDamageEffect blockedTemplate =
@@ -1159,6 +1236,35 @@ namespace ZZ
                 holyDamage,
                 contactPoint,
                 poiseDamage);
+        }
+
+        private static bool IsAuthorizedDamageSender(
+            ulong senderClientId,
+            CharacterManager target,
+            CharacterManager attacker,
+            bool attackerIsPresent)
+        {
+            if (target == null || target.IsInvulnerable)
+            {
+                return false;
+            }
+
+            if (!attackerIsPresent)
+            {
+                return senderClientId == target.OwnerClientId;
+            }
+
+            if (attacker == null ||
+                !WorldUtilityManager.CanDamageCharacter(attacker, target))
+            {
+                return false;
+            }
+
+            ulong authorizedClientId = attacker is AICharacterManager &&
+                target is PlayerManager
+                    ? target.OwnerClientId
+                    : attacker.OwnerClientId;
+            return senderClientId == authorizedClientId;
         }
 
         private static CharacterManager ResolveCharacter(ulong networkObjectId)
