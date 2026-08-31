@@ -175,9 +175,21 @@ public static class SwordSlashCoreConfigurator
         SetSlotLocalRotation(root, "Left Hand Shield Slot",
             new Quaternion(-0.1403f, -0.8997f, -0.2335f, -0.3410f));
 
-        // shift weapon pivots so the grip sits at the prefab origin
-        ShiftWeaponPivot("Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Straight Sword.prefab", 0.10f);
-        ShiftWeaponPivot("Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Broadsword.prefab", 0.11f);
+        // Keep model-specific grip correction on one prefab pivot layer.
+        // The straight-sword values flatten the scene-tuned mesh correction
+        // into that pivot so the imported mesh transform remains identity.
+        SetWeaponPivot(
+            "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Straight Sword.prefab",
+            new Vector3(-0.10935773f, 0.051664386f, 0.00890047f),
+            new Vector3(-9.119659f, 64.19104f, 53.450657f));
+        SetWeaponPivot(
+            "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Broadsword.prefab",
+            new Vector3(-0.10935773f, 0.051664386f, 0.00890047f),
+            new Vector3(-9.119659f, 64.19104f, 53.450657f));
+        SetWeaponPivot(
+            "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Medium Shield.prefab",
+            new Vector3(0.1239f, -0.0431f, -0.1053f),
+            new Vector3(-188.019f, -57.772f, -69.142f));
 
         EditorUtility.SetDirty(stage.prefabContentsRoot);
         Debug.Log("Weapon mounts fixed");
@@ -192,32 +204,48 @@ public static class SwordSlashCoreConfigurator
             return;
         }
 
-        slot.localRotation = localRotation;
+        slot.SetLocalPositionAndRotation(Vector3.zero, localRotation);
+        slot.localScale = Vector3.one;
         EditorUtility.SetDirty(slot.gameObject);
         Debug.Log(slotName + " rotation set");
     }
 
-    private static void ShiftWeaponPivot(string prefabPath, float gripOffsetY)
+    private static void SetWeaponPivot(
+        string prefabPath,
+        Vector3 localPosition,
+        Vector3 localEulerAngles)
     {
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-        if (prefab == null)
+        var root = PrefabUtility.LoadPrefabContents(prefabPath);
+        if (root == null)
         {
             Debug.LogError("Weapon prefab not found: " + prefabPath);
             return;
         }
 
-        var pivot = prefab.transform.Find("Weapon Pivot");
-        if (pivot == null)
+        try
         {
-            Debug.LogError("Weapon Pivot not found in " + prefabPath);
-            return;
-        }
+            var pivot = root.transform.Find("Weapon Pivot");
+            if (pivot == null)
+            {
+                Debug.LogError("Weapon Pivot not found in " + prefabPath);
+                return;
+            }
 
-        var localPosition = pivot.localPosition;
-        localPosition.y = gripOffsetY;
-        pivot.localPosition = localPosition;
-        PrefabUtility.SavePrefabAsset(prefab);
-        Debug.Log(prefabPath + " pivot y = " + gripOffsetY);
+            root.transform.SetLocalPositionAndRotation(
+                Vector3.zero,
+                Quaternion.identity);
+            root.transform.localScale = Vector3.one;
+            pivot.SetLocalPositionAndRotation(
+                localPosition,
+                Quaternion.Euler(localEulerAngles));
+            pivot.localScale = Vector3.one;
+            PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+            Debug.Log(prefabPath + " pivot pose calibrated");
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
     }
 
     [MenuItem("Tools/VFX/SwordSlash/Enter Play Mode")]
