@@ -156,16 +156,6 @@ namespace ZZ
                 ProjectileSlot.Main,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
-        private readonly NetworkVariable<bool> m_hasArrowNotched =
-            new NetworkVariable<bool>(
-                false,
-                NetworkVariableReadPermission.Everyone,
-                NetworkVariableWritePermission.Owner);
-        private readonly NetworkVariable<bool> m_isHoldingArrow =
-            new NetworkVariable<bool>(
-                false,
-                NetworkVariableReadPermission.Everyone,
-                NetworkVariableWritePermission.Owner);
         private readonly NetworkVariable<bool> m_isAiming =
             new NetworkVariable<bool>(
                 false,
@@ -302,12 +292,6 @@ namespace ZZ
         public NetworkVariable<ProjectileSlot> CurrentProjectileSlot =>
             m_currentProjectileSlot;
 
-        /// <summary>Gets whether an arrow model is currently attached to the character.</summary>
-        public NetworkVariable<bool> HasArrowNotched => m_hasArrowNotched;
-
-        /// <summary>Gets whether the ranged attack input is still held.</summary>
-        public NetworkVariable<bool> IsHoldingArrow => m_isHoldingArrow;
-
         /// <summary>Gets whether this player is using first-person free aim.</summary>
         public NetworkVariable<bool> IsAiming => m_isAiming;
 
@@ -370,8 +354,6 @@ namespace ZZ
             m_mainProjectileID.OnValueChanged += OnMainProjectileIDChanged;
             m_secondaryProjectileID.OnValueChanged +=
                 OnSecondaryProjectileIDChanged;
-            m_hasArrowNotched.OnValueChanged += OnRangedStateChanged;
-            m_isHoldingArrow.OnValueChanged += OnRangedStateChanged;
             m_isAiming.OnValueChanged += OnRangedStateChanged;
             m_currentQuickSlotItemID.OnValueChanged +=
                 OnCurrentQuickSlotItemIDChanged;
@@ -456,8 +438,6 @@ namespace ZZ
             m_mainProjectileID.OnValueChanged -= OnMainProjectileIDChanged;
             m_secondaryProjectileID.OnValueChanged -=
                 OnSecondaryProjectileIDChanged;
-            m_hasArrowNotched.OnValueChanged -= OnRangedStateChanged;
-            m_isHoldingArrow.OnValueChanged -= OnRangedStateChanged;
             m_isAiming.OnValueChanged -= OnRangedStateChanged;
             m_currentQuickSlotItemID.OnValueChanged -=
                 OnCurrentQuickSlotItemIDChanged;
@@ -742,20 +722,9 @@ namespace ZZ
                 ? projectileID
                 : k_NoProjectileID;
             m_currentProjectileSlot.Value = projectileSlot;
-            m_hasArrowNotched.Value = hasArrowNotched;
-            m_isHoldingArrow.Value = hasArrowNotched && isHoldingArrow;
-        }
-
-        /// <summary>Releases held input while preserving the notched arrow until its event.</summary>
-        public void SetHoldingArrowState(bool isHoldingArrow)
-        {
-            if (IsSpawned &&
-                IsOwner &&
-                m_hasArrowNotched.Value &&
-                m_isHoldingArrow.Value != isHoldingArrow)
-            {
-                m_isHoldingArrow.Value = isHoldingArrow;
-            }
+            base.SetNotchedProjectileState(
+                hasArrowNotched,
+                isHoldingArrow);
         }
 
         /// <summary>Replicates a notch event without continuously synchronizing its model.</summary>
@@ -1044,8 +1013,7 @@ namespace ZZ
             }
 
             m_currentProjectileID.Value = k_NoProjectileID;
-            m_hasArrowNotched.Value = false;
-            m_isHoldingArrow.Value = false;
+            SetNotchedProjectileState(false, false);
             m_isAiming.Value = false;
         }
 
@@ -1127,23 +1095,23 @@ namespace ZZ
             ApplyRangedPresentation();
         }
 
-        private void ApplyRangedPresentation()
+        protected override void ApplyRangedPresentation()
         {
             PlayerManager player = GetComponent<PlayerManager>();
             player?.PlayerAnimatorManager?.SetRangedWeaponState(
-                m_hasArrowNotched.Value,
-                m_isHoldingArrow.Value,
+                HasArrowNotched.Value,
+                IsHoldingArrow.Value,
                 m_isAiming.Value);
             player?.EquipmentManager?.SetRangedWeaponState(
-                m_hasArrowNotched.Value,
-                m_isHoldingArrow.Value);
-            if (!m_hasArrowNotched.Value)
+                HasArrowNotched.Value,
+                IsHoldingArrow.Value);
+            if (!HasArrowNotched.Value)
             {
                 player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
             }
 
             player?.LocomotionManager?.SetCanRun(
-                !m_hasArrowNotched.Value && !m_isAiming.Value);
+                !HasArrowNotched.Value && !m_isAiming.Value);
 
             if (IsOwner)
             {

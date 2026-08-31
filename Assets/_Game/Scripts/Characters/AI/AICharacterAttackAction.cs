@@ -13,6 +13,9 @@ namespace ZZ
         [Header("Presentation")]
         [SerializeField] private AttackType m_attackType = AttackType.LightAttack01;
         [SerializeField] private bool m_isParryable = true;
+        [SerializeField] private bool m_useCharacterActionAnimation;
+        [SerializeField] private CharacterActionAnimation m_characterActionAnimation =
+            CharacterActionAnimation.BowDraw;
 
         [Header("Selection")]
         [SerializeField, Min(0f)] private float m_minimumRange;
@@ -33,6 +36,9 @@ namespace ZZ
 
         public AttackType AttackType => m_attackType;
         public bool IsParryable => m_isParryable;
+        public bool UseCharacterActionAnimation => m_useCharacterActionAnimation;
+        public CharacterActionAnimation CharacterActionAnimation =>
+            m_characterActionAnimation;
         public float MinimumRange => m_minimumRange;
         public float MaximumRange => m_maximumRange;
         public float SelectionWeight => m_selectionWeight;

@@ -27,13 +27,13 @@ namespace ZZ
                 return StateId;
             }
 
-            if (character.IsTargetWithinCombatRange)
+            if (character.CanEndPursuit)
             {
-                character.StopMoving();
+                character.StopAtCurrentPosition();
                 return AICharacterStateId.CombatStance;
             }
 
-            character.MoveTowardsTarget();
+            character.MoveTowardsTarget(character.GetPursuitMode(StateId));
             return StateId;
         }
     }

@@ -169,7 +169,7 @@ namespace ZZ
         }
 
         /// <summary>Starts one server-selected data-driven attack.</summary>
-        public bool PerformAttack(AICharacterAttackAction attackAction)
+        public virtual bool PerformAttack(AICharacterAttackAction attackAction)
         {
             if (m_aiCharacter == null ||
                 !m_aiCharacter.IsServer ||
@@ -187,9 +187,35 @@ namespace ZZ
                 : AttackType.LightAttack01;
             m_aiCharacter.CharacterNetworkManager?.SetParryableState(
                 attackAction?.IsParryable ?? m_defaultAttackIsParryable);
-            ReplicateAttack(attackType);
-            m_aiCharacter.CharacterNetworkManager
-                ?.NotifyServerOfAttackActionServerRpc(attackType);
+            if (attackAction?.UseCharacterActionAnimation == true)
+            {
+                const bool k_IsPerformingAction = true;
+                const bool k_ShouldApplyRootMotion = false;
+                const bool k_CanRotate = true;
+                const bool k_CanMove = false;
+                m_aiCharacter.CharacterNetworkManager?.SetAttackingState(true);
+                m_aiCharacter.CharacterAnimatorManager
+                    ?.PlayTargetActionAnimation(
+                        attackAction.CharacterActionAnimation,
+                        k_IsPerformingAction,
+                        k_ShouldApplyRootMotion,
+                        k_CanRotate,
+                        k_CanMove);
+                m_aiCharacter.CharacterNetworkManager
+                    ?.NotifyServerOfActionAnimationServerRpc(
+                        attackAction.CharacterActionAnimation,
+                        k_IsPerformingAction,
+                        k_ShouldApplyRootMotion,
+                        k_CanRotate,
+                        k_CanMove);
+            }
+            else
+            {
+                ReplicateAttack(attackType);
+                m_aiCharacter.CharacterNetworkManager
+                    ?.NotifyServerOfAttackActionServerRpc(attackType);
+            }
+
             return m_aiCharacter.IsPerformingAction;
         }
 

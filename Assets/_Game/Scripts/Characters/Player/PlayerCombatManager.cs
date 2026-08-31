@@ -62,10 +62,6 @@ namespace ZZ
             (m_player?.PlayerNetworkManager?.IsChargingRightSpell.Value == true ||
                 m_player?.PlayerNetworkManager?.IsChargingLeftSpell.Value == true);
 
-        /// <summary>Gets whether a replicated drawn arrow currently belongs to this action.</summary>
-        public bool HasArrowNotched =>
-            m_player?.PlayerNetworkManager?.HasArrowNotched.Value == true;
-
         /// <summary>Gets the ammunition copy committed when the current shot began.</summary>
         public RangedProjectileItem CurrentProjectileBeingUsed =>
             m_currentProjectileBeingUsed;
@@ -456,63 +452,10 @@ namespace ZZ
             }
         }
 
-        /// <summary>Animation Event: consumes ammunition and releases the owner projectile.</summary>
-        public void ReleaseArrow()
+        /// <inheritdoc />
+        public override void ReleaseArrow()
         {
-            if (m_player == null ||
-                !m_player.IsOwner ||
-                !HasArrowNotched ||
-                m_player.PlayerNetworkManager?.IsHoldingArrow.Value == true)
-            {
-                return;
-            }
-
-            int projectileID =
-                m_player.PlayerNetworkManager.CurrentProjectileID.Value;
-            ProjectileSlot projectileSlot =
-                m_player.PlayerNetworkManager.CurrentProjectileSlot.Value;
-            RangedProjectileItem projectile =
-                m_player.InventoryManager?.GetProjectile(projectileSlot);
-            RangedWeaponItem rangedWeapon = m_currentRangedWeapon ??
-                ResolveCurrentWeapon() as RangedWeaponItem;
-            if (projectile == null ||
-                projectile.ItemID != projectileID ||
-                rangedWeapon == null ||
-                !rangedWeapon.CanFireProjectile(projectile) ||
-                m_player.PlayerStatsManager?.TryConsumeStamina(
-                    rangedWeapon.BaseStaminaCost) != true)
-            {
-                CancelNotchedProjectile(true);
-                return;
-            }
-
-            if (!projectile.TryConsumeAmmo())
-            {
-                CancelNotchedProjectile(true);
-                return;
-            }
-
-            m_player.InventoryManager?.NotifyProjectileAmountChanged(
-                projectileSlot);
-
-            Vector3 releaseDirection = ResolveProjectileReleaseDirection();
-            float characterYRotation = m_player.transform.eulerAngles.y;
-            SpawnProjectile(projectile, releaseDirection, true);
-            m_player.CharacterSoundFXManager?.PlayRangedWeaponSound(
-                rangedWeapon,
-                true);
-            m_player.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
-            m_player.PlayerNetworkManager.SetNotchedProjectileState(
-                projectileID,
-                projectileSlot,
-                false,
-                false);
-            m_player.PlayerNetworkManager
-                .NotifyServerOfReleaseProjectileServerRpc(
-                    projectileID,
-                    releaseDirection,
-                    characterYRotation);
-            ClearLocalProjectileState();
+            base.ReleaseArrow();
         }
 
         /// <summary>Reconstructs a remote presentation projectile from a fire snapshot.</summary>
@@ -531,7 +474,7 @@ namespace ZZ
             Vector3 releaseDirection = ResolveReplicatedProjectileDirection(
                 aimDirection,
                 characterYRotation);
-            SpawnProjectile(projectile, releaseDirection, false);
+            SpawnRangedProjectile(projectile, releaseDirection, false);
             RangedWeaponItem rangedWeapon = ResolveCurrentWeapon() as
                 RangedWeaponItem;
             m_player?.CharacterSoundFXManager?.PlayRangedWeaponSound(
@@ -559,6 +502,7 @@ namespace ZZ
                     false);
             }
 
+            DestroyDrawnProjectile();
             m_player.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
             m_player.EquipmentManager?.SetRangedWeaponState(false, false);
             m_player.LocomotionManager?.SetCanRun(true);
@@ -1141,13 +1085,13 @@ namespace ZZ
         /// <inheritdoc />
         public override void ResetActionState()
         {
-            base.ResetActionState();
             CancelQuickSlotItemUse();
             if (HasArrowNotched)
             {
                 CancelNotchedProjectile(false);
             }
 
+            base.ResetActionState();
             CompleteSpellCast();
             DisableCanCombo();
             DisableCanPerformCommittedAttack();
@@ -1426,19 +1370,6 @@ namespace ZZ
                 k_CanMove);
             m_player.EquipmentManager?.SetRangedWeaponState(true, true);
             m_player.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
-            Transform projectilePivot = FindProjectilePivot();
-            if (projectile.DrawProjectileModel != null && projectilePivot != null)
-            {
-                GameObject drawnProjectile = Instantiate(
-                    projectile.DrawProjectileModel,
-                    projectilePivot);
-                drawnProjectile.transform.SetLocalPositionAndRotation(
-                    Vector3.zero,
-                    Quaternion.identity);
-                m_player.CharacterEffectsManager?.RegisterCurrentActionEffect(
-                    drawnProjectile);
-            }
-
             m_player.CharacterSoundFXManager?.PlayRangedWeaponSound(
                 rangedWeapon,
                 false);
@@ -1465,7 +1396,28 @@ namespace ZZ
                     k_CanMove);
         }
 
-        private Vector3 ResolveProjectileReleaseDirection()
+        /// <inheritdoc />
+        protected override RangedProjectileItem ResolveCurrentRangedProjectile()
+        {
+            if (m_currentProjectileBeingUsed != null)
+            {
+                return m_currentProjectileBeingUsed;
+            }
+
+            ProjectileSlot projectileSlot = m_player?.PlayerNetworkManager != null
+                ? m_player.PlayerNetworkManager.CurrentProjectileSlot.Value
+                : ProjectileSlot.Main;
+            return m_player?.InventoryManager?.GetProjectile(projectileSlot);
+        }
+
+        /// <inheritdoc />
+        protected override Transform ResolveProjectileDrawHand()
+        {
+            return FindProjectilePivot();
+        }
+
+        /// <inheritdoc />
+        protected override Vector3 ResolveProjectileReleaseDirection()
         {
             Transform releaseOrigin = m_player?.LockOnTransform;
             if (releaseOrigin == null)
@@ -1498,34 +1450,68 @@ namespace ZZ
             return (farPoint - releaseOrigin.position).normalized;
         }
 
-        private void SpawnProjectile(
-            RangedProjectileItem projectile,
-            Vector3 releaseDirection,
-            bool canApplyDamage)
+        /// <inheritdoc />
+        protected override bool PrepareProjectileRelease(
+            RangedProjectileItem projectile)
         {
-            if (m_player == null ||
-                projectile?.ReleaseProjectileModel == null)
+            if (m_player?.PlayerNetworkManager == null)
             {
-                return;
+                return false;
             }
 
-            Vector3 direction = releaseDirection.sqrMagnitude > Mathf.Epsilon
-                ? releaseDirection.normalized
-                : m_player.transform.forward;
-            Transform releaseOrigin = m_player.LockOnTransform;
-            Vector3 farPoint = releaseOrigin.position + direction * 5000f;
-            Quaternion rotation = Quaternion.LookRotation(
-                (farPoint - releaseOrigin.position).normalized,
-                Vector3.up);
-            RangedProjectileManager projectileManager = Instantiate(
-                projectile.ReleaseProjectileModel,
-                releaseOrigin.position,
-                rotation);
-            projectileManager.Initialize(
-                m_player,
-                projectile,
-                direction,
-                canApplyDamage);
+            int projectileID =
+                m_player.PlayerNetworkManager.CurrentProjectileID.Value;
+            ProjectileSlot projectileSlot =
+                m_player.PlayerNetworkManager.CurrentProjectileSlot.Value;
+            RangedWeaponItem rangedWeapon = m_currentRangedWeapon ??
+                ResolveCurrentWeapon() as RangedWeaponItem;
+            bool isValid = projectile != null &&
+                projectile.ItemID == projectileID &&
+                rangedWeapon?.CanFireProjectile(projectile) == true &&
+                m_player.PlayerStatsManager?.TryConsumeStamina(
+                    rangedWeapon.BaseStaminaCost) == true &&
+                projectile.TryConsumeAmmo();
+            if (!isValid)
+            {
+                return false;
+            }
+
+            m_player.InventoryManager?.NotifyProjectileAmountChanged(
+                projectileSlot);
+            return true;
+        }
+
+        /// <inheritdoc />
+        protected override void OnProjectileReleased(
+            RangedProjectileItem projectile,
+            Vector3 releaseDirection)
+        {
+            RangedWeaponItem rangedWeapon = m_currentRangedWeapon ??
+                ResolveCurrentWeapon() as RangedWeaponItem;
+            ProjectileSlot projectileSlot =
+                m_player.PlayerNetworkManager.CurrentProjectileSlot.Value;
+            float characterYRotation = m_player.transform.eulerAngles.y;
+            m_player.CharacterSoundFXManager?.PlayRangedWeaponSound(
+                rangedWeapon,
+                true);
+            m_player.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
+            m_player.PlayerNetworkManager.SetNotchedProjectileState(
+                projectile.ItemID,
+                projectileSlot,
+                false,
+                false);
+            m_player.PlayerNetworkManager
+                .NotifyServerOfReleaseProjectileServerRpc(
+                    projectile.ItemID,
+                    releaseDirection,
+                    characterYRotation);
+            ClearLocalProjectileState();
+        }
+
+        /// <inheritdoc />
+        protected override void OnProjectileReleaseFailed()
+        {
+            CancelNotchedProjectile(true);
         }
 
         private Transform FindProjectilePivot()

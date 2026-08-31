@@ -30,6 +30,7 @@ namespace ZZ
         private readonly List<CharacterManager> m_charactersTargetingMe = new();
         private readonly List<StealthObject> m_stealthObjectsCurrentlyStandingIn =
             new();
+        private GameObject m_activeDrawnProjectile;
 
         protected CharacterManager Character { get; private set; }
 
@@ -82,6 +83,10 @@ namespace ZZ
                 return m_stealthObjectsCurrentlyStandingIn.Count > 0;
             }
         }
+
+        /// <summary>Gets whether this character owns a replicated notched projectile.</summary>
+        public bool HasArrowNotched =>
+            Character?.CharacterNetworkManager?.HasArrowNotched.Value == true;
 
         protected virtual void Awake()
         {
@@ -651,6 +656,14 @@ namespace ZZ
         /// <summary>Clears transient combat windows when the action layer returns to neutral.</summary>
         public virtual void ResetActionState()
         {
+            DestroyDrawnProjectile();
+            if (Character?.IsSpawned == true && Character.IsOwner)
+            {
+                Character.CharacterNetworkManager?.SetNotchedProjectileState(
+                    false,
+                    false);
+            }
+
             Character?.CharacterNetworkManager?.SetAttackingState(false);
             Character?.CharacterNetworkManager?.SetParryingState(false);
             Character?.CharacterNetworkManager?.SetParryableState(false);
@@ -665,6 +678,149 @@ namespace ZZ
                 networkManager.IsRipostable.Value = false;
                 networkManager.IsBeingCriticallyDamaged.Value = false;
             }
+        }
+
+        /// <summary>Animation Event: attaches the selected projectile to its draw hand.</summary>
+        public virtual void DrawProjectile()
+        {
+            RangedProjectileItem projectile = ResolveCurrentRangedProjectile();
+            Transform drawHand = ResolveProjectileDrawHand();
+            if (projectile?.DrawProjectileModel == null || drawHand == null)
+            {
+                return;
+            }
+
+            DestroyDrawnProjectile();
+            m_activeDrawnProjectile = Instantiate(
+                projectile.DrawProjectileModel,
+                drawHand);
+            m_activeDrawnProjectile.transform.SetLocalPositionAndRotation(
+                Vector3.zero,
+                Quaternion.identity);
+            Character?.CharacterEffectsManager?.RegisterCurrentActionEffect(
+                m_activeDrawnProjectile);
+            OnProjectileDrawn(projectile);
+        }
+
+        /// <summary>Animation Event: validates and releases the selected projectile.</summary>
+        public virtual void ReleaseArrow()
+        {
+            RangedProjectileItem projectile = ResolveCurrentRangedProjectile();
+            if (!CanReleaseCurrentProjectile(projectile) ||
+                !PrepareProjectileRelease(projectile))
+            {
+                OnProjectileReleaseFailed();
+                return;
+            }
+
+            Vector3 direction = ResolveProjectileReleaseDirection();
+            DestroyDrawnProjectile();
+            SpawnRangedProjectile(
+                projectile,
+                direction,
+                ShouldReleasedProjectileApplyDamage);
+            OnProjectileReleased(projectile, direction);
+        }
+
+        /// <summary>Removes the transient projectile attached during the draw animation.</summary>
+        public void DestroyDrawnProjectile()
+        {
+            if (m_activeDrawnProjectile == null)
+            {
+                return;
+            }
+
+            Destroy(m_activeDrawnProjectile);
+            m_activeDrawnProjectile = null;
+        }
+
+        /// <summary>Resolves the projectile currently selected by this character type.</summary>
+        protected virtual RangedProjectileItem ResolveCurrentRangedProjectile()
+        {
+            return null;
+        }
+
+        /// <summary>Checks authority and the replicated hold state at the fire event.</summary>
+        protected virtual bool CanReleaseCurrentProjectile(
+            RangedProjectileItem projectile)
+        {
+            return Character?.IsOwner == true &&
+                HasArrowNotched &&
+                Character.CharacterNetworkManager?.IsHoldingArrow.Value == false &&
+                projectile != null;
+        }
+
+        /// <summary>Resolves the authored hand slot used while drawing.</summary>
+        protected virtual Transform ResolveProjectileDrawHand()
+        {
+            return Character?.LockOnTransform;
+        }
+
+        /// <summary>Resolves the fire-frame direction with a safe forward fallback.</summary>
+        protected virtual Vector3 ResolveProjectileReleaseDirection()
+        {
+            Vector3 direction = Character != null
+                ? Character.transform.forward
+                : Vector3.forward;
+            return direction.sqrMagnitude > Mathf.Epsilon
+                ? direction.normalized
+                : Vector3.forward;
+        }
+
+        /// <summary>Allows a character type to validate resources before the arrow leaves.</summary>
+        protected virtual bool PrepareProjectileRelease(
+            RangedProjectileItem projectile)
+        {
+            return projectile != null;
+        }
+
+        /// <summary>Gets whether this local projectile is authoritative for damage.</summary>
+        protected virtual bool ShouldReleasedProjectileApplyDamage =>
+            Character?.IsOwner == true;
+
+        /// <summary>Receives the completed draw event for character-specific presentation.</summary>
+        protected virtual void OnProjectileDrawn(RangedProjectileItem projectile)
+        {
+        }
+
+        /// <summary>Receives the completed release for sound and replication.</summary>
+        protected virtual void OnProjectileReleased(
+            RangedProjectileItem projectile,
+            Vector3 releaseDirection)
+        {
+        }
+
+        /// <summary>Receives an invalid release event for character-specific cleanup.</summary>
+        protected virtual void OnProjectileReleaseFailed()
+        {
+        }
+
+        /// <summary>Creates one local projectile simulation from shared character data.</summary>
+        protected RangedProjectileManager SpawnRangedProjectile(
+            RangedProjectileItem projectile,
+            Vector3 releaseDirection,
+            bool canApplyDamage)
+        {
+            if (Character == null || projectile?.ReleaseProjectileModel == null)
+            {
+                return null;
+            }
+
+            Vector3 direction = releaseDirection.sqrMagnitude > Mathf.Epsilon
+                ? releaseDirection.normalized
+                : Character.transform.forward;
+            Transform releaseOrigin = Character.LockOnTransform;
+            Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+            RangedProjectileManager projectileManager = Instantiate(
+                projectile.ReleaseProjectileModel,
+                releaseOrigin.position,
+                rotation);
+            projectileManager.Initialize(
+                Character,
+                projectile,
+                direction,
+                canApplyDamage);
+            return projectileManager;
         }
 
         private bool PrepareCriticalAttack(
