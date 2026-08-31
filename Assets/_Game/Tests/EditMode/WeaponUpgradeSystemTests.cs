@@ -284,9 +284,10 @@ namespace ZZ.Tests
         public void InventoryAndDialogueSourcesPreserveRequiredFlowBoundaries()
         {
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            string inventorySource = File.ReadAllText(Path.Combine(
+            string sharedInventorySource = File.ReadAllText(Path.Combine(
                 projectRoot,
-                "Assets/_Game/Scripts/Characters/Common/Inventory/PlayerInventoryManager.cs"));
+                "Assets/_Game/Scripts/Characters/Common/Inventory/" +
+                "CharacterInventoryManager.cs"));
             string dialogueSource = File.ReadAllText(Path.Combine(
                 projectRoot,
                 "Assets/_Game/Scripts/Dialogue/CharacterDialogue.cs"));
@@ -295,9 +296,9 @@ namespace ZZ.Tests
                 "Assets/_Game/Scripts/Characters/Player/Player UI/" +
                 "PlayerUIWeaponUpgradeManager.cs"));
 
-            Assert.That(inventorySource,
+            Assert.That(sharedInventorySource,
                 Does.Contain("candidate.ItemID == item.ItemID"));
-            Assert.That(inventorySource,
+            Assert.That(sharedInventorySource,
                 Does.Contain("TryRemoveItemAmount(item.CurrentItemAmount)"));
             Assert.That(upgradeSource, Does.Contain("AttemptToUpgradeWeapon"));
             Assert.That(upgradeSource,

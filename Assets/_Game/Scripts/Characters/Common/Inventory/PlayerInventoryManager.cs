@@ -44,9 +44,6 @@ namespace ZZ
         [SerializeField, Range(0, k_QuickSlotCount - 1)]
         private int m_quickSlotItemIndex;
 
-        [Header("Runtime Inventory")]
-        [SerializeField] private List<Item> m_itemsInInventory = new();
-
         private PlayerManager m_player;
         private PlayerEquipmentManager m_equipmentManager;
         private WeaponItem m_currentRightHandWeapon;
@@ -100,9 +97,6 @@ namespace ZZ
         public IReadOnlyList<QuickSlotItem> QuickSlotItemsInQuickSlots =>
             m_quickSlotItemsInQuickSlots;
 
-        /// <summary>Gets the item assets collected during the current play session.</summary>
-        public IReadOnlyList<Item> ItemsInInventory => m_itemsInInventory;
-
         /// <summary>Gets the selected right-hand quick-slot index.</summary>
         public int RightHandWeaponIndex => m_rightHandWeaponIndex;
 
@@ -155,100 +149,6 @@ namespace ZZ
             m_currentTwoHandWeapon = null;
         }
 
-        /// <summary>Adds one authored item to the runtime inventory.</summary>
-        public bool AddItemToInventory(Item item)
-        {
-            if (item == null)
-            {
-                return false;
-            }
-
-            m_itemsInInventory ??= new List<Item>();
-            m_itemsInInventory.RemoveAll(candidate => candidate == null);
-            if (item.IsStackable)
-            {
-                Item existingStack = m_itemsInInventory.Find(candidate =>
-                    candidate.ItemID == item.ItemID &&
-                    candidate.GetType() == item.GetType() &&
-                    candidate.IsStackable);
-                if (existingStack != null)
-                {
-                    if (existingStack.CurrentItemAmount + item.CurrentItemAmount >
-                        existingStack.MaxItemAmount)
-                    {
-                        Debug.LogWarning(
-                            $"Inventory stack {item.ItemName} reached its maximum; " +
-                            $"{item.CurrentItemAmount} item(s) could not be added.",
-                            this);
-                        return false;
-                    }
-
-                    existingStack.AddItemAmount(item.CurrentItemAmount);
-                    DestroyRuntimeItem(item);
-                    return true;
-                }
-            }
-
-            m_itemsInInventory.Add(item);
-            return true;
-        }
-
-        /// <summary>Removes one matching item and clears stale references.</summary>
-        public bool RemoveItemFromInventory(Item item)
-        {
-            m_itemsInInventory ??= new List<Item>();
-            m_itemsInInventory.RemoveAll(candidate => candidate == null);
-            if (item == null)
-            {
-                return false;
-            }
-
-            if (!item.IsStackable)
-            {
-                return m_itemsInInventory.Remove(item);
-            }
-
-            Item inventoryStack = m_itemsInInventory.Find(candidate =>
-                candidate.ItemID == item.ItemID &&
-                candidate.GetType() == item.GetType() &&
-                candidate.IsStackable);
-            if (inventoryStack == null ||
-                !inventoryStack.TryRemoveItemAmount(item.CurrentItemAmount))
-            {
-                return false;
-            }
-
-            if (inventoryStack.CurrentItemAmount <= 0)
-            {
-                m_itemsInInventory.Remove(inventoryStack);
-                DestroyRuntimeItem(inventoryStack);
-            }
-
-            return true;
-        }
-
-        /// <summary>Returns the total inventory amount for one stable catalog item.</summary>
-        public int GetItemAmount(int itemID)
-        {
-            if (itemID < 0 || m_itemsInInventory == null)
-            {
-                return 0;
-            }
-
-            int totalAmount = 0;
-            foreach (Item item in m_itemsInInventory)
-            {
-                if (item?.ItemID == itemID)
-                {
-                    totalAmount += item.IsStackable
-                        ? item.CurrentItemAmount
-                        : 1;
-                }
-            }
-
-            return totalAmount;
-        }
-
         /// <summary>Gets the item currently occupying one Character Menu equipment slot.</summary>
         public Item GetEquipmentSlotItem(EquipmentSlotType equipmentSlot)
         {
@@ -286,9 +186,8 @@ namespace ZZ
         /// </summary>
         public bool EquipItemInSlot(EquipmentSlotType equipmentSlot, Item item)
         {
-            m_itemsInInventory ??= new List<Item>();
-            m_itemsInInventory.RemoveAll(candidate => candidate == null);
-            if (item == null || !m_itemsInInventory.Contains(item))
+            InventoryItems.RemoveAll(candidate => candidate == null);
+            if (item == null || !InventoryItems.Contains(item))
             {
                 return false;
             }
@@ -521,7 +420,7 @@ namespace ZZ
             return true;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             m_currentTwoHandWeapon = null;
             DestroyRuntimeWeapon(m_currentRightHandWeapon);
@@ -535,15 +434,7 @@ namespace ZZ
             DestroyRuntimeItems(m_weaponsInRightHandSlots);
             DestroyRuntimeItems(m_weaponsInLeftHandSlots);
             DestroyRuntimeItems(m_quickSlotItemsInQuickSlots);
-            if (m_itemsInInventory == null)
-            {
-                return;
-            }
-
-            foreach (Item item in m_itemsInInventory)
-            {
-                DestroyRuntimeItem(item);
-            }
+            base.OnDestroy();
         }
 
         /// <summary>Returns the stable item ID saved for one right-hand quick slot.</summary>
@@ -775,18 +666,6 @@ namespace ZZ
             }
 
             return startingWeapons;
-        }
-
-        /// <summary>Destroys every owned inventory instance and empties the list.</summary>
-        public void ClearRuntimeInventory()
-        {
-            m_itemsInInventory ??= new List<Item>();
-            foreach (Item item in m_itemsInInventory)
-            {
-                DestroyRuntimeItem(item);
-            }
-
-            m_itemsInInventory.Clear();
         }
 
         /// <summary>Reconstructs the initial armor presentation from synchronized IDs.</summary>
@@ -1918,14 +1797,6 @@ namespace ZZ
                 {
                     AddItemToInventory(runtimeItem);
                 }
-            }
-        }
-
-        private static void DestroyRuntimeItem(Item item)
-        {
-            if (item != null && (item.hideFlags & HideFlags.DontSave) != 0)
-            {
-                Destroy(item);
             }
         }
 

@@ -18,6 +18,8 @@ MonoBehaviour:
   m_itemID: 1
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 400
+  m_isInfinite: 0
   m_itemWeight: 0
   m_weaponModel: {fileID: 5024126159876492057, guid: 053ee4bc320618145969e734e9dba307, type: 3}
   m_isUnarmed: 0
@@ -32,6 +34,9 @@ MonoBehaviour:
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
+  m_poisonBuildup: 0
+  m_bleedBuildup: 0
+  m_frostBuildup: 0
   m_upgradeLevel: 0
   m_strengthRequirement: 10
   m_dexterityRequirement: 10

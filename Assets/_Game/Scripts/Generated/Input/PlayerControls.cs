@@ -877,6 +877,24 @@ namespace ZZ
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Previous Shop Category"",
+                    ""type"": ""Button"",
+                    ""id"": ""52dd4b4e-3845-4e04-87ad-607c11a97554"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Next Shop Category"",
+                    ""type"": ""Button"",
+                    ""id"": ""0894b1c9-e286-404a-978f-0ec21221519e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -956,6 +974,50 @@ namespace ZZ
                     ""action"": ""Unequip Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a1f61fdf-0acf-421e-be3b-47e7d95192cf"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": ""press"",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Previous Shop Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d941ac7-8875-47cd-b8b5-00b87a7c322e"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": ""press"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Previous Shop Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e439621c-f8fd-4a26-b969-c5db48bda87f"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": ""press"",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Next Shop Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""558aa2e8-56af-4247-995d-1a324d2968cf"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": ""press"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Next Shop Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1019,6 +1081,8 @@ namespace ZZ
             m_UI_OpenCharacterMenu = m_UI.FindAction("Open Character Menu", throwIfNotFound: true);
             m_UI_CloseMenu = m_UI.FindAction("Close Menu", throwIfNotFound: true);
             m_UI_UnequipItem = m_UI.FindAction("Unequip Item", throwIfNotFound: true);
+            m_UI_PreviousShopCategory = m_UI.FindAction("Previous Shop Category", throwIfNotFound: true);
+            m_UI_NextShopCategory = m_UI.FindAction("Next Shop Category", throwIfNotFound: true);
         }
 
         ~@PlayerControls()
@@ -1484,6 +1548,8 @@ namespace ZZ
         private readonly InputAction m_UI_OpenCharacterMenu;
         private readonly InputAction m_UI_CloseMenu;
         private readonly InputAction m_UI_UnequipItem;
+        private readonly InputAction m_UI_PreviousShopCategory;
+        private readonly InputAction m_UI_NextShopCategory;
         /// <summary>
         /// Provides access to input actions defined in input action map "UI".
         /// </summary>
@@ -1511,6 +1577,14 @@ namespace ZZ
             /// Provides access to the underlying input action "UI/UnequipItem".
             /// </summary>
             public InputAction @UnequipItem => m_Wrapper.m_UI_UnequipItem;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/PreviousShopCategory".
+            /// </summary>
+            public InputAction @PreviousShopCategory => m_Wrapper.m_UI_PreviousShopCategory;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/NextShopCategory".
+            /// </summary>
+            public InputAction @NextShopCategory => m_Wrapper.m_UI_NextShopCategory;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1549,6 +1623,12 @@ namespace ZZ
                 @UnequipItem.started += instance.OnUnequipItem;
                 @UnequipItem.performed += instance.OnUnequipItem;
                 @UnequipItem.canceled += instance.OnUnequipItem;
+                @PreviousShopCategory.started += instance.OnPreviousShopCategory;
+                @PreviousShopCategory.performed += instance.OnPreviousShopCategory;
+                @PreviousShopCategory.canceled += instance.OnPreviousShopCategory;
+                @NextShopCategory.started += instance.OnNextShopCategory;
+                @NextShopCategory.performed += instance.OnNextShopCategory;
+                @NextShopCategory.canceled += instance.OnNextShopCategory;
             }
 
             /// <summary>
@@ -1572,6 +1652,12 @@ namespace ZZ
                 @UnequipItem.started -= instance.OnUnequipItem;
                 @UnequipItem.performed -= instance.OnUnequipItem;
                 @UnequipItem.canceled -= instance.OnUnequipItem;
+                @PreviousShopCategory.started -= instance.OnPreviousShopCategory;
+                @PreviousShopCategory.performed -= instance.OnPreviousShopCategory;
+                @PreviousShopCategory.canceled -= instance.OnPreviousShopCategory;
+                @NextShopCategory.started -= instance.OnNextShopCategory;
+                @NextShopCategory.performed -= instance.OnNextShopCategory;
+                @NextShopCategory.canceled -= instance.OnNextShopCategory;
             }
 
             /// <summary>
@@ -1815,6 +1901,20 @@ namespace ZZ
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnUnequipItem(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Previous Shop Category" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPreviousShopCategory(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Next Shop Category" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnNextShopCategory(InputAction.CallbackContext context);
         }
     }
 }

@@ -28,7 +28,8 @@ namespace ZZ
         private const int k_DialogueDataVersion = 12;
         private const int k_WeaponUpgradeDataVersion = 13;
         private const int k_DoorStateDataVersion = 14;
-        private const int k_CurrentDataVersion = 14;
+        private const int k_ShopInventoryDataVersion = 15;
+        private const int k_CurrentDataVersion = 15;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -125,6 +126,9 @@ namespace ZZ
         [SerializeField] private List<SiteOfGraceSaveData> m_sitesOfGrace = new();
         [SerializeField] private WorldItemLootDictionary m_worldItemsLooted = new();
         [SerializeField] private List<string> m_doorsOpened = new();
+        [SerializeField] private List<SerializableShopInventory>
+            m_shopInventories = new();
+        [SerializeField] private List<int> m_shopsGenerated = new();
 
         public string CharacterName
         {
@@ -431,6 +435,51 @@ namespace ZZ
         /// <summary>Gets the stable identifiers of permanently opened world doors.</summary>
         public List<string> DoorsOpened =>
             m_doorsOpened ??= new List<string>();
+
+        /// <summary>Gets every persistent merchant inventory in this character save.</summary>
+        public List<SerializableShopInventory> ShopInventories =>
+            m_shopInventories ??= new List<SerializableShopInventory>();
+
+        /// <summary>Gets stable shop IDs whose default stock has already generated.</summary>
+        public List<int> ShopsGenerated =>
+            m_shopsGenerated ??= new List<int>();
+
+        /// <summary>Returns one merchant snapshot, or null before it has generated stock.</summary>
+        public SerializableShopInventory GetShopInventory(Shops shop)
+        {
+            return shop == Shops.NoShop
+                ? null
+                : ShopInventories.FirstOrDefault(
+                    inventory => inventory?.Shop == shop);
+        }
+
+        /// <summary>Adds or replaces one merchant snapshot by its stable shop ID.</summary>
+        public bool SetShopInventory(SerializableShopInventory shopInventory)
+        {
+            if (shopInventory == null || shopInventory.Shop == Shops.NoShop)
+            {
+                return false;
+            }
+
+            int existingIndex = ShopInventories.FindIndex(
+                inventory => inventory?.Shop == shopInventory.Shop);
+            if (existingIndex >= 0)
+            {
+                ShopInventories[existingIndex] = shopInventory;
+            }
+            else
+            {
+                ShopInventories.Add(shopInventory);
+            }
+
+            int shopID = (int)shopInventory.Shop;
+            if (!ShopsGenerated.Contains(shopID))
+            {
+                ShopsGenerated.Add(shopID);
+            }
+
+            return true;
+        }
 
         /// <summary>Returns whether the supplied stable door identifier is already open.</summary>
         public bool IsDoorOpened(string doorID)
@@ -866,6 +915,12 @@ namespace ZZ
                 m_doorsOpened = new List<string>();
             }
 
+            if (m_dataVersion < k_ShopInventoryDataVersion)
+            {
+                m_shopInventories = new List<SerializableShopInventory>();
+                m_shopsGenerated = new List<int>();
+            }
+
             m_bosses ??= new List<BossSaveData>();
             m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
             m_rightHandWeaponSlot01 ??= CreateLegacyWeapon(1);
@@ -893,6 +948,25 @@ namespace ZZ
             m_doorsOpened ??= new List<string>();
             m_doorsOpened.RemoveAll(string.IsNullOrWhiteSpace);
             m_doorsOpened = m_doorsOpened.Distinct().ToList();
+            m_shopInventories ??= new List<SerializableShopInventory>();
+            m_shopInventories.RemoveAll(inventory =>
+                inventory == null || inventory.Shop == Shops.NoShop);
+            m_shopInventories = m_shopInventories
+                .GroupBy(inventory => inventory.Shop)
+                .Select(group => group.Last())
+                .ToList();
+            m_shopsGenerated ??= new List<int>();
+            foreach (SerializableShopInventory inventory in m_shopInventories)
+            {
+                int shopID = (int)inventory.Shop;
+                if (!m_shopsGenerated.Contains(shopID))
+                {
+                    m_shopsGenerated.Add(shopID);
+                }
+            }
+
+            m_shopsGenerated.RemoveAll(shopID => shopID <= 0);
+            m_shopsGenerated = m_shopsGenerated.Distinct().ToList();
             m_dataVersion = k_CurrentDataVersion;
         }
 
