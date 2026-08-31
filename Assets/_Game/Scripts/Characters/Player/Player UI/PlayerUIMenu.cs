@@ -17,6 +17,12 @@ namespace ZZ
 
         protected GameObject MenuWindow => m_menuWindow;
 
+        /// <summary>Assigns a menu root created by a reusable runtime UI factory.</summary>
+        protected void SetMenuWindow(GameObject menuWindow)
+        {
+            m_menuWindow = menuWindow;
+        }
+
         protected virtual void OnDisable()
         {
             CloseMenu();

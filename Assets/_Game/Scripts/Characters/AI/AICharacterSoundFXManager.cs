@@ -140,6 +140,8 @@ namespace ZZ
         /// <summary>Cancels playback without applying dialogue completion or Stage progress.</summary>
         public void CancelCurrentDialogueEvent()
         {
+            PlayerUIManager.Instance?.PlayerUIShopManager
+                ?.CloseForDialogueSource(this);
             if (!m_dialogueIsPlaying)
             {
                 m_currentDialogue?.OnDialogueCanceled();
@@ -166,8 +168,17 @@ namespace ZZ
             CharacterDialogue completedDialogue = m_currentDialogue;
             m_dialogueIsPlaying = false;
             m_playbackSection = DialoguePlaybackSection.None;
-            completedDialogue.OnDialogueEnded();
             CloseDialoguePresentation();
+            PlayerUIShopManager shopManager =
+                PlayerUIManager.Instance?.PlayerUIShopManager;
+            if (shopManager != null)
+            {
+                shopManager.OpenInteractionMenuAfterFixedFrame(this);
+            }
+            else
+            {
+                completedDialogue.OnDialogueEnded();
+            }
 
             if (completedDialogue.SetStageAfterDialogue)
             {

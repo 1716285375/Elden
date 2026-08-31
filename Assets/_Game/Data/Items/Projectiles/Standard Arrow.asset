@@ -18,6 +18,8 @@ MonoBehaviour:
   m_itemID: 12
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 20
+  m_isInfinite: 0
   m_projectileClass: 0
   m_forwardVelocity: 30
   m_upwardVelocity: 1.5

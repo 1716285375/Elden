@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ZZ
@@ -16,6 +17,12 @@ namespace ZZ
         [Header("Stack")]
         [SerializeField, Min(1)] private int m_maxItemAmount = 1;
         [SerializeField, Min(0)] private int m_currentItemAmount = 1;
+
+        [Header("Shop")]
+        [SerializeField, Min(0)] private int m_itemValue;
+        [SerializeField] private bool m_isInfinite;
+
+        [NonSerialized] private int m_runtimeShopStockAmount = -1;
 
         /// <summary>Gets the player-facing item name.</summary>
         public string ItemName => m_itemName;
@@ -41,6 +48,17 @@ namespace ZZ
         /// <summary>Gets whether equal catalog items can share one inventory entry.</summary>
         public bool IsStackable => MaxItemAmount > 1;
 
+        /// <summary>Gets the full Rune value used when this item is purchased.</summary>
+        public int ItemValue => Mathf.Max(0, m_itemValue);
+
+        /// <summary>Gets whether this runtime shop entry has unlimited stock.</summary>
+        public bool IsInfinite => m_isInfinite;
+
+        /// <summary>Gets stock independent of the player's normal stack limit.</summary>
+        public int ShopStockAmount => m_runtimeShopStockAmount >= 0
+            ? m_runtimeShopStockAmount
+            : CurrentItemAmount;
+
         internal void AssignItemID(int itemID)
         {
             m_itemID = itemID;
@@ -50,6 +68,18 @@ namespace ZZ
         public void SetCurrentItemAmount(int itemAmount)
         {
             m_currentItemAmount = Mathf.Clamp(itemAmount, 0, MaxItemAmount);
+        }
+
+        /// <summary>Sets the runtime stock policy without changing the authored template.</summary>
+        public void SetInfinite(bool isInfinite)
+        {
+            m_isInfinite = isInfinite;
+        }
+
+        /// <summary>Sets merchant stock without changing this item's stack capacity.</summary>
+        public void SetShopStockAmount(int stockAmount)
+        {
+            m_runtimeShopStockAmount = Mathf.Max(0, stockAmount);
         }
 
         /// <summary>Adds as much as possible and returns the amount that did not fit.</summary>
@@ -82,6 +112,7 @@ namespace ZZ
                 m_currentItemAmount,
                 0,
                 m_maxItemAmount);
+            m_itemValue = Mathf.Max(0, m_itemValue);
         }
     }
 }

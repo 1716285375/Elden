@@ -73,6 +73,9 @@ MonoBehaviour:
   m_lightningDamage: 0
   m_holyDamage: 0
   m_poiseDamage: 0
+  m_poisonBuildup: 0
+  m_bleedBuildup: 0
+  m_frostBuildup: 0
 --- !u!1 &2980864934768799191
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,6 +281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterHPBar
   m_slider: {fileID: 3610295030266729606}
   m_rectTransform: {fileID: 8618107225635545665}
+  m_fillImage: {fileID: 0}
   m_shouldScaleBarLengthWithStats: 0
   m_widthScaleMultiplier: 2
   m_defaultTimeBeforeBarHides: 3
@@ -430,6 +434,9 @@ MonoBehaviour:
   m_lightningDamage: 0
   m_holyDamage: 0
   m_poiseDamage: 0
+  m_poisonBuildup: 0
+  m_bleedBuildup: 0
+  m_frostBuildup: 0
 --- !u!1 &4713752444425064866
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,6 +680,41 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  PoisonBuildup:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  BleedBuildup:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  FrostBuildup:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  BuildupCapacity:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsPoisoned:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsFrostbitten:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsFrozen:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   IsJumping:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -683,6 +725,16 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  IsSneaking:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  IsHidden:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 1
   IsDead:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -933,9 +985,10 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterStatsManager
   ShowTopMostFoldoutHeaderGroup: 1
-  m_staminaRegenerationDelay: 2
   m_staminaRegenerationTickInterval: 0.1
-  m_staminaRegenerationAmount: 2
+  m_baseStaminaRegenerationAmount: 2
+  m_staminaRegenerationModifier: 0
+  m_blockingStaminaRegenerationMultiplier: 0.2
   m_totalPoiseDamage: 0
   m_basePoiseDefense: 30
   m_armorPoiseDefense: 0
@@ -974,8 +1027,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterEffectsManager
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_criticalBloodSplatterVFX: {fileID: 0}
+  m_poisonedVFX: {fileID: 0}
+  m_frostbiteVFX: {fileID: 0}
   m_character: {fileID: 0}
   m_staticEffects: []
+  m_defaultEffectTickTime: 1
+  m_timedEffects: []
 --- !u!114 &2596670981253299374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1001,6 +1058,7 @@ MonoBehaviour:
   m_fieldOfView: 140
   m_detectionInterval: 0.2
   m_eyeHeight: 1.4
+  m_sneakingDetectionRadiusMultiplier: 0.25
   m_lineOfSightLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1046,10 +1104,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 644edb7de7c69e94590b351dabbfeebc, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterInventoryManager
+  m_itemsInInventory: []
   m_droppableItems:
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
   - {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
   m_dropItemChance: 10
+  m_characterShopID: 1
+  m_characterShop: {fileID: 11400000, guid: 00df0928cd112ef4c83c05807c882b9b, type: 2}
 --- !u!1 &4916886901977103027
 GameObject:
   m_ObjectHideFlags: 0

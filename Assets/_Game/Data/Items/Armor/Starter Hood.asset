@@ -18,6 +18,8 @@ MonoBehaviour:
   m_itemID: 4
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 600
+  m_isInfinite: 0
   m_itemWeight: 2.5
   m_physicalAbsorption: 3
   m_magicAbsorption: 4
