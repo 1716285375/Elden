@@ -27,6 +27,22 @@ namespace ZZ
         [SerializeField] private Button m_noFreeSlotsCloseButton;
         [SerializeField] private Button m_confirmDeleteButton;
         [SerializeField] private UICharacterSaveSlot[] m_characterSaveSlots;
+        [SerializeField] private TitleScreenLoadDetailsPanel m_loadDetailsPanel;
+
+        [Header("MAIN MENU ACTIONS")]
+        [SerializeField] private Button m_continueButton;
+        [SerializeField] private Button m_settingsButton;
+        [SerializeField] private Button m_creditsButton;
+        [SerializeField] private Button m_quitButton;
+
+        [Header("SECONDARY MENUS")]
+        [SerializeField] private GameObject m_settingsMenu;
+        [SerializeField] private GameObject m_creditsMenu;
+        [SerializeField] private Button m_settingsReturnButton;
+        [SerializeField] private Button m_creditsReturnButton;
+
+        [Header("PRESENTATION")]
+        [SerializeField] private GameObject[] m_primaryPresentationObjects;
 
         private CharacterSlot m_currentSelectedSlot = CharacterSlot.NoSlot;
 
@@ -67,6 +83,8 @@ namespace ZZ
 
         /// <summary>
         /// Starts the host, opens the main menu, and establishes controller focus.
+        /// Continue is preferred when a last-played slot exists, otherwise focus
+        /// lands on New Game.
         /// </summary>
         public void PressStart()
         {
@@ -77,7 +95,90 @@ namespace ZZ
 
             m_pressStartMenu?.SetActive(false);
             m_mainMenu?.SetActive(true);
-            m_newGameButton?.Select();
+            SetPrimaryPresentationVisible(true);
+            RefreshMainMenuState();
+            if (m_continueButton != null && m_continueButton.interactable)
+            {
+                m_continueButton.Select();
+            }
+            else
+            {
+                m_newGameButton?.Select();
+            }
+        }
+
+        /// <summary>
+        /// Refreshes whether Continue is available based on the last-played slot.
+        /// </summary>
+        public void RefreshMainMenuState()
+        {
+            bool hasContinue = WorldSaveGameManager.Instance != null &&
+                WorldSaveGameManager.Instance.TryGetContinueSlot(out _);
+            if (m_continueButton != null)
+            {
+                m_continueButton.interactable = hasContinue;
+            }
+        }
+
+        /// <summary>Loads the last played character slot, when one exists.</summary>
+        public void ContinueGame()
+        {
+            if (!IsNetworkHostReady())
+            {
+                return;
+            }
+
+            WorldSaveGameManager saveGameManager = WorldSaveGameManager.Instance;
+            if (saveGameManager == null ||
+                !saveGameManager.TryGetContinueSlot(out CharacterSlot continueSlot))
+            {
+                return;
+            }
+
+            saveGameManager.SelectCharacterSlot(continueSlot);
+            saveGameManager.LoadGame();
+        }
+
+        /// <summary>Opens the placeholder settings screen.</summary>
+        public void OpenSettings()
+        {
+            m_mainMenu?.SetActive(false);
+            SetPrimaryPresentationVisible(false);
+            m_settingsMenu?.SetActive(true);
+            m_settingsReturnButton?.Select();
+        }
+
+        /// <summary>Returns from the placeholder settings screen.</summary>
+        public void CloseSettings()
+        {
+            m_settingsMenu?.SetActive(false);
+            m_mainMenu?.SetActive(true);
+            SetPrimaryPresentationVisible(true);
+            m_settingsButton?.Select();
+        }
+
+        /// <summary>Opens the placeholder credits screen.</summary>
+        public void OpenCredits()
+        {
+            m_mainMenu?.SetActive(false);
+            SetPrimaryPresentationVisible(false);
+            m_creditsMenu?.SetActive(true);
+            m_creditsReturnButton?.Select();
+        }
+
+        /// <summary>Returns from the placeholder credits screen.</summary>
+        public void CloseCredits()
+        {
+            m_creditsMenu?.SetActive(false);
+            m_mainMenu?.SetActive(true);
+            SetPrimaryPresentationVisible(true);
+            m_creditsButton?.Select();
+        }
+
+        /// <summary>Exits the application (stops Play Mode in the Editor).</summary>
+        public void QuitGame()
+        {
+            GameExit.Quit();
         }
 
         /// <summary>
@@ -97,6 +198,7 @@ namespace ZZ
             }
 
             m_mainMenu?.SetActive(false);
+            SetPrimaryPresentationVisible(false);
             m_characterCreationManager?.OpenCharacterCreation();
         }
 
@@ -105,6 +207,7 @@ namespace ZZ
         {
             m_characterCreationManager?.CloseCharacterCreation();
             m_mainMenu?.SetActive(true);
+            SetPrimaryPresentationVisible(true);
             m_newGameButton?.Select();
         }
 
@@ -120,9 +223,10 @@ namespace ZZ
 
             m_currentSelectedSlot = CharacterSlot.NoSlot;
             m_mainMenu?.SetActive(false);
+            SetPrimaryPresentationVisible(false);
             PrepareSaveSlotsForRefresh();
             m_loadGameMenu?.SetActive(true);
-            m_loadGameReturnButton?.Select();
+            SelectFirstActiveSaveSlotOrReturn();
         }
 
         /// <summary>
@@ -131,9 +235,11 @@ namespace ZZ
         public void CloseLoadGameMenu()
         {
             m_currentSelectedSlot = CharacterSlot.NoSlot;
+            m_loadDetailsPanel?.Clear();
             m_deleteCharacterSlotPopup?.SetActive(false);
             m_loadGameMenu?.SetActive(false);
             m_mainMenu?.SetActive(true);
+            SetPrimaryPresentationVisible(true);
             m_loadGameButton?.Select();
         }
 
@@ -161,6 +267,7 @@ namespace ZZ
         public void SelectCurrentSlot(CharacterSlot characterSlot)
         {
             m_currentSelectedSlot = characterSlot;
+            m_loadDetailsPanel?.Display(characterSlot);
         }
 
         /// <summary>
@@ -169,6 +276,20 @@ namespace ZZ
         public void SelectNoSlot()
         {
             m_currentSelectedSlot = CharacterSlot.NoSlot;
+            m_loadDetailsPanel?.Clear();
+        }
+
+        private void SetPrimaryPresentationVisible(bool isVisible)
+        {
+            if (m_primaryPresentationObjects == null)
+            {
+                return;
+            }
+
+            foreach (GameObject presentationObject in m_primaryPresentationObjects)
+            {
+                presentationObject?.SetActive(isVisible);
+            }
         }
 
         /// <summary>
@@ -303,6 +424,27 @@ namespace ZZ
             }
 
             m_currentSelectedSlot = CharacterSlot.NoSlot;
+            m_loadGameReturnButton?.Select();
+        }
+
+        /// <summary>
+        /// Moves focus to the first slot that still holds a save after the refresh,
+        /// or to the Return button when every slot is empty.
+        /// </summary>
+        private void SelectFirstActiveSaveSlotOrReturn()
+        {
+            if (m_characterSaveSlots != null)
+            {
+                foreach (UICharacterSaveSlot saveSlot in m_characterSaveSlots)
+                {
+                    if (saveSlot != null && saveSlot.gameObject.activeSelf)
+                    {
+                        saveSlot.Select();
+                        return;
+                    }
+                }
+            }
+
             m_loadGameReturnButton?.Select();
         }
 

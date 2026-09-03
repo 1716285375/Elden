@@ -43,6 +43,9 @@ namespace ZZ
         [SerializeField] private Slider m_hairColorBlueSlider;
         [SerializeField] private TitleScreenPlayerPreviewRotator m_previewRotator;
 
+        [Header("PREVIEW")]
+        [SerializeField] private RawImage m_previewImage;
+
         private PlayerManager m_previewPlayer;
         private Coroutine m_resolvePlayerCoroutine;
         private int m_selectedClassIndex;
@@ -110,6 +113,11 @@ namespace ZZ
                 m_previewTexture.Release();
                 Destroy(m_previewTexture);
             }
+
+            if (m_previewCamera != null)
+            {
+                Destroy(m_previewCamera.gameObject);
+            }
         }
 
         /// <summary>Builds the default three-column creation UI when no authored UI is assigned.</summary>
@@ -123,6 +131,7 @@ namespace ZZ
                 BuildRuntimeInterface(styleSource);
             }
 
+            EnsurePreviewInfrastructure();
             BindUIEvents();
         }
 
@@ -370,6 +379,18 @@ namespace ZZ
             return resolvedName.Length <= MaximumCharacterNameLength
                 ? resolvedName
                 : resolvedName[..MaximumCharacterNameLength];
+        }
+
+        /// <summary>
+        /// Confirms the authored name input. Exists because a UnityEvent cannot
+        /// capture the live input text as a dynamic argument.
+        /// </summary>
+        public void ConfirmAuthoredName()
+        {
+            SubmitCharacterName(
+                m_characterNameInput != null
+                    ? m_characterNameInput.text
+                    : ResolveCharacterName());
         }
 
         private IEnumerator ResolvePreviewPlayer()
@@ -660,7 +681,6 @@ namespace ZZ
             BuildHairMenu(root.transform, styleSource);
             BuildHairColorMenu(root.transform, styleSource);
             BuildNameMenu(root.transform, styleSource);
-            BuildPreview(root.transform);
 
             m_previewRotator = gameObject.AddComponent<TitleScreenPlayerPreviewRotator>();
             m_characterCreationRoot.SetActive(false);
@@ -774,40 +794,64 @@ namespace ZZ
             m_nameMenu.SetActive(false);
         }
 
-        private void BuildPreview(Transform parent)
+        /// <summary>
+        /// Guarantees the creation preview exists regardless of whether the creation
+        /// UI is authored in the Scene or built at runtime. Only the 3D preview
+        /// pieces (RenderTexture, camera, spot light) and a fallback RawImage are
+        /// created here; an authored <see cref="RawImage"/> is used as-is.
+        /// </summary>
+        private void EnsurePreviewInfrastructure()
         {
-            GameObject previewObject = CreateUIObject("Player Preview", parent);
-            RawImage previewImage = previewObject.AddComponent<RawImage>();
-            previewImage.raycastTarget = false;
-            SetRect(
-                previewObject.GetComponent<RectTransform>(),
-                new Vector2(490f, -10f),
-                new Vector2(620f, 720f));
-
-            m_previewTexture = new RenderTexture(512, 512, 16)
+            if (m_previewImage == null && m_characterCreationRoot != null)
             {
-                name = "Character Creation Preview"
-            };
-            m_previewTexture.Create();
-            previewImage.texture = m_previewTexture;
+                GameObject previewObject = CreateUIObject(
+                    "Player Preview",
+                    m_characterCreationRoot.transform);
+                m_previewImage = previewObject.AddComponent<RawImage>();
+                m_previewImage.raycastTarget = false;
+                SetRect(
+                    previewObject.GetComponent<RectTransform>(),
+                    new Vector2(490f, -10f),
+                    new Vector2(620f, 720f));
+            }
 
-            GameObject cameraObject = new("Character Creation Preview Camera");
-            cameraObject.transform.SetParent(transform, false);
-            m_previewCamera = cameraObject.AddComponent<Camera>();
-            m_previewCamera.fieldOfView = 50f;
-            m_previewCamera.clearFlags = CameraClearFlags.SolidColor;
-            m_previewCamera.backgroundColor = new Color(0.025f, 0.02f, 0.015f, 1f);
-            m_previewCamera.cullingMask = 1 << LayerMask.NameToLayer("Player");
-            m_previewCamera.targetTexture = m_previewTexture;
+            if (m_previewTexture == null)
+            {
+                m_previewTexture = new RenderTexture(512, 512, 16)
+                {
+                    name = "Character Creation Preview"
+                };
+                m_previewTexture.Create();
+            }
 
-            GameObject lightObject = new("Character Creation Spotlight");
-            lightObject.transform.SetParent(cameraObject.transform, false);
-            m_previewLight = lightObject.AddComponent<Light>();
-            m_previewLight.type = LightType.Spot;
-            m_previewLight.range = 10f;
-            m_previewLight.intensity = 7f;
-            m_previewLight.spotAngle = 55f;
-            m_previewLight.cullingMask = m_previewCamera.cullingMask;
+            if (m_previewImage != null)
+            {
+                m_previewImage.texture = m_previewTexture;
+            }
+
+            if (m_previewCamera == null)
+            {
+                GameObject cameraObject = new("Character Creation Preview Camera");
+                cameraObject.transform.SetParent(transform, false);
+                m_previewCamera = cameraObject.AddComponent<Camera>();
+                m_previewCamera.fieldOfView = 50f;
+                m_previewCamera.clearFlags = CameraClearFlags.SolidColor;
+                m_previewCamera.backgroundColor = new Color(0.025f, 0.02f, 0.015f, 1f);
+                m_previewCamera.cullingMask = 1 << LayerMask.NameToLayer("Player");
+                m_previewCamera.targetTexture = m_previewTexture;
+            }
+
+            if (m_previewLight == null)
+            {
+                GameObject lightObject = new("Character Creation Spotlight");
+                lightObject.transform.SetParent(m_previewCamera.transform, false);
+                m_previewLight = lightObject.AddComponent<Light>();
+                m_previewLight.type = LightType.Spot;
+                m_previewLight.range = 10f;
+                m_previewLight.intensity = 7f;
+                m_previewLight.spotAngle = 55f;
+                m_previewLight.cullingMask = m_previewCamera.cullingMask;
+            }
         }
 
         private void PositionPreviewCamera(Transform playerTransform)
@@ -945,7 +989,7 @@ namespace ZZ
             TMP_InputField inputField = inputObject.AddComponent<TMP_InputField>();
             TMP_Text text = CreateText(inputObject.transform, "", 28f);
             text.alignment = TextAlignmentOptions.Center;
-            text.enableWordWrapping = false;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
             StretchToParent(text.rectTransform);
             inputField.textComponent = text;
             inputField.textViewport = inputObject.GetComponent<RectTransform>();
