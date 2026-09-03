@@ -41,7 +41,7 @@ namespace ZZ
 
             if (m_characterNameText != null)
             {
-                m_characterNameText.text = characterData.CharacterName;
+                m_characterNameText.text = characterData.CharacterName.ToUpperInvariant();
             }
 
             if (m_timePlayedText != null)
