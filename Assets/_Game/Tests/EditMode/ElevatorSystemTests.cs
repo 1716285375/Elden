@@ -159,7 +159,7 @@ namespace ZZ.Tests
         public void ElevatorSourceUsesServerAuthorityAndLateJoinState()
         {
             string source = ReadSource(
-                "Assets/_Game/Scripts/World/Managers/ElevatorInteractable.cs");
+                "Assets/_Game/Scripts/World/Interactions/ElevatorInteractable.cs");
 
             Assert.That(source, Does.Contain(
                 "NetworkVariable<Vector3> NetworkPosition"));
@@ -167,7 +167,9 @@ namespace ZZ.Tests
                 "NetworkVariable<bool> ElevatorIsRising"));
             Assert.That(source, Does.Contain(
                 "NetworkVariable<bool> ElevatorIsDescending"));
-            Assert.That(source, Does.Contain("[ServerRpc(RequireOwnership = false)]"));
+            Assert.That(source, Does.Contain(
+                "[Rpc(SendTo.Server, InvokePermission = " +
+                "RpcInvokePermission.Everyone)]"));
             Assert.That(source, Does.Contain("[ClientRpc]"));
             Assert.That(source, Does.Contain("Vector3.MoveTowards"));
             Assert.That(source, Does.Contain(
@@ -180,9 +182,9 @@ namespace ZZ.Tests
         public void ButtonAndLeverSourcesEnforceRequiredStateLifecycles()
         {
             string buttonSource = ReadSource(
-                "Assets/_Game/Scripts/World/Managers/ElevatorButtonTrigger.cs");
+                "Assets/_Game/Scripts/World/Interactions/ElevatorButtonTrigger.cs");
             string leverSource = ReadSource(
-                "Assets/_Game/Scripts/World/Managers/CallElevatorLeverInteractable.cs");
+                "Assets/_Game/Scripts/World/Interactions/CallElevatorLeverInteractable.cs");
 
             Assert.That(buttonSource, Does.Contain("ButtonHasBeenPressed"));
             Assert.That(buttonSource, Does.Contain("m_overlapCounts"));
@@ -200,9 +202,9 @@ namespace ZZ.Tests
         public void PassengerMotionPreservesLiftOwnedVerticalPosition()
         {
             string elevatorSource = ReadSource(
-                "Assets/_Game/Scripts/World/Managers/ElevatorInteractable.cs");
+                "Assets/_Game/Scripts/World/Interactions/ElevatorInteractable.cs");
             string occupancySource = ReadSource(
-                "Assets/_Game/Scripts/World/Managers/IsOnElevatorTrigger.cs");
+                "Assets/_Game/Scripts/World/Interactions/IsOnElevatorTrigger.cs");
             string locomotionSource = ReadSource(
                 "Assets/_Game/Scripts/Characters/Common/CharacterLocomotionManager.cs");
             string networkSource = ReadSource(

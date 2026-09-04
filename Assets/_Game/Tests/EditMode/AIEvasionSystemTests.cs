@@ -176,7 +176,7 @@ namespace ZZ.Tests
         private static string RemapRuntimeSourcePath(string relativePath)
         {
             if (relativePath.StartsWith("Character/Player/Player UI/"))
-                return "Characters/Player/Player UI/" + relativePath.Substring("Character/Player/Player UI/".Length);
+                return "UI/Gameplay/Player/" + relativePath.Substring("Character/Player/Player UI/".Length);
             if (relativePath.StartsWith("Character/Player/"))
                 return "Characters/Player/" + relativePath.Substring("Character/Player/".Length);
             if (relativePath.StartsWith("Character/AI/"))
@@ -188,13 +188,13 @@ namespace ZZ.Tests
             if (relativePath.StartsWith("Character/Inventory/"))
                 return "Characters/Common/Inventory/" + relativePath.Substring("Character/Inventory/".Length);
             if (relativePath.StartsWith("Character/Character UI/"))
-                return "Characters/Common/Character UI/" + relativePath.Substring("Character/Character UI/".Length);
+                return "UI/Gameplay/Character/" + relativePath.Substring("Character/Character UI/".Length);
             if (relativePath.StartsWith("Character/Animation State Behaviors/"))
                 return "Characters/Common/Animation State Behaviors/" + relativePath.Substring("Character/Animation State Behaviors/".Length);
             if (relativePath.StartsWith("Character/"))
                 return "Characters/Common/" + relativePath.Substring("Character/".Length);
             if (relativePath.StartsWith("World Managers/AI/"))
-                return "World/Managers/AI/" + relativePath.Substring("World Managers/AI/".Length);
+                return "World/AI/" + relativePath.Substring("World Managers/AI/".Length);
             if (relativePath.StartsWith("World Managers/"))
                 return "World/Managers/" + relativePath.Substring("World Managers/".Length);
             if (relativePath.StartsWith("World Objects/"))

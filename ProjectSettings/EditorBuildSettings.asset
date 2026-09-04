@@ -71,6 +71,42 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R05_BossSanctum/SCN_LV01_R05_A01_Spawners.unity
     guid: bc8178278bc48564bb8c84b5a050b07f
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A02_Base.unity
+    guid: 2f1de4a268a2a7843a1844bbd9f30736
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A02_Props.unity
+    guid: 3c0ff90d3a34eb348a1f423f13d96add
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A02_Effects.unity
+    guid: 4de461069d3fb1e409f3478f9380d6e6
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A02_Spawners.unity
+    guid: cf9995c4db7c9a14fb1843ac6858102b
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A03_Base.unity
+    guid: bb5fa192ab2e4a249a2d572e118428a2
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A03_Props.unity
+    guid: 3d0b887ad879177408492e668f4541f1
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A03_Effects.unity
+    guid: f1682e023e1002b418a88b07feade040
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A03_Spawners.unity
+    guid: bf09c691d6a6309429ab32d1e8000657
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A04_Base.unity
+    guid: 0d37faf4e1174244fa5cb076cc4c2591
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A04_Props.unity
+    guid: f96c6e38b5186994aa0ed6096d40192c
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A04_Effects.unity
+    guid: 8a85ca910a950624aaeea092388f35ed
+  - enabled: 1
+    path: Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions/R01_MonasteryOutskirts/SCN_LV01_R01_A04_Spawners.unity
+    guid: 1d5af216970f7dc4b81248730fba9ec1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -24,11 +24,11 @@ namespace ZZ.Tests
         private const string k_ItemDatabasePath =
             "Assets/_Game/Prefabs/World/Managers/World Item Database.prefab";
         private const string k_DoorSourcePath =
-            "Assets/_Game/Scripts/World/Managers/DoorInteractable.cs";
+            "Assets/_Game/Scripts/World/Interactions/DoorInteractable.cs";
         private const string k_LeverSourcePath =
-            "Assets/_Game/Scripts/World/Managers/ActivateOtherInteractableInteractable.cs";
+            "Assets/_Game/Scripts/World/Interactions/ActivateOtherInteractableInteractable.cs";
         private const string k_MessageSourcePath =
-            "Assets/_Game/Scripts/World/Managers/MessageInteractable.cs";
+            "Assets/_Game/Scripts/World/Interactions/MessageInteractable.cs";
 
         [Test]
         public void OpenedDoorIDsRoundTripWithoutDuplicates()
@@ -54,7 +54,8 @@ namespace ZZ.Tests
             Assert.That(source,
                 Does.Contain("NetworkVariableWritePermission.Server"));
             Assert.That(source,
-                Does.Contain("[ServerRpc(RequireOwnership = false)]"));
+                Does.Contain("[Rpc(SendTo.Server, InvokePermission = " +
+                    "RpcInvokePermission.Everyone)]"));
             Assert.That(source, Does.Contain("OpenDoorClientRpc"));
             Assert.That(source, Does.Contain("ApplyOpenedPresentation"));
             Assert.That(source,

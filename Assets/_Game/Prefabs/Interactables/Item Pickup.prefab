@@ -4963,6 +4963,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_interactableText: Pick Up Item
   m_interactableCollider: {fileID: 8434154673220623885}
+  m_autoDiscoverInteractableCollider: 1
   m_hostOnlyInteractable: 0
   m_shouldDisableColliderAfterInteraction: 1
   m_pickupType: 1

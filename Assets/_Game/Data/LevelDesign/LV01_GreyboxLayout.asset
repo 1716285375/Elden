@@ -1,0 +1,2450 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a7a254de3ab47498e97fad5172b2f5, type: 3}
+  m_Name: LV01_GreyboxLayout
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.LV01GreyboxLayout
+  m_playerHeight: 2
+  m_playerRadius: 0.35
+  m_cameraPivotHeight: 1.65
+  m_cameraDistance: 2.5
+  m_referenceHeight: 1.8
+  m_boxes:
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_SpawnToVista_Road
+    m_role: 1
+    m_position: {x: 0, y: -0.5, z: 6}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 7.777778, y: 1, z: 30.666668}
+    m_purpose: 'Teach move and camera: straight, safe, no threats'
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_SpawnToVista_MountainWall
+    m_role: 2
+    m_position: {x: 4.6388893, y: 3.5, z: 6}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 9, z: 30.666668}
+    m_purpose: Cliff face sheltering the path
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_SpawnToVista_DropLip
+    m_role: 3
+    m_position: {x: -4.038889, y: 0.16666675, z: 6}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 2.3333335, z: 30.666668}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_SpawnToVista_CliffFace
+    m_role: 2
+    m_position: {x: -5.038889, y: -15, z: 6}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 30, z: 30.666668}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_Step_00
+    m_role: 1
+    m_position: {x: 0.748542, y: -0.375, z: 8.25729}
+    m_rotation: {x: 0, y: 348.69006, z: 0}
+    m_size: {x: 7.777778, y: 1.25, z: 11.033008}
+    m_purpose: First climb, first 1v1 arena
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_Step_01
+    m_role: 1
+    m_position: {x: -0.5, y: -0.25, z: 14.5}
+    m_rotation: {x: 0, y: 348.69006, z: 0}
+    m_size: {x: 7.777778, y: 1.5, z: 1.6996735}
+    m_purpose: First climb, first 1v1 arena
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_Step_02
+    m_role: 1
+    m_position: {x: -0.8333334, y: -0.125, z: 16.166668}
+    m_rotation: {x: 0, y: 348.69006, z: 0}
+    m_size: {x: 7.777778, y: 1.75, z: 1.6996726}
+    m_purpose: First climb, first 1v1 arena
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_Step_03
+    m_role: 1
+    m_position: {x: -1.1666667, y: 0, z: 17.833334}
+    m_rotation: {x: 0, y: 348.69006, z: 0}
+    m_size: {x: 7.777778, y: 2, z: 1.6996744}
+    m_purpose: First climb, first 1v1 arena
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_Step_04
+    m_role: 1
+    m_position: {x: -1.5, y: 0.125, z: 19.5}
+    m_rotation: {x: 0, y: 348.69006, z: 0}
+    m_size: {x: 7.777778, y: 2.25, z: 1.6996707}
+    m_purpose: First climb, first 1v1 arena
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_Step_05
+    m_role: 1
+    m_position: {x: -2.7485418, y: 0.25, z: 25.74271}
+    m_rotation: {x: 0, y: 348.69006, z: 0}
+    m_size: {x: 7.777778, y: 2.5, z: 11.033008}
+    m_purpose: First climb, first 1v1 arena
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_MountainWall
+    m_role: 2
+    m_position: {x: 3.5844274, y: 4.2452836, z: 17.731651}
+    m_rotation: {x: 357.0252, y: 348.69006, z: 0}
+    m_size: {x: 1.5, y: 9, z: 28.903658}
+    m_purpose: Cliff face sheltering the path
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_DropLip
+    m_role: 3
+    m_position: {x: -4.9587603, y: 0.91644216, z: 16.199427}
+    m_rotation: {x: 357.0252, y: 348.69006, z: 0}
+    m_size: {x: 0.3, y: 2.3333335, z: 28.903658}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_VistaToEnemyOne_CliffFace
+    m_role: 2
+    m_position: {x: -6.0937033, y: -14.229787, z: 16.775124}
+    m_rotation: {x: 357.0252, y: 348.69006, z: 0}
+    m_size: {x: 1.5, y: 30, z: 28.903658}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyOneToCorner_Road
+    m_role: 1
+    m_position: {x: 2.0000002, y: 1, z: 27}
+    m_rotation: {x: -0, y: 38.65981, z: 0}
+    m_size: {x: 7.777778, y: 1, z: 31.472916}
+    m_purpose: Turn reveals the monastery landmark
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyOneToCorner_MountainWall
+    m_role: 2
+    m_position: {x: 5.622364, y: 5, z: 24.102108}
+    m_rotation: {x: -0, y: 38.65981, z: 0}
+    m_size: {x: 1.5, y: 9, z: 31.472916}
+    m_purpose: Cliff face sheltering the path
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyOneToCorner_DropLip
+    m_role: 3
+    m_position: {x: -1.153842, y: 1.6666667, z: 29.523073}
+    m_rotation: {x: -0, y: 38.65981, z: 0}
+    m_size: {x: 0.3, y: 2.3333335, z: 31.472916}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyOneToCorner_CliffFace
+    m_role: 2
+    m_position: {x: -1.9347107, y: -13.5, z: 30.14777}
+    m_rotation: {x: -0, y: 38.65981, z: 0}
+    m_size: {x: 1.5, y: 30, z: 31.472916}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_Step_00
+    m_role: 1
+    m_position: {x: 4.6114235, y: 1.125, z: 28.29713}
+    m_rotation: {x: -0, y: 20.55605, z: 0}
+    m_size: {x: 7.777778, y: 1.25, z: 10.757334}
+    m_purpose: Second climb into the light ambush
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_Step_01
+    m_role: 1
+    m_position: {x: 6.75, y: 1.25, z: 34}
+    m_rotation: {x: -0, y: 20.55601, z: 0}
+    m_size: {x: 7.777778, y: 1.5, z: 1.424003}
+    m_purpose: Second climb into the light ambush
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_Step_02
+    m_role: 1
+    m_position: {x: 7.25, y: 1.375, z: 35.333336}
+    m_rotation: {x: -0, y: 20.556065, z: 0}
+    m_size: {x: 7.777778, y: 1.75, z: 1.4239994}
+    m_purpose: Second climb into the light ambush
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_Step_03
+    m_role: 1
+    m_position: {x: 7.75, y: 1.5, z: 36.666664}
+    m_rotation: {x: -0, y: 20.556065, z: 0}
+    m_size: {x: 7.777778, y: 2, z: 1.4239994}
+    m_purpose: Second climb into the light ambush
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_Step_04
+    m_role: 1
+    m_position: {x: 8.25, y: 1.625, z: 38}
+    m_rotation: {x: -0, y: 20.55601, z: 0}
+    m_size: {x: 7.777778, y: 2.25, z: 1.424003}
+    m_purpose: Second climb into the light ambush
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_Step_05
+    m_role: 1
+    m_position: {x: 10.3885765, y: 1.75, z: 43.702873}
+    m_rotation: {x: -0, y: 20.556047, z: 0}
+    m_size: {x: 7.777778, y: 2.5, z: 10.757336}
+    m_purpose: Second climb into the light ambush
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_MountainWall
+    m_role: 2
+    m_position: {x: 11.775884, y: 5.744694, z: 34.190796}
+    m_rotation: {x: 356.84473, y: 20.55605, z: -0.00000005344187}
+    m_size: {x: 1.5, y: 9, z: 27.251986}
+    m_purpose: Cliff face sheltering the path
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_DropLip
+    m_role: 3
+    m_position: {x: 3.7150493, y: 2.416414, z: 37.409557}
+    m_rotation: {x: 356.84473, y: 20.55605, z: -0.00000005344187}
+    m_size: {x: 0.3, y: 2.3333335, z: 27.251986}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_CornerToEnemyTwo_CliffFace
+    m_role: 2
+    m_position: {x: 3.0718386, y: -12.727262, z: 38.54233}
+    m_rotation: {x: 356.84473, y: 20.55605, z: -0.00000005344187}
+    m_size: {x: 1.5, y: 30, z: 27.251986}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_00
+    m_role: 1
+    m_position: {x: 8.272291, y: 2.625, z: 36.361458}
+    m_rotation: {x: -0, y: 11.309933, z: 0}
+    m_size: {x: 7.777778, y: 1.25, z: 11.245467}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_01
+    m_role: 1
+    m_position: {x: 9.5625, y: 2.75, z: 42.8125}
+    m_rotation: {x: -0, y: 11.309933, z: 0}
+    m_size: {x: 7.777778, y: 1.5, z: 1.9121323}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_02
+    m_role: 1
+    m_position: {x: 9.9375, y: 2.875, z: 44.6875}
+    m_rotation: {x: -0, y: 11.309933, z: 0}
+    m_size: {x: 7.777778, y: 1.75, z: 1.9121323}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_03
+    m_role: 1
+    m_position: {x: 10.3125, y: 3, z: 46.5625}
+    m_rotation: {x: -0, y: 11.309933, z: 0}
+    m_size: {x: 7.777778, y: 2, z: 1.9121323}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_04
+    m_role: 1
+    m_position: {x: 10.6875, y: 3.125, z: 48.4375}
+    m_rotation: {x: -0, y: 11.309933, z: 0}
+    m_size: {x: 7.777778, y: 2.25, z: 1.9121323}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_05
+    m_role: 1
+    m_position: {x: 11.0625, y: 3.25, z: 50.3125}
+    m_rotation: {x: -0, y: 11.309933, z: 0}
+    m_size: {x: 7.777778, y: 2.5, z: 1.9121323}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_06
+    m_role: 1
+    m_position: {x: 11.4375, y: 3.375, z: 52.1875}
+    m_rotation: {x: -0, y: 11.309933, z: 0}
+    m_size: {x: 7.777778, y: 2.75, z: 1.9121323}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_Step_07
+    m_role: 1
+    m_position: {x: 12.727709, y: 3.5, z: 58.638542}
+    m_rotation: {x: -0, y: 11.309937, z: 0}
+    m_size: {x: 7.777778, y: 3, z: 11.245463}
+    m_purpose: Final climb, opens onto the graveyard
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_MountainWall
+    m_role: 2
+    m_position: {x: 15.008455, y: 7.4939475, z: 46.38849}
+    m_rotation: {x: 356.62994, y: 11.309934, z: -0.000000026726646}
+    m_size: {x: 1.5, y: 9, z: 34.02256}
+    m_purpose: Cliff face sheltering the path
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_DropLip
+    m_role: 3
+    m_position: {x: 6.537622, y: 4.1663785, z: 48.282486}
+    m_rotation: {x: 356.62994, y: 11.309934, z: -0.000000026726646}
+    m_size: {x: 0.3, y: 2.3333335, z: 34.02256}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Base
+    m_objectName: PB_A01_EnemyTwoToGraveyard_CliffFace
+    m_role: 2
+    m_position: {x: 5.7318916, y: -10.97406, z: 49.35285}
+    m_rotation: {x: 356.62994, y: 11.309934, z: -0.000000026726646}
+    m_size: {x: 1.5, y: 30, z: 34.02256}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Props
+    m_objectName: PB_A01_Prop_DeadTree_00
+    m_role: 4
+    m_position: {x: 4.6, y: 0, z: 6}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.6, y: 6, z: 0.6}
+    m_purpose: Dead tree silhouette
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Props
+    m_objectName: PB_A01_Prop_DeadTree_01
+    m_role: 4
+    m_position: {x: 2.4, y: 1.5, z: 27}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.6, y: 5, z: 0.6}
+    m_purpose: Dead tree silhouette
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Props
+    m_objectName: PB_A01_Prop_DeadTree_02
+    m_role: 4
+    m_position: {x: 10.8, y: 3, z: 46}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.6, y: 5, z: 0.6}
+    m_purpose: Dead tree silhouette
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Props
+    m_objectName: PB_A01_Prop_Boulder_00
+    m_role: 4
+    m_position: {x: -4.4, y: 0, z: 17}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.6, y: 1.2, z: 1.6}
+    m_purpose: Boulder cover
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Props
+    m_objectName: PB_A01_Prop_Boulder_01
+    m_role: 4
+    m_position: {x: 11.5, y: 1.5, z: 36}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.9, y: 1.4, z: 1.9}
+    m_purpose: Boulder cover
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Props
+    m_objectName: PB_A01_Prop_BrokenCart_00
+    m_role: 4
+    m_position: {x: -1.2, y: 0, z: 9}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.8, y: 1, z: 2.6}
+    m_purpose: Broken cart waymark
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Effects
+    m_objectName: PB_A01_CliffPath_FogVolume
+    m_role: 6
+    m_position: {x: 0, y: 4, z: 28}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 40, y: 20, z: 70}
+    m_purpose: Damp valley fog, hides the graveyard until the corner
+  - m_regionIndex: 0
+    m_area: A01_CliffPath
+    m_slice: Effects
+    m_objectName: PB_A01_CliffPath_LightPlaceholder_44
+    m_role: 5
+    m_position: {x: 6, y: 4, z: 32}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: Warm rim light on the corner vista
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_MainFloor
+    m_role: 1
+    m_position: {x: 16, y: 4.5, z: 74}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 46, y: 1, z: 40}
+    m_purpose: 'Primary combat floor: two patrols plus a raised archer'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Wall_W
+    m_role: 2
+    m_position: {x: -7, y: 8, z: 74}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 6, z: 40}
+    m_purpose: West perimeter
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Wall_E
+    m_role: 2
+    m_position: {x: 39, y: 8, z: 74}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 6, z: 40}
+    m_purpose: East perimeter
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Wall_NA
+    m_role: 2
+    m_position: {x: 0.5, y: 8, z: 54}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 15, y: 6, z: 1.5}
+    m_purpose: North wall, west of the entrance gap
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Wall_NB
+    m_role: 2
+    m_position: {x: 27.5, y: 8, z: 54}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 23, y: 6, z: 1.5}
+    m_purpose: North wall, east of the entrance gap
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Wall_SA
+    m_role: 2
+    m_position: {x: -3.5, y: 8, z: 94}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 7, y: 6, z: 1.5}
+    m_purpose: South wall, west of the gate approach gap
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Wall_SB
+    m_role: 2
+    m_position: {x: 15, y: 8, z: 94}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 10, y: 6, z: 1.5}
+    m_purpose: South wall between the two gateways
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Wall_SC
+    m_role: 2
+    m_position: {x: 32.5, y: 8, z: 94}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 13, y: 6, z: 1.5}
+    m_purpose: South wall, east of the tower path gap
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherPlatform
+    m_role: 1
+    m_position: {x: 25, y: 6.5, z: 78}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 10, y: 3, z: 8}
+    m_purpose: Raised platform for the archer, y 8
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_00
+    m_role: 1
+    m_position: {x: 25, y: 4.625, z: 63.666664}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 1.25, z: 6}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_01
+    m_role: 1
+    m_position: {x: 25, y: 4.75, z: 67}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 1.5, z: 0.66667175}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_02
+    m_role: 1
+    m_position: {x: 25, y: 4.875, z: 67.66667}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 1.75, z: 0.6666641}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_03
+    m_role: 1
+    m_position: {x: 25, y: 5, z: 68.33333}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 2, z: 0.6666641}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_04
+    m_role: 1
+    m_position: {x: 25, y: 5.125, z: 69}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 2.25, z: 0.66667175}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_05
+    m_role: 1
+    m_position: {x: 25, y: 5.25, z: 69.66667}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 2.5, z: 0.6666641}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_06
+    m_role: 1
+    m_position: {x: 25, y: 5.375, z: 70.33333}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 2.75, z: 0.6666641}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_07
+    m_role: 1
+    m_position: {x: 25, y: 5.5, z: 71}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 3, z: 0.66667175}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_08
+    m_role: 1
+    m_position: {x: 25, y: 5.625, z: 71.66667}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 3.25, z: 0.6666641}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_09
+    m_role: 1
+    m_position: {x: 25, y: 5.75, z: 72.33333}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 3.5, z: 0.6666641}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_10
+    m_role: 1
+    m_position: {x: 25, y: 5.875, z: 73}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 3.75, z: 0.66667175}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherStair_Step_11
+    m_role: 1
+    m_position: {x: 25, y: 6, z: 76.333336}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 4, z: 6}
+    m_purpose: Climb to the archer platform
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherParapet_N
+    m_role: 3
+    m_position: {x: 25, y: 8.611111, z: 82}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 10, y: 1.2222223, z: 0.3}
+    m_purpose: Archer platform parapet
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherParapet_E
+    m_role: 3
+    m_position: {x: 30, y: 8.611111, z: 78}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 1.2222223, z: 8}
+    m_purpose: Archer platform parapet
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherParapet_W
+    m_role: 3
+    m_position: {x: 20, y: 8.611111, z: 78}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 1.2222223, z: 8}
+    m_purpose: Archer platform parapet
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherParapet_SW
+    m_role: 3
+    m_position: {x: 21.238888, y: 8.611111, z: 74}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 2.4777775, y: 1.2222223, z: 0.3}
+    m_purpose: Archer platform parapet
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_ArcherParapet_SE
+    m_role: 3
+    m_position: {x: 28.761112, y: 8.611111, z: 74}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 2.4777775, y: 1.2222223, z: 0.3}
+    m_purpose: Archer platform parapet
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Cover_00
+    m_role: 3
+    m_position: {x: 10, y: 5.666667, z: 76}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 4, y: 1.3333335, z: 0.5}
+    m_purpose: 'Chest-high cover: breaks sightlines, keeps the fight readable'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Cover_01
+    m_role: 3
+    m_position: {x: 18, y: 5.666667, z: 68}
+    m_rotation: {x: 0, y: 30, z: 0}
+    m_size: {x: 5, y: 1.3333335, z: 0.5}
+    m_purpose: 'Chest-high cover: breaks sightlines, keeps the fight readable'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Cover_02
+    m_role: 3
+    m_position: {x: 22, y: 5.666667, z: 72}
+    m_rotation: {x: 0, y: 90, z: 0}
+    m_size: {x: 4, y: 1.3333335, z: 0.5}
+    m_purpose: 'Chest-high cover: breaks sightlines, keeps the fight readable'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_Cover_03
+    m_role: 3
+    m_position: {x: 14, y: 5.666667, z: 80}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 4.5, y: 1.3333335, z: 0.5}
+    m_purpose: 'Chest-high cover: breaks sightlines, keeps the fight readable'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_00
+    m_role: 1
+    m_position: {x: 5, y: 4.625, z: 91.3275}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 1.25, z: 8.095001}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_01
+    m_role: 1
+    m_position: {x: 5, y: 4.75, z: 96.0625}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 1.5, z: 1.375}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_02
+    m_role: 1
+    m_position: {x: 5, y: 4.875, z: 97.4375}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 1.75, z: 1.375}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_03
+    m_role: 1
+    m_position: {x: 5, y: 5, z: 98.8125}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 2, z: 1.375}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_04
+    m_role: 1
+    m_position: {x: 5, y: 5.125, z: 100.1875}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 2.25, z: 1.375}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_05
+    m_role: 1
+    m_position: {x: 5, y: 5.25, z: 101.5625}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 2.5, z: 1.375}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_06
+    m_role: 1
+    m_position: {x: 5, y: 5.375, z: 102.9375}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 2.75, z: 1.375}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_Step_07
+    m_role: 1
+    m_position: {x: 5, y: 5.5, z: 107.6725}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 3, z: 8.095001}
+    m_purpose: Funnels the player toward the closed gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_MountainWall
+    m_role: 2
+    m_position: {x: 8.55, y: 9.488339, z: 99.21454}
+    m_rotation: {x: 355.32175, y: 0, z: 0}
+    m_size: {x: 1.5, y: 9, z: 24.521698}
+    m_purpose: Cliff face sheltering the path
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_DropLip
+    m_role: 3
+    m_position: {x: 2.05, y: 6.1661115, z: 99.486404}
+    m_rotation: {x: 355.32175, y: 0, z: 0}
+    m_size: {x: 0.3, y: 2.3333335, z: 24.521698}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_GateApproach_CliffFace
+    m_role: 2
+    m_position: {x: 1.05, y: -8.950026, z: 100.723404}
+    m_rotation: {x: 355.32175, y: 0, z: 0}
+    m_size: {x: 1.5, y: 30, z: 24.521698}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_TowerSidePath_Road
+    m_role: 1
+    m_position: {x: 23, y: 4.5, z: 97}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 5.6, y: 1, z: 19.440002}
+    m_purpose: Hidden side path toward the Gate Tower
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_TowerSidePath_MountainWall
+    m_role: 2
+    m_position: {x: 26.55, y: 8.5, z: 97}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 9, z: 19.440002}
+    m_purpose: Cliff face sheltering the path
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_TowerSidePath_DropLip
+    m_role: 3
+    m_position: {x: 20.05, y: 5.166667, z: 97}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 2.3333335, z: 19.440002}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Base
+    m_objectName: PB_A02_TowerSidePath_CliffFace
+    m_role: 2
+    m_position: {x: 19.05, y: -10, z: 97}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 30, z: 19.440002}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_00
+    m_role: 4
+    m_position: {x: -4, y: 5.8, z: 60}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_01
+    m_role: 4
+    m_position: {x: -1, y: 5.8, z: 60}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_02
+    m_role: 4
+    m_position: {x: 2, y: 5.8, z: 60}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_03
+    m_role: 4
+    m_position: {x: 5, y: 5.8, z: 60}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_04
+    m_role: 4
+    m_position: {x: 8, y: 5.8, z: 60}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_05
+    m_role: 4
+    m_position: {x: -4, y: 5.8, z: 64}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_06
+    m_role: 4
+    m_position: {x: -1, y: 5.8, z: 64}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_07
+    m_role: 4
+    m_position: {x: 2, y: 5.8, z: 64}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_08
+    m_role: 4
+    m_position: {x: 5, y: 5.8, z: 64}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_09
+    m_role: 4
+    m_position: {x: 8, y: 5.8, z: 64}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_10
+    m_role: 4
+    m_position: {x: -4, y: 5.8, z: 68}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_11
+    m_role: 4
+    m_position: {x: -1, y: 5.8, z: 68}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_12
+    m_role: 4
+    m_position: {x: 2, y: 5.8, z: 68}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_13
+    m_role: 4
+    m_position: {x: 5, y: 5.8, z: 68}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_14
+    m_role: 4
+    m_position: {x: 8, y: 5.8, z: 68}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_15
+    m_role: 4
+    m_position: {x: -4, y: 5.8, z: 86}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_16
+    m_role: 4
+    m_position: {x: -1, y: 5.8, z: 86}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_17
+    m_role: 4
+    m_position: {x: 2, y: 5.8, z: 86}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_18
+    m_role: 4
+    m_position: {x: 5, y: 5.8, z: 86}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_19
+    m_role: 4
+    m_position: {x: 8, y: 5.8, z: 86}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_20
+    m_role: 4
+    m_position: {x: -4, y: 5.8, z: 90}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_21
+    m_role: 4
+    m_position: {x: -1, y: 5.8, z: 90}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_22
+    m_role: 4
+    m_position: {x: 2, y: 5.8, z: 90}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_23
+    m_role: 4
+    m_position: {x: 5, y: 5.8, z: 90}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Grave_24
+    m_role: 4
+    m_position: {x: 8, y: 5.8, z: 90}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.6, z: 0.25}
+    m_purpose: 'Gravestone: partial cover and sightline break'
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Alcove_00
+    m_role: 4
+    m_position: {x: -1, y: 5.9, z: 73}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.8, z: 0.3}
+    m_purpose: Dense stones hiding the loot alcove
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Alcove_01
+    m_role: 4
+    m_position: {x: -0.100000024, y: 5.9, z: 75.4}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.8, z: 0.3}
+    m_purpose: Dense stones hiding the loot alcove
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Alcove_02
+    m_role: 4
+    m_position: {x: 0.79999995, y: 5.9, z: 73}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.8, z: 0.3}
+    m_purpose: Dense stones hiding the loot alcove
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Alcove_03
+    m_role: 4
+    m_position: {x: 1.6999999, y: 5.9, z: 75.4}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.8, z: 0.3}
+    m_purpose: Dense stones hiding the loot alcove
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Alcove_04
+    m_role: 4
+    m_position: {x: 2.6, y: 5.9, z: 73}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 1.8, z: 0.3}
+    m_purpose: Dense stones hiding the loot alcove
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_BrokenColumn_00
+    m_role: 4
+    m_position: {x: 30, y: 6.4, z: 66}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.9, y: 2.8, z: 0.9}
+    m_purpose: Broken column landmark by the east wall
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Statue_00
+    m_role: 4
+    m_position: {x: 16, y: 6.6, z: 84}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.4, y: 3.2, z: 1.4}
+    m_purpose: Weathered statue facing the gate
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Props
+    m_objectName: PB_A02_Prop_Cart_00
+    m_role: 4
+    m_position: {x: 34, y: 5.7, z: 88}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 2.2, y: 1.4, z: 3.4}
+    m_purpose: Collapsed cart near the tower path
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Effects
+    m_objectName: PB_A02_Graveyard_FogVolume
+    m_role: 6
+    m_position: {x: 16, y: 5, z: 80}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 50, y: 14, z: 46}
+    m_purpose: Low ground fog across the graves
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Effects
+    m_objectName: PB_A02_Graveyard_LightPlaceholder_124
+    m_role: 5
+    m_position: {x: 16, y: 6, z: 72}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: Cold moonlight on the central fight
+  - m_regionIndex: 0
+    m_area: A02_Graveyard
+    m_slice: Effects
+    m_objectName: PB_A02_Graveyard_LightPlaceholder_125
+    m_role: 5
+    m_position: {x: 2, y: 6, z: 75}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: Faint warm light marking the loot branch
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Base
+    m_objectName: PB_A03_GateLanding
+    m_role: 1
+    m_position: {x: 3, y: 6.5, z: 110.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 22, y: 1, z: 11}
+    m_purpose: Turnaround in front of the gate
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Base
+    m_objectName: PB_A03_Wall_W
+    m_role: 2
+    m_position: {x: -9.991667, y: 13.666667, z: 108}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 13.316666, y: 13.333334, z: 2.2}
+    m_purpose: Curtain wall, west of the gate
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Base
+    m_objectName: PB_A03_Wall_E
+    m_role: 2
+    m_position: {x: 9.991667, y: 13.666667, z: 108}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 13.316666, y: 13.333334, z: 2.2}
+    m_purpose: Curtain wall, east of the gate
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Base
+    m_objectName: PB_A03_Return_W
+    m_role: 2
+    m_position: {x: -8, y: 11, z: 104}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 8, z: 4}
+    m_purpose: Return wall framing the approach
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Base
+    m_objectName: PB_A03_Return_E
+    m_role: 2
+    m_position: {x: 14, y: 11, z: 104}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 8, z: 4}
+    m_purpose: Return wall framing the approach
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Base
+    m_objectName: PB_A03_InnerLanding
+    m_role: 1
+    m_position: {x: 0, y: 6.5, z: 112}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 16, y: 1, z: 8}
+    m_purpose: Threshold on the monastery side
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Props
+    m_objectName: PB_A03_Prop_Rubble_00
+    m_role: 4
+    m_position: {x: -6, y: 7.4, z: 106}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.6, y: 0.8, z: 1.2}
+    m_purpose: Rubble at the gate foot
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Props
+    m_objectName: PB_A03_Prop_Rubble_01
+    m_role: 4
+    m_position: {x: 6.4, y: 7.3, z: 106.4}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.2, y: 0.6, z: 1.4}
+    m_purpose: Rubble at the gate foot
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Effects
+    m_objectName: PB_A03_MainGate_FogVolume
+    m_role: 6
+    m_position: {x: 0, y: 8, z: 112}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 30, y: 16, z: 16}
+    m_purpose: Fog spilling from the monastery interior
+  - m_regionIndex: 0
+    m_area: A03_MainGate
+    m_slice: Effects
+    m_objectName: PB_A03_MainGate_LightPlaceholder_135
+    m_role: 5
+    m_position: {x: 0, y: 12, z: 112}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: Warm light leaking through the gate
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_TowerBase
+    m_role: 1
+    m_position: {x: 24, y: 8, z: 108}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 16, y: 6, z: 16}
+    m_purpose: Tower mass, ground y 5 to floor y 11
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_TowerShaft
+    m_role: 1
+    m_position: {x: 26, y: 14, z: 110}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 8, y: 6, z: 8}
+    m_purpose: Upper shaft, floor y 11 to lever level y 17
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_FloorParapet_N
+    m_role: 3
+    m_position: {x: 24, y: 11.611111, z: 116}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 16, y: 1.2222223, z: 0.3}
+    m_purpose: Tower floor parapet
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_FloorParapet_W
+    m_role: 3
+    m_position: {x: 16, y: 11.611111, z: 108}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 1.2222223, z: 16}
+    m_purpose: Tower floor parapet
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_FloorParapet_E
+    m_role: 3
+    m_position: {x: 32, y: 11.611111, z: 108}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 1.2222223, z: 16}
+    m_purpose: Tower floor parapet
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_FloorParapet_S
+    m_role: 3
+    m_position: {x: 26.2, y: 11.611111, z: 100}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 11.6, y: 1.2222223, z: 0.3}
+    m_purpose: Tower floor parapet, gated for the stair landing
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_UpperParapet_N
+    m_role: 3
+    m_position: {x: 26, y: 17.61111, z: 114}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 8, y: 1.2222223, z: 0.3}
+    m_purpose: Lever platform parapet
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_UpperParapet_S
+    m_role: 3
+    m_position: {x: 26, y: 17.61111, z: 106}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 8, y: 1.2222223, z: 0.3}
+    m_purpose: Lever platform parapet
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_UpperParapet_E
+    m_role: 3
+    m_position: {x: 30, y: 17.61111, z: 110}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 1.2222223, z: 8}
+    m_purpose: Lever platform parapet
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_UpperParapet_W
+    m_role: 3
+    m_position: {x: 22, y: 17.61111, z: 109}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.3, y: 1.2222223, z: 6}
+    m_purpose: Lever platform parapet, gated for the bridge
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_00
+    m_role: 1
+    m_position: {x: 18, y: 4.625, z: 83.625}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 1.25, z: 3.9166718}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_01
+    m_role: 1
+    m_position: {x: 18, y: 4.75, z: 85.875}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 1.5, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_02
+    m_role: 1
+    m_position: {x: 18, y: 4.875, z: 86.45833}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 1.75, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_03
+    m_role: 1
+    m_position: {x: 18, y: 5, z: 87.04167}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_04
+    m_role: 1
+    m_position: {x: 18, y: 5.125, z: 87.625}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2.25, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_05
+    m_role: 1
+    m_position: {x: 18, y: 5.25, z: 88.20833}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2.5, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_06
+    m_role: 1
+    m_position: {x: 18, y: 5.375, z: 88.79167}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2.75, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_07
+    m_role: 1
+    m_position: {x: 18, y: 5.5, z: 89.375}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_08
+    m_role: 1
+    m_position: {x: 18, y: 5.625, z: 89.95833}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3.25, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_09
+    m_role: 1
+    m_position: {x: 18, y: 5.75, z: 90.54167}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3.5, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_10
+    m_role: 1
+    m_position: {x: 18, y: 5.875, z: 91.125}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3.75, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_11
+    m_role: 1
+    m_position: {x: 18, y: 6, z: 91.70833}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_12
+    m_role: 1
+    m_position: {x: 18, y: 6.125, z: 92.29167}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4.25, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_13
+    m_role: 1
+    m_position: {x: 18, y: 6.25, z: 92.875}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4.5, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_14
+    m_role: 1
+    m_position: {x: 18, y: 6.375, z: 93.45833}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4.75, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_15
+    m_role: 1
+    m_position: {x: 18, y: 6.5, z: 94.04167}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_16
+    m_role: 1
+    m_position: {x: 18, y: 6.625, z: 94.625}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5.25, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_17
+    m_role: 1
+    m_position: {x: 18, y: 6.75, z: 95.20833}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5.5, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_18
+    m_role: 1
+    m_position: {x: 18, y: 6.875, z: 95.79167}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5.75, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_19
+    m_role: 1
+    m_position: {x: 18, y: 7, z: 96.375}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_20
+    m_role: 1
+    m_position: {x: 18, y: 7.125, z: 96.95833}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6.25, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_21
+    m_role: 1
+    m_position: {x: 18, y: 7.25, z: 97.54167}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6.5, z: 0.5833359}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_22
+    m_role: 1
+    m_position: {x: 18, y: 7.375, z: 98.125}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6.75, z: 0.58332825}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_Step_23
+    m_role: 1
+    m_position: {x: 18, y: 7.5, z: 100.375}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 7, z: 3.9166718}
+    m_purpose: 'First flight: graveyard level up to the tower floor'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_DropLip
+    m_role: 3
+    m_position: {x: 16.461111, y: 8.160058, z: 91.95353}
+    m_rotation: {x: 343.8108, y: 0, z: 0}
+    m_size: {x: 0.3, y: 2.3333335, z: 21.520021}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_GroundToFloor_CliffFace
+    m_role: 2
+    m_position: {x: 15.461111, y: -6.4051933, z: 96.18215}
+    m_rotation: {x: 343.8108, y: 0, z: 0}
+    m_size: {x: 1.5, y: 30, z: 21.520021}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_FloorLanding
+    m_role: 1
+    m_position: {x: 18, y: 10.5, z: 99.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 4, y: 1, z: 2}
+    m_purpose: Landing between the first flight and the tower floor
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_00
+    m_role: 1
+    m_position: {x: 19, y: 10.625, z: 100.58333}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 1.25, z: 3.8333359}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_01
+    m_role: 1
+    m_position: {x: 19, y: 10.75, z: 102.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 1.5, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_02
+    m_role: 1
+    m_position: {x: 19, y: 10.875, z: 103.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 1.75, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_03
+    m_role: 1
+    m_position: {x: 19, y: 11, z: 103.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_04
+    m_role: 1
+    m_position: {x: 19, y: 11.125, z: 104.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2.25, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_05
+    m_role: 1
+    m_position: {x: 19, y: 11.25, z: 104.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2.5, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_06
+    m_role: 1
+    m_position: {x: 19, y: 11.375, z: 105.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 2.75, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_07
+    m_role: 1
+    m_position: {x: 19, y: 11.5, z: 105.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_08
+    m_role: 1
+    m_position: {x: 19, y: 11.625, z: 106.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3.25, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_09
+    m_role: 1
+    m_position: {x: 19, y: 11.75, z: 106.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3.5, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_10
+    m_role: 1
+    m_position: {x: 19, y: 11.875, z: 107.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 3.75, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_11
+    m_role: 1
+    m_position: {x: 19, y: 12, z: 107.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_12
+    m_role: 1
+    m_position: {x: 19, y: 12.125, z: 108.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4.25, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_13
+    m_role: 1
+    m_position: {x: 19, y: 12.25, z: 108.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4.5, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_14
+    m_role: 1
+    m_position: {x: 19, y: 12.375, z: 109.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 4.75, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_15
+    m_role: 1
+    m_position: {x: 19, y: 12.5, z: 109.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_16
+    m_role: 1
+    m_position: {x: 19, y: 12.625, z: 110.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5.25, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_17
+    m_role: 1
+    m_position: {x: 19, y: 12.75, z: 110.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5.5, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_18
+    m_role: 1
+    m_position: {x: 19, y: 12.875, z: 111.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 5.75, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_19
+    m_role: 1
+    m_position: {x: 19, y: 13, z: 111.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_20
+    m_role: 1
+    m_position: {x: 19, y: 13.125, z: 112.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6.25, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_21
+    m_role: 1
+    m_position: {x: 19, y: 13.25, z: 112.75}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6.5, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_22
+    m_role: 1
+    m_position: {x: 19, y: 13.375, z: 113.25}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 6.75, z: 0.5}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_Step_23
+    m_role: 1
+    m_position: {x: 19, y: 13.5, z: 115.41667}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 2.777778, y: 7, z: 3.8333359}
+    m_purpose: 'Second flight: tower floor up to the lever'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_DropLip
+    m_role: 3
+    m_position: {x: 17.461111, y: 14.158671, z: 107.949}
+    m_rotation: {x: 342.18112, y: 0, z: 0}
+    m_size: {x: 0.3, y: 2.3333335, z: 19.60726}
+    m_purpose: 'Low lip: see over the drop, cannot walk off'
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_Stair_FloorToUpper_CliffFace
+    m_role: 2
+    m_position: {x: 16.461111, y: -0.2804289, z: 112.59013}
+    m_rotation: {x: 342.18112, y: 0, z: 0}
+    m_size: {x: 1.5, y: 30, z: 19.60726}
+    m_purpose: Cliff face below the drop lip
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_UpperBridge
+    m_role: 1
+    m_position: {x: 20.5, y: 16.5, z: 114}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 3, y: 1, z: 3}
+    m_purpose: Bridge from the second flight onto the lever platform
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Base
+    m_objectName: PB_A04_ShortcutDropPad
+    m_role: 1
+    m_position: {x: 14, y: 6.5, z: 112}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 6, y: 1, z: 8}
+    m_purpose: Shortcut drop pad, tower floor y 11 down to gate level y 7
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Props
+    m_objectName: PB_A04_Prop_Crate_00
+    m_role: 4
+    m_position: {x: 21, y: 11.5, z: 102}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 1, z: 1}
+    m_purpose: Crate near the second flight
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Props
+    m_objectName: PB_A04_Prop_Crate_01
+    m_role: 4
+    m_position: {x: 21.6, y: 11.5, z: 102.6}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 1, z: 1}
+    m_purpose: Stacked crate
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Props
+    m_objectName: PB_A04_Prop_Brazier_00
+    m_role: 4
+    m_position: {x: 26, y: 17.6, z: 110}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.8, y: 1.2, z: 0.8}
+    m_purpose: Brazier beside the lever
+  - m_regionIndex: 0
+    m_area: A04_GateTower
+    m_slice: Effects
+    m_objectName: PB_A04_GateTower_LightPlaceholder_204
+    m_role: 5
+    m_position: {x: 26, y: 18, z: 110}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: 'Brazier light: makes the lever readable from the stairs'
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_HallFloor
+    m_role: 1
+    m_position: {x: 0, y: 8.5, z: 125.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 20, y: 1, z: 31}
+    m_purpose: Entrance hall floor
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_00
+    m_role: 1
+    m_position: {x: 0, y: 6.625, z: 107.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 1.25, z: 9}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_01
+    m_role: 1
+    m_position: {x: 0, y: 6.75, z: 112.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 1.5, z: 1}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_02
+    m_role: 1
+    m_position: {x: 0, y: 6.875, z: 113.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 1.75, z: 1}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_03
+    m_role: 1
+    m_position: {x: 0, y: 7, z: 114.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 2, z: 1}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_04
+    m_role: 1
+    m_position: {x: 0, y: 7.125, z: 115.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 2.25, z: 1}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_05
+    m_role: 1
+    m_position: {x: 0, y: 7.25, z: 116.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 2.5, z: 1}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_06
+    m_role: 1
+    m_position: {x: 0, y: 7.375, z: 117.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 2.75, z: 1}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_EntryRamp_Step_07
+    m_role: 1
+    m_position: {x: 0, y: 7.5, z: 122.5}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 3, z: 9}
+    m_purpose: Narrow entry throat rising from the gate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Wall_W
+    m_role: 2
+    m_position: {x: -10, y: 13.444445, z: 125.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 8.888889, z: 31}
+    m_purpose: West hall wall
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Wall_E
+    m_role: 2
+    m_position: {x: 10, y: 13.444445, z: 125.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 8.888889, z: 31}
+    m_purpose: East hall wall
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Wall_NW
+    m_role: 2
+    m_position: {x: -6.666667, y: 13.444445, z: 110}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 6.6666665, y: 8.888889, z: 1.5}
+    m_purpose: North wall west of the gate opening
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Wall_NE
+    m_role: 2
+    m_position: {x: 6.666667, y: 13.444445, z: 110}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 6.6666665, y: 8.888889, z: 1.5}
+    m_purpose: North wall east of the gate opening
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Lintel_N
+    m_role: 2
+    m_position: {x: 0, y: 15.777779, z: 110}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 6.666667, y: 4.2222223, z: 1.5}
+    m_purpose: Lintel above the gate opening
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Wall_SW
+    m_role: 2
+    m_position: {x: -5.5, y: 13.444445, z: 141}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 9, y: 8.888889, z: 1.5}
+    m_purpose: South wall west of the cloister door
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Wall_SE
+    m_role: 2
+    m_position: {x: 5.5, y: 13.444445, z: 141}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 9, y: 8.888889, z: 1.5}
+    m_purpose: South wall east of the cloister door
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Lintel_S
+    m_role: 2
+    m_position: {x: 0, y: 15, z: 141}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 2, y: 5.777778, z: 1.5}
+    m_purpose: Lintel above the cloister door
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Ceiling
+    m_role: 2
+    m_position: {x: 0, y: 18.38889, z: 125.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 21.5, y: 1, z: 32.5}
+    m_purpose: Hall ceiling
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Column_00
+    m_role: 2
+    m_position: {x: -5, y: 13.444445, z: 120}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 8.888889, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Column_01
+    m_role: 2
+    m_position: {x: 5, y: 13.444445, z: 120}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 8.888889, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Column_02
+    m_role: 2
+    m_position: {x: -5, y: 13.444445, z: 131}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 8.888889, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_Column_03
+    m_role: 2
+    m_position: {x: 5, y: 13.444445, z: 131}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 8.888889, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_CloisterCorridor_Step_00
+    m_role: 1
+    m_position: {x: 0, y: 8.625, z: 139.02084}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 1.25, z: 6.7083282}
+    m_purpose: Short climb into the cloister
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_CloisterCorridor_Step_01
+    m_role: 1
+    m_position: {x: 0, y: 8.75, z: 143.0625}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 1.5, z: 1.375}
+    m_purpose: Short climb into the cloister
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_CloisterCorridor_Step_02
+    m_role: 1
+    m_position: {x: 0, y: 8.875, z: 144.4375}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 1.75, z: 1.375}
+    m_purpose: Short climb into the cloister
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Base
+    m_objectName: PB_R02A01_CloisterCorridor_Step_03
+    m_role: 1
+    m_position: {x: 0, y: 9, z: 148.47916}
+    m_rotation: {x: -0, y: 0, z: 0}
+    m_size: {x: 4.4444447, y: 2, z: 6.7083282}
+    m_purpose: Short climb into the cloister
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Props
+    m_objectName: PB_R02A01_Prop_Pew_00
+    m_role: 4
+    m_position: {x: -7, y: 9.5, z: 124}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 1, z: 3}
+    m_purpose: Toppled pew
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Props
+    m_objectName: PB_R02A01_Prop_Pew_01
+    m_role: 4
+    m_position: {x: 7, y: 9.5, z: 128}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 1, z: 3}
+    m_purpose: Toppled pew
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Props
+    m_objectName: PB_R02A01_Prop_Crate_00
+    m_role: 4
+    m_position: {x: -8, y: 9.6, z: 137}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.2, y: 1.2, z: 1.2}
+    m_purpose: Supply crate
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Effects
+    m_objectName: PB_A01_EntranceHall_FogVolume
+    m_role: 6
+    m_position: {x: 0, y: 13, z: 125.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 20, y: 9, z: 31}
+    m_purpose: Interior haze, thins toward the far end
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Effects
+    m_objectName: PB_A01_EntranceHall_LightPlaceholder_235
+    m_role: 5
+    m_position: {x: 0, y: 15, z: 119}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: 'Light shaft at the entry: pulls the player inside'
+  - m_regionIndex: 1
+    m_area: A01_EntranceHall
+    m_slice: Effects
+    m_objectName: PB_A01_EntranceHall_LightPlaceholder_236
+    m_role: 5
+    m_position: {x: 0, y: 14, z: 139}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: 'Light at the cloister door: confirms the way on'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_CloisterFloor
+    m_role: 1
+    m_position: {x: 0, y: 9.5, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 51, y: 1, z: 47}
+    m_purpose: Cloister floor, hub for every later branch
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Courtyard
+    m_role: 1
+    m_position: {x: 0, y: 9.5, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 22, y: 1, z: 20}
+    m_purpose: Open courtyard, 22 x 20
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Wall_W
+    m_role: 2
+    m_position: {x: -25.5, y: 12.777778, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 5.555556, z: 47}
+    m_purpose: West cloister wall
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Wall_E
+    m_role: 2
+    m_position: {x: 25.5, y: 12.777778, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.5, y: 5.555556, z: 47}
+    m_purpose: East cloister wall
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Wall_S
+    m_role: 2
+    m_position: {x: 0, y: 12.777778, z: 193.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 51, y: 5.555556, z: 1.5}
+    m_purpose: South cloister wall, sealed until R03
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Wall_NW
+    m_role: 2
+    m_position: {x: -13.25, y: 12.777778, z: 146.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 24.5, y: 5.555556, z: 1.5}
+    m_purpose: North wall west of the hall door
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Wall_NE
+    m_role: 2
+    m_position: {x: 13.25, y: 12.777778, z: 146.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 24.5, y: 5.555556, z: 1.5}
+    m_purpose: North wall east of the hall door
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Lintel_N
+    m_role: 2
+    m_position: {x: 0, y: 14.333333, z: 146.5}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 2, y: 2.4444447, z: 1.5}
+    m_purpose: Lintel above the hall door
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_00
+    m_role: 2
+    m_position: {x: -11, y: 12.777778, z: 160}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_01
+    m_role: 2
+    m_position: {x: -11, y: 12.777778, z: 180}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_02
+    m_role: 2
+    m_position: {x: -5.5, y: 12.777778, z: 160}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_03
+    m_role: 2
+    m_position: {x: -5.5, y: 12.777778, z: 180}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_04
+    m_role: 2
+    m_position: {x: 0, y: 12.777778, z: 160}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_05
+    m_role: 2
+    m_position: {x: 0, y: 12.777778, z: 180}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_06
+    m_role: 2
+    m_position: {x: 5.5, y: 12.777778, z: 160}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_07
+    m_role: 2
+    m_position: {x: 5.5, y: 12.777778, z: 180}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_08
+    m_role: 2
+    m_position: {x: 11, y: 12.777778, z: 160}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_09
+    m_role: 2
+    m_position: {x: 11, y: 12.777778, z: 180}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_10
+    m_role: 2
+    m_position: {x: -11, y: 12.777778, z: 165}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_11
+    m_role: 2
+    m_position: {x: 11, y: 12.777778, z: 165}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_12
+    m_role: 2
+    m_position: {x: -11, y: 12.777778, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_13
+    m_role: 2
+    m_position: {x: 11, y: 12.777778, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_14
+    m_role: 2
+    m_position: {x: -11, y: 12.777778, z: 175}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Column_15
+    m_role: 2
+    m_position: {x: 11, y: 12.777778, z: 175}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1, y: 5.5555553, z: 1}
+    m_purpose: 'Column: scale reference and camera collision test'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Roof_W
+    m_role: 2
+    m_position: {x: -7.25, y: 16.055555, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 36.5, y: 1, z: 47}
+    m_purpose: West ambulatory roof
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Roof_E
+    m_role: 2
+    m_position: {x: 18.25, y: 16.055555, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 14.5, y: 1, z: 47}
+    m_purpose: East ambulatory roof
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Roof_N
+    m_role: 2
+    m_position: {x: 0, y: 16.055555, z: 153.25}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 22, y: 1, z: 13.5}
+    m_purpose: North ambulatory roof
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Base
+    m_objectName: PB_R02A02_Roof_S
+    m_role: 2
+    m_position: {x: 0, y: 16.055555, z: 186.75}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 22, y: 1, z: 13.5}
+    m_purpose: South ambulatory roof
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Props
+    m_objectName: PB_R02A02_Prop_Well_00
+    m_role: 4
+    m_position: {x: 0, y: 10.5, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 2.4, y: 1, z: 2.4}
+    m_purpose: 'Dry well: the courtyard centrepiece'
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Props
+    m_objectName: PB_R02A02_Prop_BrokenColumn_00
+    m_role: 4
+    m_position: {x: -6, y: 10.9, z: 164}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.8, y: 1.8, z: 0.8}
+    m_purpose: Fallen column
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Props
+    m_objectName: PB_R02A02_Prop_Statue_00
+    m_role: 4
+    m_position: {x: 6, y: 11.7, z: 176}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 1.2, y: 3.4, z: 1.2}
+    m_purpose: Saint statue
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Effects
+    m_objectName: PB_A02_Cloister_FogVolume
+    m_role: 6
+    m_position: {x: 0, y: 13, z: 170}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 48, y: 12, z: 44}
+    m_purpose: Still courtyard air
+  - m_regionIndex: 1
+    m_area: A02_Cloister
+    m_slice: Effects
+    m_objectName: PB_A02_Cloister_LightPlaceholder_269
+    m_role: 5
+    m_position: {x: 0, y: 13, z: 158}
+    m_rotation: {x: 0, y: 0, z: 0}
+    m_size: {x: 0.5, y: 0.5, z: 0.5}
+    m_purpose: Checkpoint light beacon, visible from the hall door

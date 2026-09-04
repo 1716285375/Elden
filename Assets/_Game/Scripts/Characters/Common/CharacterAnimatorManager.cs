@@ -267,7 +267,7 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Applies unsnapped locomotion values immediately for replicated AI blend trees.
+        /// Applies locomotion values immediately when a caller explicitly needs a hard cut.
         /// </summary>
         public void SetAnimatorMovementParameters(
             float horizontalValue,

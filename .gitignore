@@ -120,6 +120,7 @@ InitTestScene*.unity*
 .agents
 .codebuddy
 .agent
+.kilocode
 
 # Local code intelligence indexes
 .codegraph/

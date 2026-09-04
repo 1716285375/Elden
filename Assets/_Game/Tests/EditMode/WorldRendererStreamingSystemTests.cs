@@ -14,21 +14,20 @@ namespace ZZ.Tests
     /// <summary>Focused EP151-152 Renderer/Collider decoupling validation.</summary>
     public static class WorldRendererStreamingSystemTests
     {
+        private const int k_ExpectedWorldSliceSceneCount = 32;
+
         [Test]
         public static void RendererVisibilityDoesNotDisableColliderOrGameObject()
         {
-            Scene scene = EditorSceneManager.NewScene(
-                NewSceneSetup.EmptyScene,
-                NewSceneMode.Additive);
+            GameObject managerObject = null;
+            GameObject geometry = null;
             try
             {
-                GameObject managerObject = new("Renderer Manager");
-                SceneManager.MoveGameObjectToScene(managerObject, scene);
+                managerObject = new GameObject("Renderer Manager");
                 Component rendererManager = managerObject.AddComponent(
                     GetRuntimeType("ZZ.WorldLocationRendererManager"));
-                GameObject geometry = GameObject.CreatePrimitive(
+                geometry = GameObject.CreatePrimitive(
                     PrimitiveType.Cube);
-                SceneManager.MoveGameObjectToScene(geometry, scene);
 
                 Invoke(rendererManager, "RefreshSceneObjects");
                 Invoke(rendererManager, "ToggleAllMeshRenderers", false);
@@ -39,26 +38,24 @@ namespace ZZ.Tests
             }
             finally
             {
-                EditorSceneManager.CloseScene(scene, true);
+                UnityEngine.Object.DestroyImmediate(geometry);
+                UnityEngine.Object.DestroyImmediate(managerObject);
             }
         }
 
         [Test]
         public static void SpawnerSceneRejectsRootObjectDisabling()
         {
-            Scene scene = EditorSceneManager.NewScene(
-                NewSceneSetup.EmptyScene,
-                NewSceneMode.Additive);
+            GameObject managerObject = null;
+            GameObject networkSpawnerRoot = null;
             try
             {
-                GameObject managerObject = new("Renderer Manager");
-                SceneManager.MoveGameObjectToScene(managerObject, scene);
+                managerObject = new GameObject("Renderer Manager");
                 Component rendererManager = managerObject.AddComponent(
                     GetRuntimeType("ZZ.WorldLocationRendererManager"));
                 Invoke(rendererManager, "ConfigureScene", -1, false);
-                GameObject networkSpawnerRoot = GameObject.CreatePrimitive(
+                networkSpawnerRoot = GameObject.CreatePrimitive(
                     PrimitiveType.Cube);
-                SceneManager.MoveGameObjectToScene(networkSpawnerRoot, scene);
 
                 Invoke(rendererManager, "PrepareForGameMode");
 
@@ -69,7 +66,8 @@ namespace ZZ.Tests
             }
             finally
             {
-                EditorSceneManager.CloseScene(scene, true);
+                UnityEngine.Object.DestroyImmediate(networkSpawnerRoot);
+                UnityEngine.Object.DestroyImmediate(managerObject);
             }
         }
 
@@ -85,7 +83,7 @@ namespace ZZ.Tests
                     "GetBuildIndexFromSceneID",
                     BindingFlags.Public | BindingFlags.Static);
 
-            Assert.That(sceneIDs, Has.Count.EqualTo(20));
+            Assert.That(sceneIDs, Has.Count.EqualTo(k_ExpectedWorldSliceSceneCount));
             Assert.That(buildIndexMethod, Is.Not.Null);
             foreach (string sceneID in sceneIDs)
             {
@@ -100,9 +98,9 @@ namespace ZZ.Tests
         public static void LocalRendererRefreshUsesLoadCompleteAndCancelsOldWork()
         {
             string worldSceneManagerSource = ReadAssetText(
-                "Assets/_Game/Scripts/World/Managers/WorldSceneManager.cs");
+                "Assets/_Game/Scripts/World/Streaming/WorldSceneManager.cs");
             string locationManagerSource = ReadAssetText(
-                "Assets/_Game/Scripts/World/Managers/WorldSceneSubSceneManager.cs");
+                "Assets/_Game/Scripts/World/Streaming/WorldSceneSubSceneManager.cs");
 
             Assert.That(
                 worldSceneManagerSource,
@@ -153,7 +151,9 @@ namespace ZZ.Tests
             IReadOnlyList<string> scenePaths = GetWorldScenePaths();
             Type rendererManagerType = GetRuntimeType(
                 "ZZ.WorldLocationRendererManager");
-            Assert.That(scenePaths.Count, Is.EqualTo(20));
+            Assert.That(
+                scenePaths.Count,
+                Is.EqualTo(k_ExpectedWorldSliceSceneCount));
             foreach (string scenePath in scenePaths)
             {
                 Scene scene = EditorSceneManager.OpenScene(

@@ -114,7 +114,7 @@ namespace ZZ
             }
         }
 
-        [ServerRpc(RequireOwnership = false)]
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         private void BreakObjectServerRpc()
         {
             if (!IsBroken.Value)

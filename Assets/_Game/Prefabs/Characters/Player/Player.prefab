@@ -113152,11 +113152,11 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 22
+  DopplerLevel: 0
+  MinDistance: 4
+  MaxDistance: 32
   Pan2D: 0
-  rolloffMode: 1
+  rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -113296,7 +113296,17 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 759e2c08e4d4eee43b3d51cf0edc494e, type: 3}
   - {fileID: 8300000, guid: 45ba9d7d47f75d94490ee001e7610902, type: 3}
   - {fileID: 8300000, guid: d514774ec89065446920f5add5f41192, type: 3}
-  m_footstepSounds: []
+  m_footstepSounds:
+  - {fileID: 8300000, guid: 02a5e2bbe76ab23449fe702cc8f5aba2, type: 3}
+  - {fileID: 8300000, guid: b46549248c2a8ed469830fa91f290700, type: 3}
+  - {fileID: 8300000, guid: 6842429df1e8b974399b28919e1218e0, type: 3}
+  - {fileID: 8300000, guid: 469c3987680ae8343ae86dd90d9211b3, type: 3}
+  - {fileID: 8300000, guid: ecce0968cd3a31d4ca287868e8b61605, type: 3}
+  - {fileID: 8300000, guid: eee149539f350ea4f98f86af590e2274, type: 3}
+  - {fileID: 8300000, guid: badac3b516190464c8e669412ce6a828, type: 3}
+  - {fileID: 8300000, guid: 524c51619f88049488e83539b0d8cbaa, type: 3}
+  - {fileID: 8300000, guid: 6da9c99a55f3f334db59058a000a794e, type: 3}
+  - {fileID: 8300000, guid: bf5dc152a3fcb4f46afa276d6052293d, type: 3}
 --- !u!1 &767646516357682233
 GameObject:
   m_ObjectHideFlags: 0
@@ -146326,7 +146336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2178199961
+  GlobalObjectIdHash: 2850873980
   InScenePlacedSourceGlobalObjectIdHash: 2850873980
   DeferredDespawnTick: 0
   Ownership: 1

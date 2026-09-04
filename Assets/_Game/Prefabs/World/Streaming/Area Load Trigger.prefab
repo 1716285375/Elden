@@ -66,4 +66,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbb2cc6abda8fe74fb9ab9a612527358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.EventTriggerLoadScene
+  m_worldLocation: {fileID: 0}
   m_area: 1

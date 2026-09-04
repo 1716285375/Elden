@@ -865,6 +865,15 @@ MonoBehaviour:
   DotBloomMax:
     m_OverrideState: 1
     m_Value: 2
+  PrintIntensity:
+    m_OverrideState: 1
+    m_Value: 0.14
+  PrintDensity:
+    m_OverrideState: 1
+    m_Value: 96
+  PrintShadowStrength:
+    m_OverrideState: 1
+    m_Value: 0.9
   AOLineStrength:
     m_OverrideState: 1
     m_Value: 0.25

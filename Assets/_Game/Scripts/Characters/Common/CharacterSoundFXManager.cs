@@ -55,9 +55,7 @@ namespace ZZ
                 return;
             }
 
-            WorldSoundFXManager.Instance?.PlaySoundEffect(
-                weapon.Whooshes,
-                m_audioSource);
+            PlayRandomSoundEffect(weapon.Whooshes);
         }
 
         /// <summary>Plays a randomized bow draw or release clip through this character.</summary>
@@ -70,11 +68,10 @@ namespace ZZ
                 return;
             }
 
-            WorldSoundFXManager.Instance?.PlaySoundEffect(
+            PlayRandomSoundEffect(
                 isRelease
                     ? weapon.ReleaseSoundEffects
-                    : weapon.DrawSoundEffects,
-                m_audioSource);
+                    : weapon.DrawSoundEffects);
         }
 
         /// <summary>Plays shared full or empty flask feedback through this character.</summary>
@@ -92,17 +89,13 @@ namespace ZZ
         /// <summary>Plays one locally spatialized damage grunt for this character.</summary>
         public void PlayDamageGrunt()
         {
-            WorldSoundFXManager.Instance?.PlaySoundEffect(
-                m_damageGrunts,
-                m_audioSource);
+            PlayRandomSoundEffect(m_damageGrunts);
         }
 
         /// <summary>Plays one authored footstep without producing an AI stimulus.</summary>
         public virtual void PlayFootstepSoundEffect()
         {
-            WorldSoundFXManager.Instance?.PlaySoundEffect(
-                m_footstepSounds,
-                m_audioSource);
+            PlayRandomSoundEffect(m_footstepSounds);
         }
 
         /// <summary>Plays a resolved block-impact clip through the character's spatial source.</summary>
@@ -139,6 +132,41 @@ namespace ZZ
             {
                 m_audioSource.PlayOneShot(criticalStrikeSound);
             }
+        }
+
+        /// <summary>
+        /// Plays a random character-owned clip even when the persistent world
+        /// sound manager is absent during direct Scene testing.
+        /// </summary>
+        protected bool PlayRandomSoundEffect(
+            AudioClip[] soundEffects,
+            float volumeScale = 1f)
+        {
+            if (m_audioSource == null)
+            {
+                return false;
+            }
+
+            WorldSoundFXManager soundManager = WorldSoundFXManager.Instance;
+            if (soundManager != null)
+            {
+                return soundManager.PlaySoundEffect(
+                    soundEffects,
+                    m_audioSource,
+                    volumeScale);
+            }
+
+            if (!WorldSoundFXManager.TrySelectRandomSoundEffect(
+                    soundEffects,
+                    out AudioClip soundEffect))
+            {
+                return false;
+            }
+
+            m_audioSource.PlayOneShot(
+                soundEffect,
+                Mathf.Clamp01(volumeScale));
+            return true;
         }
     }
 }

@@ -201,7 +201,7 @@ namespace ZZ.Tests
                 "Assets/_Game/Scripts/Combat/Damage/DamageCollider.cs");
             string hudSource = ReadSource(
                 projectRoot,
-                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIHUDManager.cs");
+                "Assets/_Game/Scripts/UI/Gameplay/Player/PlayerUIHUDManager.cs");
 
             Assert.That(networkSource,
                 Does.Contain("IsFrostbitten.OnValueChanged +="));

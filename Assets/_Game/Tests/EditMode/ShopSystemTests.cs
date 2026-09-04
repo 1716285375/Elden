@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ZZ.Tests
 {
@@ -95,7 +96,7 @@ namespace ZZ.Tests
         public void RuntimeStockAndSharedInventoryDoNotMutateTemplates()
         {
             string shopSource = ReadProjectFile(
-                "Assets/_Game/Scripts/Items/CharacterShop.cs");
+                "Assets/_Game/Scripts/Items/Shops/CharacterShop.cs");
             string inventorySource = ReadProjectFile(
                 "Assets/_Game/Scripts/Characters/Common/Inventory/" +
                 "CharacterInventoryManager.cs");
@@ -112,10 +113,10 @@ namespace ZZ.Tests
         public void BuySellShareSlotsAndCategoryRules()
         {
             string shopUISource = ReadProjectFile(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUIShopManager.cs");
             string slotSource = ReadProjectFile(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "UIShopInventorySlot.cs");
             Assert.That(shopUISource,
                 Does.Contain("GetOrCreateSlot(activeSlotCount)"));
@@ -138,6 +139,41 @@ namespace ZZ.Tests
             Assert.That(inputJson, Does.Contain("<Gamepad>/rightShoulder"));
             Assert.That(inputJson, Does.Contain("<Keyboard>/q"));
             Assert.That(inputJson, Does.Contain("<Keyboard>/e"));
+        }
+
+        [Test]
+        public void RuntimeShopUIBuildsAndDestroysWithoutNullListeners()
+        {
+            System.Type shopManagerType = System.Type.GetType(
+                "ZZ.PlayerUIShopManager, Assembly-CSharp");
+            Assert.That(shopManagerType, Is.Not.Null);
+            GameObject menuRoot = new("Runtime Shop UI Test");
+            try
+            {
+                Assert.DoesNotThrow(() => menuRoot.AddComponent(shopManagerType));
+            }
+            finally
+            {
+                Assert.DoesNotThrow(() => Object.DestroyImmediate(menuRoot));
+            }
+        }
+
+        [Test]
+        public void CategoryButtonIgnoresUnregisteredListenerDuringDestroy()
+        {
+            System.Type categoryType = System.Type.GetType(
+                "ZZ.UIItemCategory, Assembly-CSharp");
+            Assert.That(categoryType, Is.Not.Null);
+            GameObject buttonObject = new(
+                "Category Listener Test",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button));
+            Button button = buttonObject.GetComponent<Button>();
+            button.onClick.AddListener(null);
+            buttonObject.AddComponent(categoryType);
+
+            Assert.DoesNotThrow(() => Object.DestroyImmediate(buttonObject));
         }
 
         private static int GetItemValue(string assetPath)

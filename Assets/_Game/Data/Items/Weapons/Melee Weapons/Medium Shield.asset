@@ -32,6 +32,9 @@ MonoBehaviour:
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
+  m_poisonBuildup: 0
+  m_bleedBuildup: 0
+  m_frostBuildup: 0
   m_upgradeLevel: 0
   m_strengthRequirement: 0
   m_dexterityRequirement: 0

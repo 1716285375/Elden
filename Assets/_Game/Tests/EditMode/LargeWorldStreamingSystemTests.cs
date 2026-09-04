@@ -21,7 +21,7 @@ namespace ZZ.Tests
         public void SceneSetsOwnFourPhysicalSlicesAndDirectNeighbours()
         {
             UnityEngine.Object[] locations = LoadLocationAssets();
-            Assert.That(locations.Length, Is.EqualTo(5));
+            Assert.That(locations.Length, Is.EqualTo(8));
             for (int locationIndex = 0;
                 locationIndex < locations.Length;
                 locationIndex++)
@@ -35,30 +35,42 @@ namespace ZZ.Tests
                     ((IEnumerable)GetProperty(location, "RequiredLocations"))
                     .Cast<UnityEngine.Object>()
                     .ToArray();
+                string primaryScene = GetProperty<string>(
+                    location,
+                    "PrimarySceneID");
 
                 Assert.That(ownedScenes.Count, Is.EqualTo(4));
-                Assert.That(ownedScenes[0],
-                    Is.EqualTo(WorldScenePathLayout.GetSceneID(
-                        locationIndex,
-                        0)));
-                Assert.That(ownedScenes,
-                    Does.Contain(WorldScenePathLayout.GetSceneID(
-                        locationIndex,
-                        1)));
-                Assert.That(ownedScenes,
-                    Does.Contain(WorldScenePathLayout.GetSceneID(
-                        locationIndex,
-                        2)));
-                Assert.That(ownedScenes,
-                    Does.Contain(WorldScenePathLayout.GetSceneID(
-                        locationIndex,
-                        3)));
-                int expectedNeighbours = locationIndex == 0 ||
-                    locationIndex == locations.Length - 1
-                    ? 1
-                    : 2;
+                Assert.That(primaryScene, Is.EqualTo(ownedScenes[0]));
+                foreach (string sceneID in ownedScenes)
+                {
+                    Assert.That(
+                        AssetDatabase.LoadAssetAtPath<SceneAsset>(
+                            WorldScenePathLayout.GetScenePath(sceneID)),
+                        Is.Not.Null,
+                        sceneID);
+                }
+
                 Assert.That(requiredLocations.Count,
-                    Is.EqualTo(expectedNeighbours));
+                    Is.EqualTo(ExpectedNeighbours(location.name)));
+            }
+        }
+
+        private static int ExpectedNeighbours(string assetName)
+        {
+            switch (assetName)
+            {
+                case "R01_MonasteryOutskirts_A01_CliffPath":
+                    return 1;
+                case "R01_MonasteryOutskirts_A02_Graveyard":
+                    return 3;
+                case "R01_MonasteryOutskirts_A03_MainGate":
+                    return 2;
+                case "R01_MonasteryOutskirts_A04_GateTower":
+                    return 2;
+                case "R05_BossSanctum":
+                    return 1;
+                default:
+                    return 2;
             }
         }
 
@@ -89,7 +101,7 @@ namespace ZZ.Tests
         public void PlayerLocationTrackingIsDictionaryDriven()
         {
             string managerSource = ReadSource(
-                "Assets/_Game/Scripts/World/Managers/WorldSceneSubSceneManager.cs");
+                "Assets/_Game/Scripts/World/Streaming/WorldSceneSubSceneManager.cs");
             string playerSource = ReadSource(
                 "Assets/_Game/Scripts/Characters/Player/PlayerManager.cs");
 
@@ -110,7 +122,7 @@ namespace ZZ.Tests
         public void SceneQueueRetriesNetcodeBusyStateAndThrottlesOperations()
         {
             string source = ReadSource(
-                "Assets/_Game/Scripts/World/Managers/WorldSceneManager.cs");
+                "Assets/_Game/Scripts/World/Streaming/WorldSceneManager.cs");
 
             Assert.That(source, Does.Contain(
                 "SceneEventProgressStatus.SceneEventInProgress"));
@@ -211,10 +223,10 @@ namespace ZZ.Tests
         private static UnityEngine.Object[] LoadLocationAssets()
         {
             Type locationType = GetRuntimeType("ZZ.WorldLocationSceneSet");
-            return Enumerable.Range(0, 5)
-                .Select(locationIndex => AssetDatabase.LoadAssetAtPath(
-                    $"{k_LocationFolder}/" +
-                    $"{WorldScenePathLayout.GetRegionFolderName(locationIndex)}.asset",
+            return AssetDatabase.FindAssets("t:WorldLocationSceneSet",
+                    new[] { k_LocationFolder })
+                .Select(guid => AssetDatabase.LoadAssetAtPath(
+                    AssetDatabase.GUIDToAssetPath(guid),
                     locationType))
                 .Where(location => location != null)
                 .ToArray();
@@ -251,7 +263,8 @@ namespace ZZ.Tests
         {
             string projectRoot = Directory.GetParent(Application.dataPath)
                 .FullName;
-            return File.ReadAllText(Path.Combine(projectRoot, relativePath));
+            return File.ReadAllText(Path.Combine(projectRoot, relativePath))
+                .Replace("\r\n", "\n");
         }
     }
 }

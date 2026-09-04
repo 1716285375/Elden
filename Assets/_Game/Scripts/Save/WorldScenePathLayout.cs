@@ -45,11 +45,30 @@ namespace ZZ
         public static string GetRegionFolderPath(int regionIndex) =>
             $"{LevelFolder}/Regions/{s_regionFolderNames[regionIndex]}";
 
+        /// <summary>
+        /// Returns the authored Area count for one Region. R01 has four Areas
+        /// (CliffPath, Graveyard, MainGate, GateTower), R02 has two; the rest
+        /// stream one Area each until their design passes land.
+        /// </summary>
+        public static int GetAreaCount(int regionIndex) =>
+            regionIndex switch
+            {
+                0 => 4,
+                1 => 2,
+                _ => 1
+            };
+
+        public static string GetSceneID(int regionIndex, int areaIndex, int sliceIndex) =>
+            $"SCN_LV01_R{regionIndex + 1:00}_A{areaIndex + 1:00}_{s_sliceNames[sliceIndex]}";
+
         public static string GetSceneID(int regionIndex, int sliceIndex) =>
-            $"SCN_LV01_R{regionIndex + 1:00}_A01_{s_sliceNames[sliceIndex]}";
+            GetSceneID(regionIndex, 0, sliceIndex);
+
+        public static string GetScenePath(int regionIndex, int areaIndex, int sliceIndex) =>
+            $"{GetRegionFolderPath(regionIndex)}/{GetSceneID(regionIndex, areaIndex, sliceIndex)}.unity";
 
         public static string GetScenePath(int regionIndex, int sliceIndex) =>
-            $"{GetRegionFolderPath(regionIndex)}/{GetSceneID(regionIndex, sliceIndex)}.unity";
+            GetScenePath(regionIndex, 0, sliceIndex);
 
         /// <summary>
         /// Resolves the folder path of a region Scene ID such as
@@ -60,5 +79,8 @@ namespace ZZ
 
         public static int GetRegionIndexFromSceneID(string sceneID) =>
             int.Parse(sceneID.Substring(9, 3).Substring(1)) - 1;
+
+        public static int GetAreaIndexFromSceneID(string sceneID) =>
+            int.Parse(sceneID.Substring(13, 3).Substring(1)) - 1;
     }
 }

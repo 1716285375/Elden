@@ -238,11 +238,11 @@ namespace ZZ.Tests
         public void ConfirmLoadAndPersistentInteractionUseSaveContracts()
         {
             string levelSource = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUILevelUpManager.cs");
+                "Assets/_Game/Scripts/UI/Gameplay/Player/PlayerUILevelUpManager.cs");
             string playerSource = File.ReadAllText(
                 "Assets/_Game/Scripts/Characters/Player/PlayerManager.cs");
             string gateSource = File.ReadAllText(
-                "Assets/_Game/Scripts/World/Managers/DungeonOneWayGate.cs");
+                "Assets/_Game/Scripts/World/Interactions/DungeonOneWayGate.cs");
 
             Assert.That(levelSource, Does.Contain("TrySpendRunes(m_totalLevelUpCost)"));
             Assert.That(levelSource, Does.Contain("saveGameManager.SaveGame();"));

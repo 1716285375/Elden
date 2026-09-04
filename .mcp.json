@@ -2,11 +2,34 @@
   "mcpServers": {
     "ai-game-developer": {
       "type": "http",
-      "url": "https://ai-game.dev/mcp/p/2ae3b083"
+      "url": "http://localhost:27786/p/2ae3b083"
     },
     "ai-game-developer-local": {
       "type": "http",
       "url": "http://localhost:27786"
+    },
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
+    },
+    "code-review-graph": {
+      "type": "stdio",
+      "command": "code-review-graph",
+      "args": [
+        "serve",
+        "--repo",
+        "C:\\C\\Game\\Unity\\Elden"
+      ]
+    },
+    "blender": {
+      "command": "uvx",
+      "args": [
+        "blender-mcp"
+      ]
     }
   }
 }

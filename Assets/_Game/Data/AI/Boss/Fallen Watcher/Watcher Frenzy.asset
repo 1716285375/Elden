@@ -18,6 +18,7 @@ MonoBehaviour:
   m_maximumRange: 2.75
   m_selectionWeight: 3.5
   m_recoveryTime: 1.55
+  m_comboAction: {fileID: 0}
   m_physicalDamage: 44
   m_magicDamage: 0
   m_fireDamage: 0

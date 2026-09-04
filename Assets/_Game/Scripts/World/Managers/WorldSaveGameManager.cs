@@ -13,6 +13,10 @@ namespace ZZ
     {
         private static WorldSaveGameManager s_instance;
 
+        private const string k_LastPlayedCharacterSlotKey =
+            "ZZ.LastPlayedCharacterSlot";
+        private const float k_SceneEventRetryTimeoutSeconds = 30f;
+
         [FormerlySerializedAs("worldSceneName")]
         [SerializeField] private string m_worldSceneName =
             WorldScenePathLayout.MasterSceneName;
@@ -38,6 +42,7 @@ namespace ZZ
         private CharacterSlot m_currentCharacterSlotBeingUsed = CharacterSlot.NoSlot;
         private CharacterSaveData m_currentCharacterData;
         private bool m_shouldApplyLoadedCharacterData;
+        private bool m_sceneLoadIsInProgress;
         private int m_namelessKnightStageID;
         private int m_blacksmithStageID;
 
@@ -61,6 +66,9 @@ namespace ZZ
             m_currentCharacterData != null &&
             m_player != null &&
             m_player.IsOwner;
+
+        /// <summary>Gets whether a saved Scene transition is already running.</summary>
+        public bool IsSceneLoadInProgress => m_sceneLoadIsInProgress;
 
         /// <summary>Gets one NPC's loaded dialogue Stage.</summary>
         public int GetStageOfDialogue(CharacterDialogueID characterDialogueID)
@@ -436,6 +444,63 @@ namespace ZZ
         }
 
         /// <summary>
+        /// Returns the last slot played by this machine, when it still holds a valid
+        /// save. Recency is tracked separately from <see cref="CharacterSaveData.SecondsPlayed"/>
+        /// (an accumulated total, not a "last played" marker).
+        /// </summary>
+        public bool TryGetContinueSlot(out CharacterSlot continueSlot)
+        {
+            continueSlot = (CharacterSlot)PlayerPrefs.GetInt(
+                k_LastPlayedCharacterSlotKey,
+                (int)CharacterSlot.NoSlot);
+            if (continueSlot == CharacterSlot.NoSlot)
+            {
+                return false;
+            }
+
+            if (GetCharacterDataForSlot(continueSlot) == null)
+            {
+                continueSlot = CharacterSlot.NoSlot;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Marks a slot as the most recently played one. Called after successful
+        /// create, load, and save operations so Continue always lands on the last
+        /// character this machine actually played.
+        /// </summary>
+        private void SetLastPlayedCharacterSlot(CharacterSlot characterSlot)
+        {
+            if (characterSlot == CharacterSlot.NoSlot)
+            {
+                return;
+            }
+
+            PlayerPrefs.SetInt(k_LastPlayedCharacterSlotKey, (int)characterSlot);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>Clears the last-played marker when its slot is deleted.</summary>
+        private void ClearLastPlayedCharacterSlotIfMatches(CharacterSlot characterSlot)
+        {
+            if (characterSlot == CharacterSlot.NoSlot)
+            {
+                return;
+            }
+
+            if ((CharacterSlot)PlayerPrefs.GetInt(
+                    k_LastPlayedCharacterSlotKey,
+                    (int)CharacterSlot.NoSlot) == characterSlot)
+            {
+                PlayerPrefs.DeleteKey(k_LastPlayedCharacterSlotKey);
+                PlayerPrefs.Save();
+            }
+        }
+
+        /// <summary>
         /// Creates starting character data in the first free slot and loads the world.
         /// </summary>
         public bool NewGame()
@@ -452,7 +517,8 @@ namespace ZZ
         /// </summary>
         public bool NewGame(CharacterSaveData startingCharacterData)
         {
-            if (startingCharacterData == null ||
+            if (m_sceneLoadIsInProgress ||
+                startingCharacterData == null ||
                 !TryFindFreeCharacterSlot(
                     out CharacterSlot freeSlot,
                     out SaveFileDataWriter writer))
@@ -485,8 +551,9 @@ namespace ZZ
             m_currentCharacterData = startingCharacterData;
             GetStageIDsOnLoad();
             SetCharacterDataForSlot(freeSlot, startingCharacterData);
+            SetLastPlayedCharacterSlot(freeSlot);
             m_shouldApplyLoadedCharacterData = true;
-            StartCoroutine(LoadScene(m_startingSceneIndex));
+            TryBeginSceneLoad(m_startingSceneIndex);
             return true;
         }
 
@@ -507,6 +574,7 @@ namespace ZZ
                 m_player.SaveGameDataToCurrentCharacterData();
                 CreateWriter(m_currentCharacterSlotBeingUsed).SaveFile(m_currentCharacterData);
                 SetCharacterDataForSlot(m_currentCharacterSlotBeingUsed, m_currentCharacterData);
+                SetLastPlayedCharacterSlot(m_currentCharacterSlotBeingUsed);
                 return true;
             }
             catch (IOException exception)
@@ -526,6 +594,11 @@ namespace ZZ
         /// </summary>
         public void LoadGame()
         {
+            if (m_sceneLoadIsInProgress)
+            {
+                return;
+            }
+
             if (m_currentCharacterSlotBeingUsed == CharacterSlot.NoSlot)
             {
                 Debug.LogError("A character slot must be selected before loading a game.");
@@ -545,8 +618,9 @@ namespace ZZ
                 m_currentCharacterData = loadedData;
                 GetStageIDsOnLoad();
                 SetCharacterDataForSlot(m_currentCharacterSlotBeingUsed, loadedData);
+                SetLastPlayedCharacterSlot(m_currentCharacterSlotBeingUsed);
                 m_shouldApplyLoadedCharacterData = true;
-                StartCoroutine(LoadScene(loadedData.SceneIndex));
+                TryBeginSceneLoad(loadedData.SceneIndex);
             }
             catch (IOException exception)
             {
@@ -567,7 +641,10 @@ namespace ZZ
         /// </summary>
         public void SelectCharacterSlot(CharacterSlot characterSlot)
         {
-            m_currentCharacterSlotBeingUsed = characterSlot;
+            if (!m_sceneLoadIsInProgress)
+            {
+                m_currentCharacterSlotBeingUsed = characterSlot;
+            }
         }
 
         /// <summary>
@@ -584,6 +661,7 @@ namespace ZZ
             {
                 CreateWriter(characterSlot).DeleteSaveFile();
                 SetCharacterDataForSlot(characterSlot, null);
+                ClearLastPlayedCharacterSlotIfMatches(characterSlot);
                 if (m_currentCharacterSlotBeingUsed == characterSlot)
                 {
                     m_currentCharacterSlotBeingUsed = CharacterSlot.NoSlot;
@@ -697,7 +775,33 @@ namespace ZZ
         /// </summary>
         public IEnumerator LoadNewGame()
         {
-            yield return LoadScene(m_startingSceneIndex);
+            if (!TryBeginSceneLoad(m_startingSceneIndex))
+            {
+                yield break;
+            }
+
+            while (m_sceneLoadIsInProgress)
+            {
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Loads the front-end Scene without saving the active character.
+        /// </summary>
+        public void ReturnToMainMenu()
+        {
+            int mainMenuBuildIndex = SceneUtility.GetBuildIndexByScenePath(
+                WorldScenePathLayout.MainMenuScenePath);
+            if (mainMenuBuildIndex < 0)
+            {
+                HandleSceneLoadFailure(
+                    $"The main menu Scene at {WorldScenePathLayout.MainMenuScenePath} " +
+                    "is not in Build Settings.");
+                return;
+            }
+
+            TryBeginSceneLoad(mainMenuBuildIndex);
         }
 
         /// <summary>
@@ -747,41 +851,160 @@ namespace ZZ
 
         private IEnumerator LoadScene(int sceneIndex)
         {
-            string scenePath = SceneUtility.GetScenePathByBuildIndex(sceneIndex);
-            if (string.IsNullOrEmpty(scenePath))
+            try
             {
-                Debug.LogError($"Scene build index {sceneIndex} is not available in Build Settings.");
-                yield break;
-            }
-
-            string sceneName = Path.GetFileNameWithoutExtension(scenePath);
-            NetworkManager networkManager = NetworkManager.Singleton;
-            if (networkManager != null &&
-                networkManager.IsListening &&
-                !networkManager.IsServer)
-            {
-                Debug.LogError("Only the server can load a saved Scene.");
-                yield break;
-            }
-
-            PlayerUIManager.Instance?.PlayerUILoadingScreenManager
-                ?.ActivateLoadingScreen();
-            if (networkManager != null && networkManager.IsListening)
-            {
-                SceneEventProgressStatus status = networkManager.SceneManager.LoadScene(
-                    sceneName,
-                    LoadSceneMode.Single);
-                if (status != SceneEventProgressStatus.Started)
+                string scenePath = SceneUtility.GetScenePathByBuildIndex(sceneIndex);
+                if (string.IsNullOrEmpty(scenePath))
                 {
-                    Debug.LogError($"Could not load {sceneName}: {status}.");
-                    PlayerUIManager.Instance?.PlayerUILoadingScreenManager
-                        ?.DeactivateLoadingScreen(0f);
+                    HandleSceneLoadFailure(
+                        $"Scene build index {sceneIndex} is not available in Build Settings.");
+                    yield break;
                 }
 
+                string sceneName = Path.GetFileNameWithoutExtension(scenePath);
+                NetworkManager networkManager = NetworkManager.Singleton;
+                if (networkManager != null &&
+                    networkManager.IsListening &&
+                    !networkManager.IsServer)
+                {
+                    HandleSceneLoadFailure(
+                        "Only the server can load a saved Scene.");
+                    yield break;
+                }
+
+                PlayerUIManager.Instance?.PlayerUILoadingScreenManager
+                    ?.ActivateLoadingScreen();
+                if (networkManager != null && networkManager.IsListening)
+                {
+                    yield return LoadNetworkScene(networkManager, sceneName);
+                    yield break;
+                }
+
+                AsyncOperation loadOperation = SceneManager.LoadSceneAsync(
+                    sceneIndex,
+                    LoadSceneMode.Single);
+                if (loadOperation == null)
+                {
+                    HandleSceneLoadFailure(
+                        $"Could not start loading {sceneName}.");
+                    yield break;
+                }
+
+                yield return loadOperation;
+            }
+            finally
+            {
+                m_sceneLoadIsInProgress = false;
+            }
+        }
+
+        private IEnumerator LoadNetworkScene(
+            NetworkManager networkManager,
+            string sceneName)
+        {
+            NetworkSceneManager networkSceneManager = networkManager.SceneManager;
+            if (networkSceneManager == null)
+            {
+                HandleSceneLoadFailure(
+                    $"Could not load {sceneName}: NetworkSceneManager is unavailable.");
                 yield break;
             }
 
-            yield return SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);
+            bool sceneLoadCompleted = false;
+            void HandleSceneEvent(SceneEvent sceneEvent)
+            {
+                if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted &&
+                    sceneEvent.SceneName == sceneName)
+                {
+                    sceneLoadCompleted = true;
+                }
+            }
+
+            networkSceneManager.OnSceneEvent += HandleSceneEvent;
+            try
+            {
+                float retryUntil = Time.realtimeSinceStartup +
+                    k_SceneEventRetryTimeoutSeconds;
+                while (Time.realtimeSinceStartup < retryUntil)
+                {
+                    if (!networkManager.IsListening || !networkManager.IsServer)
+                    {
+                        HandleSceneLoadFailure(
+                            $"Could not load {sceneName}: the network host stopped.");
+                        yield break;
+                    }
+
+                    sceneLoadCompleted = false;
+                    SceneEventProgressStatus status = networkSceneManager.LoadScene(
+                        sceneName,
+                        LoadSceneMode.Single);
+                    if (ShouldRetrySceneLoad(status))
+                    {
+                        yield return null;
+                        continue;
+                    }
+
+                    if (status != SceneEventProgressStatus.Started)
+                    {
+                        HandleSceneLoadFailure(
+                            $"Could not load {sceneName}: {status}.");
+                        yield break;
+                    }
+
+                    float completeUntil = Time.realtimeSinceStartup +
+                        k_SceneEventRetryTimeoutSeconds;
+                    while (!sceneLoadCompleted &&
+                        Time.realtimeSinceStartup < completeUntil &&
+                        networkManager.IsListening)
+                    {
+                        yield return null;
+                    }
+
+                    if (!sceneLoadCompleted)
+                    {
+                        string reason = networkManager.IsListening
+                            ? "the Netcode load event did not complete in time"
+                            : "the network host stopped";
+                        HandleSceneLoadFailure(
+                            $"Could not load {sceneName}: {reason}.");
+                    }
+
+                    yield break;
+                }
+
+                HandleSceneLoadFailure(
+                    $"Timed out waiting to start loading {sceneName}.");
+            }
+            finally
+            {
+                networkSceneManager.OnSceneEvent -= HandleSceneEvent;
+            }
+        }
+
+        private bool TryBeginSceneLoad(int sceneIndex)
+        {
+            if (m_sceneLoadIsInProgress)
+            {
+                return false;
+            }
+
+            m_sceneLoadIsInProgress = true;
+            StartCoroutine(LoadScene(sceneIndex));
+            return true;
+        }
+
+        private static bool ShouldRetrySceneLoad(
+            SceneEventProgressStatus status)
+        {
+            return status == SceneEventProgressStatus.SceneEventInProgress;
+        }
+
+        private void HandleSceneLoadFailure(string message)
+        {
+            m_shouldApplyLoadedCharacterData = false;
+            Debug.LogError(message);
+            PlayerUIManager.Instance?.PlayerUILoadingScreenManager
+                ?.DeactivateLoadingScreen(0f);
         }
 
         private void SetCharacterDataForSlot(

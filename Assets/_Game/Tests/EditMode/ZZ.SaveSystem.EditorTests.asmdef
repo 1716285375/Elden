@@ -3,7 +3,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "ZZ.SaveSystem"
+        "ZZ.SaveSystem",
+        "Unity.Netcode.Runtime"
     ],
     "includePlatforms": [
         "Editor"

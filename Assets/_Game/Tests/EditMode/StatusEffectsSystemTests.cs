@@ -217,13 +217,13 @@ namespace ZZ.Tests
                 "Assets/_Game/Scripts/Characters/Common/Effects/PlayerEffectsManager.cs"));
             string hudSource = File.ReadAllText(Path.Combine(
                 root,
-                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIHUDManager.cs"));
+                "Assets/_Game/Scripts/UI/Gameplay/Player/PlayerUIHUDManager.cs"));
             string damageSource = File.ReadAllText(Path.Combine(
                 root,
                 "Assets/_Game/Scripts/Combat/Damage/DamageCollider.cs"));
             string takeBuildupSource = File.ReadAllText(Path.Combine(
                 root,
-                "Assets/_Game/Scripts/Combat/Effects/Instant Effects/TakeBuildupEffect.cs"));
+                "Assets/_Game/Scripts/Combat/Effects/InstantEffects/TakeBuildupEffect.cs"));
 
             Assert.That(effectsSource, Does.Contain("!m_character.IsOwner"));
             Assert.That(effectsSource, Does.Contain("effect.TimedEffectID"));

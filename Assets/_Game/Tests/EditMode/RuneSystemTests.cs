@@ -65,7 +65,7 @@ namespace ZZ.Tests
                 "CalculatePendingRuneTotal",
                 BindingFlags.Public | BindingFlags.Static);
             string source = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIHUDManager.cs");
+                "Assets/_Game/Scripts/UI/Gameplay/Player/PlayerUIHUDManager.cs");
 
             Assert.That(calculate.Invoke(null, new object[] { 0, 50 }), Is.EqualTo(50));
             Assert.That(calculate.Invoke(null, new object[] { 100, 50 }), Is.EqualTo(150));
@@ -152,7 +152,7 @@ namespace ZZ.Tests
         public void LocalPlayerCacheBindsAndClearsAtOwnershipBoundaries()
         {
             string managerSource = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIManager.cs");
+                "Assets/_Game/Scripts/UI/Gameplay/Player/PlayerUIManager.cs");
             string playerSource = File.ReadAllText(
                 "Assets/_Game/Scripts/Characters/Player/PlayerManager.cs");
 

@@ -81,12 +81,14 @@ namespace ZZ.Tests
                 BindingFlags.Public | BindingFlags.Instance);
             object attribute = rpc?.GetCustomAttributes(false)
                 .Single(candidate =>
-                    candidate.GetType().Name == "ServerRpcAttribute");
-            FieldInfo requireOwnership = attribute?.GetType()
-                .GetField("RequireOwnership");
+                    candidate.GetType().Name == "RpcAttribute");
+            FieldInfo invokePermission = attribute?.GetType()
+                .GetField("InvokePermission");
 
             Assert.That(rpc, Is.Not.Null);
-            Assert.That(requireOwnership?.GetValue(attribute), Is.False);
+            Assert.That(
+                invokePermission?.GetValue(attribute).ToString(),
+                Is.EqualTo("Everyone"));
             Assert.That(networkType.GetField("IsParrying"), Is.Not.Null);
             Assert.That(networkType.GetField("IsParryable"), Is.Not.Null);
         }

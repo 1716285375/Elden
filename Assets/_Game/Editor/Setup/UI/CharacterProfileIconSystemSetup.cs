@@ -30,7 +30,7 @@ namespace ZZ.Editor
             EditorApplication.delayCall += BuildCharacterProfileIconSystem;
         }
 
-        [MenuItem("Tools/ZZ/UI/Build Character Profile Icon System")]
+        [ZZTool("物品与界面", "构建角色资料图标系统", 520)]
         public static void BuildCharacterProfileIconSystem()
         {
             GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(

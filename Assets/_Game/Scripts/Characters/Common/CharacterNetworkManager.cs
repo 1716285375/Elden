@@ -788,12 +788,12 @@ namespace ZZ
         }
 
         /// <summary>Asks the server to validate one collision-confirmed Parry.</summary>
-        [ServerRpc(RequireOwnership = false)]
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         public void NotifyServerOfParryServerRpc(
             ulong parriedCharacterNetworkObjectId,
-            ServerRpcParams serverRpcParams = default)
+            RpcParams rpcParams = default)
         {
-            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            if (rpcParams.Receive.SenderClientId != OwnerClientId)
             {
                 return;
             }
@@ -1102,7 +1102,7 @@ namespace ZZ
         /// <summary>
         /// Requests character damage from the attacker's owner, authorized and relayed by the server.
         /// </summary>
-        [ServerRpc(RequireOwnership = false)]
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         public void RequestCharacterDamageServerRpc(
             ulong targetNetworkObjectId,
             ulong attackerNetworkObjectId,
@@ -1118,13 +1118,13 @@ namespace ZZ
             float frostBuildup,
             Vector3 contactPoint,
             bool wasBlocked,
-            ServerRpcParams serverRpcParams = default)
+            RpcParams rpcParams = default)
         {
             CharacterManager target = ResolveCharacter(targetNetworkObjectId);
             CharacterManager attacker = attackerIsPresent
                 ? ResolveCharacter(attackerNetworkObjectId)
                 : null;
-            ulong senderClientId = serverRpcParams.Receive.SenderClientId;
+            ulong senderClientId = rpcParams.Receive.SenderClientId;
             if (!IsAuthorizedDamageSender(
                     senderClientId,
                     target,

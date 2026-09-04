@@ -162,7 +162,7 @@ namespace ZZ.Tests
             string sessionSource = File.ReadAllText(
                 "Assets/_Game/Scripts/World/Managers/WorldGameSessionManager.cs");
             string graceSource = File.ReadAllText(
-                "Assets/_Game/Scripts/World/Managers/SiteOfGraceInteractable.cs");
+                "Assets/_Game/Scripts/World/Interactions/SiteOfGraceInteractable.cs");
             string objectSource = File.ReadAllText(
                 "Assets/_Game/Scripts/World/Managers/WorldObjectManager.cs");
 
@@ -188,16 +188,16 @@ namespace ZZ.Tests
             MethodInfo reclaimRpc = pickupType.GetMethod(
                 "ReclaimRunesServerRpc",
                 BindingFlags.Instance | BindingFlags.NonPublic);
-            object serverRpcAttribute = reclaimRpc.GetCustomAttributes(false)
+            object rpcAttribute = reclaimRpc.GetCustomAttributes(false)
                 .Single(attribute =>
-                    attribute.GetType().Name == "ServerRpcAttribute");
+                    attribute.GetType().Name == "RpcAttribute");
             string source = File.ReadAllText(
-                "Assets/_Game/Scripts/World/Managers/PickupRunesInteractable.cs");
+                "Assets/_Game/Scripts/World/Interactions/PickupRunesInteractable.cs");
 
             Assert.That(
-                (bool)serverRpcAttribute.GetType().GetField("RequireOwnership")
-                    .GetValue(serverRpcAttribute),
-                Is.False);
+                rpcAttribute.GetType().GetField("InvokePermission")
+                    .GetValue(rpcAttribute).ToString(),
+                Is.EqualTo("Everyone"));
             Assert.That(source, Does.Contain("TargetClientIds"));
             Assert.That(source, Does.Contain("player.PlayerStatsManager?.AddRunes"));
             Assert.That(source, Does.Contain("ClearDeadSpot(false)"));

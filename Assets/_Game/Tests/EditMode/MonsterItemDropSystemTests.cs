@@ -127,7 +127,7 @@ namespace ZZ.Tests
                     "DestroyThisNetworkObjectServerRpc");
                 object attribute = rpc?.GetCustomAttributes(false)
                     .SingleOrDefault(candidate =>
-                        candidate.GetType().Name == "ServerRpcAttribute");
+                        candidate.GetType().Name == "RpcAttribute");
                 Assert.That(pickup, Is.Not.Null);
                 Assert.That(
                     new SerializedObject(pickup)
@@ -140,9 +140,9 @@ namespace ZZ.Tests
                 AssertServerWrittenNetworkVariable(pickup, "DroppingCreatureID");
                 Assert.That(attribute, Is.Not.Null);
                 Assert.That(
-                    (bool)attribute.GetType().GetField("RequireOwnership")
-                        .GetValue(attribute),
-                    Is.False);
+                    attribute.GetType().GetField("InvokePermission")
+                        .GetValue(attribute).ToString(),
+                    Is.EqualTo("Everyone"));
             }
             finally
             {

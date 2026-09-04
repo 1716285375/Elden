@@ -1,0 +1,940 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+
+namespace ZZ
+{
+    [DefaultExecutionOrder(-10000)]
+    public class PlayerInputManager : MonoBehaviour
+    {
+        private const string k_GameplaySceneName =
+            WorldScenePathLayout.MasterSceneName;
+        private const int k_MaxQueuedAttackInputs = 2;
+
+        private static PlayerInputManager s_instance;
+        public static PlayerInputManager Instance => s_instance;
+
+        public Vector2 MovementInput { get; private set; }
+        public float VerticalInput { get; private set; }
+        public float HorizontalInput { get; private set; }
+        public float MoveAmount { get; private set; }
+        public Vector2 CameraInput { get; private set; }
+        public float CameraVerticalInput { get; private set; }
+        public float CameraHorizontalInput { get; private set; }
+
+        /// <summary>
+        /// Gets whether the most recent look input came from a pointer device. Pointer values
+        /// are per-frame movement amounts, while a stick reports a held deflection.
+        /// </summary>
+        public bool IsPointerLook { get; private set; }
+
+        public bool IsMovementInputEnabled { get; private set; }
+
+        [Header("Attack Input Buffer")]
+        [SerializeField, Min(0f)] private float m_inputBufferDuration = 0.3f;
+
+        private PlayerControls m_playerControls;
+        private PlayerManager m_player;
+        private readonly Queue<AttackInput> m_attackInputQueue = new();
+        private bool m_hasDodgeInput;
+        private bool m_hasJumpInput;
+        private bool m_hasSneakInput;
+        private bool m_hasSwitchRightWeaponInput;
+        private bool m_hasSwitchLeftWeaponInput;
+        private bool m_hasSwitchQuickSlotItemInput;
+        private bool m_hasRBInput;
+        private bool m_isRBSpellInput;
+        private bool m_isRangedRBInput;
+        private bool m_isRangedRTInput;
+        private bool m_hasRTStartedInput;
+        private bool m_hasRTReleasedInput;
+        private bool m_hasLTInput;
+        private bool m_hasLBInput;
+        private bool m_isLBInputHeld;
+        private bool m_isLBSpellInput;
+        private bool m_hasLockOnInput;
+        private bool m_hasInteractionInput;
+        private bool m_hasUseQuickSlotItemInput;
+        private bool m_isGameplayInputBlocked;
+        private bool m_isSprintInputHeld;
+        private bool m_isTwoHandInputHeld;
+        private bool m_hasTwoHandRightWeaponInput;
+        private bool m_hasTwoHandLeftWeaponInput;
+        private bool m_isMenuCameraInputEnabled;
+
+        private void Awake()
+        {
+            if (s_instance != null && s_instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            s_instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            if (s_instance != this)
+            {
+                return;
+            }
+
+            m_playerControls ??= new PlayerControls();
+            DisablePlayerControls();
+            m_playerControls.PlayerMovement.Movement.performed += OnMovementChanged;
+            m_playerControls.PlayerMovement.Movement.canceled += OnMovementChanged;
+            m_playerControls.PlayerMovement.Dodge.performed += OnDodgePerformed;
+            m_playerControls.PlayerMovement.Sprint.performed += OnSprintPerformed;
+            m_playerControls.PlayerMovement.Sprint.canceled += OnSprintCanceled;
+            m_playerControls.PlayerMovement.Jump.performed += OnJumpPerformed;
+            m_playerControls.PlayerMovement.Sneak.performed += OnSneakPerformed;
+            m_playerControls.PlayerMovement.SwitchRightWeapon.performed +=
+                OnSwitchRightWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchLeftWeapon.performed +=
+                OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchQuickSlotItem.performed +=
+                OnSwitchQuickSlotItemPerformed;
+            m_playerControls.PlayerMovement.RB.started += OnRBStarted;
+            m_playerControls.PlayerMovement.RB.performed += OnRBPerformed;
+            m_playerControls.PlayerMovement.RB.canceled += OnRBCanceled;
+            m_playerControls.PlayerMovement.RT.started += OnRTStarted;
+            m_playerControls.PlayerMovement.RT.canceled += OnRTCanceled;
+            m_playerControls.PlayerMovement.LT.performed += OnLTPerformed;
+            m_playerControls.PlayerMovement.LB.started += OnLBStarted;
+            m_playerControls.PlayerMovement.LB.performed += OnLBPerformed;
+            m_playerControls.PlayerMovement.LB.canceled += OnLBCanceled;
+            m_playerControls.PlayerMovement.TwoHandWeapon.performed +=
+                OnTwoHandWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandWeapon.canceled +=
+                OnTwoHandWeaponCanceled;
+            m_playerControls.PlayerMovement.TwoHandRightWeapon.performed +=
+                OnTwoHandRightWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandLeftWeapon.performed +=
+                OnTwoHandLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.Interact.performed += OnInteractPerformed;
+            m_playerControls.PlayerMovement.UseQuickSlotItem.performed +=
+                OnUseQuickSlotItemPerformed;
+            m_playerControls.PlayerCamera.Movement.performed += OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.Movement.canceled += OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.LockOn.performed += OnLockOnPerformed;
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            RefreshMovementInput(SceneManager.GetActiveScene());
+        }
+
+        private void OnDisable()
+        {
+            if (s_instance != this || m_playerControls == null)
+            {
+                return;
+            }
+
+            m_playerControls.PlayerMovement.Movement.performed -= OnMovementChanged;
+            m_playerControls.PlayerMovement.Movement.canceled -= OnMovementChanged;
+            m_playerControls.PlayerMovement.Dodge.performed -= OnDodgePerformed;
+            m_playerControls.PlayerMovement.Sprint.performed -= OnSprintPerformed;
+            m_playerControls.PlayerMovement.Sprint.canceled -= OnSprintCanceled;
+            m_playerControls.PlayerMovement.Jump.performed -= OnJumpPerformed;
+            m_playerControls.PlayerMovement.Sneak.performed -= OnSneakPerformed;
+            m_playerControls.PlayerMovement.SwitchRightWeapon.performed -=
+                OnSwitchRightWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchLeftWeapon.performed -=
+                OnSwitchLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.SwitchQuickSlotItem.performed -=
+                OnSwitchQuickSlotItemPerformed;
+            m_playerControls.PlayerMovement.RB.started -= OnRBStarted;
+            m_playerControls.PlayerMovement.RB.performed -= OnRBPerformed;
+            m_playerControls.PlayerMovement.RB.canceled -= OnRBCanceled;
+            m_playerControls.PlayerMovement.RT.started -= OnRTStarted;
+            m_playerControls.PlayerMovement.RT.canceled -= OnRTCanceled;
+            m_playerControls.PlayerMovement.LT.performed -= OnLTPerformed;
+            m_playerControls.PlayerMovement.LB.started -= OnLBStarted;
+            m_playerControls.PlayerMovement.LB.performed -= OnLBPerformed;
+            m_playerControls.PlayerMovement.LB.canceled -= OnLBCanceled;
+            m_playerControls.PlayerMovement.TwoHandWeapon.performed -=
+                OnTwoHandWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandWeapon.canceled -=
+                OnTwoHandWeaponCanceled;
+            m_playerControls.PlayerMovement.TwoHandRightWeapon.performed -=
+                OnTwoHandRightWeaponPerformed;
+            m_playerControls.PlayerMovement.TwoHandLeftWeapon.performed -=
+                OnTwoHandLeftWeaponPerformed;
+            m_playerControls.PlayerMovement.Interact.performed -= OnInteractPerformed;
+            m_playerControls.PlayerMovement.UseQuickSlotItem.performed -=
+                OnUseQuickSlotItemPerformed;
+            m_playerControls.PlayerCamera.Movement.performed -= OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.Movement.canceled -= OnCameraMovementChanged;
+            m_playerControls.PlayerCamera.LockOn.performed -= OnLockOnPerformed;
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            DisablePlayerControls();
+        }
+
+        private void Update()
+        {
+            if (IsMovementInputEnabled)
+            {
+                HandleAllInputs();
+            }
+        }
+
+        private void OnApplicationFocus(bool focus)
+        {
+            if (!focus)
+            {
+                DisablePlayerControls();
+                return;
+            }
+
+            if (s_instance != this || m_playerControls == null)
+            {
+                return;
+            }
+
+            RefreshMovementInput(SceneManager.GetActiveScene());
+        }
+
+        private void OnDestroy()
+        {
+            if (s_instance != this)
+            {
+                return;
+            }
+
+            s_instance = null;
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            m_playerControls?.Dispose();
+        }
+
+        /// <summary>
+        /// Associates input intentions with the locally owned player.
+        /// </summary>
+        public void BindPlayer(PlayerManager localPlayer)
+        {
+            if (localPlayer == null ||
+                !localPlayer.IsOwner ||
+                m_player == localPlayer)
+            {
+                return;
+            }
+
+            m_player = localPlayer;
+            ClearAttackInputQueue();
+        }
+
+        /// <summary>
+        /// Clears the locally owned player without disturbing a newer ownership binding.
+        /// </summary>
+        public void ClearPlayer(PlayerManager localPlayer)
+        {
+            if (m_player == localPlayer)
+            {
+                ClearAttackInputQueue();
+                m_player = null;
+            }
+        }
+
+        /// <summary>
+        /// Enables local movement and camera input when gameplay is not blocked by a modal UI.
+        /// </summary>
+        public void EnablePlayerControls()
+        {
+            if (m_isGameplayInputBlocked)
+            {
+                return;
+            }
+
+            m_playerControls?.PlayerMovement.Enable();
+            m_playerControls?.PlayerCamera.Enable();
+            IsMovementInputEnabled = true;
+        }
+
+        /// <summary>
+        /// Disables local movement and camera input and clears all held gameplay intentions.
+        /// </summary>
+        public void DisablePlayerControls()
+        {
+            MovementInput = Vector2.zero;
+            VerticalInput = 0f;
+            HorizontalInput = 0f;
+            MoveAmount = 0f;
+            CameraInput = Vector2.zero;
+            CameraVerticalInput = 0f;
+            CameraHorizontalInput = 0f;
+            m_hasDodgeInput = false;
+            m_hasJumpInput = false;
+            m_hasSneakInput = false;
+            m_hasSwitchRightWeaponInput = false;
+            m_hasSwitchLeftWeaponInput = false;
+            m_hasSwitchQuickSlotItemInput = false;
+            m_hasRBInput = false;
+            m_isRBSpellInput = false;
+            m_isRangedRBInput = false;
+            m_isRangedRTInput = false;
+            m_hasRTStartedInput = false;
+            m_hasRTReleasedInput = false;
+            m_hasLTInput = false;
+            m_hasLBInput = false;
+            m_isLBInputHeld = false;
+            m_isLBSpellInput = false;
+            m_hasLockOnInput = false;
+            m_hasInteractionInput = false;
+            m_hasUseQuickSlotItemInput = false;
+            m_isSprintInputHeld = false;
+            m_isTwoHandInputHeld = false;
+            m_hasTwoHandRightWeaponInput = false;
+            m_hasTwoHandLeftWeaponInput = false;
+            m_player?.LocomotionManager?.HandleSprinting(false);
+            m_player?.PlayerCombatManager?.CancelChargingAttack();
+            m_player?.PlayerCombatManager?.CancelChargingSpell();
+            m_player?.PlayerCombatManager?.CancelNotchedProjectile(true);
+            m_player?.PlayerCombatManager?.CancelQuickSlotItemUse();
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
+            m_player?.PlayerCombatManager?.SetBlocking(false);
+            ClearAttackInputQueue();
+            IsMovementInputEnabled = false;
+            m_playerControls?.PlayerMovement.Disable();
+            if (!m_isMenuCameraInputEnabled)
+            {
+                m_playerControls?.PlayerCamera.Disable();
+            }
+        }
+
+        /// <summary>Enables look input for a title-screen preview without enabling gameplay.</summary>
+        public void EnableMenuCameraInput()
+        {
+            m_isMenuCameraInputEnabled = true;
+            m_playerControls?.PlayerCamera.Enable();
+        }
+
+        /// <summary>Releases title-screen look input and clears its final camera delta.</summary>
+        public void DisableMenuCameraInput()
+        {
+            m_isMenuCameraInputEnabled = false;
+            CameraInput = Vector2.zero;
+            CameraVerticalInput = 0f;
+            CameraHorizontalInput = 0f;
+            if (!IsMovementInputEnabled)
+            {
+                m_playerControls?.PlayerCamera.Disable();
+            }
+        }
+
+        /// <summary>
+        /// Blocks gameplay controls while a modal player UI owns navigation input.
+        /// </summary>
+        public void BlockGameplayInput()
+        {
+            m_isGameplayInputBlocked = true;
+            DisablePlayerControls();
+        }
+
+        /// <summary>
+        /// Releases the modal UI block and restores controls when the active Scene permits gameplay.
+        /// </summary>
+        public void UnblockGameplayInput()
+        {
+            m_isGameplayInputBlocked = false;
+            RefreshMovementInput(SceneManager.GetActiveScene());
+        }
+
+        /// <summary>
+        /// Records one attack only while the current combat animation permits queuing.
+        /// </summary>
+        public bool TryQueueAttackInput(AttackInputType inputType)
+        {
+            if (m_player?.PlayerCombatManager?.CanQueueNextAttack != true)
+            {
+                return false;
+            }
+
+            RemoveExpiredAttackInputs(Time.time);
+            if (m_attackInputQueue.Count >= k_MaxQueuedAttackInputs)
+            {
+                return false;
+            }
+
+            m_attackInputQueue.Enqueue(new AttackInput(inputType, Time.time));
+            return true;
+        }
+
+        /// <summary>Returns the oldest unexpired buffered attack.</summary>
+        public bool TryDequeueAttackInput(out AttackInput attackInput)
+        {
+            RemoveExpiredAttackInputs(Time.time);
+            if (m_attackInputQueue.Count == 0)
+            {
+                attackInput = default;
+                return false;
+            }
+
+            attackInput = m_attackInputQueue.Dequeue();
+            return true;
+        }
+
+        /// <summary>Clears every attack intent that no longer belongs to the current action.</summary>
+        public void ClearAttackInputQueue()
+        {
+            m_attackInputQueue.Clear();
+        }
+
+        private void HandleAllInputs()
+        {
+            if (PlayerUIManager.Instance?.IsMenuWindowOpen == true)
+            {
+                return;
+            }
+
+            HandleCameraMovementInput();
+            HandleLockOnInput();
+            HandlePlayerMovementInput();
+            HandleDodgeInput();
+            HandleJumpInput();
+            HandleSneakInput();
+            HandleWeaponSwitchInput();
+            HandleSwitchQuickSlotItemInput();
+            HandleInteractionInput();
+            HandleQuickSlotItemInput();
+            HandleSprinting();
+            HandleTwoHandInput();
+            HandleLTInput();
+            HandleBlockingInput();
+            HandleAttackInput();
+        }
+
+        private void HandleCameraMovementInput()
+        {
+            CameraVerticalInput = CameraInput.y;
+            CameraHorizontalInput = CameraInput.x;
+            m_player?.LockOnManager?.HandleTargetSwitchInput(CameraHorizontalInput);
+        }
+
+        private void HandleLockOnInput()
+        {
+            if (!m_hasLockOnInput)
+            {
+                return;
+            }
+
+            m_hasLockOnInput = false;
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
+            m_player?.LockOnManager?.HandleLockOn();
+        }
+
+        private void HandlePlayerMovementInput()
+        {
+            VerticalInput = MovementInput.y;
+            HorizontalInput = MovementInput.x;
+
+            MoveAmount = Mathf.Clamp01(Mathf.Abs(VerticalInput) + Mathf.Abs(HorizontalInput));
+            if (MoveAmount > 0f && MoveAmount <= 0.5f)
+            {
+                MoveAmount = 0.5f;
+            }
+            else if (MoveAmount > 0.5f)
+            {
+                MoveAmount = 1f;
+            }
+        }
+
+        private void HandleDodgeInput()
+        {
+            if (!m_hasDodgeInput)
+            {
+                return;
+            }
+
+            m_hasDodgeInput = false;
+            m_player?.PlayerCombatManager?.SetBlocking(false);
+            m_player?.LocomotionManager?.AttemptToPerformDodge();
+        }
+
+        private void HandleSprinting()
+        {
+            m_player?.LocomotionManager?.HandleSprinting(m_isSprintInputHeld);
+        }
+
+        private void HandleJumpInput()
+        {
+            if (!m_hasJumpInput)
+            {
+                return;
+            }
+
+            m_hasJumpInput = false;
+            m_player?.PlayerCombatManager?.SetBlocking(false);
+            m_player?.LocomotionManager?.AttemptToPerformJump();
+        }
+
+        private void HandleSneakInput()
+        {
+            if (!m_hasSneakInput)
+            {
+                return;
+            }
+
+            m_hasSneakInput = false;
+            m_player?.PlayerNetworkManager?.ToggleSneakingState();
+        }
+
+        private void HandleWeaponSwitchInput()
+        {
+            if (m_hasSwitchRightWeaponInput)
+            {
+                m_hasSwitchRightWeaponInput = false;
+                CancelRangedInputState();
+                m_player?.InventoryManager?.SwitchRightWeapon();
+            }
+
+            if (m_hasSwitchLeftWeaponInput)
+            {
+                m_hasSwitchLeftWeaponInput = false;
+                CancelRangedInputState();
+                m_player?.InventoryManager?.SwitchLeftWeapon();
+            }
+        }
+
+        private void HandleAttackInput()
+        {
+            if (m_hasRBInput && !m_isTwoHandInputHeld)
+            {
+                m_hasRBInput = false;
+                if (m_isRangedRBInput)
+                {
+                    PerformRangedProjectileAction(ProjectileSlot.Main);
+                }
+                else if (!TryQueueAttackInput(AttackInputType.Light))
+                {
+                    PerformRightHandAction();
+                }
+            }
+
+            if (m_hasRTStartedInput)
+            {
+                m_hasRTStartedInput = false;
+                if (!TryQueueAttackInput(AttackInputType.Heavy))
+                {
+                    m_player?.PlayerCombatManager?.BeginChargingHeavyAttack();
+                }
+            }
+
+            if (m_hasRTReleasedInput)
+            {
+                m_hasRTReleasedInput = false;
+                m_player?.PlayerCombatManager?.ReleaseChargingHeavyAttack();
+            }
+        }
+
+        private void HandleSwitchQuickSlotItemInput()
+        {
+            if (!m_hasSwitchQuickSlotItemInput)
+            {
+                return;
+            }
+
+            m_hasSwitchQuickSlotItemInput = false;
+            m_player?.InventoryManager?.SwitchQuickSlotItem();
+        }
+
+        private void HandleBlockingInput()
+        {
+            if (!m_isLBInputHeld || m_isLBSpellInput)
+            {
+                return;
+            }
+
+            PlayerCombatManager combatManager = m_player?.PlayerCombatManager;
+            if (combatManager?.CanUsePowerStance() == true)
+            {
+                if (!m_hasLBInput)
+                {
+                    return;
+                }
+
+                m_hasLBInput = false;
+                WeaponItem offHandWeapon =
+                    m_player.InventoryManager?.CurrentLeftHandWeapon;
+                combatManager.PerformPowerStanceLeftHandAction(offHandWeapon);
+                return;
+            }
+
+            m_hasLBInput = false;
+            WeaponItem weapon = ResolveBlockingWeapon();
+            combatManager?.PerformWeaponBasedAction(
+                weapon?.LeftHandAction,
+                weapon);
+        }
+
+        private void HandleLTInput()
+        {
+            if (!m_hasLTInput)
+            {
+                return;
+            }
+
+            m_hasLTInput = false;
+            m_hasLBInput = false;
+            m_isLBInputHeld = false;
+            m_player?.PlayerCombatManager?.AttemptToPerformAshOfWar();
+        }
+
+        private void HandleInteractionInput()
+        {
+            if (!m_hasInteractionInput)
+            {
+                return;
+            }
+
+            m_hasInteractionInput = false;
+            m_player?.InteractionManager?.HandleInteractionInput();
+        }
+
+        private void HandleQuickSlotItemInput()
+        {
+            if (!m_hasUseQuickSlotItemInput)
+            {
+                return;
+            }
+
+            m_hasUseQuickSlotItemInput = false;
+            m_player?.InventoryManager?.CurrentQuickSlotItem
+                ?.AttemptToUseItem(m_player);
+        }
+
+        private void HandleTwoHandInput()
+        {
+            if (!m_isTwoHandInputHeld || m_player?.PlayerNetworkManager == null)
+            {
+                return;
+            }
+
+            if (m_hasTwoHandRightWeaponInput)
+            {
+                m_hasTwoHandRightWeaponInput = false;
+                m_hasRBInput = false;
+                m_player.PlayerCombatManager?.SetBlocking(false);
+                m_player.PlayerNetworkManager.ToggleTwoHandWeapon(true);
+            }
+
+            if (m_hasTwoHandLeftWeaponInput)
+            {
+                m_hasTwoHandLeftWeaponInput = false;
+                m_hasLBInput = false;
+                m_isLBInputHeld = false;
+                m_player.PlayerCombatManager?.SetBlocking(false);
+                m_player.PlayerNetworkManager.ToggleTwoHandWeapon(false);
+            }
+        }
+
+        private void PerformRightHandAction()
+        {
+            WeaponItem weapon = ResolveAttackWeapon();
+            WeaponItemBasedAction action =
+                m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                    ? weapon?.TwoHandRightAction
+                    : weapon?.RightHandAction;
+            if (action == null || weapon == null)
+            {
+                return;
+            }
+
+            m_player.PlayerCombatManager?.PerformWeaponBasedAction(action, weapon);
+        }
+
+        private void OnMovementChanged(InputAction.CallbackContext context)
+        {
+            MovementInput = context.ReadValue<Vector2>();
+        }
+
+        private void OnCameraMovementChanged(InputAction.CallbackContext context)
+        {
+            CameraInput = context.ReadValue<Vector2>();
+            IsPointerLook = context.control?.device is Mouse;
+        }
+
+        private void OnDodgePerformed(InputAction.CallbackContext context)
+        {
+            m_hasDodgeInput = true;
+        }
+
+        private void OnSprintPerformed(InputAction.CallbackContext context)
+        {
+            m_isSprintInputHeld = true;
+        }
+
+        private void OnSprintCanceled(InputAction.CallbackContext context)
+        {
+            m_isSprintInputHeld = false;
+        }
+
+        private void OnJumpPerformed(InputAction.CallbackContext context)
+        {
+            m_hasJumpInput = true;
+        }
+
+        private void OnSneakPerformed(InputAction.CallbackContext context)
+        {
+            m_hasSneakInput = true;
+        }
+
+        private void OnSwitchRightWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasSwitchRightWeaponInput = true;
+        }
+
+        private void OnSwitchLeftWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasSwitchLeftWeaponInput = true;
+        }
+
+        private void OnSwitchQuickSlotItemPerformed(
+            InputAction.CallbackContext context)
+        {
+            m_hasSwitchQuickSlotItemInput = true;
+        }
+
+        private void OnRBPerformed(InputAction.CallbackContext context)
+        {
+            if (m_isRBSpellInput)
+            {
+                return;
+            }
+
+            m_hasRBInput = true;
+        }
+
+        private void OnRBStarted(InputAction.CallbackContext context)
+        {
+            m_isRBSpellInput = TryBeginSpellInput(true);
+            m_isRangedRBInput = !m_isRBSpellInput &&
+                ResolveAttackWeapon() is RangedWeaponItem;
+        }
+
+        private void OnRBCanceled(InputAction.CallbackContext context)
+        {
+            if (m_isRBSpellInput)
+            {
+                m_isRBSpellInput = false;
+                m_player?.PlayerCombatManager?.ReleaseChargingSpell(true);
+            }
+            else if (m_isRangedRBInput)
+            {
+                m_player?.PlayerCombatManager?.ReleaseHeldProjectileInput();
+            }
+
+            m_isRangedRBInput = false;
+        }
+
+        private void OnRTStarted(InputAction.CallbackContext context)
+        {
+            m_isRangedRTInput = ResolveAttackWeapon() is RangedWeaponItem;
+            if (m_isRangedRTInput)
+            {
+                PerformRangedProjectileAction(ProjectileSlot.Secondary);
+            }
+            else
+            {
+                m_hasRTStartedInput = true;
+            }
+        }
+
+        private WeaponItem ResolveAttackWeapon()
+        {
+            PlayerInventoryManager inventory = m_player?.InventoryManager;
+            return m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                ? inventory?.CurrentTwoHandWeapon
+                : inventory?.CurrentRightHandWeapon;
+        }
+
+        private WeaponItem ResolveBlockingWeapon()
+        {
+            PlayerInventoryManager inventory = m_player?.InventoryManager;
+            if (m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true)
+            {
+                return inventory?.CurrentTwoHandWeapon;
+            }
+
+            return inventory?.CurrentRightHandWeapon is RangedWeaponItem
+                ? inventory.CurrentRightHandWeapon
+                : inventory?.CurrentLeftHandWeapon;
+        }
+
+        private void OnRTCanceled(InputAction.CallbackContext context)
+        {
+            if (m_isRangedRTInput)
+            {
+                m_player?.PlayerCombatManager?.ReleaseHeldProjectileInput();
+                m_isRangedRTInput = false;
+            }
+            else
+            {
+                m_hasRTReleasedInput = true;
+            }
+        }
+
+        private void OnLTPerformed(InputAction.CallbackContext context)
+        {
+            m_hasLTInput = true;
+        }
+
+        private void OnLBPerformed(InputAction.CallbackContext context)
+        {
+            if (m_isLBSpellInput)
+            {
+                return;
+            }
+
+            m_hasLBInput = true;
+            m_isLBInputHeld = true;
+        }
+
+        private void OnLBStarted(InputAction.CallbackContext context)
+        {
+            m_isLBSpellInput = TryBeginSpellInput(false);
+            m_hasLBInput = !m_isLBSpellInput;
+            m_isLBInputHeld = !m_isLBSpellInput;
+        }
+
+        private void OnLBCanceled(InputAction.CallbackContext context)
+        {
+            if (m_isLBSpellInput)
+            {
+                m_isLBSpellInput = false;
+                m_player?.PlayerCombatManager?.ReleaseChargingSpell(false);
+            }
+
+            m_hasLBInput = false;
+            m_isLBInputHeld = false;
+            m_player?.PlayerCombatManager?.SetBlocking(false);
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
+        }
+
+        private bool TryBeginSpellInput(bool isRightHand)
+        {
+            if (m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true)
+            {
+                return false;
+            }
+
+            WeaponItem weapon = isRightHand
+                ? m_player?.InventoryManager?.CurrentRightHandWeapon
+                : m_player?.InventoryManager?.CurrentLeftHandWeapon;
+            if (weapon is not CasterWeaponItem)
+            {
+                return false;
+            }
+
+            WeaponItemBasedAction action = isRightHand
+                ? weapon.RightHandAction
+                : weapon.LeftHandAction;
+            if (action is not CastIncantationAction)
+            {
+                return false;
+            }
+
+            m_player.PlayerNetworkManager.SetCharacterActionHand(isRightHand);
+            m_player.PlayerCombatManager?.PerformWeaponBasedAction(action, weapon);
+            return m_player.PlayerCombatManager?.IsChargingSpell == true;
+        }
+
+        private void OnTwoHandWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_isTwoHandInputHeld = true;
+        }
+
+        private void OnTwoHandWeaponCanceled(InputAction.CallbackContext context)
+        {
+            m_isTwoHandInputHeld = false;
+            m_hasTwoHandRightWeaponInput = false;
+            m_hasTwoHandLeftWeaponInput = false;
+        }
+
+        private void OnTwoHandRightWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasTwoHandRightWeaponInput = m_isTwoHandInputHeld;
+        }
+
+        private void OnTwoHandLeftWeaponPerformed(InputAction.CallbackContext context)
+        {
+            m_hasTwoHandLeftWeaponInput = m_isTwoHandInputHeld;
+        }
+
+        private void OnLockOnPerformed(InputAction.CallbackContext context)
+        {
+            m_hasLockOnInput = true;
+        }
+
+        private void OnInteractPerformed(InputAction.CallbackContext context)
+        {
+            m_hasInteractionInput = true;
+        }
+
+        private void OnUseQuickSlotItemPerformed(InputAction.CallbackContext context)
+        {
+            m_hasUseQuickSlotItemInput = true;
+        }
+
+        private void PerformRangedProjectileAction(ProjectileSlot projectileSlot)
+        {
+            if (ResolveAttackWeapon() is not RangedWeaponItem weapon)
+            {
+                return;
+            }
+
+            WeaponItemBasedAction action = projectileSlot == ProjectileSlot.Main
+                ? weapon.RightHandAction
+                : weapon.RightHandHeavyAction;
+            m_player?.PlayerCombatManager?.PerformWeaponBasedAction(
+                action,
+                weapon);
+        }
+
+        private void CancelRangedInputState()
+        {
+            m_isRangedRBInput = false;
+            m_isRangedRTInput = false;
+            m_player?.PlayerCombatManager?.CancelNotchedProjectile(true);
+            m_player?.PlayerNetworkManager?.SetAimingState(false);
+        }
+
+        private void RemoveExpiredAttackInputs(float currentTime)
+        {
+            while (m_attackInputQueue.Count > 0 &&
+                IsAttackInputExpired(
+                    m_attackInputQueue.Peek(),
+                    currentTime,
+                    m_inputBufferDuration))
+            {
+                m_attackInputQueue.Dequeue();
+            }
+        }
+
+        private static bool IsAttackInputExpired(
+            AttackInput attackInput,
+            float currentTime,
+            float bufferDuration)
+        {
+            return currentTime >
+                attackInput.Timestamp + Mathf.Max(0f, bufferDuration);
+        }
+
+        private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
+        {
+            RefreshMovementInput(activeScene);
+        }
+
+        private void RefreshMovementInput(Scene activeScene)
+        {
+            if (Application.isFocused &&
+                activeScene.name == k_GameplaySceneName &&
+                !m_isGameplayInputBlocked)
+            {
+                EnablePlayerControls();
+                return;
+            }
+
+            DisablePlayerControls();
+        }
+    }
+}
