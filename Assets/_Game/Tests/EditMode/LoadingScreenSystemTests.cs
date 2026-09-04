@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
+using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
 
@@ -61,7 +63,7 @@ namespace ZZ.Tests
             Type managerType = GetRuntimeType(
                 "ZZ.PlayerUILoadingScreenManager");
             string source = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUILoadingScreenManager.cs");
 
             Assert.That(
@@ -84,7 +86,7 @@ namespace ZZ.Tests
         public void LoadingManagerOwnsSceneSubscriptionAndCoroutineCleanup()
         {
             string source = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUILoadingScreenManager.cs");
 
             Assert.That(
@@ -104,7 +106,7 @@ namespace ZZ.Tests
         public void LoadingIconUsesUnscaledLifecycleOwnedCoroutine()
         {
             string source = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "FadeLoadingScreenIcon.cs");
 
             Assert.That(source, Does.Contain("private void OnEnable()"));
@@ -118,7 +120,7 @@ namespace ZZ.Tests
         {
             Type managerType = GetRuntimeType("ZZ.WorldAIManager");
             string source = File.ReadAllText(
-                "Assets/_Game/Scripts/World/Managers/AI/WorldAIManager.cs");
+                "Assets/_Game/Scripts/World/AI/WorldAIManager.cs");
 
             Assert.That(managerType.GetMethod("SpawnAllCharacters"), Is.Not.Null);
             Assert.That(managerType.GetMethod("ResetAllCharacters"), Is.Not.Null);
@@ -145,7 +147,7 @@ namespace ZZ.Tests
             Type spawnerType = GetRuntimeType("ZZ.AICharacterSpawner");
             Type aiType = GetRuntimeType("ZZ.AICharacterManager");
             string source = File.ReadAllText(
-                "Assets/_Game/Scripts/World/Managers/AI/AICharacterSpawner.cs");
+                "Assets/_Game/Scripts/World/AI/AICharacterSpawner.cs");
 
             Assert.That(spawnerType.GetMethod("ResetCharacter"), Is.Not.Null);
             Assert.That(aiType.GetMethod("ResetAtSpawnPoint"), Is.Not.Null);
@@ -176,12 +178,54 @@ namespace ZZ.Tests
             string saveSource = File.ReadAllText(
                 "Assets/_Game/Scripts/World/Managers/WorldSaveGameManager.cs");
             string travelSource = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUITeleportLocationManager.cs");
 
             Assert.That(saveSource, Does.Contain("ActivateLoadingScreen()"));
             Assert.That(travelSource, Does.Contain("ActivateLoadingScreen()"));
             Assert.That(travelSource, Does.Contain("DeactivateLoadingScreen()"));
+        }
+
+        [Test]
+        public void SavedSceneLoadSerializesRequestsAndRetriesNetcodeBusyState()
+        {
+            string source = File.ReadAllText(
+                "Assets/_Game/Scripts/World/Managers/WorldSaveGameManager.cs");
+
+            Assert.That(source, Does.Contain("m_sceneLoadIsInProgress"));
+            Assert.That(source, Does.Contain("TryBeginSceneLoad("));
+            Assert.That(source, Does.Contain(
+                "SceneEventProgressStatus.SceneEventInProgress"));
+            Assert.That(source, Does.Contain(
+                "SceneEventType.LoadEventCompleted"));
+            Assert.That(source, Does.Contain(
+                "k_SceneEventRetryTimeoutSeconds"));
+            Assert.That(source, Does.Contain(
+                "networkSceneManager.OnSceneEvent -= HandleSceneEvent"));
+        }
+
+        [Test]
+        public void SavedSceneLoadOnlyRetriesTransientBusyStatus()
+        {
+            MethodInfo shouldRetry = GetRuntimeType("ZZ.WorldSaveGameManager")
+                .GetMethod(
+                    "ShouldRetrySceneLoad",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+
+            Assert.That(shouldRetry, Is.Not.Null);
+            Assert.That(
+                shouldRetry.Invoke(
+                    null,
+                    new object[]
+                    {
+                        SceneEventProgressStatus.SceneEventInProgress
+                    }),
+                Is.True);
+            Assert.That(
+                shouldRetry.Invoke(
+                    null,
+                    new object[] { SceneEventProgressStatus.InvalidSceneName }),
+                Is.False);
         }
 
         private static Type GetRuntimeType(string fullName)

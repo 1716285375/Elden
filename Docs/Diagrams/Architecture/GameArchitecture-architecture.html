@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>图 1-1 游戏总体架构-架构图</title>
+<style>
+  :root {
+    --paper: #f5f5f5;
+    --ink: #2d3142;
+    --ink-soft: #5b6072;
+    --accent: #eb6c36;
+    --node-fill: #ffffff;
+    --node-fill-alt: #e8eaee;
+  }
+  html, body { margin: 0; padding: 0; background: #d8d8d8; }
+  .page { display: flex; justify-content: center; padding: 24px; }
+  svg { background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,.18); max-width: 100%; height: auto; }
+  text { fill: var(--ink); }
+  .eyebrow   { font: 600 10px "Geist Mono","Noto Sans SC",monospace; letter-spacing: .18em; fill: var(--ink-soft); }
+  .title     { font: 400 32px "Instrument Serif","Noto Sans SC",serif; }
+  .node-name { font: 600 12px "Geist","Noto Sans SC",sans-serif; }
+  .node-sub  { font: 400 10px "Noto Sans SC","Geist",sans-serif; fill: var(--ink-soft); }
+  .mono      { font: 400 9px "Geist Mono",monospace; fill: var(--ink-soft); }
+  .edge-lbl  { font: 400 10px "Noto Sans SC","Geist",sans-serif; fill: var(--ink-soft); }
+  .caption   { font: 400 12px "Noto Sans SC","Geist",sans-serif; fill: var(--ink-soft); }
+  .box       { fill: var(--node-fill); stroke: var(--ink); stroke-width: 1.5; }
+  .box-alt   { fill: var(--node-fill-alt); stroke: var(--ink); stroke-width: 1.5; }
+  .box-core  { fill: var(--node-fill); stroke: var(--accent); stroke-width: 2; }
+  .edge      { stroke: var(--ink); stroke-width: 1.4; fill: none; }
+  .edge-inh  { stroke: var(--ink); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+</style>
+</head>
+<body>
+<div class="page">
+<svg viewBox="0 0 1120 792" width="1120" height="792" role="img" aria-label="图 1-1 游戏总体架构-架构图">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2d3142"/>
+    </marker>
+    <marker id="arrow-open" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M1,1 L10,6 L1,11" fill="none" stroke="#2d3142" stroke-width="1.6"/>
+    </marker>
+  </defs>
+
+  <!-- 页眉 -->
+  <text class="eyebrow" x="40" y="64">ELDEN · 图 1-1 游戏总体架构-架构图</text>
+  <text class="title" x="40" y="104">游戏总体架构</text>
+
+  <!-- ══ 第一层：入口层 ══ -->
+  <text class="mono" x="40" y="150">INPUT / WORLD / UI</text>
+  <rect class="box" x="60"  y="160" width="300" height="84" rx="6"/>
+  <text class="node-name" x="210" y="192" text-anchor="middle">输入系统</text>
+  <text class="node-sub"  x="210" y="212" text-anchor="middle">输入采集与动作分发</text>
+  <text class="mono"      x="210" y="230" text-anchor="middle">PlayerInputManager · PlayerControls</text>
+
+  <rect class="box" x="410" y="160" width="300" height="84" rx="6"/>
+  <text class="node-name" x="560" y="192" text-anchor="middle">世界服务</text>
+  <text class="node-sub"  x="560" y="212" text-anchor="middle">会话 · 物品库 · AI 生成 · 交互物</text>
+  <text class="mono"      x="560" y="230" text-anchor="middle">World Managers</text>
+
+  <rect class="box" x="760" y="160" width="300" height="84" rx="6"/>
+  <text class="node-name" x="910" y="192" text-anchor="middle">玩家界面</text>
+  <text class="node-sub"  x="910" y="212" text-anchor="middle">HUD · 菜单 · 赐福界面 · 加载屏</text>
+  <text class="mono"      x="910" y="230" text-anchor="middle">Player UI</text>
+
+  <!-- ══ 第二层：角色层 ══ -->
+  <text class="mono" x="40" y="292">CHARACTER</text>
+  <rect class="box-alt" x="60"  y="302" width="300" height="84" rx="6"/>
+  <text class="node-name" x="210" y="334" text-anchor="middle">玩家角色</text>
+  <text class="node-sub"  x="210" y="354" text-anchor="middle">本地操控 · 锁定 · 交互 · 存档挂载</text>
+  <text class="mono"      x="210" y="372" text-anchor="middle">PlayerManager</text>
+
+  <rect class="box-core" x="410" y="302" width="300" height="84" rx="6"/>
+  <text class="node-name" x="560" y="334" text-anchor="middle">角色聚合根（核心）</text>
+  <text class="node-sub"  x="560" y="354" text-anchor="middle">动作状态 · 死亡 · 受击 · 子系统门面</text>
+  <text class="mono"      x="560" y="372" text-anchor="middle">CharacterManager : NetworkBehaviour</text>
+
+  <rect class="box-alt" x="760" y="302" width="300" height="84" rx="6"/>
+  <text class="node-name" x="910" y="334" text-anchor="middle">AI 敌人</text>
+  <text class="node-sub"  x="910" y="354" text-anchor="middle">服务器权威状态机 · 生成与重生</text>
+  <text class="mono"      x="910" y="372" text-anchor="middle">AICharacterManager · StateMachine</text>
+
+  <!-- ══ 第三层：角色子系统 ══ -->
+  <text class="mono" x="40" y="434">CHARACTER SUBSYSTEMS（组合）</text>
+  <rect class="box" x="60"  y="444" width="300" height="84" rx="6"/>
+  <text class="node-name" x="210" y="476" text-anchor="middle">战斗与移动</text>
+  <text class="node-sub"  x="210" y="496" text-anchor="middle">攻击 · 格挡 · 翻滚 · 走跑跳</text>
+  <text class="mono"      x="210" y="514" text-anchor="middle">Combat · Locomotion Manager</text>
+
+  <rect class="box" x="410" y="444" width="300" height="84" rx="6"/>
+  <text class="node-name" x="560" y="476" text-anchor="middle">动画与表现</text>
+  <text class="node-sub"  x="560" y="496" text-anchor="middle">动画状态 · 特效 · 音效</text>
+  <text class="mono"      x="560" y="514" text-anchor="middle">Animator · Effects · SoundFX</text>
+
+  <rect class="box" x="760" y="444" width="300" height="84" rx="6"/>
+  <text class="node-name" x="910" y="476" text-anchor="middle">属性与网络</text>
+  <text class="node-sub"  x="910" y="496" text-anchor="middle">HP/FP/体力 · 网络变量同步</text>
+  <text class="mono"      x="910" y="514" text-anchor="middle">Stats · Network Manager</text>
+
+  <!-- ══ 第四层：玩法数据层 ══ -->
+  <text class="mono" x="40" y="576">GAMEPLAY DATA</text>
+  <rect class="box" x="60"  y="586" width="300" height="84" rx="6"/>
+  <text class="node-name" x="210" y="618" text-anchor="middle">伤害结算</text>
+  <text class="node-sub"  x="210" y="638" text-anchor="middle">弹反 · 格挡 · 减伤 · 处决</text>
+  <text class="mono"      x="210" y="656" text-anchor="middle">DamageCollider · TakeDamageEffect</text>
+
+  <rect class="box" x="410" y="586" width="300" height="84" rx="6"/>
+  <text class="node-name" x="560" y="618" text-anchor="middle">物品 · 库存 · 装备</text>
+  <text class="node-sub"  x="560" y="638" text-anchor="middle">武器 · 防具 · 圣杯瓶 · 快捷栏</text>
+  <text class="mono"      x="560" y="656" text-anchor="middle">Items · Inventory · Equipment</text>
+
+  <rect class="box" x="760" y="586" width="300" height="84" rx="6"/>
+  <text class="node-name" x="910" y="618" text-anchor="middle">存档系统</text>
+  <text class="node-sub"  x="910" y="638" text-anchor="middle">角色槽位 · JSON 序列化写盘</text>
+  <text class="mono"      x="910" y="656" text-anchor="middle">WorldSaveGameManager · SaveFileDataWriter</text>
+
+  <!-- ══ 连线 ══ -->
+  <!-- 输入 → 玩家 -->
+  <path class="edge" d="M210,244 L210,302" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="218" y="278">输入事件</text>
+  <!-- 世界服务 → 角色聚合根 -->
+  <path class="edge" d="M560,244 L560,302" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="568" y="278">生成 · 会话</text>
+  <!-- 玩家界面 ↔ 角色聚合根 -->
+  <path class="edge" d="M910,244 L910,272 L640,272 L640,302" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="700" y="266">状态显示 / 菜单操作</text>
+  <!-- 继承：玩家 → 聚合根 -->
+  <path class="edge-inh" d="M360,344 L410,344" marker-end="url(#arrow-open)"/>
+  <text class="edge-lbl" x="366" y="336">继承</text>
+  <!-- 继承：AI → 聚合根 -->
+  <path class="edge-inh" d="M760,344 L710,344" marker-end="url(#arrow-open)"/>
+  <text class="edge-lbl" x="722" y="336">继承</text>
+  <!-- 组合：聚合根 → 三个子系统 -->
+  <path class="edge" d="M480,386 L480,408 L210,408 L210,444" marker-end="url(#arrow)"/>
+  <path class="edge" d="M560,386 L560,444" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,386 L640,408 L910,408 L910,444" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="498" y="424">组合持有</text>
+  <!-- 战斗 → 伤害结算 -->
+  <path class="edge" d="M210,528 L210,586" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="218" y="562">开关伤害碰撞体</text>
+  <!-- 伤害结算 → 属性与网络 -->
+  <path class="edge" d="M360,628 L1080,628 L1080,486 L1060,486" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="940" y="620">扣减 HP / 韧性</text>
+  <!-- 物品 → 战斗 -->
+  <path class="edge" d="M410,628 L100,628 L100,528" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="120" y="620">武器数据</text>
+  <!-- 物品 → 存档 -->
+  <path class="edge" d="M710,628 L760,628" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="706" y="646">序列化</text>
+
+  <!-- 图例 -->
+  <g>
+    <line class="edge" x1="60" y1="716" x2="110" y2="716" marker-end="url(#arrow)"/>
+    <text class="edge-lbl" x="120" y="720">依赖 / 数据流</text>
+    <line class="edge-inh" x1="240" y1="716" x2="290" y2="716" marker-end="url(#arrow-open)"/>
+    <text class="edge-lbl" x="300" y="720">继承</text>
+    <rect class="box-core" x="370" y="708" width="18" height="16" rx="3"/>
+    <text class="edge-lbl" x="396" y="720">核心聚合根</text>
+  </g>
+
+  <!-- 图题 -->
+  <text class="caption" x="560" y="766" text-anchor="middle">图 1-1 游戏总体架构-架构图</text>
+</svg>
+</div>
+</body>
+</html>

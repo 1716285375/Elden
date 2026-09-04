@@ -15,10 +15,10 @@ namespace ZZ.Tests
         private const string k_RenderTexturePath =
             "Assets/_Game/Resources/UI/Icon Render Texture.renderTexture";
         private const string k_MakerSourcePath =
-            "Assets/_Game/Scripts/UI/Frontend/Profile Icons/" +
+            "Assets/_Game/Scripts/UI/Frontend/ProfileIcons/" +
             "CharacterProfileIconMaker.cs";
         private const string k_DummySourcePath =
-            "Assets/_Game/Scripts/UI/Frontend/Profile Icons/" +
+            "Assets/_Game/Scripts/UI/Frontend/ProfileIcons/" +
             "ProfileIconMakerManager.cs";
 
         [Test]

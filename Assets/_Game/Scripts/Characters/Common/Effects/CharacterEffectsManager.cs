@@ -20,6 +20,7 @@ namespace ZZ
         [Header("Timed Effects")]
         [SerializeField, Min(0.01f)] private float m_defaultEffectTickTime = 1f;
         [SerializeField] private List<TimedCharacterEffect> m_timedEffects = new();
+        private readonly List<TimedCharacterEffect> m_timedEffectsSnapshot = new();
 
         private readonly List<GameObject> m_currentActionEffects = new();
         private GameObject m_activePoisonedVFX;
@@ -449,8 +450,9 @@ namespace ZZ
         public void ProcessTimedEffects()
         {
             float tickTime = Mathf.Max(0.01f, m_defaultEffectTickTime);
-            TimedCharacterEffect[] effectsSnapshot = m_timedEffects.ToArray();
-            foreach (TimedCharacterEffect runtimeEffect in effectsSnapshot)
+            m_timedEffectsSnapshot.Clear();
+            m_timedEffectsSnapshot.AddRange(m_timedEffects);
+            foreach (TimedCharacterEffect runtimeEffect in m_timedEffectsSnapshot)
             {
                 if (runtimeEffect == null || !m_timedEffects.Contains(runtimeEffect))
                 {
@@ -470,6 +472,7 @@ namespace ZZ
                 }
             }
 
+            m_timedEffectsSnapshot.Clear();
             m_timedEffects.RemoveAll(effect => effect == null);
         }
 

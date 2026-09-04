@@ -288,7 +288,7 @@ namespace ZZ.Tests
             string inventorySource = File.ReadAllText(
                 "Assets/_Game/Scripts/Characters/Common/Inventory/PlayerInventoryManager.cs");
             string inputSource = File.ReadAllText(
-                "Assets/_Game/Scripts/World/Managers/PlayerInputManager.cs");
+                "Assets/_Game/Scripts/Input/PlayerInputManager.cs");
 
             Assert.That(inventorySource, Does.Contain("!m_player.IsPerformingAction"));
             Assert.That(inventorySource, Does.Contain("IsUsingItem != true"));

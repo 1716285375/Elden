@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ZZ
 {
@@ -18,6 +19,8 @@ namespace ZZ
     /// </remarks>
     public class TitleScreenCameraCoordinator : MonoBehaviour
     {
+        private const string k_TitleSceneName = "SCN_MainMenu";
+
         [Header("Menu Presentation")]
         [SerializeField] private Camera m_menuCamera;
         [SerializeField] private AudioListener m_menuAudioListener;
@@ -26,21 +29,58 @@ namespace ZZ
         private AudioListener m_gameplayAudioListener;
         private bool m_hasMutedGameplayCamera;
         private bool m_hasMutedGameplayAudio;
+        private bool m_lastExclusiveState;
 
         private void Start()
         {
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
             ResolveMenuReferences();
             ResolveGameplayReferences();
+            RefreshPresentation(SceneManager.GetActiveScene());
+        }
 
-            if (m_gameplayCamera != null)
+        private void OnDestroy()
+        {
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            RestoreGameplayRig();
+        }
+
+        private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
+        {
+            RefreshPresentation(activeScene);
+        }
+
+        private void RefreshPresentation(Scene activeScene)
+        {
+            bool useMenuPresentation =
+                activeScene.name == k_TitleSceneName;
+            if (useMenuPresentation == m_lastExclusiveState)
+            {
+                return;
+            }
+
+            m_lastExclusiveState = useMenuPresentation;
+            if (useMenuPresentation)
+            {
+                ActivateMenuPresentation();
+            }
+            else
+            {
+                RestoreGameplayRig();
+            }
+        }
+
+        private void ActivateMenuPresentation()
+        {
+            ResolveGameplayReferences();
+            if (m_gameplayCamera != null && m_gameplayCamera.enabled)
             {
                 m_gameplayCamera.enabled = false;
                 m_hasMutedGameplayCamera = true;
             }
 
-            // Only silence the gameplay listener once a menu listener is guaranteed to
-            // replace it, otherwise the Scene is left with no audio output at all.
-            if (m_menuAudioListener != null && m_gameplayAudioListener != null)
+            if (m_menuAudioListener != null && m_gameplayAudioListener != null &&
+                m_gameplayAudioListener.enabled)
             {
                 m_gameplayAudioListener.enabled = false;
                 m_hasMutedGameplayAudio = true;
@@ -56,25 +96,36 @@ namespace ZZ
                 m_menuAudioListener.enabled = true;
             }
 
+            m_lastExclusiveState = true;
             LogState("menu presentation took over");
         }
 
-        private void OnDestroy()
+        private void RestoreGameplayRig()
         {
+            if (m_menuCamera != null)
+            {
+                m_menuCamera.enabled = false;
+            }
+
+            if (m_menuAudioListener != null)
+            {
+                m_menuAudioListener.enabled = false;
+            }
+
             if (m_hasMutedGameplayCamera && m_gameplayCamera != null)
             {
                 m_gameplayCamera.enabled = true;
+                m_hasMutedGameplayCamera = false;
             }
 
             if (m_hasMutedGameplayAudio && m_gameplayAudioListener != null)
             {
                 m_gameplayAudioListener.enabled = true;
+                m_hasMutedGameplayAudio = false;
             }
 
-            if (m_hasMutedGameplayCamera || m_hasMutedGameplayAudio)
-            {
-                LogState("gameplay rig restored");
-            }
+            m_lastExclusiveState = false;
+            LogState("gameplay rig restored");
         }
 
         private void ResolveMenuReferences()

@@ -52,6 +52,10 @@ public class SwordSlashVFXPlayer : MonoBehaviour
     private Mesh m_mesh;
     private MeshRenderer m_meshRenderer;
     private ParticleSystemRenderer[] m_particleRenderers;
+    private Vector3[] m_vertices;
+    private Vector2[] m_uvs;
+    private Color[] m_colors;
+    private int[] m_triangles;
 
     private bool m_sampling;
     private bool m_initialized;
@@ -64,6 +68,11 @@ public class SwordSlashVFXPlayer : MonoBehaviour
     private void LateUpdate()
     {
         Initialize();
+
+        if (!m_sampling && m_samples.Count == 0)
+        {
+            return;
+        }
 
         if (m_sampling)
         {
@@ -149,27 +158,6 @@ public class SwordSlashVFXPlayer : MonoBehaviour
         }
 
         StopAccentParticles(clearTrail);
-    }
-
-    // Compatibility overload for older code.
-    public void Play(Transform anchor, float scale)
-    {
-        Play();
-    }
-
-    // Compatibility method for older code.
-    public void SetScale(float scale)
-    {
-        // Intentionally unused.
-        // The procedural trail width is derived from the real blade endpoints,
-        // so changing transform scale would make the trail detach from the sword.
-    }
-
-    // Compatibility method for older code.
-    public void BindToAnchor(Transform anchor)
-    {
-        // Intentionally unused.
-        // The trail is generated in world space from BladeBase/BladeTip.
     }
 
     private void Initialize()
@@ -302,10 +290,11 @@ public class SwordSlashVFXPlayer : MonoBehaviour
 
         TrailSample previous = m_samples[m_samples.Count - 1];
 
-        float baseDelta = Vector3.Distance(previous.Base, currentBase);
-        float tipDelta = Vector3.Distance(previous.Tip, currentTip);
+        float minimumSampleDistanceSquared = minSampleDistance * minSampleDistance;
+        float baseDeltaSquared = (previous.Base - currentBase).sqrMagnitude;
+        float tipDeltaSquared = (previous.Tip - currentTip).sqrMagnitude;
 
-        if (Mathf.Max(baseDelta, tipDelta) >= minSampleDistance)
+        if (Mathf.Max(baseDeltaSquared, tipDeltaSquared) >= minimumSampleDistanceSquared)
         {
             AddSample(currentBase, currentTip);
         }
@@ -324,8 +313,9 @@ public class SwordSlashVFXPlayer : MonoBehaviour
         {
             TrailSample previous = m_samples[m_samples.Count - 1];
 
-            if (Vector3.Distance(previous.Base, currentBase) < minSampleDistance &&
-                Vector3.Distance(previous.Tip, currentTip) < minSampleDistance)
+            float minimumSampleDistanceSquared = minSampleDistance * minSampleDistance;
+            if ((previous.Base - currentBase).sqrMagnitude < minimumSampleDistanceSquared &&
+                (previous.Tip - currentTip).sqrMagnitude < minimumSampleDistanceSquared)
             {
                 return;
             }
@@ -336,7 +326,8 @@ public class SwordSlashVFXPlayer : MonoBehaviour
 
     private void AddSample(Vector3 currentBase, Vector3 currentTip)
     {
-        if (m_samples.Count >= maxSamples)
+        int sampleLimit = Mathf.Max(2, maxSamples);
+        if (m_samples.Count >= sampleLimit)
         {
             m_samples.RemoveAt(0);
         }
@@ -368,11 +359,17 @@ public class SwordSlashVFXPlayer : MonoBehaviour
     private void RemoveExpiredSamples()
     {
         float now = Time.time;
+        int expiredCount = 0;
 
-        while (m_samples.Count > 0 &&
-               now - m_samples[0].Time > trailLifetime)
+        while (expiredCount < m_samples.Count &&
+               now - m_samples[expiredCount].Time > trailLifetime)
         {
-            m_samples.RemoveAt(0);
+            expiredCount++;
+        }
+
+        if (expiredCount > 0)
+        {
+            m_samples.RemoveRange(0, expiredCount);
         }
     }
 
@@ -391,14 +388,9 @@ public class SwordSlashVFXPlayer : MonoBehaviour
             return;
         }
 
+        EnsureMeshBuffers();
         int vertexCount = sampleCount * 2;
-
-        Vector3[] vertices = new Vector3[vertexCount];
-        Vector2[] uvs = new Vector2[vertexCount];
-        Color[] colors = new Color[vertexCount];
-
-        int[] triangles = new int[(sampleCount - 1) * 6];
-
+        int triangleCount = (sampleCount - 1) * 6;
         float now = Time.time;
 
         for (int i = 0; i < sampleCount; i++)
@@ -410,16 +402,16 @@ public class SwordSlashVFXPlayer : MonoBehaviour
 
             // Runtime trail object has identity transform at world origin,
             // therefore world positions can be used directly as mesh vertices.
-            vertices[baseIndex] = sample.Base;
-            vertices[tipIndex] = sample.Tip;
+            m_vertices[baseIndex] = sample.Base;
+            m_vertices[tipIndex] = sample.Tip;
 
             float alongTrail =
                 sampleCount <= 1
                     ? 1f
                     : (float)i / (sampleCount - 1);
 
-            uvs[baseIndex] = new Vector2(alongTrail, 0f);
-            uvs[tipIndex] = new Vector2(alongTrail, 1f);
+            m_uvs[baseIndex] = new Vector2(alongTrail, 0f);
+            m_uvs[tipIndex] = new Vector2(alongTrail, 1f);
 
             float age01 =
                 Mathf.Clamp01((now - sample.Time) / trailLifetime);
@@ -430,8 +422,8 @@ public class SwordSlashVFXPlayer : MonoBehaviour
             alpha *= Mathf.SmoothStep(0f, 1f, alongTrail);
 
             Color color = new Color(1f, 1f, 1f, alpha);
-            colors[baseIndex] = color;
-            colors[tipIndex] = color;
+            m_colors[baseIndex] = color;
+            m_colors[tipIndex] = color;
         }
 
         int triangleIndex = 0;
@@ -444,21 +436,39 @@ public class SwordSlashVFXPlayer : MonoBehaviour
             int nextTip = currentBase + 3;
 
             // Front face.
-            triangles[triangleIndex++] = currentBase;
-            triangles[triangleIndex++] = currentTip;
-            triangles[triangleIndex++] = nextTip;
+            m_triangles[triangleIndex++] = currentBase;
+            m_triangles[triangleIndex++] = currentTip;
+            m_triangles[triangleIndex++] = nextTip;
 
-            triangles[triangleIndex++] = currentBase;
-            triangles[triangleIndex++] = nextTip;
-            triangles[triangleIndex++] = nextBase;
+            m_triangles[triangleIndex++] = currentBase;
+            m_triangles[triangleIndex++] = nextTip;
+            m_triangles[triangleIndex++] = nextBase;
         }
 
-        m_mesh.vertices = vertices;
-        m_mesh.uv = uvs;
-        m_mesh.colors = colors;
-        m_mesh.triangles = triangles;
+        m_mesh.SetVertices(m_vertices, 0, vertexCount);
+        m_mesh.SetUVs(0, m_uvs, 0, vertexCount);
+        m_mesh.SetColors(m_colors, 0, vertexCount);
+        m_mesh.SetTriangles(m_triangles, 0, triangleCount, 0, false);
         m_mesh.RecalculateBounds();
         m_mesh.RecalculateNormals();
+    }
+
+    private void EnsureMeshBuffers()
+    {
+        int sampleCapacity = Mathf.Max(2, maxSamples);
+        int vertexCapacity = sampleCapacity * 2;
+        int triangleCapacity = (sampleCapacity - 1) * 6;
+        if (m_vertices == null || m_vertices.Length != vertexCapacity)
+        {
+            m_vertices = new Vector3[vertexCapacity];
+            m_uvs = new Vector2[vertexCapacity];
+            m_colors = new Color[vertexCapacity];
+        }
+
+        if (m_triangles == null || m_triangles.Length != triangleCapacity)
+        {
+            m_triangles = new int[triangleCapacity];
+        }
     }
 
     private void SetTrailVisible(bool visible)

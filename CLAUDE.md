@@ -2,6 +2,17 @@
 
 This file defines the shared development conventions for this repository. It applies whenever Claude Code analyzes code, implements features, fixes defects, refactors, or performs code reviews. Readability, correctness, maintainability, and the smallest necessary change take priority.
 
+## Related Documents
+
+- [Code Analysis Rules](Docs/AI/CodeAnalysisRules.md) — analysis workflow using CodeGraph MCP (structure queries) and code-review-graph (change impact), and deciding whether to generate diagrams.
+- [Diagram Drawing Rules](Docs/AI/DiagramRules.md) — applies when rendering diagrams with the diagram-design plugin.
+
+## AI Tool Chain
+
+- CodeGraph MCP（结构查询）与 code-review-graph（变更评审）已注册到 `.mcp.json`。
+- 子代理没有 MCP 工具时用 CLI 兜底：`codegraph explore|node|query|callers|callees|impact|affected`、`code-review-graph detect-changes|update|status`。
+- 用法细节见 `Docs/AI/` 下两个规则文档。
+
 ## Instruction Priority
 
 - Explicit requirements in the user's current task take precedence over this file.

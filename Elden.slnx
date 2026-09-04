@@ -1,9 +1,13 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="UnitySkills.Editor.csproj" />
-  <Project Path="Assembly-CSharp-Editor.csproj" />
-  <Project Path="UnitySkills.Tests.Editor.csproj" />
-  <Project Path="ParrelSync.csproj" />
   <Project Path="ZZ.SaveSystem.EditorTests.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="ZZ.SaveSystem.csproj" />
+  <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="UnitySkills.Tests.Editor.csproj" />
+  <Project Path="ZZ.NavRuntime.Tests.csproj" />
+  <Project Path="ZZ.NavBaker.EditorTests.csproj" />
+  <Project Path="ParrelSync.csproj" />
+  <Project Path="UnitySkills.Tests.Runtime.csproj" />
 </Solution>

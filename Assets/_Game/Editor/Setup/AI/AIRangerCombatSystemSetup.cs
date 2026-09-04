@@ -56,7 +56,7 @@ namespace ZZ.Editor
             EditorApplication.delayCall += ConfigureRangerCombatSystem;
         }
 
-        [MenuItem("Tools/ZZ/AI/Configure Ranger Combat System")]
+        [ZZTool("AI", "配置远程战斗系统", 320)]
         public static void ConfigureRangerCombatSystem()
         {
             EnsureAssetFolder(k_RangerPrefabDirectory);

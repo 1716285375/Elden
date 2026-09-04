@@ -23,14 +23,22 @@ namespace ZZ.Tests
         private const string k_TriggerPrefabPath =
             "Assets/_Game/Prefabs/World/Streaming/Area Load Trigger.prefab";
 
-        private static readonly int[] s_areaLocations =
-        {
-            1,
-            2,
-            3,
-            4,
-            5
-        };
+        /// <summary>
+        /// WorldSceneLocation enum value -> (region, area) of the Scene Set that
+        /// owns it. Values 6-8 are R01's per-Area streaming units.
+        /// </summary>
+        private static readonly (int LocationValue, int RegionIndex, int AreaIndex)[]
+            s_locationMapping =
+            {
+                (1, 0, 0), // R01 A01 CliffPath
+                (6, 0, 1), // R01 A02 Graveyard
+                (7, 0, 2), // R01 A03 MainGate
+                (8, 0, 3), // R01 A04 GateTower
+                (2, 1, 0), // R02 A01 EntranceHall
+                (3, 2, 0), // R03
+                (4, 3, 0), // R04
+                (5, 4, 0)  // R05
+            };
 
         [Test]
         public static void SceneLocationMappingMatchesActualAreaSceneNames()
@@ -38,13 +46,15 @@ namespace ZZ.Tests
             Assert.That(
                 GetSceneID(0),
                 Is.EqualTo(WorldScenePathLayout.MasterSceneName));
-            for (int areaIndex = 0; areaIndex < s_areaLocations.Length; areaIndex++)
+            foreach ((int locationValue, int regionIndex, int areaIndex) in
+                s_locationMapping)
             {
                 string expectedID = WorldScenePathLayout.GetSceneID(
+                    regionIndex,
                     areaIndex,
                     0);
                 Assert.That(
-                    GetSceneID(s_areaLocations[areaIndex]),
+                    GetSceneID(locationValue),
                     Is.EqualTo(expectedID));
                 Assert.That(
                     AssetDatabase.LoadAssetAtPath<SceneAsset>(
@@ -57,15 +67,31 @@ namespace ZZ.Tests
         public static void AdjacencyLoadsCurrentAndDirectlyConnectedAreas()
         {
             CollectionAssert.AreEqual(
-                GetOwnedSceneIDs(0).Concat(GetOwnedSceneIDs(1)),
+                GetOwnedSceneIDs(0, 0).Concat(GetOwnedSceneIDs(0, 1)),
                 GetScenesToLoad(1));
             CollectionAssert.AreEqual(
-                GetOwnedSceneIDs(2)
-                    .Concat(GetOwnedSceneIDs(1))
-                    .Concat(GetOwnedSceneIDs(3)),
-                GetScenesToLoad(3));
+                GetOwnedSceneIDs(0, 1)
+                    .Concat(GetOwnedSceneIDs(0, 0))
+                    .Concat(GetOwnedSceneIDs(0, 2))
+                    .Concat(GetOwnedSceneIDs(0, 3)),
+                GetScenesToLoad(6));
             CollectionAssert.AreEqual(
-                GetOwnedSceneIDs(4).Concat(GetOwnedSceneIDs(3)),
+                GetOwnedSceneIDs(0, 2)
+                    .Concat(GetOwnedSceneIDs(0, 1))
+                    .Concat(GetOwnedSceneIDs(0, 3)),
+                GetScenesToLoad(7));
+            CollectionAssert.AreEqual(
+                GetOwnedSceneIDs(0, 3)
+                    .Concat(GetOwnedSceneIDs(0, 1))
+                    .Concat(GetOwnedSceneIDs(0, 2)),
+                GetScenesToLoad(8));
+            CollectionAssert.AreEqual(
+                GetOwnedSceneIDs(1, 0)
+                    .Concat(GetOwnedSceneIDs(0, 2))
+                    .Concat(GetOwnedSceneIDs(2, 0)),
+                GetScenesToLoad(2));
+            CollectionAssert.AreEqual(
+                GetOwnedSceneIDs(4, 0).Concat(GetOwnedSceneIDs(3, 0)),
                 GetScenesToLoad(5));
         }
 
@@ -96,17 +122,19 @@ namespace ZZ.Tests
                         "m_playersInLocation",
                         BindingFlags.Instance | BindingFlags.NonPublic)
                     .GetValue(manager);
-                UnityEngine.Object area00 = LoadLocationAsset(0);
-                UnityEngine.Object area04 = LoadLocationAsset(4);
+                UnityEngine.Object area00 = LoadLocationAsset(
+                    "R01_MonasteryOutskirts_A01_CliffPath");
+                UnityEngine.Object area04 = LoadLocationAsset(
+                    "R05_BossSanctum");
                 ((IList)playersInLocation[area00]).Add(playerA);
                 ((IList)playersInLocation[area04]).Add(playerB);
 
                 CollectionAssert.AreEquivalent(
                     new[] { WorldScenePathLayout.MasterSceneName }
-                        .Concat(GetOwnedSceneIDs(0))
-                        .Concat(GetOwnedSceneIDs(1))
-                        .Concat(GetOwnedSceneIDs(4))
-                        .Concat(GetOwnedSceneIDs(3)),
+                        .Concat(GetOwnedSceneIDs(0, 0))
+                        .Concat(GetOwnedSceneIDs(0, 1))
+                        .Concat(GetOwnedSceneIDs(4, 0))
+                        .Concat(GetOwnedSceneIDs(3, 0)),
                     (IEnumerable)manager.GetType().GetMethod(
                         "BuildDoNotUnloadSceneIDs").Invoke(manager, null));
             }
@@ -200,11 +228,13 @@ namespace ZZ.Tests
                 (IEnumerable<string>)bakingSet.GetType()
                     .GetProperty("sceneGUIDs")
                     ?.GetValue(bakingSet);
-            for (int locationIndex = 0;
-                locationIndex < s_areaLocations.Length;
-                locationIndex++)
+            foreach (UnityEngine.Object location in LoadAllLocationAssets())
             {
-                foreach (string sceneID in GetOwnedSceneIDs(locationIndex))
+                IReadOnlyList<string> sceneIDs = GetProperty<
+                    IReadOnlyList<string>>(
+                        location,
+                        "ScenesRequiredForThisLocation");
+                foreach (string sceneID in sceneIDs)
                 {
                     string scenePath =
                         WorldScenePathLayout.GetScenePath(sceneID);
@@ -239,15 +269,16 @@ namespace ZZ.Tests
 
             try
             {
-                GameObject manager = scene.GetRootGameObjects()
-                    .Single(root => root.name == "World Streaming Manager");
-                GameObject probe = scene.GetRootGameObjects()
-                    .Single(root => root.name ==
-                        "World Streaming Adaptive Probe Volume");
+                GameObject manager = FindChild(scene, "World Streaming Manager");
+                GameObject probe = FindChild(
+                    scene,
+                    "World Streaming Adaptive Probe Volume");
                 GameObject triggerPrefab =
                     AssetDatabase.LoadAssetAtPath<GameObject>(
                         k_TriggerPrefabPath);
 
+                Assert.That(manager, Is.Not.Null, "World Streaming Manager");
+                Assert.That(probe, Is.Not.Null, "Adaptive Probe Volume");
                 Assert.That(
                     manager.GetComponent(
                         GetRuntimeType("Unity.Netcode.NetworkObject")),
@@ -298,10 +329,8 @@ namespace ZZ.Tests
                 Does.Contain("WorldSceneSubSceneManager.Instance?.RemovePlayer(player)"));
         }
 
-        private static UnityEngine.Object LoadLocationAsset(int locationIndex)
+        private static UnityEngine.Object LoadLocationAsset(string assetName)
         {
-            string assetName =
-                WorldScenePathLayout.GetRegionFolderName(locationIndex);
             UnityEngine.Object location = AssetDatabase.LoadAssetAtPath(
                 $"{k_WorldLocationFolder}/{assetName}.asset",
                 GetRuntimeType("ZZ.WorldLocationSceneSet"));
@@ -309,12 +338,27 @@ namespace ZZ.Tests
             return location;
         }
 
-        private static IEnumerable<string> GetOwnedSceneIDs(int locationIndex)
+        private static UnityEngine.Object[] LoadAllLocationAssets()
+        {
+            Type locationType = GetRuntimeType("ZZ.WorldLocationSceneSet");
+            return AssetDatabase.FindAssets("t:WorldLocationSceneSet",
+                    new[] { k_WorldLocationFolder })
+                .Select(guid => AssetDatabase.LoadAssetAtPath(
+                    AssetDatabase.GUIDToAssetPath(guid),
+                    locationType))
+                .Where(location => location != null)
+                .ToArray();
+        }
+
+        private static IEnumerable<string> GetOwnedSceneIDs(
+            int regionIndex,
+            int areaIndex)
         {
             for (int sliceIndex = 0; sliceIndex < 4; sliceIndex++)
             {
                 yield return WorldScenePathLayout.GetSceneID(
-                    locationIndex,
+                    regionIndex,
+                    areaIndex,
                     sliceIndex);
             }
         }
@@ -343,6 +387,39 @@ namespace ZZ.Tests
                 new[] { Enum.ToObject(locationType, locationValue) })).ToArray();
         }
 
+        private static object GetProperty(
+            UnityEngine.Object target,
+            string propertyName)
+        {
+            PropertyInfo property = target.GetType().GetProperty(
+                propertyName,
+                BindingFlags.Public | BindingFlags.Instance);
+            Assert.That(property, Is.Not.Null, propertyName);
+            return property.GetValue(target);
+        }
+
+        private static T GetProperty<T>(
+            UnityEngine.Object target,
+            string propertyName)
+        {
+            return (T)GetProperty(target, propertyName);
+        }
+
+        private static GameObject FindChild(Scene scene, string objectName)
+        {
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                Transform match = root.GetComponentsInChildren<Transform>(true)
+                    .FirstOrDefault(transform => transform.name == objectName);
+                if (match != null)
+                {
+                    return match.gameObject;
+                }
+            }
+
+            return null;
+        }
+
         private static Type GetRuntimeType(string fullName)
         {
             Type type = AppDomain.CurrentDomain.GetAssemblies()
@@ -355,13 +432,14 @@ namespace ZZ.Tests
         private static string ReadRuntimeSource(string relativePath)
         {
             relativePath = RemapRuntimeSourcePath(relativePath);
-            return File.ReadAllText($"Assets/_Game/Scripts/{relativePath}");
+            return File.ReadAllText($"Assets/_Game/Scripts/{relativePath}")
+                .Replace("\r\n", "\n");
         }
         /// <summary>Maps a pre-refactor Script-relative path to the new layout.</summary>
         private static string RemapRuntimeSourcePath(string relativePath)
         {
             if (relativePath.StartsWith("Character/Player/Player UI/"))
-                return "Characters/Player/Player UI/" + relativePath.Substring("Character/Player/Player UI/".Length);
+                return "UI/Gameplay/Player/" + relativePath.Substring("Character/Player/Player UI/".Length);
             if (relativePath.StartsWith("Character/Player/"))
                 return "Characters/Player/" + relativePath.Substring("Character/Player/".Length);
             if (relativePath.StartsWith("Character/AI/"))
@@ -373,13 +451,13 @@ namespace ZZ.Tests
             if (relativePath.StartsWith("Character/Inventory/"))
                 return "Characters/Common/Inventory/" + relativePath.Substring("Character/Inventory/".Length);
             if (relativePath.StartsWith("Character/Character UI/"))
-                return "Characters/Common/Character UI/" + relativePath.Substring("Character/Character UI/".Length);
+                return "UI/Gameplay/Character/" + relativePath.Substring("Character/Character UI/".Length);
             if (relativePath.StartsWith("Character/Animation State Behaviors/"))
                 return "Characters/Common/Animation State Behaviors/" + relativePath.Substring("Character/Animation State Behaviors/".Length);
             if (relativePath.StartsWith("Character/"))
                 return "Characters/Common/" + relativePath.Substring("Character/".Length);
             if (relativePath.StartsWith("World Managers/AI/"))
-                return "World/Managers/AI/" + relativePath.Substring("World Managers/AI/".Length);
+                return "World/AI/" + relativePath.Substring("World Managers/AI/".Length);
             if (relativePath.StartsWith("World Managers/"))
                 return "World/Managers/" + relativePath.Substring("World Managers/".Length);
             if (relativePath.StartsWith("World Objects/"))

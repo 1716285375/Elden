@@ -36,53 +36,79 @@ namespace ZZ.Tests
         }
 
         [Test]
-        public void WorldSceneHasUniqueSitesWithSeparateTeleportPoints()
+        public void WorldSceneSetHasUniqueSitesWithSeparateTeleportPoints()
         {
-            Scene scene = SceneManager.GetSceneByPath(k_WorldScenePath);
-            bool shouldCloseScene = !scene.IsValid() || !scene.isLoaded;
-            if (shouldCloseScene)
+            Scene masterScene = SceneManager.GetSceneByPath(k_WorldScenePath);
+            bool shouldCloseMaster = !masterScene.IsValid() || !masterScene.isLoaded;
+            if (shouldCloseMaster)
             {
-                scene = EditorSceneManager.OpenScene(
+                masterScene = EditorSceneManager.OpenScene(
                     k_WorldScenePath,
                     OpenSceneMode.Additive);
             }
 
             try
             {
-                Component[] allComponents = scene.GetRootGameObjects()
+                Component[] masterComponents = masterScene.GetRootGameObjects()
                     .SelectMany(root =>
                         root.GetComponentsInChildren<Component>(true))
                     .ToArray();
-                Component[] sites = allComponents
-                    .Where(component =>
-                        component.GetType().Name == "SiteOfGraceInteractable")
-                    .ToArray();
-                int[] siteIDs = sites
-                    .Select(site => GetProperty<int>(site, "SiteOfGraceID"))
-                    .ToArray();
-
-                Assert.That(sites, Is.Not.Empty);
-                Assert.That(siteIDs, Has.All.GreaterThan(0));
-                Assert.That(siteIDs.Distinct().Count(), Is.EqualTo(siteIDs.Length));
                 Assert.That(
-                    allComponents.Count(component =>
+                    masterComponents.Count(component =>
                         component.GetType().Name == "WorldObjectManager"),
                     Is.EqualTo(1));
-                foreach (Component site in sites)
+
+                List<int> siteIDs = new List<int>();
+                string[] spawnerScenePaths = AssetDatabase.FindAssets(
+                        "t:Scene",
+                        new[]
+                        {
+                            "Assets/_Game/Scenes/Levels/LV01_AbandonedMonastery/Regions"
+                        })
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .Where(path => path.EndsWith(
+                        "_Spawners.unity",
+                        StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+                foreach (string spawnerScenePath in spawnerScenePaths)
                 {
-                    Transform teleport = GetProperty<Transform>(
-                        site,
-                        "TeleportTransform");
-                    Assert.That(teleport, Is.Not.Null);
-                    Assert.That(teleport, Is.Not.EqualTo(site.transform));
-                    Assert.That(teleport.IsChildOf(site.transform), Is.True);
+                    Scene spawnerScene = EditorSceneManager.OpenScene(
+                        spawnerScenePath,
+                        OpenSceneMode.Additive);
+                    try
+                    {
+                        Component[] sites = spawnerScene.GetRootGameObjects()
+                            .SelectMany(root =>
+                                root.GetComponentsInChildren<Component>(true))
+                            .Where(component =>
+                                component.GetType().Name == "SiteOfGraceInteractable")
+                            .ToArray();
+                        foreach (Component site in sites)
+                        {
+                            siteIDs.Add(GetProperty<int>(site, "SiteOfGraceID"));
+                            Transform teleport = GetProperty<Transform>(
+                                site,
+                                "TeleportTransform");
+                            Assert.That(teleport, Is.Not.Null);
+                            Assert.That(teleport, Is.Not.EqualTo(site.transform));
+                            Assert.That(teleport.IsChildOf(site.transform), Is.True);
+                        }
+                    }
+                    finally
+                    {
+                        EditorSceneManager.CloseScene(spawnerScene, true);
+                    }
                 }
+
+                Assert.That(siteIDs, Is.Not.Empty);
+                Assert.That(siteIDs, Has.All.GreaterThan(0));
+                Assert.That(siteIDs.Distinct().Count(), Is.EqualTo(siteIDs.Count));
             }
             finally
             {
-                if (shouldCloseScene)
+                if (shouldCloseMaster)
                 {
-                    EditorSceneManager.CloseScene(scene, true);
+                    EditorSceneManager.CloseScene(masterScene, true);
                 }
             }
         }
@@ -200,9 +226,9 @@ namespace ZZ.Tests
         public void RestCompletionOpensGraceMenuAndTravelClosesModalInput()
         {
             string siteSource = File.ReadAllText(
-                "Assets/_Game/Scripts/World/Managers/SiteOfGraceInteractable.cs");
+                "Assets/_Game/Scripts/World/Interactions/SiteOfGraceInteractable.cs");
             string uiSource = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/PlayerUIManager.cs");
+                "Assets/_Game/Scripts/UI/Gameplay/Player/PlayerUIManager.cs");
 
             Assert.That(siteSource, Does.Contain("OpenSiteOfGraceMenu()"));
             Assert.That(siteSource, Does.Contain("TeleportLocalPlayer()"));

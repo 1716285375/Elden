@@ -19,6 +19,8 @@ namespace ZZ
         private const string k_StartingGameplaySceneName =
             WorldScenePathLayout.MasterSceneName;
         private const string k_SpawnPointName = "Player Spawn Point";
+        private const float k_UninitializedPositionSqrMagnitude = 0.0001f;
+        private const float k_BelowTerrainTolerance = 0.5f;
 
         [SerializeField] private PlayerAnimatorManager m_playerAnimatorManager;
         [SerializeField] private WorldLocationSceneSet m_areaCurrentlyIn;
@@ -27,6 +29,7 @@ namespace ZZ
         [SerializeField] private bool m_respawnCharacter;
 
         private bool m_isDeathInputBlocked;
+        private bool m_isSpawnCameraPresentationPending;
 
         public PlayerAnimatorManager PlayerAnimatorManager => m_playerAnimatorManager;
         public PlayerNetworkManager PlayerNetworkManager { get; private set; }
@@ -87,22 +90,29 @@ namespace ZZ
             base.OnNetworkSpawn();
             RegisterLocalPlayerForSaveData();
             WorldGameSessionManager.Instance?.AddPlayer(this);
-            TryPlaceAtSpawnPoint(SceneManager.GetActiveScene());
+            bool placedAtStartingSpawn =
+                TryPlaceAtSpawnPoint(SceneManager.GetActiveScene());
             RestoreSpawnedClientState();
             PlayerCombatManager?.RestoreDeadSpotFromSaveIfNeeded();
+            m_isSpawnCameraPresentationPending =
+                IsOwner && placedAtStartingSpawn;
             BindLocalPlayerSystems();
+            TryBeginSpawnCameraPresentation();
         }
 
         public override void OnGainedOwnership()
         {
             base.OnGainedOwnership();
             RegisterLocalPlayerForSaveData();
+            m_isSpawnCameraPresentationPending = IsInGameplayScene;
             BindLocalPlayerSystems();
+            TryBeginSpawnCameraPresentation();
         }
 
         public override void OnLostOwnership()
         {
             ResetLocalDeathPresentation();
+            m_isSpawnCameraPresentationPending = false;
             LockOnManager?.ClearLockOn();
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             PlayerCamera.Instance?.ClearPlayer(this);
@@ -118,6 +128,7 @@ namespace ZZ
         public override void OnNetworkDespawn()
         {
             ResetLocalDeathPresentation();
+            m_isSpawnCameraPresentationPending = false;
             LockOnManager?.ClearLockOn();
             WorldSaveGameManager.Instance?.UnregisterPlayer(this);
             WorldGameSessionManager.Instance?.RemovePlayer(this);
@@ -153,6 +164,7 @@ namespace ZZ
             }
 
             BindLocalPlayerSystems();
+            TryBeginSpawnCameraPresentation();
             PlayerCamera.Instance?.HandleAllCameraActions();
         }
 
@@ -464,7 +476,8 @@ namespace ZZ
                 currentData.XPosition,
                 currentData.YPosition,
                 currentData.ZPosition);
-            LocomotionManager.WarpTo(savedPosition, transform.rotation);
+            Vector3 loadPosition = ResolveSafeLoadPosition(savedPosition);
+            LocomotionManager.WarpTo(loadPosition, transform.rotation);
             CharacterNetworkManager.NetworkPosition.Value = transform.position;
             CharacterNetworkManager.NetworkRotation.Value = transform.rotation;
             PlayerCamera.Instance?.SnapToPlayerAndResetRotation(this);
@@ -647,16 +660,23 @@ namespace ZZ
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
-            TryPlaceAtSpawnPoint(scene);
+            if (!TryPlaceAtSpawnPoint(scene))
+            {
+                return;
+            }
+
             WorldSaveGameManager.Instance?.TryApplyLoadedCharacterData(this);
             PlayerCombatManager?.RestoreDeadSpotFromSaveIfNeeded();
+            m_isSpawnCameraPresentationPending = IsOwner;
+            BindLocalPlayerSystems();
+            TryBeginSpawnCameraPresentation();
         }
 
-        private void TryPlaceAtSpawnPoint(Scene scene)
+        private bool TryPlaceAtSpawnPoint(Scene scene)
         {
             if (!IsSpawned || !IsOwner || scene.name != k_StartingGameplaySceneName)
             {
-                return;
+                return false;
             }
 
             Transform spawnPoint = FindSpawnPoint(scene);
@@ -664,7 +684,7 @@ namespace ZZ
             {
                 Debug.LogError(
                     $"Could not find '{k_SpawnPointName}' in {k_StartingGameplaySceneName}.");
-                return;
+                return false;
             }
 
             LocomotionManager.WarpTo(spawnPoint.position, spawnPoint.rotation);
@@ -674,11 +694,33 @@ namespace ZZ
                 CharacterNetworkManager.NetworkRotation.Value = transform.rotation;
             }
 
-            PlayerCamera.Instance?.SnapToPlayerAndResetRotation(this);
+            return true;
+        }
+
+        private void TryBeginSpawnCameraPresentation()
+        {
+            if (!m_isSpawnCameraPresentationPending || !IsOwner)
+            {
+                return;
+            }
+
+            PlayerCamera playerCamera = PlayerCamera.Instance;
+            if (playerCamera == null)
+            {
+                return;
+            }
+
+            playerCamera.BeginSpawnIntroduction(this);
+            m_isSpawnCameraPresentationPending = false;
         }
 
         private static Transform FindSpawnPoint(Scene scene)
         {
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return null;
+            }
+
             foreach (GameObject rootObject in scene.GetRootGameObjects())
             {
                 foreach (Transform candidate in rootObject.GetComponentsInChildren<Transform>(true))
@@ -691,6 +733,62 @@ namespace ZZ
             }
 
             return null;
+        }
+
+        private Vector3 ResolveSafeLoadPosition(Vector3 savedPosition)
+        {
+            if (IsFinite(savedPosition) &&
+                savedPosition.sqrMagnitude > k_UninitializedPositionSqrMagnitude &&
+                IsSupportedByLandTerrain(savedPosition))
+            {
+                return savedPosition;
+            }
+
+            Scene gameplayScene = SceneManager.GetSceneByName(k_StartingGameplaySceneName);
+            Transform spawnPoint = FindSpawnPoint(gameplayScene);
+            Vector3 fallbackPosition = spawnPoint != null
+                ? spawnPoint.position
+                : transform.position;
+            Debug.LogWarning(
+                $"Saved player position {savedPosition} is outside the playable nature terrain. " +
+                $"Using spawn point {fallbackPosition} instead.");
+            return fallbackPosition;
+        }
+
+        private static bool IsSupportedByLandTerrain(Vector3 position)
+        {
+            foreach (Terrain terrain in Terrain.activeTerrains)
+            {
+                if (terrain == null || terrain.name != "LandTerrain" ||
+                    terrain.terrainData == null)
+                {
+                    continue;
+                }
+
+                Vector3 terrainPosition = terrain.transform.position;
+                Vector3 terrainSize = terrain.terrainData.size;
+                bool insideHorizontalBounds =
+                    position.x >= terrainPosition.x &&
+                    position.x <= terrainPosition.x + terrainSize.x &&
+                    position.z >= terrainPosition.z &&
+                    position.z <= terrainPosition.z + terrainSize.z;
+                if (!insideHorizontalBounds)
+                {
+                    continue;
+                }
+
+                float groundY = terrain.SampleHeight(position) + terrainPosition.y;
+                return position.y >= groundY - k_BelowTerrainTolerance;
+            }
+
+            return false;
+        }
+
+        private static bool IsFinite(Vector3 position)
+        {
+            return !float.IsNaN(position.x) && !float.IsInfinity(position.x) &&
+                !float.IsNaN(position.y) && !float.IsInfinity(position.y) &&
+                !float.IsNaN(position.z) && !float.IsInfinity(position.z);
         }
     }
 }

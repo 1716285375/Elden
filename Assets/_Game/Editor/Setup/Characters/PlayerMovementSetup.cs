@@ -24,7 +24,7 @@ namespace ZZ.Editor
         private const string k_RunPlayerUpdatesInEditMode =
             "RUN_PLAYER_UPDATES_IN_EDIT_MODE";
 
-        [MenuItem("Tools/Elden/Generate Player Controls Class")]
+        [ZZTool("角色与输入", "生成玩家输入类", 400)]
         public static void GeneratePlayerControlsClass()
         {
             AssetImporter importer = AssetImporter.GetAtPath(k_InputActionsPath);
@@ -46,7 +46,7 @@ namespace ZZ.Editor
             Debug.Log($"Generated {k_WrapperPath} from {k_InputActionsPath}.");
         }
 
-        [MenuItem("Tools/Elden/Configure Player Movement")]
+        [ZZTool("角色与输入", "配置玩家移动", 410)]
         public static void ConfigurePlayerMovement()
         {
             ConfigurePlayerPrefab();
@@ -57,7 +57,7 @@ namespace ZZ.Editor
             Debug.Log("Configured player input and locomotion successfully.");
         }
 
-        [MenuItem("Tools/Elden/Validate Player Input")]
+        [ZZTool("角色与输入", "验证玩家输入", 420)]
         public static void ValidatePlayerInput()
         {
             InputActionAsset inputActions =
@@ -80,7 +80,7 @@ namespace ZZ.Editor
                 "[PlayerInputValidation] Dodge Tap, Sprint Hold/release, and Sprint rules are valid.");
         }
 
-        [MenuItem("Tools/Elden/Configure Camera System")]
+        [ZZTool("角色与输入", "配置相机系统", 430)]
         public static void ConfigureCameraSystem()
         {
             ConfigureCameraRig(k_MainMenuScenePath);
@@ -244,17 +244,31 @@ namespace ZZ.Editor
                 cameraPivot.localRotation = Quaternion.identity;
                 cameraPivot.localScale = Vector3.one;
 
+                // Camera feedback gets its own transform between the pivot and the camera because
+                // the camera's local position is rewritten by collision handling every frame.
+                Transform feedbackPivot = cameraPivot.Find("Feedback Pivot");
+                if (feedbackPivot == null)
+                {
+                    feedbackPivot = new GameObject("Feedback Pivot").transform;
+                }
+
+                feedbackPivot.SetParent(cameraPivot, false);
+                feedbackPivot.localPosition = Vector3.zero;
+                feedbackPivot.localRotation = Quaternion.identity;
+                feedbackPivot.localScale = Vector3.one;
+
                 mainCamera.gameObject.name = "Main Camera";
                 mainCamera.tag = "MainCamera";
-                mainCamera.transform.SetParent(cameraPivot, false);
+                mainCamera.transform.SetParent(feedbackPivot, false);
                 mainCamera.transform.localPosition = new Vector3(0f, 0f, -2.5f);
                 mainCamera.transform.localRotation = Quaternion.identity;
                 mainCamera.transform.localScale = Vector3.one;
 
-                playerCamera.ConfigureRig(cameraPivot, mainCamera);
+                playerCamera.ConfigureRig(cameraPivot, feedbackPivot, mainCamera);
                 EditorUtility.SetDirty(playerCamera);
                 EditorUtility.SetDirty(cameraRoot);
                 EditorUtility.SetDirty(cameraPivot);
+                EditorUtility.SetDirty(feedbackPivot);
                 EditorUtility.SetDirty(mainCamera);
                 EditorSceneManager.MarkSceneDirty(scene);
                 EditorSceneManager.SaveScene(scene);

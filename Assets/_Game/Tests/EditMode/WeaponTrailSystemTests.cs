@@ -14,7 +14,7 @@ namespace ZZ.Tests
         private const string k_StraightSwordPrefabPath =
             "Assets/_Game/Prefabs/Equipment/Weapons/Melee Weapons/Straight Sword.prefab";
         private const string k_WeaponManagerPath =
-            "Assets/_Game/Scripts/Items/WeaponManager.cs";
+            "Assets/_Game/Scripts/Items/Weapons/WeaponManager.cs";
         private const string k_PlayerEquipmentManagerPath =
             "Assets/_Game/Scripts/Characters/Common/Equipment/PlayerEquipmentManager.cs";
         private const string k_PlayerCombatManagerPath =

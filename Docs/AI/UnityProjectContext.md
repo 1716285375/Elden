@@ -33,7 +33,7 @@
 | `Assets/Script/Character` | Character, player, locomotion, camera, and networking behaviours | Confirmed | C# scripts |
 | `Assets/Script/World Managers` | Persistent input/save/scene-flow managers | Confirmed | C# scripts |
 | `Assets/Scenes` | Main menu and world scenes | Confirmed | Scene files and Build Settings |
-| `Docs/ArtRecovery/Nephilite` | Recovered-art provenance and dependency manifests | Confirmed | Recovery workflow output |
+| `Docs/ArtRecovery/Zephyr` | Recovered-art provenance and dependency manifests | Confirmed | Recovery workflow output |
 
 ## Assembly Boundaries
 
@@ -43,9 +43,9 @@
 
 ## Scenes And Startup Flow
 
-- Build scenes: `Assets/Scenes/Scene_Main_Menu_01.unity`, then `Assets/Scenes/Scene_World_01.unity`
-- Likely startup scene: `Scene_Main_Menu_01`
-- Scene loading flow: `TitleScreenManager` starts host/new game; `WorldSaveGameManager` loads `Scene_World_01`, using Netcode scene management when networking is active.
+- Build scenes: `Assets/Scenes/Frontend/SCN_MainMenu.unity`, then `Assets/Scenes/Levels/LV01_AbandonedMonastery/SCN_LV01_AbandonedMonastery.unity` (master) and 20 region slices under `Levels/LV01_AbandonedMonastery/Regions/R0X_*/`
+- Likely startup scene: `SCN_MainMenu`
+- Scene loading flow: `TitleScreenManager` starts host/new game; `WorldSaveGameManager` loads `SCN_LV01_AbandonedMonastery`, using Netcode scene management when networking is active.
 
 ## Architecture
 
@@ -100,8 +100,8 @@
 - `Packages/manifest.json`
 - `Packages/packages-lock.json`
 - Representative scripts under `Assets/Script`
-- `F:/MyProject/Game/RE-Assets/Nephilite-Demo/README.md`
-- `F:/MyProject/Game/RE-Code/Nephilite-Demo/README.md`
+- `F:/MyProject/Game/RE-Assets/Zephyr-Demo/README.md`
+- `F:/MyProject/Game/RE-Code/Zephyr-Demo/README.md`
 
 <!-- unity-onboarding:generated:end -->
 

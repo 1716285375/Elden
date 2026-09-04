@@ -780,7 +780,7 @@ Assets/Tests/Editor/StatusEffectsSystemTests.cs,223,Assets/Script/Damage/DamageC
 Assets/Tests/Editor/StatusEffectsSystemTests.cs,226,Assets/Script/Effects/Instant Effects/TakeBuildupEffect.cs,Assets/Script
 Assets/Tests/Editor/WeaponTrailSystemTests.cs,13,Assets/Data/Prefabs/Weapons/Melee Weapons/Broadsword.prefab,Assets/Data
 Assets/Tests/Editor/WeaponTrailSystemTests.cs,15,Assets/Data/Prefabs/Weapons/Melee Weapons/Straight Sword.prefab,Assets/Data
-Assets/Tests/Editor/WeaponTrailSystemTests.cs,17,Assets/Script/Items/WeaponManager.cs,Assets/Script
+Assets/Tests/Editor/WeaponTrailSystemTests.cs,17,Assets/Script/Items/Weapons/WeaponManager.cs,Assets/Script
 Assets/Tests/Editor/WeaponTrailSystemTests.cs,19,Assets/Script/Character/Equipment/PlayerEquipmentManager.cs,Assets/Script
 Assets/Tests/Editor/WeaponTrailSystemTests.cs,21,Assets/Script/Character/Player/PlayerCombatManager.cs,Assets/Script
 Assets/Tests/Editor/WeaponUpgradeSystemTests.cs,15,Assets/Data/Items/Upgrade Materials/Small Smithing Stone.asset,Assets/Data

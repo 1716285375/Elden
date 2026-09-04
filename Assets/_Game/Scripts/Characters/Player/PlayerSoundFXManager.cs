@@ -6,7 +6,9 @@ namespace ZZ
     public class PlayerSoundFXManager : CharacterSoundFXManager
     {
         private const float k_FootstepSoundRange = 2f;
-        private const float k_FootstepInterval = 0.55f;
+        private const float k_WalkingFootstepInterval = 0.54f;
+        private const float k_RunningFootstepInterval = 0.4f;
+        private const float k_SprintingFootstepInterval = 0.3f;
         private const float k_MinimumFootstepMovement = 0.15f;
 
         private PlayerManager m_player;
@@ -20,20 +22,16 @@ namespace ZZ
 
         private void Update()
         {
-            if (m_player == null ||
-                !m_player.IsSpawned ||
-                !m_player.IsServer ||
-                m_player.IsDead ||
-                m_player.PlayerNetworkManager == null ||
-                m_player.PlayerNetworkManager.IsSneaking.Value ||
-                m_player.PlayerNetworkManager.MoveAmount.Value <
-                    k_MinimumFootstepMovement ||
-                Time.time < m_nextFootstepTime)
+            if (!CanPlayFootstep())
             {
                 return;
             }
 
-            m_nextFootstepTime = Time.time + k_FootstepInterval;
+            PlayerNetworkManager networkManager =
+                m_player.PlayerNetworkManager;
+            m_nextFootstepTime = Time.time + GetFootstepInterval(
+                networkManager.MoveAmount.Value,
+                networkManager.IsSprinting.Value);
             PlayFootstepSoundEffect();
         }
 
@@ -45,10 +43,17 @@ namespace ZZ
                 return;
             }
 
-            base.PlayFootstepSoundEffect();
-            WorldSoundFXManager.Instance?.AlertNearbyCharactersToSound(
-                transform.position,
-                k_FootstepSoundRange);
+            if (m_player?.IsClient == true)
+            {
+                base.PlayFootstepSoundEffect();
+            }
+
+            if (m_player?.IsServer == true)
+            {
+                WorldSoundFXManager.Instance?.AlertNearbyCharactersToSound(
+                    transform.position,
+                    k_FootstepSoundRange);
+            }
         }
 
         /// <inheritdoc />
@@ -56,9 +61,40 @@ namespace ZZ
         {
             WeaponItem blockingWeapon =
                 m_player?.InventoryManager?.CurrentLeftHandWeapon;
-            WorldSoundFXManager.Instance?.PlaySoundEffect(
-                blockingWeapon?.BlockingSoundEffects,
-                CharacterAudioSource);
+            PlayRandomSoundEffect(blockingWeapon?.BlockingSoundEffects);
+        }
+
+        private bool CanPlayFootstep()
+        {
+            if (m_player == null ||
+                !m_player.IsSpawned ||
+                (!m_player.IsClient && !m_player.IsServer) ||
+                m_player.IsDead ||
+                !m_player.IsGrounded ||
+                m_player.PlayerNetworkManager == null ||
+                m_player.PlayerNetworkManager.IsSneaking.Value ||
+                m_player.PlayerNetworkManager.MoveAmount.Value <
+                    k_MinimumFootstepMovement)
+            {
+                m_nextFootstepTime = Time.time;
+                return false;
+            }
+
+            return Time.time >= m_nextFootstepTime;
+        }
+
+        private static float GetFootstepInterval(
+            float moveAmount,
+            bool isSprinting)
+        {
+            if (isSprinting)
+            {
+                return k_SprintingFootstepInterval;
+            }
+
+            return moveAmount >= 0.75f
+                ? k_RunningFootstepInterval
+                : k_WalkingFootstepInterval;
         }
     }
 }

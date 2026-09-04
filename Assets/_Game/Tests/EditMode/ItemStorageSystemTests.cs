@@ -115,10 +115,10 @@ namespace ZZ.Tests
         public void StorageUIRefreshesBothSidesAndFallsBackToStorageSelection()
         {
             string storageUISource = ReadProjectFile(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUIStorageManager.cs");
             string slotSource = ReadProjectFile(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "UIStorageInventorySlot.cs");
 
             Assert.That(storageUISource,
@@ -139,10 +139,10 @@ namespace ZZ.Tests
         public void SiteOfGraceAndGlobalMenuManagerExposeStorage()
         {
             string siteSource = ReadProjectFile(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUISiteOfGraceManager.cs");
             string uiManagerSource = ReadProjectFile(
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUIManager.cs");
             string playerSource = ReadProjectFile(
                 "Assets/_Game/Scripts/Characters/Player/PlayerManager.cs");

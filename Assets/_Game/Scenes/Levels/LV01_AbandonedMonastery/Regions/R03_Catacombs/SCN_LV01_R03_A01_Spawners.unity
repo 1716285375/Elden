@@ -119,6 +119,452 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &187870412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 187870413}
+  - component: {fileID: 187870414}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-04
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &187870413
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187870412}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.50813544, z: -0, w: -0.86127716}
+  m_LocalPosition: {x: 31.71612, y: 11.81986, z: 248.97102}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &187870414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187870412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &220503263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 220503264}
+  m_Layer: 0
+  m_Name: Nature Streaming Triggers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &220503264
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220503263}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2140798521}
+  - {fileID: 1396834239}
+  m_Father: {fileID: 1236849798}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &275263581
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 275263582}
+  - component: {fileID: 275263583}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-09
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &275263582
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275263581}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.8750668, z: -0, w: 0.48400217}
+  m_LocalPosition: {x: 45.287605, y: 2.8227227, z: 201.4694}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &275263583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275263581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &797102599
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 797102600}
+  - component: {fileID: 797102601}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-07
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &797102600
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797102599}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.22878946, z: -0, w: 0.97347593}
+  m_LocalPosition: {x: 51.66188, y: 9.9995165, z: 227.77397}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &797102601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797102599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &840516935
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 840516936}
+  - component: {fileID: 840516937}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &840516936
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840516935}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.041451994, z: -0, w: 0.9991405}
+  m_LocalPosition: {x: 33.86876, y: 3.081705, z: 209.13663}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &840516937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840516935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &858700219
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 858700220}
+  - component: {fileID: 858700221}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &858700220
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 858700219}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.5280462, z: -0, w: -0.8492157}
+  m_LocalPosition: {x: 48.375904, y: 6.711097, z: 215.57558}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &858700221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 858700219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &913486585
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 913486586}
+  m_Layer: 0
+  m_Name: Nature AI Population
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &913486586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913486585}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 978796075}
+  - {fileID: 1640259605}
+  - {fileID: 840516936}
+  - {fileID: 187870413}
+  - {fileID: 941390493}
+  - {fileID: 1772573998}
+  - {fileID: 797102600}
+  - {fileID: 2117706896}
+  - {fileID: 275263582}
+  - {fileID: 858700220}
+  - {fileID: 1383097165}
+  m_Father: {fileID: 1236849798}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &941390492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 941390493}
+  - component: {fileID: 941390494}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-05
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &941390493
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941390492}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.78704304, z: -0, w: 0.6168981}
+  m_LocalPosition: {x: 42.444107, y: 14.96929, z: 260.59335}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &941390494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941390492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &978796074
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 978796075}
+  - component: {fileID: 978796076}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &978796075
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978796074}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.99235547, z: -0, w: 0.123412795}
+  m_LocalPosition: {x: 41.080414, y: 5.2552958, z: 225.5303}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &978796076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978796074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
 --- !u!1 &1116180437
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +596,163 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1236849797
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1236849798}
+  m_Layer: 0
+  m_Name: A01_Catacombs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1236849798
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236849797}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1785764343}
+  - {fileID: 913486586}
+  - {fileID: 220503264}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1383097164
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1383097165}
+  - component: {fileID: 1383097166}
+  m_Layer: 0
+  m_Name: Catacombs Warden Boss Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1383097165
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383097164}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.9909573, z: -0, w: -0.13417783}
+  m_LocalPosition: {x: 64.4, y: 13.363087, z: 246.93335}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1383097166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383097164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 271294674669322707, guid: 036b7f6bfa4f44447952004b69b2bd11, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 1103
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1001 &1396834238
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 220503264}
+    m_Modifications:
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 190
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 9.13962
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 235
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_area
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_worldLocation
+      value: 
+      objectReference: {fileID: 11400000, guid: e98de531558112b4391c44f480c7e840, type: 2}
+    - target: {fileID: 7010940596096726253, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_Name
+      value: Nature Trigger A01_Catacombs -> A01_BellTower
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+--- !u!4 &1396834239 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+  m_PrefabInstance: {fileID: 1396834238}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1443144665
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,13 +780,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 443540b073e14034a9e548f1eb9cc981, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldLocationRendererManager
   m_rendererSceneID: 15
   m_manageRootObjects: 0
   m_rootObjects:
   - {fileID: 1116180437}
-  m_meshRenderers: []
+  - {fileID: 1236849797}
+  m_meshRenderers:
+  - {fileID: 1866588120}
 --- !u!4 &1443144667
 Transform:
   m_ObjectHideFlags: 0
@@ -199,9 +804,354 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1640259604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1640259605}
+  - component: {fileID: 1640259606}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1640259605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640259604}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.892957, z: -0, w: -0.450142}
+  m_LocalPosition: {x: 31.044186, y: 6.1587453, z: 229.2225}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1640259606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640259604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &1772573997
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1772573998}
+  - component: {fileID: 1772573999}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-06
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1772573998
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772573997}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.75218576, z: -0, w: -0.6589511}
+  m_LocalPosition: {x: 40.483753, y: 10.021841, z: 240.78566}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1772573999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772573997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1 &1785764342
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1785764343}
+  m_Layer: 0
+  m_Name: Nature Gameplay Placeholders
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1785764343
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785764342}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1866588119}
+  m_Father: {fileID: 1236849798}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1866588118
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1785764343}
+    m_Modifications:
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 13.700397
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 245
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8642557494630845579, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_InScenePlaced
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8642557494630845579, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3405442816
+      objectReference: {fileID: 0}
+    - target: {fileID: 8642557494630845579, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8642557494630845579, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 1732888018
+      objectReference: {fileID: 0}
+    - target: {fileID: 8645763720741976894, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+      propertyPath: m_Name
+      value: Nature Pickup - Catacombs Key
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+--- !u!4 &1866588119 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1988750263304961623, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+  m_PrefabInstance: {fileID: 1866588118}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1866588120 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4879746297425410304, guid: aad275c616a3b1b4ba4a2cdd0f8395bf, type: 3}
+  m_PrefabInstance: {fileID: 1866588118}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2117706895
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2117706896}
+  - component: {fileID: 2117706897}
+  m_Layer: 0
+  m_Name: Nature Enemy Spawner 06-08
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2117706896
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117706895}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.9980056, z: -0, w: -0.06312502}
+  m_LocalPosition: {x: 61.3479, y: 2.3346744, z: 200.02068}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 913486586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2117706897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117706895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
+  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_patrolPathID: 0
+  m_repeatPatrol: 0
+  m_isSleeping: 0
+  m_willInvestigateSound: 1
+  m_bossID: 0
+  m_manuallySetStats: 0
+  m_maximumHealth: 100
+  m_maximumStamina: 100
+--- !u!1001 &2140798520
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 220503264}
+    m_Modifications:
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.793287
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 230
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_area
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_worldLocation
+      value: 
+      objectReference: {fileID: 11400000, guid: 1fd2525c420a96640ae19dae1e99842f, type: 2}
+    - target: {fileID: 7010940596096726253, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+      propertyPath: m_Name
+      value: Nature Trigger A01_Catacombs -> A01_MonasteryInterior
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+--- !u!4 &2140798521 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
+  m_PrefabInstance: {fileID: 2140798520}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1116180438}
   - {fileID: 1443144667}
+  - {fileID: 1236849798}

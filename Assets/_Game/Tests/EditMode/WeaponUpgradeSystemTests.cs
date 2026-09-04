@@ -293,7 +293,7 @@ namespace ZZ.Tests
                 "Assets/_Game/Scripts/Dialogue/CharacterDialogue.cs"));
             string upgradeSource = File.ReadAllText(Path.Combine(
                 projectRoot,
-                "Assets/_Game/Scripts/Characters/Player/Player UI/" +
+                "Assets/_Game/Scripts/UI/Gameplay/Player/" +
                 "PlayerUIWeaponUpgradeManager.cs"));
 
             Assert.That(sharedInventorySource,

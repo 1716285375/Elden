@@ -15,6 +15,8 @@ namespace ZZ.Tests
             "Humanoid Animator Controller.controller";
         private const string k_StealthObjectPrefabPath =
             "Assets/_Game/Prefabs/World/Objects/Stealth Object.prefab";
+        private const string k_PlayerPrefabPath =
+            "Assets/_Game/Prefabs/Characters/Player/Player.prefab";
 
         [Test]
         public void NamedSneakActionSupportsKeyboardAndGamepadToggleInput()
@@ -108,6 +110,51 @@ namespace ZZ.Tests
         }
 
         [Test]
+        public void PlayerFootstepsAreAuthoredAndPresentedOnClients()
+        {
+            GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                k_PlayerPrefabPath);
+            Assert.That(playerPrefab, Is.Not.Null);
+            Component soundManager = playerPrefab
+                .GetComponentsInChildren<Component>(true)
+                .First(component => component != null &&
+                    component.GetType().FullName == "ZZ.PlayerSoundFXManager");
+            SerializedObject serializedSoundManager = new(soundManager);
+            SerializedProperty footsteps = serializedSoundManager.FindProperty(
+                "m_footstepSounds");
+            Assert.That(footsteps.arraySize, Is.EqualTo(10));
+            for (int soundIndex = 0;
+                soundIndex < footsteps.arraySize;
+                soundIndex++)
+            {
+                Assert.That(
+                    footsteps.GetArrayElementAtIndex(soundIndex)
+                        .objectReferenceValue,
+                    Is.Not.Null,
+                    $"Footstep {soundIndex + 1}");
+            }
+
+            AudioSource audioSource = soundManager.GetComponent<AudioSource>();
+            Assert.That(audioSource, Is.Not.Null);
+            Assert.That(audioSource.dopplerLevel, Is.Zero);
+            Assert.That(audioSource.minDistance, Is.EqualTo(4f));
+            Assert.That(audioSource.maxDistance, Is.EqualTo(32f));
+            Assert.That(
+                audioSource.rolloffMode,
+                Is.EqualTo(AudioRolloffMode.Logarithmic));
+
+            string playerSoundSource = ReadRuntimeSource(
+                "Character/Player/PlayerSoundFXManager.cs");
+            Assert.That(playerSoundSource,
+                Does.Contain("m_player?.IsClient == true"));
+            Assert.That(playerSoundSource,
+                Does.Contain("m_player?.IsServer == true"));
+            Assert.That(
+                ReadRuntimeSource("Character/CharacterSoundFXManager.cs"),
+                Does.Contain("TrySelectRandomSoundEffect"));
+        }
+
+        [Test]
         public void AnimatorAndStealthPrefabContainRequiredAssets()
         {
             AnimatorController controller =
@@ -164,8 +211,9 @@ namespace ZZ.Tests
             tests.SneakMovementHasDistinctForwardAndBackwardSpeeds();
             tests.TargetRelationsDriveHiddenAndConcealmentDetection();
             tests.SneakingSuppressesFootstepsAndManualStateChangesWin();
+            tests.PlayerFootstepsAreAuthoredAndPresentedOnClients();
             tests.AnimatorAndStealthPrefabContainRequiredAssets();
-            Debug.Log("[SneakingSystemTests] 6 EP153-155 focused tests passed.");
+            Debug.Log("[SneakingSystemTests] 7 EP153-155 focused tests passed.");
         }
 
         private static string ReadRuntimeSource(string relativePath)
@@ -177,7 +225,7 @@ namespace ZZ.Tests
         private static string RemapRuntimeSourcePath(string relativePath)
         {
             if (relativePath.StartsWith("Character/Player/Player UI/"))
-                return "Characters/Player/Player UI/" + relativePath.Substring("Character/Player/Player UI/".Length);
+                return "UI/Gameplay/Player/" + relativePath.Substring("Character/Player/Player UI/".Length);
             if (relativePath.StartsWith("Character/Player/"))
                 return "Characters/Player/" + relativePath.Substring("Character/Player/".Length);
             if (relativePath.StartsWith("Character/AI/"))
@@ -189,13 +237,13 @@ namespace ZZ.Tests
             if (relativePath.StartsWith("Character/Inventory/"))
                 return "Characters/Common/Inventory/" + relativePath.Substring("Character/Inventory/".Length);
             if (relativePath.StartsWith("Character/Character UI/"))
-                return "Characters/Common/Character UI/" + relativePath.Substring("Character/Character UI/".Length);
+                return "UI/Gameplay/Character/" + relativePath.Substring("Character/Character UI/".Length);
             if (relativePath.StartsWith("Character/Animation State Behaviors/"))
                 return "Characters/Common/Animation State Behaviors/" + relativePath.Substring("Character/Animation State Behaviors/".Length);
             if (relativePath.StartsWith("Character/"))
                 return "Characters/Common/" + relativePath.Substring("Character/".Length);
             if (relativePath.StartsWith("World Managers/AI/"))
-                return "World/Managers/AI/" + relativePath.Substring("World Managers/AI/".Length);
+                return "World/AI/" + relativePath.Substring("World Managers/AI/".Length);
             if (relativePath.StartsWith("World Managers/"))
                 return "World/Managers/" + relativePath.Substring("World Managers/".Length);
             if (relativePath.StartsWith("World Objects/"))

@@ -65,7 +65,7 @@ namespace ZZ.Editor
         private static readonly Color s_textColor =
             new(0.93f, 0.88f, 0.72f, 1f);
 
-        [MenuItem("Tools/Elden/Configure Weapon Upgrade System")]
+        [ZZTool("物品与界面", "配置武器升级系统", 500)]
         public static void ConfigureWeaponUpgradeSystem()
         {
             EnsureFolder(k_MaterialFolder);
@@ -116,7 +116,7 @@ namespace ZZ.Editor
                 "materials, Anvil, Blacksmith, persistence, and world spawners.");
         }
 
-        [MenuItem("Tools/Elden/Validate Weapon Upgrade System")]
+        [ZZTool("物品与界面", "验证武器升级系统", 510)]
         public static void ValidateWeaponUpgradeSystem()
         {
             UpgradeMaterial small = LoadRequiredAsset<UpgradeMaterial>(
@@ -698,7 +698,6 @@ namespace ZZ.Editor
                 label.text = "UPGRADE WEAPON";
             }
 
-            GetOrAddComponent<PlayerUIHoverSound>(upgradeButtonObject);
             ClearPersistentListeners(upgradeButton);
             UnityEventTools.AddPersistentListener(
                 upgradeButton.onClick,
@@ -996,7 +995,6 @@ namespace ZZ.Editor
             image.color = s_buttonColor;
             Button button = GetOrAddComponent<Button>(rectTransform.gameObject);
             button.targetGraphic = image;
-            GetOrAddComponent<PlayerUIHoverSound>(rectTransform.gameObject);
             TMP_Text label = CreateText(
                 rectTransform,
                 "Label",

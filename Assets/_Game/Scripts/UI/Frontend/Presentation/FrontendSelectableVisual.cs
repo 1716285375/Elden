@@ -1,4 +1,4 @@
-using System.Collections;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -57,6 +57,7 @@ namespace ZZ
         [SerializeField] private Sprite m_selectedBackgroundSprite;
         [SerializeField] private float m_labelShiftX = 12f;
         [SerializeField, Min(0.01f)] private float m_transitionDuration = 0.14f;
+        [SerializeField] private Ease m_transitionEase = Ease.InOutQuad;
 
         [Header("Behaviour")]
         [SerializeField] private bool m_disableButtonTransition = true;
@@ -66,7 +67,7 @@ namespace ZZ
         private float m_normalLabelX;
         private bool m_usesAnchoredLabelPosition;
         private bool m_isSelected;
-        private Coroutine m_transitionCoroutine;
+        private Sequence m_transitionSequence;
 
         private void Awake()
         {
@@ -87,12 +88,7 @@ namespace ZZ
 
         private void OnDisable()
         {
-            if (m_transitionCoroutine != null)
-            {
-                StopCoroutine(m_transitionCoroutine);
-                m_transitionCoroutine = null;
-            }
-
+            KillTransitionSequence();
             m_isSelected = false;
             ApplyStateInstant(false);
         }
@@ -133,63 +129,70 @@ namespace ZZ
             }
 
             m_isSelected = isSelected;
-            if (m_transitionCoroutine != null)
-            {
-                StopCoroutine(m_transitionCoroutine);
-            }
-
-            m_transitionCoroutine = StartCoroutine(AnimateTo(isSelected));
+            KillTransitionSequence();
+            m_transitionSequence = BuildTransitionSequence(isSelected);
         }
 
-        private IEnumerator AnimateTo(bool isSelected)
+        /// <summary>
+        /// Runs the background colour, label colour, and label shift in parallel. The marker is
+        /// toggled immediately because the original transition kept it constant for the whole
+        /// duration and only <see cref="ApplyStateInstant"/> re-evaluated interactability.
+        /// </summary>
+        private Sequence BuildTransitionSequence(bool isSelected)
         {
-            float elapsed = 0f;
-            float duration = Mathf.Max(0.01f, m_transitionDuration);
-
             if (m_useSpriteSwap)
             {
                 ApplySprite(isSelected);
             }
 
-            Color startBackgroundColor =
-                m_selectionBackground != null ? m_selectionBackground.color : Color.clear;
-            Color targetBackgroundColor = ResolveBackgroundColor(isSelected);
-            Color startTextColor = m_label != null ? m_label.color : Color.white;
-            Color targetTextColor = ResolveTextColor(isSelected);
-            float startShift = GetLabelShift();
-            float targetShift = isSelected ? m_labelShiftX : 0f;
+            Sequence sequence = DOTween.Sequence();
+            sequence.SetUpdate(true);
 
-            while (elapsed < duration)
+            if (m_selectionBackground != null)
             {
-                elapsed += Time.unscaledDeltaTime;
-                float t = Mathf.Clamp01(elapsed / duration);
-                float eased = t * t * (3f - 2f * t);
-
-                if (m_selectionBackground != null)
-                {
-                    m_selectionBackground.color = Color.Lerp(
-                        startBackgroundColor,
-                        targetBackgroundColor,
-                        eased);
-                }
-
-                if (m_label != null)
-                {
-                    m_label.color = Color.Lerp(startTextColor, targetTextColor, eased);
-                }
-
-                SetLabelShift(Mathf.Lerp(startShift, targetShift, eased));
-
-                if (m_selectionMarker != null)
-                {
-                    m_selectionMarker.SetActive(isSelected);
-                }
-
-                yield return null;
+                sequence.Join(m_selectionBackground
+                    .DOColor(ResolveBackgroundColor(isSelected), m_transitionDuration)
+                    .SetEase(m_transitionEase)
+                    .SetUpdate(true));
             }
 
-            ApplyStateInstant(isSelected);
-            m_transitionCoroutine = null;
+            if (m_label != null)
+            {
+                sequence.Join(m_label
+                    .DOColor(ResolveTextColor(isSelected), m_transitionDuration)
+                    .SetEase(m_transitionEase)
+                    .SetUpdate(true));
+                sequence.Join(DOTween.To(
+                        GetLabelShift,
+                        SetLabelShift,
+                        isSelected ? m_labelShiftX : 0f,
+                        m_transitionDuration)
+                    .SetEase(m_transitionEase)
+                    .SetUpdate(true));
+            }
+
+            sequence.OnComplete(() =>
+            {
+                m_transitionSequence = null;
+                ApplyStateInstant(isSelected);
+            });
+
+            if (m_selectionMarker != null)
+            {
+                m_selectionMarker.SetActive(isSelected);
+            }
+
+            return sequence;
+        }
+
+        /// <summary>
+        /// Killing without completing is deliberate: <see cref="ApplyStateInstant"/> snaps to the
+        /// real state right afterwards, so no partially interpolated value can survive.
+        /// </summary>
+        private void KillTransitionSequence()
+        {
+            m_transitionSequence?.Kill();
+            m_transitionSequence = null;
         }
 
         private void ApplyStateInstant(bool isSelected)

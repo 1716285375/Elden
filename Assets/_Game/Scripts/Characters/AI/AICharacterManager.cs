@@ -1513,9 +1513,10 @@ namespace ZZ
                 verticalValue = m_aiNetworkManager.VerticalMovement.Value;
             }
 
-            m_aiAnimatorManager.SetAnimatorMovementParameters(
+            m_aiAnimatorManager.UpdateAnimatorMovementParameters(
                 horizontalValue,
-                verticalValue);
+                verticalValue,
+                false);
         }
 
         private void PublishMovementAnimation(

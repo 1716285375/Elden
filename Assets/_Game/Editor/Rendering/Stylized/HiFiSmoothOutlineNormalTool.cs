@@ -15,15 +15,13 @@ namespace ZZ.Editor.Rendering.Stylized
     ///
     /// Usage: select one or more GameObjects (MeshFilter / SkinnedMeshRenderer
     /// or model assets) in the Hierarchy/Project and run
-    /// Tools &gt; Stylized &gt; Generate Smooth Outline Normals (UV3).
+    /// ZZ &gt; 工具面板 &gt; 渲染 &gt; 生成平滑描边法线（UV3）。
     /// Imported model assets are written back through their ModelImporter
     /// (the tool re-imports the model once per selection).
     /// </summary>
     public static class HiFiSmoothOutlineNormalTool
     {
-        private const string k_MenuPath = "Tools/Stylized/Generate Smooth Outline Normals (UV3)";
-
-        [MenuItem(k_MenuPath)]
+        [ZZTool("渲染", "生成平滑描边法线（UV3）", 600)]
         public static void GenerateSmoothOutlineNormals()
         {
             int processed = 0;

@@ -26,9 +26,9 @@ namespace ZZ.Tests
         private const string k_CharacterSourcePath =
             "Assets/_Game/Scripts/Characters/Common/CharacterManager.cs";
         private const string k_DamageSourcePath =
-            "Assets/_Game/Scripts/Combat/Effects/Instant Effects/TakeDamageEffect.cs";
+            "Assets/_Game/Scripts/Combat/Effects/InstantEffects/TakeDamageEffect.cs";
         private const string k_InteractableSourcePath =
-            "Assets/_Game/Scripts/World/Managers/LadderInteractable.cs";
+            "Assets/_Game/Scripts/World/Interactions/LadderInteractable.cs";
 
         private static readonly string[] s_overrideControllerPaths =
         {

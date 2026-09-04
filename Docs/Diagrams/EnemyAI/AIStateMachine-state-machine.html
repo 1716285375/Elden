@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>图 1-3 敌人AI-状态机图</title>
+<style>
+  :root {
+    --paper: #f5f5f5;
+    --ink: #2d3142;
+    --ink-soft: #5b6072;
+    --accent: #eb6c36;
+  }
+  html, body { margin: 0; padding: 0; background: #d8d8d8; }
+  .page { display: flex; justify-content: center; padding: 24px; }
+  svg { background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,.18); max-width: 100%; height: auto; }
+  text { fill: var(--ink); }
+  .eyebrow   { font: 600 10px "Geist Mono","Noto Sans SC",monospace; letter-spacing: .18em; fill: var(--ink-soft); }
+  .title     { font: 400 32px "Instrument Serif","Noto Sans SC",serif; }
+  .state-cn  { font: 600 13px "Geist","Noto Sans SC",sans-serif; }
+  .state-en  { font: 400 9px "Geist Mono",monospace; fill: var(--ink-soft); }
+  .edge-lbl  { font: 400 10px "Noto Sans SC","Geist",sans-serif; fill: var(--ink-soft); }
+  .note-txt  { font: 400 10px "Noto Sans SC","Geist",sans-serif; fill: var(--ink-soft); }
+  .caption   { font: 400 12px "Noto Sans SC","Geist",sans-serif; fill: var(--ink-soft); }
+  .state     { fill: #ffffff; stroke: var(--ink); stroke-width: 1.6; }
+  .state-dead{ fill: #e8eaee; stroke: var(--ink); stroke-width: 1.6; }
+  .edge      { stroke: var(--ink); stroke-width: 1.4; fill: none; }
+  .edge-death{ stroke: var(--ink); stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; }
+  .note      { fill: #ffffff; stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 3 3; }
+</style>
+</head>
+<body>
+<div class="page">
+<svg viewBox="0 0 1120 792" width="1120" height="792" role="img" aria-label="图 1-3 敌人AI-状态机图">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2d3142"/>
+    </marker>
+  </defs>
+
+  <!-- 页眉 -->
+  <text class="eyebrow" x="40" y="64">ELDEN · 图 1-3 敌人AI-状态机图</text>
+  <text class="title" x="40" y="104">AI 角色状态机（服务器权威）</text>
+
+  <!-- ══ 初始点 ══ -->
+  <circle cx="90" cy="320" r="7" fill="#2d3142"/>
+  <path class="edge" d="M97,320 L134,320" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="60" y="296">OnNetworkSpawn</text>
+
+  <!-- ══ 状态节点 ══ -->
+  <rect class="state" x="140" y="280" width="180" height="80" rx="10"/>
+  <text class="state-cn" x="230" y="314" text-anchor="middle">待机</text>
+  <text class="state-en" x="230" y="336" text-anchor="middle">Idle</text>
+
+  <rect class="state" x="440" y="280" width="180" height="80" rx="10"/>
+  <text class="state-cn" x="530" y="314" text-anchor="middle">追击目标</text>
+  <text class="state-en" x="530" y="336" text-anchor="middle">PursueTarget</text>
+
+  <rect class="state" x="740" y="280" width="180" height="80" rx="10"/>
+  <text class="state-cn" x="830" y="314" text-anchor="middle">战斗架势</text>
+  <text class="state-en" x="830" y="336" text-anchor="middle">CombatStance</text>
+
+  <rect class="state" x="880" y="460" width="180" height="80" rx="10"/>
+  <text class="state-cn" x="970" y="494" text-anchor="middle">攻击</text>
+  <text class="state-en" x="970" y="516" text-anchor="middle">Attack</text>
+
+  <!-- 死亡：双框终态 -->
+  <rect class="state-dead" x="440" y="520" width="180" height="80" rx="10"/>
+  <rect x="446" y="526" width="168" height="68" rx="7" fill="none" stroke="#2d3142" stroke-width="1"/>
+  <text class="state-cn" x="530" y="556" text-anchor="middle">死亡</text>
+  <text class="state-en" x="530" y="578" text-anchor="middle">Dead</text>
+
+  <!-- ══ 状态转换 ══ -->
+  <!-- Idle → PursueTarget -->
+  <path class="edge" d="M320,304 L434,304" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="330" y="296">TryAcquireTarget 成功</text>
+
+  <!-- PursueTarget → Idle -->
+  <path class="edge" d="M440,338 L326,338" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="330" y="356">丢失目标 / 超出脱战距离</text>
+
+  <!-- PursueTarget → CombatStance -->
+  <path class="edge" d="M620,304 L734,304" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="630" y="296">进入战斗范围</text>
+
+  <!-- CombatStance → PursueTarget -->
+  <path class="edge" d="M740,338 L626,338" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="636" y="356">离开战斗范围</text>
+
+  <!-- CombatStance → Attack -->
+  <path class="edge" d="M920,330 L970,330 L970,454" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="866" y="322">CanStartAttack</text>
+
+  <!-- Attack → CombatStance -->
+  <path class="edge" d="M880,486 L840,486 L840,366" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="700" y="478">攻击结束 / 未成功起手</text>
+
+  <!-- 任意 → Dead（虚线） -->
+  <path class="edge-death" d="M530,360 L530,514" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="542" y="420">ProcessDeathEvent</text>
+  <text class="edge-lbl" x="542" y="436">（任意状态均可进入）</text>
+
+  <!-- Dead → Idle（重生） -->
+  <path class="edge" d="M440,560 L230,560 L230,366" marker-end="url(#arrow)"/>
+  <text class="edge-lbl" x="244" y="552">ResetAtSpawnPoint 重生回 Idle</text>
+
+  <!-- ══ 说明注记 ══ -->
+  <rect class="note" x="60" y="640" width="480" height="52" rx="6"/>
+  <text class="note-txt" x="74" y="660">每个状态的 Tick 返回下一状态 ID，由 AICharacterStateMachine.ChangeState</text>
+  <text class="note-txt" x="74" y="678">执行 Exit → Enter 切换；AI 逻辑仅在 IsServer 端运行，客户端同步表现。</text>
+
+  <rect class="note" x="600" y="640" width="460" height="52" rx="6"/>
+  <text class="note-txt" x="614" y="660">Boss 例外：BeginBossEncounter 越过待机直接进入追击；</text>
+  <text class="note-txt" x="614" y="678">Attack 状态进入时开启武器伤害碰撞体，退出时关闭。</text>
+
+  <!-- 图题 -->
+  <text class="caption" x="560" y="766" text-anchor="middle">图 1-3 敌人AI-状态机图</text>
+</svg>
+</div>
+</body>
+</html>

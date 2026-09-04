@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58084440a533cdd48965c30ce6f3c1ee, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossArenaController
   m_bossID: 1001
   m_fogWallRoot: {fileID: 2174716667473277780}
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
   m_patrolPathID: 10801
@@ -177,7 +177,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e2c9dccbc4a9b54b9de536af3d068f4, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldAIManager
   m_aiActivationBeaconPrefab: {fileID: 1174959693093781671, guid: 9e684d8a33fdaae47ab0af5aa933f24b, type: 3}
   m_dialogueInteractablePrefab: {fileID: 2785176864149174166, guid: 3fedaf98de918ac4d887ea7a1e4f4dcc, type: 3}
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 271294674669322707, guid: 036b7f6bfa4f44447952004b69b2bd11, type: 3}
   m_patrolPathID: 0
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 020803d7b76a1e946bd0b88cde0b5b88, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldNetworkObjectSpawner
   m_networkPrefab: {fileID: 7790825136366700131, guid: be79c5367aedd8645906195952440c98, type: 3}
 --- !u!1 &2174716667473277780
@@ -455,7 +455,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87f71837b87f86c48ac4a967d050e278, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.EventTriggerWakeNearbyCharacters
   m_triggerRadius: 1
   m_awakenRadius: 20
@@ -501,7 +501,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
   m_patrolPathID: 0
@@ -554,7 +554,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
   m_patrolPathID: 0
@@ -611,7 +611,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e31acb0f857adca43b680481d2c72140, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIPatrolPath
   m_patrolPathID: 10801
   m_patrolPoints:
@@ -692,7 +692,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 0a29a1894e5fef844b60bd75dd5f974f, type: 3}
   m_patrolPathID: 0
@@ -807,7 +807,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 020803d7b76a1e946bd0b88cde0b5b88, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WorldNetworkObjectSpawner
   m_networkPrefab: {fileID: 2582879494257928889, guid: ce10f2cf3ccc9284190ebb0032e9dbc8, type: 3}
 --- !u!1 &9053632526178276115
@@ -852,7 +852,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
   m_characterGameObject: {fileID: 4713752444425064866, guid: 40bc4d628b7ca94488d5509cceeebabc, type: 3}
   m_patrolPathID: 0
