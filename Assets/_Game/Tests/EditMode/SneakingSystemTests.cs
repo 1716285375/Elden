@@ -29,7 +29,7 @@ namespace ZZ.Tests
             Assert.That(inputActions, Does.Contain("<Gamepad>/leftStickPress"));
             Assert.That(generatedControls, Does.Contain("public InputAction @Sneak"));
             Assert.That(
-                ReadRuntimeSource("World Managers/PlayerInputManager.cs"),
+                ReadRuntimeSource("Input/PlayerInputManager.cs"),
                 Does.Contain("ToggleSneakingState()"));
         }
 

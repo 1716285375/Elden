@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Frostbite Effect",
-        menuName = "ZZ/Character Effects/Timed/Frostbite")]
+    [GameAsset(
+        FileName = "Frostbite Effect",
+        MenuName = "ZZ/Character Effects/Timed/Frostbite")]
     public class FrostbiteEffect : TimedCharacterEffect
     {
         [SerializeField, Range(0f, 100f)] private float m_hpPercentageDamage = 10f;

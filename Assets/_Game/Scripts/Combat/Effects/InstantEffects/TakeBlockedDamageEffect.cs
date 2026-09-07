@@ -3,9 +3,9 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Applies damage-type absorption and feedback for one valid block.</summary>
-    [CreateAssetMenu(
-        fileName = "Take Blocked Damage Effect",
-        menuName = "ZZ/Character Effects/Instant/Take Blocked Damage")]
+    [GameAsset(
+        FileName = "Take Blocked Damage Effect",
+        MenuName = "ZZ/Character Effects/Instant/Take Blocked Damage")]
     public class TakeBlockedDamageEffect : TakeDamageEffect
     {
         [SerializeField] private AudioClip[] m_blockSounds =

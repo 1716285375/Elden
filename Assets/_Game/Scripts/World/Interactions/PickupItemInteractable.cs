@@ -151,7 +151,10 @@ namespace ZZ
                 return;
             }
 
-            GrantItemToPlayer(player, m_item);
+            if (!TryGrantItemToPlayer(player, m_item))
+            {
+                return;
+            }
             SaveWorldItemAsLooted();
             RemovePickupFromWorld();
         }
@@ -241,10 +244,10 @@ namespace ZZ
                 return;
             }
 
-            GrantItemToPlayer(player, item);
+            TryGrantItemToPlayer(player, item);
         }
 
-        private static void GrantItemToPlayer(PlayerManager player, Item item)
+        internal static bool TryGrantItemToPlayer(PlayerManager player, Item item)
         {
             Item runtimeItem = WorldItemDatabase.Instance
                 ?.GetRuntimeItemByID(item?.ItemID ?? -1) ?? item;
@@ -257,7 +260,7 @@ namespace ZZ
                     UnityEngine.Object.Destroy(runtimeItem);
                 }
 
-                return;
+                return false;
             }
 
             player.CharacterSoundFXManager?.PlayPickupItemSound();
@@ -277,6 +280,12 @@ namespace ZZ
                     runtimeItem.IsStackable
                         ? runtimeItem.CurrentItemAmount
                         : 1);
+            return true;
+        }
+
+        /// <summary>Only a confirmed grant removes a pickup; rejected attempts remain available.</summary>
+        public override void CompleteInteraction()
+        {
         }
 
         private bool TryResolveRequestingPlayer(

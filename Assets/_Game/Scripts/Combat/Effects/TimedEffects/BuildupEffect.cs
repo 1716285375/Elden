@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Degrade Buildup Effect",
-        menuName = "ZZ/Character Effects/Timed/Degrade Buildup")]
+    [GameAsset(
+        FileName = "Degrade Buildup Effect",
+        MenuName = "ZZ/Character Effects/Timed/Degrade Buildup")]
     public class BuildupEffect : TimedCharacterEffect
     {
         [SerializeField] private Buildup m_buildupType;

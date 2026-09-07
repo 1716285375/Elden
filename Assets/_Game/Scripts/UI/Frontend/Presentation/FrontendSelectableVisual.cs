@@ -42,6 +42,7 @@ namespace ZZ
         [SerializeField] private Graphic m_selectionBackground;
         [SerializeField] private GameObject m_selectionMarker;
         [SerializeField] private TMP_Text m_label;
+        [SerializeField] private TMP_Text[] m_secondaryLabels = System.Array.Empty<TMP_Text>();
 
         [Header("Appearance")]
         [SerializeField] private Color m_normalBackgroundColor =
@@ -67,6 +68,7 @@ namespace ZZ
         private float m_normalLabelX;
         private bool m_usesAnchoredLabelPosition;
         private bool m_isSelected;
+        private bool m_wasInteractable;
         private Sequence m_transitionSequence;
 
         private void Awake()
@@ -83,6 +85,54 @@ namespace ZZ
 
         private void OnEnable()
         {
+            m_isSelected = EventSystem.current?.currentSelectedGameObject == gameObject;
+            m_wasInteractable = IsInteractable();
+            ApplyStateInstant(m_isSelected);
+        }
+
+        private void LateUpdate()
+        {
+            bool isInteractable = IsInteractable();
+            if (isInteractable != m_wasInteractable)
+            {
+                m_wasInteractable = isInteractable;
+                KillTransitionSequence();
+                ApplyStateInstant(m_isSelected);
+            }
+        }
+
+        /// <summary>Applies the authored menu palette to a dynamically created command button.</summary>
+        public void ApplyAppearanceFrom(FrontendSelectableVisual source, TMP_Text label)
+        {
+            if (source == null)
+            {
+                return;
+            }
+            KillTransitionSequence();
+            m_label = label;
+            m_normalBackgroundColor = source.m_normalBackgroundColor;
+            m_idleBackgroundColor = source.m_idleBackgroundColor;
+            m_disabledBackgroundColor = source.m_disabledBackgroundColor;
+            m_normalTextColor = source.m_normalTextColor;
+            m_selectedTextColor = source.m_selectedTextColor;
+            m_disabledTextColor = source.m_disabledTextColor;
+            m_idleBackgroundSprite = source.m_idleBackgroundSprite;
+            m_selectedBackgroundSprite = source.m_selectedBackgroundSprite;
+            m_labelShiftX = source.m_labelShiftX;
+            m_transitionDuration = source.m_transitionDuration;
+            m_transitionEase = source.m_transitionEase;
+            m_selectable = GetComponent<Selectable>();
+            ResolveReferences();
+            CaptureNormalLabelPosition();
+            m_selectable.transition = Selectable.Transition.None;
+            if (m_selectionImage != null)
+            {
+                m_selectionImage.type = Image.Type.Sliced;
+            }
+            if (m_label != null && source.m_label != null)
+            {
+                m_label.font = source.m_label.font;
+            }
             ApplyStateInstant(m_isSelected);
         }
 
@@ -197,6 +247,13 @@ namespace ZZ
 
         private void ApplyStateInstant(bool isSelected)
         {
+            foreach (TMP_Text secondary in m_secondaryLabels)
+            {
+                if (secondary != null)
+                {
+                    secondary.color = ResolveTextColor(isSelected);
+                }
+            }
             if (m_useSpriteSwap)
             {
                 ApplySprite(isSelected);
@@ -258,7 +315,7 @@ namespace ZZ
 
         private bool IsInteractable()
         {
-            return m_selectable == null || m_selectable.interactable;
+            return m_selectable == null || m_selectable.IsInteractable();
         }
 
         private void ResolveReferences()

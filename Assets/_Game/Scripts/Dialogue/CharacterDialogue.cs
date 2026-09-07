@@ -6,9 +6,9 @@ namespace ZZ
     /// <summary>
     /// Stores one authored stage of linear NPC dialogue while a runtime copy owns playback progress.
     /// </summary>
-    [CreateAssetMenu(
-        menuName = "Character Dialogue/Character Dialogue",
-        fileName = "New Character Dialogue")]
+    [GameAsset(
+        MenuName = "Character Dialogue/Character Dialogue",
+        FileName = "New Character Dialogue")]
     public class CharacterDialogue : ScriptableObject
     {
         [Header("Stage")]

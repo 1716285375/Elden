@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "lieflat-charts": {
+      "source": "larashero3-dotcom/lieflat-charts",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "72f86e4e9a6b7522a1fefe1faaf79305046f2f7cdc966bb3fb62a3e65cb55fc9"
+    }
+  }
+}

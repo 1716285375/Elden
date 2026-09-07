@@ -3,9 +3,9 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Validates the equipped spell and starts a catalyst casting action.</summary>
-    [CreateAssetMenu(
-        fileName = "Cast Incantation",
-        menuName = "ZZ/Weapon Actions/Cast Incantation")]
+    [GameAsset(
+        FileName = "Cast Incantation",
+        MenuName = "ZZ/Weapon Actions/Cast Incantation")]
     public class CastIncantationAction : WeaponItemAction
     {
         [SerializeField] private SpellClass m_requiredSpellClass = SpellClass.Incantation;

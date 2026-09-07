@@ -414,6 +414,11 @@ namespace ZZ
             }
 
             bool hasInitializedHealth = maximumHealth > 0f;
+            if (!hasInitializedHealth && !IsDead.Value)
+            {
+                // Network spawn callbacks may run before the stats component initializes Health.
+                return;
+            }
             bool shouldProcessDeath = IsDead.Value ||
                 hasInitializedHealth && CurrentHealth.Value <= 0f;
             m_characterManager.ReconcilePredictedDeath(

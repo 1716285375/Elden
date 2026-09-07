@@ -3,9 +3,9 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Performs a shield Parry using one of the authored timing profiles.</summary>
-    [CreateAssetMenu(
-        fileName = "Parry Ash Of War",
-        menuName = "ZZ/Ashes Of War/Parry")]
+    [GameAsset(
+        FileName = "Parry Ash Of War",
+        MenuName = "ZZ/Ashes Of War/Parry")]
     public class ParryAshOfWar : AshOfWar
     {
         [SerializeField] private ParryAnimationSpeed m_parrySpeed =

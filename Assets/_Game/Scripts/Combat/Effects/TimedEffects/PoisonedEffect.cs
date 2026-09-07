@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Poisoned Effect",
-        menuName = "ZZ/Character Effects/Timed/Poisoned")]
+    [GameAsset(
+        FileName = "Poisoned Effect",
+        MenuName = "ZZ/Character Effects/Timed/Poisoned")]
     public class PoisonedEffect : TimedCharacterEffect
     {
         [SerializeField, Min(0f)] private float m_poisonDamage = 10f;

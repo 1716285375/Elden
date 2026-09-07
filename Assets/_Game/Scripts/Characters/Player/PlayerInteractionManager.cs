@@ -125,7 +125,8 @@ namespace ZZ
         /// <summary>Uses the first eligible interaction and applies its one-shot policy.</summary>
         public void HandleInteractionInput()
         {
-            if (m_player?.PlayerCombatManager?.IsUsingItem == true)
+            if (m_player == null || !m_player.IsOwner || m_player.IsDead ||
+                m_player.IsPerformingAction || m_player.PlayerCombatManager?.IsUsingItem == true)
             {
                 return;
             }
@@ -199,15 +200,22 @@ namespace ZZ
 
         private Interactable FindFirstEligibleInteraction()
         {
+            Interactable nearest = null;
+            float nearestDistance = float.PositiveInfinity;
             foreach (Interactable interactable in m_currentInteractableActions)
             {
                 if (interactable != null && interactable.CanInteract(m_player))
                 {
-                    return interactable;
+                    float distance = (interactable.transform.position - transform.position).sqrMagnitude;
+                    if (distance < nearestDistance)
+                    {
+                        nearest = interactable;
+                        nearestDistance = distance;
+                    }
                 }
             }
 
-            return null;
+            return nearest;
         }
 
         private void ClearActiveInteraction()

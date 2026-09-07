@@ -10,7 +10,7 @@ namespace ZZ.Editor
     /// <summary>
     /// Removes runtime-spawned network objects before NGO processes an Editor scene copy.
     /// </summary>
-    [BuildCallbackVersion(1)]
+    [BuildCallbackVersion(2)]
     public sealed class RuntimeSpawnedNetworkObjectSceneProcessor : IProcessSceneWithReport
     {
         private const int k_CallbackOrder = -1000;
@@ -31,6 +31,7 @@ namespace ZZ.Editor
                 {
                     if (networkObject == null ||
                         networkObject.InScenePlaced ||
+                        IsLiveNetworkObject(networkObject) ||
                         !HasBeenSpawned(networkObject))
                     {
                         continue;
@@ -46,6 +47,15 @@ namespace ZZ.Editor
             return s_spawnCountField?.GetValue(networkObject) is int spawnCount
                 ? spawnCount > 0
                 : networkObject.IsSpawned;
+        }
+
+        private static bool IsLiveNetworkObject(NetworkObject networkObject)
+        {
+            // Additive scene processing can run after Awake/Start spawned legitimate scene-owned AI.
+            NetworkManager manager = NetworkManager.Singleton;
+            return networkObject.IsSpawned && manager != null && manager.IsListening &&
+                manager.SpawnManager.SpawnedObjects.TryGetValue(networkObject.NetworkObjectId, out NetworkObject liveObject) &&
+                liveObject == networkObject;
         }
     }
 }

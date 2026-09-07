@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -36,6 +37,8 @@ namespace ZZ
                 NetworkVariableWritePermission.Server);
 
         private AICharacterManager m_aiCharacter;
+        private readonly NetworkVariable<int> m_encounterBossID = new();
+        private readonly NetworkVariable<FixedString128Bytes> m_encounterBossName = new();
         private AICharacterNetworkManager m_networkManager;
         private NavMeshAgent m_navMeshAgent;
 
@@ -45,8 +48,9 @@ namespace ZZ
         /// <summary>Raised on each peer when the active phase changes.</summary>
         public event Action<BossCharacterManager, int> PhaseChanged;
 
-        public int BossID => m_bossID;
-        public string BossName => m_bossName;
+        public int BossID => m_encounterBossID.Value > 0 ? m_encounterBossID.Value : m_bossID;
+        public string BossName => m_encounterBossName.Value.Length > 0
+            ? m_encounterBossName.Value.ToString() : m_bossName;
         public bool IsEncounterActive => m_isEncounterActive.Value;
         public bool HasBeenDefeated =>
             m_aiCharacter?.OriginSpawner?.HasBossBeenDefeated == true;
@@ -58,6 +62,19 @@ namespace ZZ
             m_aiCharacter = GetComponent<AICharacterManager>();
             m_networkManager = GetComponent<AICharacterNetworkManager>();
             m_navMeshAgent = GetComponent<NavMeshAgent>();
+        }
+
+        /// <summary>Assigns the streamed encounter identity before its network spawn callbacks run.</summary>
+        public void ConfigureEncounterIdentity(int bossID, string bossName)
+        {
+            if (IsSpawned || bossID <= 0)
+            {
+                throw new InvalidOperationException("Configure a positive Boss ID before network spawning.");
+            }
+            m_bossID = bossID;
+            m_bossName = bossName;
+            m_encounterBossID.Value = bossID;
+            m_encounterBossName.Value = new FixedString128Bytes(bossName);
         }
 
         public override void OnNetworkSpawn()

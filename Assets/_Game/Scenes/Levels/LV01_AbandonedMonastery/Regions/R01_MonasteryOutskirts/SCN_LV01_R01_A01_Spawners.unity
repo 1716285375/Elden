@@ -147,6 +147,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Nature Pickup - Smithing Stone
       objectReference: {fileID: 0}
+    - target: {fileID: 5607157336599520361, guid: ce10f2cf3ccc9284190ebb0032e9dbc8, type: 3}
+      propertyPath: m_trackDroppingCreaturePosition
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7503844566799118048, guid: ce10f2cf3ccc9284190ebb0032e9dbc8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 145
@@ -246,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -352,7 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -395,7 +399,6 @@ Transform:
   - {fileID: 626359496}
   - {fileID: 1596300176}
   - {fileID: 206264167}
-  - {fileID: 2140798521}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &206264166
@@ -962,7 +965,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1015,7 +1018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1068,7 +1071,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1077,76 +1080,6 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
---- !u!1001 &1396834238
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 2140798521}
-    m_Modifications:
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 130
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.0697365
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 80
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_area
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_worldLocation
-      value: 
-      objectReference: {fileID: 11400000, guid: 15542d75e8e743749a119164bff4a398, type: 2}
-    - target: {fileID: 7010940596096726253, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_Name
-      value: Nature Trigger A01_CliffPath -> A02_Graveyard
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
---- !u!4 &1396834239 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-  m_PrefabInstance: {fileID: 1396834238}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1473081026
 GameObject:
   m_ObjectHideFlags: 0
@@ -1222,7 +1155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1307,7 +1240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1413,7 +1346,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1466,7 +1399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1519,7 +1452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1528,38 +1461,6 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
---- !u!1 &2140798520
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2140798521}
-  m_Layer: 0
-  m_Name: Nature Streaming Triggers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2140798521
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2140798520}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1396834239}
-  m_Father: {fileID: 203726919}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -7,9 +7,9 @@ namespace ZZ
     /// Describes the physical additive Scenes and visible neighbour locations for
     /// one player-facing world location.
     /// </summary>
-    [CreateAssetMenu(
-        fileName = "World Location Scene Set",
-        menuName = "World/World Location Scene Set")]
+    [GameAsset(
+        FileName = "World Location Scene Set",
+        MenuName = "World/World Location Scene Set")]
     public class WorldLocationSceneSet : ScriptableObject
     {
         [SerializeField] private string m_locationID;

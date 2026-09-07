@@ -47,6 +47,21 @@ namespace ZZ
 
         private void OnTriggerEnter(Collider other)
         {
+            TryBeginEncounter(other);
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            // Streaming can spawn the Boss after the player has already entered the arena.
+            TryBeginEncounter(other);
+        }
+
+        private void TryBeginEncounter(Collider other)
+        {
+            if (m_boundBoss != null && m_boundBoss.IsEncounterActive)
+            {
+                return;
+            }
             NetworkManager networkManager = NetworkManager.Singleton;
             if (networkManager == null || !networkManager.IsServer)
             {
@@ -59,7 +74,10 @@ namespace ZZ
                 return;
             }
 
-            TryFindBoss();
+            if (m_boundBoss == null || !m_boundBoss.IsSpawned)
+            {
+                TryFindBoss();
+            }
             m_boundBoss?.BeginEncounter(enteringPlayer);
         }
 
@@ -77,7 +95,7 @@ namespace ZZ
         private void TryFindBoss()
         {
             BossCharacterManager[] bosses = FindObjectsByType<BossCharacterManager>(
-                FindObjectsSortMode.None);
+                FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (BossCharacterManager boss in bosses)
             {
                 if (boss != null && boss.IsSpawned && boss.BossID == m_bossID)

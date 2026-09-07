@@ -184,6 +184,8 @@ namespace ZZ
         private CharacterManager m_characterManager;
         private AnimationClip m_lastDamageAnimationPlayed;
         private AnimationClip m_lastPingDamageAnimationPlayed;
+        private RuntimeAnimatorController m_parameterController;
+        private readonly HashSet<int> m_optionalBoolParameters = new();
 
         protected Animator CharacterAnimator => m_animator;
 
@@ -294,13 +296,16 @@ namespace ZZ
         /// <summary>Applies the replicated low-profile locomotion condition.</summary>
         public void SetSneakingState(bool isSneaking)
         {
-            m_animator?.SetBool(s_isSneakingParameter, isSneaking);
+            SetOptionalAnimatorBool(s_isSneakingParameter, isSneaking);
         }
 
         /// <summary>Applies the replicated two-hand locomotion and blocking condition.</summary>
         public void SetTwoHandingWeaponState(bool isTwoHandingWeapon)
         {
             m_animator?.SetBool(s_isTwoHandingWeaponParameter, isTwoHandingWeapon);
+            SetOptionalAnimatorBool(Animator.StringToHash("isTwoHandingLeftWeapon"),
+                isTwoHandingWeapon && m_characterManager is PlayerManager player &&
+                player.PlayerNetworkManager.IsTwoHandingLeftWeapon.Value);
         }
 
         /// <summary>Applies the two independent replicated spell-charge branches.</summary>
@@ -335,9 +340,34 @@ namespace ZZ
                 return;
             }
 
-            m_animator.SetBool(s_hasArrowNotchedParameter, hasArrowNotched);
-            m_animator.SetBool(s_isHoldingArrowParameter, isHoldingArrow);
-            m_animator.SetBool(s_isAimingParameter, isAiming);
+            SetOptionalAnimatorBool(s_hasArrowNotchedParameter, hasArrowNotched);
+            SetOptionalAnimatorBool(s_isHoldingArrowParameter, isHoldingArrow);
+            SetOptionalAnimatorBool(s_isAimingParameter, isAiming);
+        }
+
+        private void SetOptionalAnimatorBool(int parameter, bool value)
+        {
+            if (m_animator == null || m_animator.runtimeAnimatorController == null)
+            {
+                return;
+            }
+            if (m_parameterController != m_animator.runtimeAnimatorController)
+            {
+                m_parameterController = m_animator.runtimeAnimatorController;
+                m_optionalBoolParameters.Clear();
+                foreach (AnimatorControllerParameter entry in m_animator.parameters)
+                {
+                    if (entry.type == AnimatorControllerParameterType.Bool)
+                    {
+                        m_optionalBoolParameters.Add(entry.nameHash);
+                    }
+                }
+            }
+            // AI-only controllers need not implement the player's sneak and bow presentation.
+            if (m_optionalBoolParameters.Contains(parameter))
+            {
+                m_animator.SetBool(parameter, value);
+            }
         }
 
         /// <summary>Animation Event: attaches the current projectile to this character.</summary>
@@ -463,6 +493,11 @@ namespace ZZ
                 actionStateHash,
                 k_ActionTransitionDuration,
                 actionLayerIndex);
+            if (targetAnimation == CharacterActionAnimation.BackStep)
+            {
+                // Backstep clips lack the rolling clip's sound event; present this once on each peer.
+                m_characterManager.CharacterSoundFXManager?.PlayRollingSoundFX();
+            }
         }
 
         /// <summary>Plays an action only on this peer for prediction or reconciliation.</summary>
@@ -882,6 +917,14 @@ namespace ZZ
             if (IsTwoHandingWeapon())
             {
                 return GetTwoHandAttackStateHash(attackType);
+            }
+
+            if (m_characterManager is PlayerManager player &&
+                player.PlayerNetworkManager.IsUsingLeftHand.Value &&
+                attackType is AttackType.LightAttack01 or AttackType.LightAttack02 or AttackType.LightAttack03)
+            {
+                return Animator.StringToHash(attackType == AttackType.LightAttack02
+                    ? "Action Override.OffHand_Attack_02" : "Action Override.OffHand_Attack_01");
             }
 
             switch (attackType)

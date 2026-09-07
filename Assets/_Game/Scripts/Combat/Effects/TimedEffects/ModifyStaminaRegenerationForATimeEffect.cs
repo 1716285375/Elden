@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Modify Stamina Regeneration Effect",
-        menuName = "ZZ/Character Effects/Timed/Modify Stamina Regeneration")]
+    [GameAsset(
+        FileName = "Modify Stamina Regeneration Effect",
+        MenuName = "ZZ/Character Effects/Timed/Modify Stamina Regeneration")]
     public class ModifyStaminaRegenerationForATimeEffect : TimedCharacterEffect
     {
         [SerializeField] private float m_modifierPercentage = -80f;

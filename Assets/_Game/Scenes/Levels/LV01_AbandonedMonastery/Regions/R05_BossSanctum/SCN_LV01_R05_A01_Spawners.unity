@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -225,76 +225,6 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
---- !u!1001 &687660131
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 867188411}
-    m_Modifications:
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 195
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.33135
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 260
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_area
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_worldLocation
-      value: 
-      objectReference: {fileID: 11400000, guid: e98de531558112b4391c44f480c7e840, type: 2}
-    - target: {fileID: 7010940596096726253, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_Name
-      value: Nature Trigger A01_BossSanctum -> A01_BellTower
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
---- !u!4 &687660132 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-  m_PrefabInstance: {fileID: 687660131}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &797102599
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -445,7 +375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -454,38 +384,6 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
---- !u!1 &867188410
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 867188411}
-  m_Layer: 0
-  m_Name: Nature Streaming Triggers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &867188411
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 867188410}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 687660132}
-  m_Father: {fileID: 1236849798}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &913486585
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,7 +468,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -579,6 +477,76 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
+--- !u!1 &976976429
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 976976430}
+  - component: {fileID: 976976432}
+  - component: {fileID: 976976431}
+  m_Layer: 0
+  m_Name: Encounter Area
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &976976430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976976429}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1383097165}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &976976431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976976429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58084440a533cdd48965c30ce6f3c1ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossArenaController
+  m_bossID: 1001
+  m_fogWallRoot: {fileID: 0}
+  m_bossMusicSource: {fileID: 0}
+  m_bossMusic: {fileID: 0}
+--- !u!65 &976976432
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976976429}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 18, y: 8, z: 18}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &1116180437
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,7 +609,6 @@ Transform:
   m_Children:
   - {fileID: 1785764343}
   - {fileID: 913486586}
-  - {fileID: 867188411}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1383097164
@@ -673,7 +640,8 @@ Transform:
   m_LocalPosition: {x: 150, y: 9.071556, z: 278}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 976976430}
   m_Father: {fileID: 913486586}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1383097166
@@ -688,7 +656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 271294674669322707, guid: 036b7f6bfa4f44447952004b69b2bd11, type: 3}
+  m_characterGameObject: {fileID: 5114655627426318866, guid: 2d50b60c5234b654ba3798e183499900, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -850,6 +818,18 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 1512424376
       objectReference: {fileID: 0}
+    - target: {fileID: 7416472201752827280, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
+      propertyPath: m_itemID
+      value: 20700
+      objectReference: {fileID: 0}
+    - target: {fileID: 7416472201752827280, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
+      propertyPath: m_pickupType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7416472201752827280, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
+      propertyPath: m_trackDroppingCreaturePosition
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -960,7 +940,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0

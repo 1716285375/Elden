@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Grants the rounded fifty-percent Strength bonus used while two-handing.</summary>
-    [CreateAssetMenu(fileName = "Two Handing Effect", menuName = "ZZ/Effects/Two Handing")]
+    [GameAsset(FileName = "Two Handing Effect", MenuName = "ZZ/Effects/Two Handing")]
     public class TwoHandingEffect : StaticCharacterEffect
     {
         private int m_strengthGained;

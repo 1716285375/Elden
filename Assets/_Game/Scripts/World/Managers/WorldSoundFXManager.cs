@@ -51,7 +51,8 @@ namespace ZZ
                 return false;
             }
 
-            audioSource.PlayOneShot(soundEffect, Mathf.Clamp01(volumeScale));
+            audioSource.PlayOneShot(soundEffect,
+                Mathf.Clamp01(volumeScale) * SoundEffectVolume.GetVolumeScale(soundEffects, soundEffect));
             return true;
         }
 

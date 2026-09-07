@@ -3,9 +3,9 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Resolves a held ranged-attack input into one notched ammunition slot.</summary>
-    [CreateAssetMenu(
-        fileName = "Fire Projectile",
-        menuName = "ZZ/Actions/Fire Projectile")]
+    [GameAsset(
+        FileName = "Fire Projectile",
+        MenuName = "ZZ/Actions/Fire Projectile")]
     public class FireProjectileWeaponItemAction : WeaponItemAction
     {
         [SerializeField] private ProjectileSlot m_projectileSlot =

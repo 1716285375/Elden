@@ -169,6 +169,7 @@ namespace ZZ
             m_playerControls.PlayerCamera.LockOn.performed -= OnLockOnPerformed;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             DisablePlayerControls();
+            m_playerControls.PlayerCamera.Disable();
         }
 
         private void Update()
@@ -184,10 +185,11 @@ namespace ZZ
             if (!focus)
             {
                 DisablePlayerControls();
+                m_playerControls?.PlayerCamera.Disable();
                 return;
             }
 
-            if (s_instance != this || m_playerControls == null)
+            if (s_instance != this || m_playerControls == null || !isActiveAndEnabled)
             {
                 return;
             }
@@ -255,6 +257,9 @@ namespace ZZ
         /// </summary>
         public void DisablePlayerControls()
         {
+            // Disabling an action invokes its cancellation callbacks synchronously.
+            IsMovementInputEnabled = false;
+            m_playerControls?.PlayerMovement.Disable();
             MovementInput = Vector2.zero;
             VerticalInput = 0f;
             HorizontalInput = 0f;
@@ -293,8 +298,6 @@ namespace ZZ
             m_player?.PlayerNetworkManager?.SetAimingState(false);
             m_player?.PlayerCombatManager?.SetBlocking(false);
             ClearAttackInputQueue();
-            IsMovementInputEnabled = false;
-            m_playerControls?.PlayerMovement.Disable();
             if (!m_isMenuCameraInputEnabled)
             {
                 m_playerControls?.PlayerCamera.Disable();
@@ -559,8 +562,15 @@ namespace ZZ
                 return;
             }
 
-            m_hasLBInput = false;
             WeaponItem weapon = ResolveBlockingWeapon();
+            bool isSingleHandAttack = weapon is MeleeWeaponItem && !weapon.IsUnarmed &&
+                weapon.WeaponClass != WeaponClass.Shield &&
+                m_player.PlayerNetworkManager.IsTwoHandingWeapon.Value == false;
+            if (isSingleHandAttack && !m_hasLBInput)
+            {
+                return;
+            }
+            m_hasLBInput = false;
             combatManager?.PerformWeaponBasedAction(
                 weapon?.LeftHandAction,
                 weapon);
@@ -713,6 +723,11 @@ namespace ZZ
 
         private void OnRBCanceled(InputAction.CallbackContext context)
         {
+            if (!IsMovementInputEnabled)
+            {
+                return;
+            }
+
             if (m_isRBSpellInput)
             {
                 m_isRBSpellInput = false;
@@ -762,6 +777,11 @@ namespace ZZ
 
         private void OnRTCanceled(InputAction.CallbackContext context)
         {
+            if (!IsMovementInputEnabled)
+            {
+                return;
+            }
+
             if (m_isRangedRTInput)
             {
                 m_player?.PlayerCombatManager?.ReleaseHeldProjectileInput();
@@ -798,6 +818,11 @@ namespace ZZ
 
         private void OnLBCanceled(InputAction.CallbackContext context)
         {
+            if (!IsMovementInputEnabled)
+            {
+                return;
+            }
+
             if (m_isLBSpellInput)
             {
                 m_isLBSpellInput = false;
@@ -926,7 +951,7 @@ namespace ZZ
 
         private void RefreshMovementInput(Scene activeScene)
         {
-            if (Application.isFocused &&
+            if (isActiveAndEnabled && Application.isFocused &&
                 activeScene.name == k_GameplaySceneName &&
                 !m_isGameplayInputBlocked)
             {
@@ -935,6 +960,14 @@ namespace ZZ
             }
 
             DisablePlayerControls();
+            if (m_isMenuCameraInputEnabled && isActiveAndEnabled && Application.isFocused)
+            {
+                m_playerControls?.PlayerCamera.Enable();
+            }
+            else
+            {
+                m_playerControls?.PlayerCamera.Disable();
+            }
         }
     }
 }

@@ -22,3 +22,4 @@ MonoBehaviour:
   m_requiredLocations:
   - {fileID: 11400000, guid: 15542d75e8e743749a119164bff4a398, type: 2}
   - {fileID: 11400000, guid: 9d8a840836d66684c920de5654be1179, type: 2}
+  - {fileID: 11400000, guid: 1fd2525c420a96640ae19dae1e99842f, type: 2}

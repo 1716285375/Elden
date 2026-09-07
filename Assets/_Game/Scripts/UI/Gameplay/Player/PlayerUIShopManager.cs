@@ -374,7 +374,8 @@ namespace ZZ
             m_modeText.text = m_currentMode == ShopBuyOrSell.Buying
                 ? "Purchase"
                 : "Sell";
-            m_categoryText.text = $"Category: {m_currentCategory}   [LB / RB]";
+            InputHintText.SetTemplate(m_categoryText,
+                $"Category: {m_currentCategory}   {{Previous Shop Category}}  {{Next Shop Category}}");
             if (activeSlotCount > 0)
             {
                 UIShopInventorySlot firstSlot = m_slotPool[0];
@@ -700,6 +701,7 @@ namespace ZZ
                 26f,
                 TextAlignmentOptions.Center);
             StretchToParent(text.rectTransform);
+            PlayerUIManager.Instance?.ApplyGameplayButtonStyle(button, text);
             return button;
         }
 

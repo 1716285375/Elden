@@ -4,9 +4,9 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Defines the attack set and movement tuning used by one Boss phase.</summary>
-    [CreateAssetMenu(
-        menuName = "Character/AI/Boss Phase Data",
-        fileName = "Boss Phase Data")]
+    [GameAsset(
+        MenuName = "Character/AI/Boss Phase Data",
+        FileName = "Boss Phase Data")]
     public class BossPhaseData : ScriptableObject
     {
         [SerializeField, Range(0f, 1f)] private float m_healthThreshold = 1f;

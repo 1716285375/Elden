@@ -21,6 +21,8 @@ namespace ZZ
         protected virtual void Awake()
         {
             m_audioSource ??= GetComponent<AudioSource>();
+            SoundEffectVolume.WarmUp(m_damageGrunts);
+            SoundEffectVolume.WarmUp(m_footstepSounds);
         }
 
         /// <summary>
@@ -165,7 +167,7 @@ namespace ZZ
 
             m_audioSource.PlayOneShot(
                 soundEffect,
-                Mathf.Clamp01(volumeScale));
+                Mathf.Clamp01(volumeScale) * SoundEffectVolume.GetVolumeScale(soundEffects, soundEffect));
             return true;
         }
     }

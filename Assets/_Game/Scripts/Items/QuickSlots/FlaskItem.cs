@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Restores Health or Focus Points when its drink animation reaches the success frame.</summary>
-    [CreateAssetMenu(fileName = "Flask", menuName = "ZZ/Items/Quick Slot/Flask")]
+    [GameAsset(FileName = "Flask", MenuName = "ZZ/Items/Quick Slot/Flask")]
     public class FlaskItem : QuickSlotItem
     {
         [Header("Flask")]

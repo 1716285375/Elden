@@ -23,6 +23,7 @@ namespace ZZ
         [SerializeField] private TMP_Text m_currentMaterialsText;
         [SerializeField] private TMP_Text m_materialsRequiredText;
         [SerializeField] private Button m_upgradeButton;
+        [SerializeField] private Button m_returnButton;
 
         [Header("CONFIRMATION")]
         [SerializeField] private GameObject m_confirmationPopup;
@@ -65,6 +66,7 @@ namespace ZZ
             CloseConfirmationPopup(false);
             RefreshWeaponIcons();
             SelectRightHandWeapon();
+            m_rightWeaponButton?.Select();
         }
 
         /// <summary>Defers service opening past dialogue HUD restoration.</summary>
@@ -127,6 +129,7 @@ namespace ZZ
                     $"+{(int)m_currentSelectedWeapon.UpgradeLevel + 1}?";
             }
 
+            m_confirmationPopup?.transform.SetAsLastSibling();
             m_confirmationPopup?.SetActive(true);
             m_confirmButton?.Select();
             m_confirmButton?.OnSelect(null);
@@ -328,6 +331,10 @@ namespace ZZ
 
         private void SetWeaponButtonsInteractable(bool isInteractable)
         {
+            if (m_returnButton != null)
+            {
+                m_returnButton.interactable = isInteractable;
+            }
             if (m_rightWeaponButton != null)
             {
                 m_rightWeaponButton.interactable = isInteractable;

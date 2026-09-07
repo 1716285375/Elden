@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Take Damage Effect",
-        menuName = "ZZ/Character Effects/Instant/Take Damage")]
+    [GameAsset(
+        FileName = "Take Damage Effect",
+        MenuName = "ZZ/Character Effects/Instant/Take Damage")]
     public class TakeDamageEffect : DamageEffect
     {
         public AnimationClip DamageAnimation { get; private set; }

@@ -140,7 +140,7 @@ namespace ZZ.Tests
         public static void OffHandInputOwnsPowerStanceAndComboWindow()
         {
             string inputSource = ReadRuntimeSource(
-                "World Managers/PlayerInputManager.cs");
+                "Input/PlayerInputManager.cs");
             string combatSource = ReadRuntimeSource(
                 "Character/Player/PlayerCombatManager.cs");
 

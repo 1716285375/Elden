@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Creates a homing fire projectile with an authored fire-damage payload.</summary>
-    [CreateAssetMenu(fileName = "Fireball", menuName = "ZZ/Items/Spells/Fireball")]
+    [GameAsset(FileName = "Fireball", MenuName = "ZZ/Items/Spells/Fireball")]
     public class FireballSpell : SpellItem
     {
         [Header("Fireball")]

@@ -31,7 +31,7 @@ public sealed class LV01SpawnRuntimeTests
         yield return null;
         Scene masterScene = SceneManager.GetSceneByName("SCN_LV01_AbandonedMonastery");
         Transform spawn = FindTransform(masterScene, "Player Spawn Point");
-        Transform initialTrigger = FindTransform(masterScene, "Spawn Area Load Trigger");
+        Transform initialTrigger = FindTransform(masterScene, "A01_CliffPath");
         Terrain landTerrain = Object.FindObjectsByType<Terrain>(
                 FindObjectsInactive.Exclude,
                 FindObjectsSortMode.None)

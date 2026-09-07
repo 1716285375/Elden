@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,8 +6,7 @@ namespace ZZ
 {
     /// <summary>
     /// Renders an integer as a row of digit sprite Images (HUD/Numbers art).
-    /// Child images are generated on demand from the current value, so the row
-    /// always fits its content. Alignment and digit size are configurable.
+    /// Reuses digit Images across value changes and hides unused digits immediately.
     /// </summary>
     public class HUDNumberDisplay : MonoBehaviour
     {
@@ -18,21 +18,35 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_letterSpacing = 1f;
         [SerializeField] private bool m_rightAligned = true;
 
+        private readonly List<Image> m_digitImages = new();
+        private int m_lastNumber = int.MinValue;
+
         /// <summary>Shows the given value, clearing the row when it is negative.</summary>
         public void SetNumber(int number)
         {
-            ClearDigits();
+            if (m_digitImages.Count == 0)
+            {
+                foreach (Transform child in transform)
+                {
+                    if (child.name == k_DigitObjectName && child.TryGetComponent(out Image image))
+                    {
+                        m_digitImages.Add(image);
+                    }
+                }
+            }
 
-            if (number < 0 || number > 999999999)
+            if (number == m_lastNumber)
             {
                 return;
             }
 
-            string digits = number.ToString();
+            m_lastNumber = number;
+            string digits = number >= 0 && number <= 999999999 ? number.ToString() : string.Empty;
             float runningOffset = 0f;
-            for (int index = digits.Length - 1; index >= 0; index--)
+            int imageIndex = 0;
+            for (int index = 0; index < digits.Length; index++)
             {
-                int digitValue = digits[index] - '0';
+                int digitValue = digits[m_rightAligned ? digits.Length - 1 - index : index] - '0';
                 Sprite digitSprite = GetDigitSprite(digitValue);
                 if (digitSprite == null)
                 {
@@ -41,8 +55,23 @@ namespace ZZ
 
                 float digitWidth =
                     m_digitHeight * (digitSprite.rect.width / digitSprite.rect.height);
-                AddDigitImage(digitSprite, digitWidth, runningOffset);
+                Image digitImage = GetOrCreateDigitImage(imageIndex);
+                RectTransform rectTransform = digitImage.rectTransform;
+                float horizontalAnchor = m_rightAligned ? 1f : 0f;
+                rectTransform.pivot = new Vector2(horizontalAnchor, 0.5f);
+                rectTransform.anchorMin = new Vector2(horizontalAnchor, 0.5f);
+                rectTransform.anchorMax = rectTransform.anchorMin;
+                rectTransform.anchoredPosition = new Vector2(m_rightAligned ? -runningOffset : runningOffset, 0f);
+                rectTransform.sizeDelta = new Vector2(digitWidth, m_digitHeight);
+                digitImage.sprite = digitSprite;
+                digitImage.gameObject.SetActive(true);
+                imageIndex++;
                 runningOffset += digitWidth + m_letterSpacing;
+            }
+
+            for (int index = imageIndex; index < m_digitImages.Count; index++)
+            {
+                m_digitImages[index].gameObject.SetActive(false);
             }
         }
 
@@ -56,8 +85,13 @@ namespace ZZ
             return m_digitSprites[digitValue];
         }
 
-        private void AddDigitImage(Sprite digitSprite, float digitWidth, float offset)
+        private Image GetOrCreateDigitImage(int index)
         {
+            if (index < m_digitImages.Count)
+            {
+                return m_digitImages[index];
+            }
+
             var digitObject = new GameObject(
                 k_DigitObjectName,
                 typeof(RectTransform),
@@ -65,35 +99,16 @@ namespace ZZ
                 typeof(Image));
             digitObject.transform.SetParent(transform, false);
 
-            RectTransform rectTransform = (RectTransform)digitObject.transform;
-            rectTransform.pivot = new Vector2(1f, 0.5f);
-            rectTransform.anchorMin = new Vector2(m_rightAligned ? 1f : 0f, 0.5f);
-            rectTransform.anchorMax = new Vector2(m_rightAligned ? 1f : 0f, 0.5f);
-            rectTransform.anchoredPosition = new Vector2(
-                m_rightAligned ? -offset : offset,
-                0f);
-            rectTransform.sizeDelta = new Vector2(digitWidth, m_digitHeight);
-
             Image digitImage = digitObject.GetComponent<Image>();
-            digitImage.sprite = digitSprite;
             digitImage.raycastTarget = false;
-        }
-
-        private void ClearDigits()
-        {
-            for (int index = transform.childCount - 1; index >= 0; index--)
-            {
-                Transform child = transform.GetChild(index);
-                if (child.name == k_DigitObjectName)
-                {
-                    Destroy(child.gameObject);
-                }
-            }
+            m_digitImages.Add(digitImage);
+            return digitImage;
         }
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            m_lastNumber = int.MinValue;
             if (m_digitSprites == null || m_digitSprites.Length != 10)
             {
                 m_digitSprites = new Sprite[10];

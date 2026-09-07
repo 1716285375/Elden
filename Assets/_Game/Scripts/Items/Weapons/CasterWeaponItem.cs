@@ -3,9 +3,9 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Defines a catalyst weapon and the spell class it can release.</summary>
-    [CreateAssetMenu(
-        fileName = "Caster Weapon",
-        menuName = "ZZ/Items/Weapons/Caster Weapon")]
+    [GameAsset(
+        FileName = "Caster Weapon",
+        MenuName = "ZZ/Items/Weapons/Caster Weapon")]
     public class CasterWeaponItem : WeaponItem
     {
         [Header("Spell Casting")]

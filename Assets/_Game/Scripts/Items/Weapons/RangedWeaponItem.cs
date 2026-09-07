@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Defines a ranged weapon's compatible ammunition and draw/release audio.</summary>
-    [CreateAssetMenu(fileName = "Ranged Weapon", menuName = "ZZ/Items/Ranged Weapon")]
+    [GameAsset(FileName = "Ranged Weapon", MenuName = "ZZ/Items/Ranged Weapon")]
     public class RangedWeaponItem : WeaponItem
     {
         [Header("Projectile Compatibility")]

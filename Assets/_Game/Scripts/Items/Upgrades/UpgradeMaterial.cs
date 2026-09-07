@@ -3,9 +3,9 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Represents a stackable catalog material consumed by weapon upgrades.</summary>
-    [CreateAssetMenu(
-        menuName = "Items/Upgrade Material",
-        fileName = "New Upgrade Material")]
+    [GameAsset(
+        MenuName = "Items/Upgrade Material",
+        FileName = "New Upgrade Material")]
     public sealed class UpgradeMaterial : Item
     {
         [SerializeField] private UpgradeStone m_upgradeStone;

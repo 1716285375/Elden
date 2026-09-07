@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Enters first-person free aim for an equipped ranged weapon.</summary>
-    [CreateAssetMenu(fileName = "Aim", menuName = "ZZ/Actions/Aim")]
+    [GameAsset(FileName = "Aim", MenuName = "ZZ/Actions/Aim")]
     public class AimAction : WeaponItemAction
     {
         /// <inheritdoc />

@@ -1,6 +1,8 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 namespace ZZ
 {
@@ -30,6 +32,8 @@ namespace ZZ
 
         private AICharacterManager m_instantiatedCharacter;
         private bool m_hasResolvedSpawn;
+        private bool m_hasReportedMissingNavigation;
+        private bool m_hasCompletedSceneInitialization;
 
         /// <summary>Gets the server-spawned AI instance owned by this point.</summary>
         public AICharacterManager InstantiatedCharacter => m_instantiatedCharacter;
@@ -66,9 +70,23 @@ namespace ZZ
             WorldAIManager.Instance?.RegisterSpawner(this);
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
+            // Finish additive scene processing before publishing any network objects.
+            yield return null;
+            m_hasCompletedSceneInitialization = true;
             WorldAIManager.Instance?.RegisterSpawner(this);
+            var retryDelay = new WaitForSeconds(0.5f);
+            // Additive spawners can arrive during the initial spawn pass or before their NavMesh.
+            while (!m_hasResolvedSpawn)
+            {
+                if (WorldAIManager.Instance != null)
+                {
+                    WorldAIManager.Instance.RegisterSpawner(this);
+                    AttemptToSpawnCharacter();
+                }
+                yield return retryDelay;
+            }
         }
 
         private void OnDestroy()
@@ -87,7 +105,7 @@ namespace ZZ
             }
 
             NetworkManager networkManager = NetworkManager.Singleton;
-            if (networkManager == null ||
+            if (!m_hasCompletedSceneInitialization || !gameObject.scene.isLoaded || networkManager == null ||
                 !networkManager.IsListening ||
                 !networkManager.IsServer)
             {
@@ -119,9 +137,12 @@ namespace ZZ
                     k_NavMeshSampleDistance,
                     NavMesh.AllAreas))
             {
-                Debug.LogWarning(
-                    $"No NavMesh was found near AI spawner {name}.",
-                    this);
+                if (!m_hasReportedMissingNavigation)
+                {
+                    Debug.LogWarning(
+                        $"Waiting for NavMesh near AI spawner {name}; spawning will retry.", this);
+                    m_hasReportedMissingNavigation = true;
+                }
                 return null;
             }
 
@@ -129,8 +150,14 @@ namespace ZZ
                 m_characterGameObject,
                 hit.position,
                 transform.rotation);
+            SceneManager.MoveGameObjectToScene(instance, gameObject.scene);
             AICharacterManager character = instance.GetComponent<AICharacterManager>();
             character.SetOriginSpawner(this);
+            if (IsBoss)
+            {
+                instance.GetComponent<BossCharacterManager>()?.ConfigureEncounterIdentity(
+                    m_bossID, name.Replace(" Spawner", string.Empty));
+            }
             AIPatrolPath patrolPath = m_patrolPathID > 0
                 ? WorldAIManager.Instance?.GetAIPatrolPathByID(m_patrolPathID)
                 : null;
