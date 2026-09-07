@@ -5,9 +5,9 @@ namespace ZZ
     /// <summary>
     /// Describes one data-driven AI attack and its optional animation-window combo follow-up.
     /// </summary>
-    [CreateAssetMenu(
-        menuName = "Character/AI/Attack Action",
-        fileName = "AI Attack Action")]
+    [GameAsset(
+        MenuName = "Character/AI/Attack Action",
+        FileName = "AI Attack Action")]
     public class AICharacterAttackAction : ScriptableObject
     {
         [Header("Presentation")]

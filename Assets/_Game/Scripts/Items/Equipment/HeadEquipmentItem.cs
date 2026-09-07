@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Defines an armor item equipped in the head slot.</summary>
-    [CreateAssetMenu(fileName = "Head Equipment", menuName = "ZZ/Items/Armor/Head")]
+    [GameAsset(FileName = "Head Equipment", MenuName = "ZZ/Items/Armor/Head")]
     public class HeadEquipmentItem : ArmorItem
     {
         [SerializeField] private HeadEquipmentType m_headEquipmentType;

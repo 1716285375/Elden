@@ -50,7 +50,7 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Serializes and overwrites this writer's save file.
+        /// Publishes a complete JSON snapshot while preserving the previous save if writing fails.
         /// </summary>
         public void SaveFile(CharacterSaveData characterData)
         {
@@ -62,13 +62,39 @@ namespace ZZ
             Directory.CreateDirectory(m_dataSavePath);
             string json = JsonUtility.ToJson(characterData, true);
 
-            using FileStream stream = new FileStream(
-                GetFullSavePath(),
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None);
-            using StreamWriter writer = new StreamWriter(stream);
-            writer.Write(json);
+            string fullSavePath = GetFullSavePath();
+            string temporaryPath = fullSavePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                using (FileStream stream = new(
+                           temporaryPath,
+                           FileMode.CreateNew,
+                           FileAccess.Write,
+                           FileShare.None))
+                using (StreamWriter writer = new(stream))
+                {
+                    writer.Write(json);
+                    writer.Flush();
+                    stream.Flush(true);
+                }
+
+                // Both files share a directory so replacing the published snapshot stays atomic.
+                if (File.Exists(fullSavePath))
+                {
+                    File.Replace(temporaryPath, fullSavePath, null);
+                }
+                else
+                {
+                    File.Move(temporaryPath, fullSavePath);
+                }
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath))
+                {
+                    File.Delete(temporaryPath);
+                }
+            }
         }
 
         /// <summary>

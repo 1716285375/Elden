@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ZZ
@@ -23,6 +25,26 @@ namespace ZZ
             }
 
             m_button.Select();
+            if (Application.isPlaying)
+            {
+                StartCoroutine(RestoreInitialFocusAfterEnable());
+            }
+        }
+
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+        }
+
+        private IEnumerator RestoreInitialFocusAfterEnable()
+        {
+            // Other menu OnEnable callbacks can replace or clear the EventSystem's first selection.
+            yield return null;
+            GameObject selected = EventSystem.current?.currentSelectedGameObject;
+            if (m_button.IsInteractable() && (selected == null || !selected.activeInHierarchy))
+            {
+                m_button.Select();
+            }
         }
     }
 }

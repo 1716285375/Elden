@@ -5,7 +5,7 @@ namespace ZZ
     /// <summary>
     /// Resolves a fully charged heavy attack into its replicated release animation.
     /// </summary>
-    [CreateAssetMenu(fileName = "Charged Attack", menuName = "ZZ/Actions/Charged Attack")]
+    [GameAsset(FileName = "Charged Attack", MenuName = "ZZ/Actions/Charged Attack")]
     public class ChargedAttackWeaponItemAction : WeaponItemBasedAction
     {
         [SerializeField] private AttackType m_attackType = AttackType.ChargedAttack01;

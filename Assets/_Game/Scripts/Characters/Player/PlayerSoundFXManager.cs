@@ -13,35 +13,46 @@ namespace ZZ
 
         private PlayerManager m_player;
         private float m_nextFootstepTime;
+        private float m_remoteSpatialBlend = 1f;
 
         protected override void Awake()
         {
             base.Awake();
             m_player = GetComponentInParent<PlayerManager>();
+            if (CharacterAudioSource != null)
+            {
+                m_remoteSpatialBlend = CharacterAudioSource.spatialBlend;
+            }
         }
 
         private void Update()
+        {
+            UpdateAudioPerspective();
+            PlayFootstepSoundEffect();
+        }
+
+        private void UpdateAudioPerspective()
+        {
+            if (m_player == null || !m_player.IsSpawned || CharacterAudioSource == null)
+            {
+                return;
+            }
+
+            // Camera collision and orbit must not change the loudness of the local player's own actions.
+            CharacterAudioSource.spatialBlend = m_player.IsOwner ? 0f : m_remoteSpatialBlend;
+        }
+
+        /// <inheritdoc />
+        public override void PlayFootstepSoundEffect()
         {
             if (!CanPlayFootstep())
             {
                 return;
             }
 
-            PlayerNetworkManager networkManager =
-                m_player.PlayerNetworkManager;
+            PlayerNetworkManager networkManager = m_player.PlayerNetworkManager;
             m_nextFootstepTime = Time.time + GetFootstepInterval(
-                networkManager.MoveAmount.Value,
-                networkManager.IsSprinting.Value);
-            PlayFootstepSoundEffect();
-        }
-
-        /// <inheritdoc />
-        public override void PlayFootstepSoundEffect()
-        {
-            if (m_player?.PlayerNetworkManager?.IsSneaking.Value == true)
-            {
-                return;
-            }
+                networkManager.MoveAmount.Value, networkManager.IsSprinting.Value);
 
             if (m_player?.IsClient == true)
             {
@@ -71,8 +82,15 @@ namespace ZZ
                 (!m_player.IsClient && !m_player.IsServer) ||
                 m_player.IsDead ||
                 !m_player.IsGrounded ||
+                !m_player.CanMove ||
+                m_player.IsPerformingAction ||
+                m_player.ShouldApplyRootMotion ||
                 m_player.PlayerNetworkManager == null ||
                 m_player.PlayerNetworkManager.IsSneaking.Value ||
+                m_player.PlayerNetworkManager.IsChargingAttack.Value ||
+                m_player.PlayerNetworkManager.IsRolling.Value ||
+                m_player.PlayerNetworkManager.IsJumping.Value ||
+                m_player.PlayerNetworkManager.IsClimbingLadder.Value ||
                 m_player.PlayerNetworkManager.MoveAmount.Value <
                     k_MinimumFootstepMovement)
             {

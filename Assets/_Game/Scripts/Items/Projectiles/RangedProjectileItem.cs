@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Defines ammunition data separately from its drawn and released prefabs.</summary>
-    [CreateAssetMenu(fileName = "Ranged Projectile", menuName = "ZZ/Items/Projectile")]
+    [GameAsset(FileName = "Ranged Projectile", MenuName = "ZZ/Items/Projectile")]
     public class RangedProjectileItem : Item
     {
         [Header("Projectile Class")]

@@ -28,6 +28,7 @@ namespace ZZ
         private float m_spellChargeStartTime;
         private bool m_isCastingRightHandSpell;
         private bool m_hasReachedFullSpellCharge;
+        private bool m_hasReleasedSpell;
         private RangedWeaponItem m_currentRangedWeapon;
         private RangedProjectileItem m_currentProjectileBeingUsed;
         private ProjectileSlot m_currentProjectileSlot;
@@ -55,7 +56,7 @@ namespace ZZ
         public bool CanBlock => m_canBlock;
 
         /// <summary>Gets whether this owner currently holds either spell-casting input.</summary>
-        public bool IsChargingSpell => m_currentCastingSpell != null;
+        public bool IsChargingSpell => m_currentCastingSpell != null && !m_hasReleasedSpell;
 
         /// <summary>Gets whether replicated input still holds the active spell charge.</summary>
         public bool IsHoldingSpellInput => IsChargingSpell &&
@@ -559,6 +560,7 @@ namespace ZZ
             m_isCastingRightHandSpell = isRightHand;
             m_spellChargeStartTime = Time.time;
             m_hasReachedFullSpellCharge = false;
+            m_hasReleasedSpell = false;
             m_player.PlayerNetworkManager?.SetCharacterActionHand(isRightHand);
             m_player.PlayerNetworkManager?.SetSpellFullyChargedState(false);
             m_player.PlayerNetworkManager?.SetChargingSpellState(isRightHand, true);
@@ -579,6 +581,7 @@ namespace ZZ
             SpellItem spell = m_currentCastingSpell;
             CasterWeaponItem casterWeapon = m_currentCasterWeapon;
             bool isFullyCharged = m_hasReachedFullSpellCharge;
+            m_hasReleasedSpell = true;
             m_player.PlayerNetworkManager?.SetChargingSpellState(isRightHand, false);
             if (isFullyCharged)
             {
@@ -954,8 +957,6 @@ namespace ZZ
                 m_player.IsOwner &&
                 m_player.IsPerformingAction &&
                 m_player.PlayerNetworkManager != null &&
-                (m_player.PlayerNetworkManager.IsUsingRightHand.Value ||
-                    m_player.PlayerNetworkManager.IsTwoHandingWeapon.Value) &&
                 HasNextMainHandComboAttack(CurrentAttackType);
             m_canComboWithMainHandWeapon =
                 m_canQueueNextAttack;
@@ -1630,6 +1631,7 @@ namespace ZZ
             m_spellChargeStartTime = 0f;
             m_isCastingRightHandSpell = false;
             m_hasReachedFullSpellCharge = false;
+            m_hasReleasedSpell = false;
         }
 
         private void EnableCommittedAttack(AttackType attackType)
@@ -1697,7 +1699,9 @@ namespace ZZ
         private void SetCurrentWeaponActionHand()
         {
             bool isRightHandAction =
-                m_player?.PlayerNetworkManager?.IsTwoHandingLeftWeapon.Value != true;
+                m_player?.PlayerNetworkManager?.IsTwoHandingLeftWeapon.Value != true &&
+                (m_player.PlayerNetworkManager.IsTwoHandingWeapon.Value ||
+                    CurrentWeaponBeingUsed != m_player.InventoryManager.CurrentLeftHandWeapon);
             m_player?.PlayerNetworkManager?.SetCharacterActionHand(isRightHandAction);
         }
 

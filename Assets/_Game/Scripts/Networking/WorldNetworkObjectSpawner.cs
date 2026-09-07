@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ZZ
 {
@@ -16,7 +17,8 @@ namespace ZZ
 
         private IEnumerator Start()
         {
-            while (NetworkManager.Singleton == null ||
+            yield return null;
+            while (!gameObject.scene.isLoaded || NetworkManager.Singleton == null ||
                 !NetworkManager.Singleton.IsListening)
             {
                 yield return null;
@@ -31,6 +33,7 @@ namespace ZZ
                 m_networkPrefab,
                 transform.position,
                 transform.rotation);
+            SceneManager.MoveGameObjectToScene(m_spawnedInstance.gameObject, gameObject.scene);
             m_spawnedInstance.Spawn(true);
         }
     }

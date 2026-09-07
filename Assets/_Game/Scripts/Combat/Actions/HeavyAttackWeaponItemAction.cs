@@ -5,7 +5,7 @@ namespace ZZ
     /// <summary>
     /// Resolves a heavy attack intent into a validated, replicated attack animation.
     /// </summary>
-    [CreateAssetMenu(fileName = "Heavy Attack", menuName = "ZZ/Actions/Heavy Attack")]
+    [GameAsset(FileName = "Heavy Attack", MenuName = "ZZ/Actions/Heavy Attack")]
     public class HeavyAttackWeaponItemAction : WeaponItemBasedAction
     {
         [SerializeField] private AttackType m_attackType = AttackType.HeavyAttack01;

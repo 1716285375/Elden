@@ -64,11 +64,14 @@ namespace ZZ.Tests
                 case "R01_MonasteryOutskirts_A02_Graveyard":
                     return 3;
                 case "R01_MonasteryOutskirts_A03_MainGate":
-                    return 2;
+                    return 3;
                 case "R01_MonasteryOutskirts_A04_GateTower":
                     return 2;
                 case "R05_BossSanctum":
+                case "R03_Catacombs":
                     return 1;
+                case "R02_MonasteryInterior":
+                    return 3;
                 default:
                     return 2;
             }

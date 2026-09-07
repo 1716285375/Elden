@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -36,6 +37,7 @@ namespace ZZ
         [SerializeField] private PlayerUILoadingScreenManager
             m_playerUILoadingScreenManager;
         [SerializeField] private GameObject m_menuEventSystem;
+        [SerializeField] private FrontendSelectableVisual m_gameplayButtonStyle;
 
         [Header("UI SOUNDS")]
         [SerializeField] private AudioSource m_uiAudioSource;
@@ -60,6 +62,7 @@ namespace ZZ
         private float m_lastHoverSoundTime = float.NegativeInfinity;
         private float m_lastConfirmSoundTime = float.NegativeInfinity;
         private PointerEventData m_pointerEventData;
+        private EventSystem m_pointerEventSystem;
         private readonly List<RaycastResult> m_uiRaycastResults = new();
 
         public static PlayerUIManager Instance => s_instance;
@@ -118,6 +121,21 @@ namespace ZZ
 
         /// <summary>Gets whether any modal player menu currently owns UI input.</summary>
         public bool IsMenuWindowOpen => m_isMenuWindowOpen;
+
+        /// <summary>Styles generated shop and storage commands using the authored gameplay menu template.</summary>
+        public void ApplyGameplayButtonStyle(Button button, TMPro.TMP_Text label)
+        {
+            if (button == null || m_gameplayButtonStyle == null)
+            {
+                return;
+            }
+            FrontendSelectableVisual visual = button.GetComponent<FrontendSelectableVisual>();
+            if (visual == null)
+            {
+                visual = button.gameObject.AddComponent<FrontendSelectableVisual>();
+            }
+            visual.ApplyAppearanceFrom(m_gameplayButtonStyle, label);
+        }
 
         /// <summary>Gets whether the active Scene and player state allow menus.</summary>
         public bool CanOpenMenuWindows =>
@@ -249,19 +267,27 @@ namespace ZZ
         /// </summary>
         private void UpdateMenuSounds()
         {
-            if (!Cursor.visible || EventSystem.current == null)
+            EventSystem eventSystem = EventSystem.current;
+            if (!Cursor.visible || eventSystem == null)
             {
                 m_lastHoveredUiObject = null;
                 m_lastSelectedGameObject = null;
                 return;
             }
 
-            if (EventSystem.current.IsPointerOverGameObject())
+            Mouse mouse = Mouse.current;
+            bool isPointerOverUI = mouse != null && eventSystem.IsPointerOverGameObject();
+            if (isPointerOverUI)
             {
-                m_pointerEventData ??= new PointerEventData(EventSystem.current);
-                m_pointerEventData.position = Input.mousePosition;
+                if (m_pointerEventData == null || m_pointerEventSystem != eventSystem)
+                {
+                    m_pointerEventData = new PointerEventData(eventSystem);
+                    m_pointerEventSystem = eventSystem;
+                }
+
+                m_pointerEventData.position = mouse.position.ReadValue();
                 m_uiRaycastResults.Clear();
-                EventSystem.current.RaycastAll(m_pointerEventData, m_uiRaycastResults);
+                eventSystem.RaycastAll(m_pointerEventData, m_uiRaycastResults);
                 GameObject hoveredObject = ResolveHoverTarget(m_uiRaycastResults);
                 if (hoveredObject != null && hoveredObject != m_lastHoveredUiObject)
                 {
@@ -275,7 +301,7 @@ namespace ZZ
                 m_lastHoveredUiObject = null;
             }
 
-            GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
+            GameObject selectedObject = eventSystem.currentSelectedGameObject;
             if (selectedObject != null && selectedObject != m_lastSelectedGameObject)
             {
                 TryPlayHoverSound();
@@ -283,8 +309,8 @@ namespace ZZ
 
             m_lastSelectedGameObject = selectedObject;
 
-            if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) &&
-                EventSystem.current.IsPointerOverGameObject())
+            if (isPointerOverUI &&
+                (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame))
             {
                 TryPlayConfirmSound();
             }
@@ -340,6 +366,12 @@ namespace ZZ
             if (s_instance == this)
             {
                 s_instance = null;
+            }
+
+            if (m_scaledUiCursor != null)
+            {
+                Destroy(m_scaledUiCursor);
+                m_scaledUiCursor = null;
             }
         }
 
@@ -486,7 +518,6 @@ namespace ZZ
                 return;
             }
 
-            Cursor.SetCursor(m_scaledUiCursor, m_uiCursorHotspot, CursorMode.ForceSoftware);
             m_hasMenuCursorApplied = true;
 
             Cursor.lockState = CursorLockMode.None;
@@ -500,57 +531,38 @@ namespace ZZ
         /// </summary>
         private void BuildScaledUiCursor()
         {
-            if (m_uiCursorTexture == null || m_uiCursorTexture.width <= m_uiCursorPixelWidth)
+            if (m_uiCursorTexture == null)
             {
-                m_scaledUiCursor = m_uiCursorTexture;
                 return;
             }
 
-            int targetWidth = m_uiCursorPixelWidth;
+            int targetWidth = Mathf.Min(m_uiCursorTexture.width, Mathf.Max(1, m_uiCursorPixelWidth));
             int targetHeight = Mathf.Max(1,
                 Mathf.RoundToInt(targetWidth *
                     (float)m_uiCursorTexture.height / m_uiCursorTexture.width));
-            Color32[] sourcePixels = m_uiCursorTexture.GetPixels32();
-            var scaledPixels = new Color32[targetWidth * targetHeight];
-            float scaleX = (float)m_uiCursorTexture.width / targetWidth;
-            float scaleY = (float)m_uiCursorTexture.height / targetHeight;
-            for (int y = 0; y < targetHeight; y++)
+            RenderTexture previousRenderTexture = RenderTexture.active;
+            RenderTexture cursorRenderTexture = RenderTexture.GetTemporary(
+                targetWidth, targetHeight, 0, RenderTextureFormat.ARGB32);
+            try
             {
-                float sourceY = (y + 0.5f) * scaleY - 0.5f;
-                int y0 = Mathf.Clamp(Mathf.FloorToInt(sourceY), 0, m_uiCursorTexture.height - 1);
-                int y1 = Mathf.Clamp(y0 + 1, 0, m_uiCursorTexture.height - 1);
-                float ty = sourceY - y0;
-                for (int x = 0; x < targetWidth; x++)
+                // Imported UI textures may omit CPU pixels; read back a small cursor copy.
+                Graphics.Blit(m_uiCursorTexture, cursorRenderTexture);
+                RenderTexture.active = cursorRenderTexture;
+                m_scaledUiCursor = new Texture2D(
+                    targetWidth, targetHeight, TextureFormat.RGBA32, false)
                 {
-                    float sourceX = (x + 0.5f) * scaleX - 0.5f;
-                    int x0 = Mathf.Clamp(Mathf.FloorToInt(sourceX), 0, m_uiCursorTexture.width - 1);
-                    int x1 = Mathf.Clamp(x0 + 1, 0, m_uiCursorTexture.width - 1);
-                    float tx = sourceX - x0;
-                    Color32 c00 = sourcePixels[y0 * m_uiCursorTexture.width + x0];
-                    Color32 c01 = sourcePixels[y0 * m_uiCursorTexture.width + x1];
-                    Color32 c10 = sourcePixels[y1 * m_uiCursorTexture.width + x0];
-                    Color32 c11 = sourcePixels[y1 * m_uiCursorTexture.width + x1];
-                    Color32 top = LerpColor(c00, c01, tx);
-                    Color32 bottom = LerpColor(c10, c11, tx);
-                    scaledPixels[y * targetWidth + x] = LerpColor(top, bottom, ty);
-                }
+                    name = "Menu Cursor",
+                    filterMode = FilterMode.Bilinear
+                };
+                m_scaledUiCursor.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
+                // Cursor.SetCursor requires the CPU copy even after the texture is uploaded.
+                m_scaledUiCursor.Apply(false, false);
             }
-
-            m_scaledUiCursor = new Texture2D(targetWidth, targetHeight, TextureFormat.RGBA32, false)
+            finally
             {
-                filterMode = FilterMode.Bilinear
-            };
-            m_scaledUiCursor.SetPixels32(scaledPixels);
-            m_scaledUiCursor.Apply(false, true);
-        }
-
-        private static Color32 LerpColor(Color32 from, Color32 to, float amount)
-        {
-            return new Color32(
-                (byte)Mathf.Lerp(from.r, to.r, amount),
-                (byte)Mathf.Lerp(from.g, to.g, amount),
-                (byte)Mathf.Lerp(from.b, to.b, amount),
-                (byte)Mathf.Lerp(from.a, to.a, amount));
+                RenderTexture.active = previousRenderTexture;
+                RenderTexture.ReleaseTemporary(cursorRenderTexture);
+            }
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)

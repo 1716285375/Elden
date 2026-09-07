@@ -18,12 +18,14 @@ MonoBehaviour:
   m_itemID: 9
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 0
+  m_isInfinite: 0
   m_itemWeight: 0
   m_weaponModel: {fileID: 5460602265585115584, guid: bf890e345839838468dde0567155c6d9, type: 3}
   m_isUnarmed: 0
   m_weaponModelType: 0
   m_weaponClass: 3
-  m_weaponAnimator: {fileID: 22100000, guid: 1ee06f5de2d4dc8498bddf503b2aeaaf, type: 2}
+  m_weaponAnimator: {fileID: 22100000, guid: 3b5752b8fff100340a7c8ebcd283750e, type: 2}
   m_weaponPivotPosition: {x: 0, y: 0, z: 0}
   m_weaponPivotRotation: {x: 0, y: 0, z: 0}
   m_weaponPivotScale: {x: 1, y: 1, z: 1}
@@ -32,6 +34,9 @@ MonoBehaviour:
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
+  m_poisonBuildup: 0
+  m_bleedBuildup: 0
+  m_frostBuildup: 0
   m_upgradeLevel: 0
   m_strengthRequirement: 0
   m_dexterityRequirement: 0

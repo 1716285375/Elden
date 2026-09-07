@@ -196,7 +196,7 @@ namespace ZZ.Tests
         public static void NetworkDespawnUsesNonNetworkAdditiveSceneCleanup()
         {
             string source = ReadRuntimeSource(
-                "World Managers/WorldSceneManager.cs");
+                "World/Streaming/WorldSceneManager.cs");
 
             Assert.That(source, Does.Contain(
                 "StartCoroutine(UnloadAllAdditiveScenesNonNetwork())"));

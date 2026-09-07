@@ -78,7 +78,8 @@ namespace ZZ.Tests
             CollectionAssert.AreEqual(
                 GetOwnedSceneIDs(0, 2)
                     .Concat(GetOwnedSceneIDs(0, 1))
-                    .Concat(GetOwnedSceneIDs(0, 3)),
+                    .Concat(GetOwnedSceneIDs(0, 3))
+                    .Concat(GetOwnedSceneIDs(1, 0)),
                 GetScenesToLoad(7));
             CollectionAssert.AreEqual(
                 GetOwnedSceneIDs(0, 3)
@@ -88,7 +89,8 @@ namespace ZZ.Tests
             CollectionAssert.AreEqual(
                 GetOwnedSceneIDs(1, 0)
                     .Concat(GetOwnedSceneIDs(0, 2))
-                    .Concat(GetOwnedSceneIDs(2, 0)),
+                    .Concat(GetOwnedSceneIDs(2, 0))
+                    .Concat(GetOwnedSceneIDs(3, 0)),
                 GetScenesToLoad(2));
             CollectionAssert.AreEqual(
                 GetOwnedSceneIDs(4, 0).Concat(GetOwnedSceneIDs(3, 0)),
@@ -149,7 +151,7 @@ namespace ZZ.Tests
         [Test]
         public static void NetworkSceneManagerQueuesOperationsUntilCompletionEvents()
         {
-            string source = ReadRuntimeSource("World Managers/WorldSceneManager.cs");
+            string source = ReadRuntimeSource("World/Streaming/WorldSceneManager.cs");
 
             Type managerType = GetRuntimeType("ZZ.WorldSceneManager");
             Assert.That(
@@ -175,7 +177,7 @@ namespace ZZ.Tests
         public static void AreaTriggerFiltersServerAndPlayerBeforeChangingArea()
         {
             string source = ReadRuntimeSource(
-                "World Managers/EventTriggerLoadScene.cs");
+                "World/Streaming/EventTriggerLoadScene.cs");
             Type triggerType = GetRuntimeType("ZZ.EventTriggerLoadScene");
             DisallowMultipleComponent disallowMultiple = triggerType
                 .GetCustomAttributes<DisallowMultipleComponent>()
@@ -199,7 +201,7 @@ namespace ZZ.Tests
         public static void LocalPlayerWaitsForLoadedSceneBeforeActivatingAPV()
         {
             string source = ReadRuntimeSource(
-                "World Managers/WorldSceneSubSceneManager.cs");
+                "World/Streaming/WorldSceneSubSceneManager.cs");
 
             Assert.That(source, Does.Contain("player.IsOwner"));
             Assert.That(

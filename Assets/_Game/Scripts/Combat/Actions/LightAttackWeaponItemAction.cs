@@ -5,7 +5,7 @@ namespace ZZ
     /// <summary>
     /// Resolves a light attack intent into a validated, replicated attack animation.
     /// </summary>
-    [CreateAssetMenu(fileName = "Light Attack", menuName = "ZZ/Actions/Light Attack")]
+    [GameAsset(FileName = "Light Attack", MenuName = "ZZ/Actions/Light Attack")]
     public class LightAttackWeaponItemAction : WeaponItemBasedAction
     {
         [SerializeField] private AttackType m_attackType = AttackType.LightAttack01;

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ZZ
 {
     /// <summary>Defines immutable starting stock for one merchant archetype.</summary>
-    [CreateAssetMenu(menuName = "Items/Shops/Character Shop")]
+    [GameAsset(MenuName = "Items/Shops/Character Shop")]
     public sealed class CharacterShop : ScriptableObject
     {
         [SerializeField] private List<Item> m_items = new();

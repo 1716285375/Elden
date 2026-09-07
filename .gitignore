@@ -144,3 +144,6 @@ __pycache__/
 
 # Rider
 .iead*
+
+# Docs
+/Docs/

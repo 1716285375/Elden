@@ -276,11 +276,15 @@ namespace ZZ.Tests
             bool expectedActive)
         {
             SerializedObject serializedQuickSlot = new SerializedObject(quickSlot);
-            Component quantity = serializedQuickSlot.FindProperty("m_quantityText")
+            Component quantity = serializedQuickSlot.FindProperty("m_quantityDisplay")
                 .objectReferenceValue as Component;
 
             Assert.That(quantity, Is.Not.Null);
-            Assert.That(GetProperty<string>(quantity, "text"), Is.EqualTo(expectedText));
+            var digits = quantity.GetComponentsInChildren<UnityEngine.UI.Image>(true)
+                .Where(image => image.name == "Digit" && image.gameObject.activeSelf)
+                .OrderBy(image => image.rectTransform.anchoredPosition.x);
+            Assert.That(digits.Select(image => image.sprite.name),
+                Is.EqualTo(expectedText.Select(character => $"hud_{character}")));
             Assert.That(quantity.gameObject.activeSelf, Is.EqualTo(expectedActive));
         }
     }

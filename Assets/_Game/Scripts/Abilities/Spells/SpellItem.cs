@@ -61,7 +61,7 @@ namespace ZZ
                 player.IsGrounded &&
                 networkManager != null &&
                 networkManager.CurrentStamina.Value > 0f &&
-                networkManager.CurrentFocusPoints.Value > FocusPointsCost &&
+                networkManager.CurrentFocusPoints.Value >= FocusPointsCost &&
                 player.InventoryManager?.CurrentSpell == this &&
                 casterWeapon != null &&
                 casterWeapon.SpellClass == m_spellClass;

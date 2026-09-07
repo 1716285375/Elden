@@ -264,8 +264,8 @@ namespace ZZ
             new(4, 2, new Vector2(150f, 205f)),
             new(4, 5, new Vector2(90f, 230f)),
             new(5, 4, new Vector2(90f, 230f)),
-            new(5, 6, new Vector2(190f, 235f)),
-            new(6, 5, new Vector2(190f, 235f)),
+            new(4, 6, new Vector2(190f, 235f)),
+            new(6, 4, new Vector2(190f, 235f)),
             new(6, 7, new Vector2(195f, 260f)),
             new(7, 6, new Vector2(195f, 260f))
         };
@@ -787,7 +787,7 @@ namespace ZZ
                 Debug.Log(
                     $"[LV01Nature] Configured {s_areas.Length} navigation volumes and " +
                     $"{GetUniqueJunctionCount()} bidirectional links, plus " +
-                    $"{s_junctions.Length} directed streaming triggers.");
+                    $"{s_areas.Length} persistent area volumes.");
             }
             finally
             {
@@ -948,6 +948,7 @@ namespace ZZ
             try
             {
                 ValidateMasterEnvironment(masterScene, failures);
+                triggerCount = FindTransform(masterScene, "Nature Area Volumes")?.childCount ?? 0;
                 foreach (AreaDefinition area in s_areas)
                 {
                     for (int sliceIndex = 0; sliceIndex < k_SliceCount; sliceIndex++)
@@ -1077,10 +1078,10 @@ namespace ZZ
                 failures.Add($"Site of Grace count {graceCount} != expected 1.");
             }
 
-            if (triggerCount != s_junctions.Length)
+            if (triggerCount != s_areas.Length)
             {
                 failures.Add(
-                    $"Nature streaming trigger count {triggerCount} != expected {s_junctions.Length}.");
+                    $"Nature area volume count {triggerCount} != expected {s_areas.Length}.");
             }
 
             if (legacyTriggerCount > 0)
@@ -1437,9 +1438,126 @@ namespace ZZ
                 junction.SourceAreaIndex < junction.DestinationAreaIndex);
         }
 
+        /// <summary>Repairs existing gameplay wiring without replacing terrain or enemy placements.</summary>
+        [MenuItem("Tools/ZZ/Repair Existing Gameplay Content")]
+        public static void RepairExistingGameplayContent()
+        {
+            EnsureNoDirtyScenes();
+            Scene masterScene = OpenSceneIfNeeded(WorldScenePathLayout.MasterScenePath, out bool openedMaster);
+            try
+            {
+                BackupGameplayAsset(masterScene.path);
+                Terrain terrain = FindLandTerrain(masterScene);
+                foreach (AreaDefinition area in s_areas)
+                {
+                    BackupGameplayAsset(GetSliceScenePath(area, k_SpawnersSliceIndex));
+                    BackupGameplayAsset(GetWorldLocationPath(area));
+                    string basePath = GetSliceScenePath(area, k_BaseSliceIndex);
+                    BackupGameplayAsset(basePath);
+                    Scene baseScene = OpenSceneIfNeeded(basePath, out bool openedBase);
+                    try
+                    {
+                        DeleteNamedTransforms(baseScene, k_NatureLinkRootName);
+                        EditorSceneManager.SaveScene(baseScene);
+                    }
+                    finally
+                    {
+                        CloseSceneIfNeeded(baseScene, openedBase);
+                    }
+                }
+                PlaceNavMeshLinks(terrain);
+                PlaceStreamingTriggers(terrain);
+                var usedPickupIDs = new HashSet<int>();
+                for (int areaIndex = 0; areaIndex < s_areas.Length; areaIndex++)
+                {
+                    Scene scene = OpenSceneIfNeeded(GetSliceScenePath(s_areas[areaIndex], k_SpawnersSliceIndex), out bool opened);
+                    try
+                    {
+                        foreach (PickupItemInteractable pickup in GetSceneComponents<PickupItemInteractable>(scene))
+                        {
+                            var data = new SerializedObject(pickup);
+                            int pickupID = data.FindProperty("m_itemID").intValue;
+                            if (pickupID < 0 || !usedPickupIDs.Add(pickupID))
+                            {
+                                pickupID = 20000 + areaIndex * 100;
+                                while (!usedPickupIDs.Add(pickupID))
+                                {
+                                    pickupID++;
+                                }
+                            }
+                            data.FindProperty("m_itemID").intValue = pickupID;
+                            data.FindProperty("m_pickupType").intValue = (int)ItemPickupType.WorldSpawn;
+                            data.FindProperty("m_trackDroppingCreaturePosition").boolValue = false;
+                            data.ApplyModifiedPropertiesWithoutUndo();
+                            PrefabUtility.RecordPrefabInstancePropertyModifications(pickup);
+                        }
+                        foreach (Transform chest in GetSceneTransforms(scene).Where(candidate =>
+                                     candidate.name == "Nature Placeholder - Gate Tower Chest" ||
+                                     candidate.name == "Nature Placeholder - Bell Tower Chest"))
+                        {
+                            foreach (Transform child in chest.GetComponentsInChildren<Transform>(true))
+                            {
+                                child.gameObject.layer = LayerMask.NameToLayer("Default");
+                                PrefabUtility.RecordPrefabInstancePropertyModifications(child.gameObject);
+                            }
+                            BoxCollider trigger = chest.GetComponent<BoxCollider>();
+                            if (trigger == null)
+                            {
+                                trigger = chest.gameObject.AddComponent<BoxCollider>();
+                            }
+                            trigger.isTrigger = true;
+                            trigger.center = Vector3.up;
+                            trigger.size = new Vector3(3f, 3f, 3f);
+                            TreasureChestInteractable interaction = chest.GetComponent<TreasureChestInteractable>();
+                            if (interaction == null)
+                            {
+                                interaction = chest.gameObject.AddComponent<TreasureChestInteractable>();
+                            }
+                            var data = new SerializedObject(interaction);
+                            data.FindProperty("m_worldItemID").intValue = 21000 + areaIndex;
+                            data.FindProperty("m_interactableCollider").objectReferenceValue = trigger;
+                            data.FindProperty("m_interactableText").stringValue = "Open Chest";
+                            data.FindProperty("m_chestAnimator").objectReferenceValue = chest.GetComponentInChildren<Animator>(true);
+                            data.FindProperty("m_reward").objectReferenceValue = LoadRequiredAsset<Item>(
+                                areaIndex == 3 ? "Assets/_Game/Data/Items/Weapons/Melee Weapons/Broadsword.asset" :
+                                "Assets/_Game/Data/Items/Weapons/Catalysts/Incantation Catalyst.asset");
+                            data.ApplyModifiedPropertiesWithoutUndo();
+                        }
+                        EditorSceneManager.SaveScene(scene);
+                    }
+                    finally
+                    {
+                        CloseSceneIfNeeded(scene, opened);
+                    }
+                }
+                AssetDatabase.SaveAssets();
+                Debug.Log("[Gameplay Repair] Area volumes, unique world pickups and two animated reward chests repaired.");
+            }
+            finally
+            {
+                CloseSceneIfNeeded(masterScene, openedMaster);
+            }
+        }
+
+        private static void BackupGameplayAsset(string path)
+        {
+            string backupPath = Path.Combine(".utmp", "GameplayRepairBackup", path);
+            if (!File.Exists(backupPath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(backupPath));
+                File.Copy(path, backupPath);
+            }
+        }
+
         private static void PlaceStreamingTriggers(Terrain landTerrain)
         {
-            GameObject triggerPrefab = LoadRequiredAsset<GameObject>(k_TriggerPrefabPath);
+            Scene masterScene = landTerrain.gameObject.scene;
+            Transform oldSpawnTrigger = FindTransform(masterScene, "Spawn Area Load Trigger");
+            if (oldSpawnTrigger != null)
+            {
+                oldSpawnTrigger.gameObject.SetActive(false);
+            }
+            GameObject volumeRoot = EnsureSceneRoot(masterScene, "Nature Area Volumes");
             for (int sourceAreaIndex = 0; sourceAreaIndex < s_areas.Length; sourceAreaIndex++)
             {
                 AreaDefinition sourceArea = s_areas[sourceAreaIndex];
@@ -1448,46 +1566,62 @@ namespace ZZ
                     out bool openedByIntegration);
                 try
                 {
-                    Transform areaRoot = EnsureAreaRoot(scene, sourceArea).transform;
                     DeleteNamedTransforms(scene, k_NatureTriggerRootName);
                     DeleteLegacyStreamingTriggers(scene);
-                    GameObject triggerRoot = new(k_NatureTriggerRootName);
-                    SceneManager.MoveGameObjectToScene(triggerRoot, scene);
-                    triggerRoot.transform.SetParent(areaRoot, false);
-
-                    foreach (JunctionDefinition junction in s_junctions
-                                 .Where(junction => junction.SourceAreaIndex == sourceAreaIndex))
-                    {
-                        AreaDefinition destinationArea = s_areas[junction.DestinationAreaIndex];
-                        WorldLocationSceneSet destination =
-                            LoadRequiredAsset<WorldLocationSceneSet>(
-                                GetWorldLocationPath(destinationArea));
-                        GameObject instance =
-                            (GameObject)PrefabUtility.InstantiatePrefab(triggerPrefab, scene);
-                        instance.name =
-                            $"Nature Trigger {sourceArea.RootName} -> {destinationArea.RootName}";
-                        instance.transform.SetParent(triggerRoot.transform, true);
-                        SetPositionOnTerrain(instance.transform, junction.Position, landTerrain, 2.5f);
-
-                        EventTriggerLoadScene trigger =
-                            instance.GetComponent<EventTriggerLoadScene>() ??
-                            throw new InvalidOperationException(
-                                $"Trigger prefab lacks {nameof(EventTriggerLoadScene)}.");
-                        SerializedObject serializedTrigger = new(trigger);
-                        RequireProperty(serializedTrigger, "m_worldLocation")
-                            .objectReferenceValue = destination;
-                        RequireProperty(serializedTrigger, "m_area").intValue =
-                            (int)destinationArea.LegacyLocation;
-                        serializedTrigger.ApplyModifiedPropertiesWithoutUndo();
-                    }
-
                     EditorSceneManager.SaveScene(scene);
                 }
                 finally
                 {
                     CloseSceneIfNeeded(scene, openedByIntegration);
                 }
+
+                Transform existing = volumeRoot.transform.Find(sourceArea.RootName);
+                GameObject volumeObject = existing != null ? existing.gameObject : new GameObject(sourceArea.RootName);
+                if (existing == null)
+                {
+                    SceneManager.MoveGameObjectToScene(volumeObject, masterScene);
+                }
+                volumeObject.transform.SetParent(volumeRoot.transform, false);
+                volumeObject.transform.position = new Vector3(sourceArea.Bounds.center.x,
+                    landTerrain.transform.position.y + landTerrain.terrainData.size.y * 0.5f, sourceArea.Bounds.center.y);
+                volumeObject.transform.rotation = Quaternion.identity;
+                volumeObject.transform.localScale = Vector3.one;
+                volumeObject.layer = LayerMask.NameToLayer("Event Trigger");
+                BoxCollider volume = volumeObject.GetComponent<BoxCollider>();
+                if (volume == null)
+                {
+                    volume = volumeObject.AddComponent<BoxCollider>();
+                }
+                volume.isTrigger = true;
+                volume.center = Vector3.zero;
+                volume.size = new Vector3(sourceArea.Bounds.width, landTerrain.terrainData.size.y + 20f, sourceArea.Bounds.height);
+                EventTriggerLoadScene trigger = volumeObject.GetComponent<EventTriggerLoadScene>();
+                if (trigger == null)
+                {
+                    trigger = volumeObject.AddComponent<EventTriggerLoadScene>();
+                }
+                WorldLocationSceneSet location = LoadRequiredAsset<WorldLocationSceneSet>(GetWorldLocationPath(sourceArea));
+                var triggerData = new SerializedObject(trigger);
+                triggerData.FindProperty("m_worldLocation").objectReferenceValue = location;
+                triggerData.FindProperty("m_area").intValue = (int)sourceArea.LegacyLocation;
+                triggerData.FindProperty("m_requirePlayerInsideBounds").boolValue = true;
+                triggerData.FindProperty("m_locationPriority").intValue = sourceAreaIndex;
+                triggerData.ApplyModifiedPropertiesWithoutUndo();
+
+                var locationData = new SerializedObject(location);
+                SerializedProperty neighbours = locationData.FindProperty("m_requiredLocations");
+                int[] neighbourIndices = s_junctions.Where(junction => junction.SourceAreaIndex == sourceAreaIndex)
+                    .Select(junction => junction.DestinationAreaIndex).Distinct().ToArray();
+                neighbours.arraySize = neighbourIndices.Length;
+                for (int neighbourIndex = 0; neighbourIndex < neighbourIndices.Length; neighbourIndex++)
+                {
+                    neighbours.GetArrayElementAtIndex(neighbourIndex).objectReferenceValue =
+                        LoadRequiredAsset<WorldLocationSceneSet>(GetWorldLocationPath(s_areas[neighbourIndices[neighbourIndex]]));
+                }
+                locationData.ApplyModifiedPropertiesWithoutUndo();
             }
+            EditorSceneManager.SaveScene(masterScene);
+            AssetDatabase.SaveAssets();
         }
 
         private static void ConfigureNavigationSurface(

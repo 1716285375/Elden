@@ -21,4 +21,3 @@ MonoBehaviour:
   - SCN_LV01_R03_A01_Spawners
   m_requiredLocations:
   - {fileID: 11400000, guid: 1fd2525c420a96640ae19dae1e99842f, type: 2}
-  - {fileID: 11400000, guid: e98de531558112b4391c44f480c7e840, type: 2}

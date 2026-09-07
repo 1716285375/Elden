@@ -62,6 +62,8 @@ namespace ZZ
         /// Gets whether the locally owned player has a writable active save slot.
         /// </summary>
         public bool CanSaveGame =>
+            !m_sceneLoadIsInProgress &&
+            !m_shouldApplyLoadedCharacterData &&
             m_currentCharacterSlotBeingUsed != CharacterSlot.NoSlot &&
             m_currentCharacterData != null &&
             m_player != null &&
@@ -345,7 +347,9 @@ namespace ZZ
 
         private void Update()
         {
-            if (m_currentCharacterData == null ||
+            if (m_sceneLoadIsInProgress ||
+                m_shouldApplyLoadedCharacterData ||
+                m_currentCharacterData == null ||
                 m_currentCharacterSlotBeingUsed == CharacterSlot.NoSlot ||
                 m_player == null ||
                 !m_player.IsOwner ||
@@ -518,7 +522,9 @@ namespace ZZ
         public bool NewGame(CharacterSaveData startingCharacterData)
         {
             if (m_sceneLoadIsInProgress ||
+                m_shouldApplyLoadedCharacterData ||
                 startingCharacterData == null ||
+                !CanLoadScene(m_startingSceneIndex) ||
                 !TryFindFreeCharacterSlot(
                     out CharacterSlot freeSlot,
                     out SaveFileDataWriter writer))
@@ -553,8 +559,7 @@ namespace ZZ
             SetCharacterDataForSlot(freeSlot, startingCharacterData);
             SetLastPlayedCharacterSlot(freeSlot);
             m_shouldApplyLoadedCharacterData = true;
-            TryBeginSceneLoad(m_startingSceneIndex);
-            return true;
+            return TryBeginSceneLoad(m_startingSceneIndex);
         }
 
         /// <summary>
@@ -565,7 +570,7 @@ namespace ZZ
             if (!CanSaveGame)
             {
                 Debug.LogError(
-                    "A current character slot, character data, and locally owned player are required to save.");
+                    "Saving requires an active character and locally owned player after scene restoration completes.");
                 return false;
             }
 
@@ -594,7 +599,7 @@ namespace ZZ
         /// </summary>
         public void LoadGame()
         {
-            if (m_sceneLoadIsInProgress)
+            if (m_sceneLoadIsInProgress || m_shouldApplyLoadedCharacterData)
             {
                 return;
             }
@@ -612,6 +617,11 @@ namespace ZZ
                 if (loadedData == null)
                 {
                     Debug.LogError($"No save file exists for {m_currentCharacterSlotBeingUsed}.");
+                    return;
+                }
+
+                if (!CanLoadScene(loadedData.SceneIndex))
+                {
                     return;
                 }
 
@@ -641,7 +651,7 @@ namespace ZZ
         /// </summary>
         public void SelectCharacterSlot(CharacterSlot characterSlot)
         {
-            if (!m_sceneLoadIsInProgress)
+            if (!m_sceneLoadIsInProgress && !m_shouldApplyLoadedCharacterData)
             {
                 m_currentCharacterSlotBeingUsed = characterSlot;
             }
@@ -652,7 +662,9 @@ namespace ZZ
         /// </summary>
         public void DeleteGame(CharacterSlot characterSlot)
         {
-            if (characterSlot == CharacterSlot.NoSlot)
+            if (m_sceneLoadIsInProgress ||
+                m_shouldApplyLoadedCharacterData ||
+                characterSlot == CharacterSlot.NoSlot)
             {
                 return;
             }
@@ -801,7 +813,37 @@ namespace ZZ
                 return;
             }
 
-            TryBeginSceneLoad(mainMenuBuildIndex);
+            if (m_sceneLoadIsInProgress)
+            {
+                return;
+            }
+            m_shouldApplyLoadedCharacterData = false;
+            m_sceneLoadIsInProgress = true;
+            StartCoroutine(ReturnToMainMenuRoutine(mainMenuBuildIndex));
+        }
+
+        private IEnumerator ReturnToMainMenuRoutine(int sceneIndex)
+        {
+            try
+            {
+                PlayerUIManager.Instance?.PlayerUILoadingScreenManager?.ActivateLoadingScreen();
+                NetworkManager networkManager = NetworkManager.Singleton;
+                if (networkManager != null && networkManager.IsListening)
+                {
+                    // Area scenes are streamed locally; leave the session before unloading the world.
+                    networkManager.Shutdown();
+                    while (networkManager != null && networkManager.ShutdownInProgress)
+                    {
+                        yield return null;
+                    }
+                }
+                yield return SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);
+            }
+            finally
+            {
+                m_sceneLoadIsInProgress = false;
+                PlayerUIManager.Instance?.PlayerUILoadingScreenManager?.DeactivateLoadingScreen(0f);
+            }
         }
 
         /// <summary>
@@ -983,13 +1025,39 @@ namespace ZZ
 
         private bool TryBeginSceneLoad(int sceneIndex)
         {
-            if (m_sceneLoadIsInProgress)
+            if (m_sceneLoadIsInProgress || !CanLoadScene(sceneIndex))
             {
                 return false;
             }
 
             m_sceneLoadIsInProgress = true;
             StartCoroutine(LoadScene(sceneIndex));
+            return true;
+        }
+
+        private bool CanLoadScene(int sceneIndex)
+        {
+            if (sceneIndex < 0 ||
+                sceneIndex >= SceneManager.sceneCountInBuildSettings ||
+                string.IsNullOrEmpty(SceneUtility.GetScenePathByBuildIndex(sceneIndex)))
+            {
+                Debug.LogError($"Scene build index {sceneIndex} is not available in Build Settings.");
+                return false;
+            }
+
+            if (!isActiveAndEnabled)
+            {
+                Debug.LogError("The save manager must be active to load a Scene.");
+                return false;
+            }
+
+            NetworkManager networkManager = NetworkManager.Singleton;
+            if (networkManager != null && networkManager.IsListening && !networkManager.IsServer)
+            {
+                Debug.LogError("Only the server can load a saved Scene.");
+                return false;
+            }
+
             return true;
         }
 

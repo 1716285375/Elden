@@ -5,7 +5,7 @@ namespace ZZ
     /// <summary>
     /// Maps one armor component to the matching embedded male and female modular meshes.
     /// </summary>
-    [CreateAssetMenu(fileName = "Equipment Model", menuName = "ZZ/Items/Armor/Equipment Model")]
+    [GameAsset(FileName = "Equipment Model", MenuName = "ZZ/Items/Armor/Equipment Model")]
     public class EquipmentModel : ScriptableObject
     {
         [SerializeField] private EquipmentModelType m_equipmentModelType;

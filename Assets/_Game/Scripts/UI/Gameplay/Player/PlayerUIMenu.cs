@@ -13,7 +13,7 @@ namespace ZZ
         [SerializeField] private GameObject m_menuWindow;
 
         /// <summary>Gets whether this modal menu currently owns local UI input.</summary>
-        public bool IsMenuOpen => m_menuWindow?.activeSelf == true;
+        public bool IsMenuOpen => m_menuWindow != null && m_menuWindow.activeInHierarchy;
 
         protected GameObject MenuWindow => m_menuWindow;
 
@@ -32,14 +32,26 @@ namespace ZZ
         public virtual void OpenMenu()
         {
             PlayerUIManager playerUIManager = PlayerUIManager.Instance;
-            if (playerUIManager?.CanOpenMenuWindows != true)
+            if (!isActiveAndEnabled || m_menuWindow == null ||
+                playerUIManager?.CanOpenMenuWindows != true)
+            {
+                return;
+            }
+
+            Transform menuParent = m_menuWindow.transform.parent;
+            if (menuParent != null && !menuParent.gameObject.activeInHierarchy)
             {
                 return;
             }
 
             playerUIManager.CloseAllMenuWindows();
-            m_menuWindow?.SetActive(true);
+            // Default buttons select themselves in OnEnable and need the EventSystem first.
             playerUIManager.NotifyMenuWindowOpened();
+            m_menuWindow.SetActive(true);
+            if (!IsMenuOpen)
+            {
+                playerUIManager.RefreshMenuWindowState();
+            }
         }
 
         /// <summary>Closes this menu and releases input when no modal remains open.</summary>

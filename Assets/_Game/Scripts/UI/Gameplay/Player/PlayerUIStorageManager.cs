@@ -570,6 +570,7 @@ namespace ZZ
                 26f,
                 TextAlignmentOptions.Center);
             StretchToParent(text.rectTransform);
+            PlayerUIManager.Instance?.ApplyGameplayButtonStyle(button, text);
             return button;
         }
 

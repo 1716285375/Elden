@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Take Critical Damage Effect",
-        menuName = "ZZ/Character Effects/Instant/Take Critical Damage")]
+    [GameAsset(
+        FileName = "Take Critical Damage Effect",
+        MenuName = "ZZ/Character Effects/Instant/Take Critical Damage")]
     public class TakeCriticalDamageEffect : TakeDamageEffect
     {
         /// <summary>Creates a transient critical payload for delayed animation-frame damage.</summary>

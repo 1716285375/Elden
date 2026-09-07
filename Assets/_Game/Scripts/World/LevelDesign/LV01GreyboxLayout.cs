@@ -8,9 +8,9 @@ namespace ZZ
     /// the intended iteration loop; use <c>LV01GreyboxSpec</c> to rebuild the whole
     /// set from the design table.
     /// </summary>
-    [CreateAssetMenu(
-        menuName = "World/LV01 Greybox Layout",
-        fileName = "LV01_GreyboxLayout")]
+    [GameAsset(
+        MenuName = "World/LV01 Greybox Layout",
+        FileName = "LV01_GreyboxLayout")]
     public class LV01GreyboxLayout : ScriptableObject
     {
         [Header("Measured Player Metrics")]

@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Take Stamina Damage Effect",
-        menuName = "ZZ/Character Effects/Instant/Take Stamina Damage")]
+    [GameAsset(
+        FileName = "Take Stamina Damage Effect",
+        MenuName = "ZZ/Character Effects/Instant/Take Stamina Damage")]
     public class TakeStaminaDamageEffect : InstantCharacterEffect
     {
         [SerializeField, Min(0f)] private float m_staminaDamage = 25f;

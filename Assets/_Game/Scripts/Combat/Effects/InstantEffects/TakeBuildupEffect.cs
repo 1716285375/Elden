@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace ZZ
 {
-    [CreateAssetMenu(
-        fileName = "Take Buildup Effect",
-        menuName = "ZZ/Character Effects/Instant/Take Buildup")]
+    [GameAsset(
+        FileName = "Take Buildup Effect",
+        MenuName = "ZZ/Character Effects/Instant/Take Buildup")]
     public class TakeBuildupEffect : InstantCharacterEffect
     {
         [SerializeField] private Buildup m_buildupType;

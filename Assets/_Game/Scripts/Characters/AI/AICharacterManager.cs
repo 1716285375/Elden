@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 namespace ZZ
 {
@@ -1146,7 +1147,7 @@ namespace ZZ
                 player.IsSpawned &&
                 !player.IsDead &&
                 player.gameObject.activeInHierarchy &&
-                player.gameObject.scene == gameObject.scene;
+                player.gameObject.scene.GetPhysicsScene() == gameObject.scene.GetPhysicsScene();
         }
 
         private bool IsWithinFieldOfView(Vector3 targetOffset)
@@ -1224,7 +1225,7 @@ namespace ZZ
         {
             float maximumRange = m_bossCharacter != null
                 ? m_bossCharacter.GetMaximumAttackRange(m_combatStanceDistance)
-                : m_combatStanceDistance;
+                : HasConfiguredAttackActions ? 0f : Mathf.Min(m_combatStanceDistance, m_attackDistance);
             if (m_defaultAttackAction != null)
             {
                 maximumRange = Mathf.Max(

@@ -18,6 +18,7 @@ namespace ZZ
 
         private Rigidbody m_rigidbody;
         private readonly HashSet<PlayerInteractionManager> m_registeredPlayers = new();
+        private readonly Dictionary<Collider, PlayerInteractionManager> m_playerColliders = new();
 
         public string InteractableText => m_interactableText;
         public Collider InteractableCollider => m_interactableCollider;
@@ -135,11 +136,22 @@ namespace ZZ
 
         protected virtual void OnTriggerEnter(Collider other)
         {
+            RegisterOverlappingPlayer(other);
+        }
+
+        protected virtual void OnTriggerStay(Collider other)
+        {
+            RegisterOverlappingPlayer(other);
+        }
+
+        private void RegisterOverlappingPlayer(Collider other)
+        {
             PlayerInteractionManager interactionManager =
                 other.GetComponentInParent<PlayerInteractionManager>();
-            if (interactionManager != null &&
-                m_registeredPlayers.Add(interactionManager))
+            if (interactionManager != null)
             {
+                m_playerColliders[other] = interactionManager;
+                m_registeredPlayers.Add(interactionManager);
                 interactionManager.AddInteractionToList(this);
             }
         }
@@ -148,6 +160,11 @@ namespace ZZ
         {
             PlayerInteractionManager interactionManager =
                 other.GetComponentInParent<PlayerInteractionManager>();
+            m_playerColliders.Remove(other);
+            if (interactionManager != null && m_playerColliders.ContainsValue(interactionManager))
+            {
+                return;
+            }
             if (interactionManager != null &&
                 m_registeredPlayers.Remove(interactionManager))
             {
@@ -163,6 +180,7 @@ namespace ZZ
             }
 
             m_registeredPlayers.Clear();
+            m_playerColliders.Clear();
         }
 
         private void ConfigurePhysicsComponents()

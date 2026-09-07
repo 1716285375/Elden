@@ -19,13 +19,14 @@ namespace ZZ
         private void Awake()
         {
             m_detectorCollider = GetComponent<SphereCollider>();
+            m_player ??= GetComponentInParent<PlayerManager>();
         }
 
-        private void Start()
+        private void Update()
         {
             if (m_detectorCollider != null)
             {
-                m_detectorCollider.enabled = m_player != null && m_player.IsServer;
+                m_detectorCollider.enabled = CanProcessServerTrigger();
             }
         }
 
@@ -37,7 +38,7 @@ namespace ZZ
             }
 
             AICharacterManager aiCharacter =
-                other.GetComponent<AICharacterManager>();
+                other.GetComponentInParent<AICharacterManager>();
             aiCharacter?.ActivateCharacter(m_player);
         }
 
@@ -49,7 +50,7 @@ namespace ZZ
             }
 
             AICharacterManager aiCharacter =
-                other.GetComponent<AICharacterManager>();
+                other.GetComponentInParent<AICharacterManager>();
             aiCharacter?.DeactivateCharacter(m_player);
         }
 

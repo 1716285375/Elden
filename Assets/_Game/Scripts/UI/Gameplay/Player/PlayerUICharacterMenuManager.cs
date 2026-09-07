@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace ZZ
 {
@@ -11,6 +12,8 @@ namespace ZZ
         private const string k_OpenCharacterMenuActionName =
             "Open Character Menu";
         private const string k_CloseMenuActionName = "Close Menu";
+
+        [SerializeField] private Button m_initialButton;
 
         private PlayerControls m_playerControls;
         private InputAction m_openCharacterMenuAction;
@@ -64,6 +67,10 @@ namespace ZZ
             PlayerUIManager.Instance?.PlayerUIPopUpManager
                 ?.CloseAllPopUpWindows();
             OpenMenu();
+            if (IsMenuOpen)
+            {
+                m_initialButton?.Select();
+            }
         }
 
         /// <summary>Closes only the Character Menu window.</summary>
@@ -113,6 +120,10 @@ namespace ZZ
         private void OnOpenCharacterMenuPerformed(
             InputAction.CallbackContext context)
         {
+            if (TryCancelUpgradeConfirmation())
+            {
+                return;
+            }
             PlayerUIManager playerUIManager = PlayerUIManager.Instance;
             if (playerUIManager == null)
             {
@@ -130,15 +141,41 @@ namespace ZZ
 
         private void OnCloseMenuPerformed(InputAction.CallbackContext context)
         {
-            if (PlayerUIManager.Instance?.IsMenuWindowOpen == true)
+            if (TryCancelUpgradeConfirmation())
             {
-                PlayerUIManager.Instance.CloseAllMenuWindows();
+                return;
             }
+            PlayerUIManager playerUIManager = PlayerUIManager.Instance;
+            if (playerUIManager?.IsMenuWindowOpen != true)
+            {
+                return;
+            }
+
+            PlayerUIEquipmentManager equipmentManager = playerUIManager.PlayerUIEquipmentManager;
+            if (equipmentManager?.IsEquipmentMenuOpen == true &&
+                equipmentManager.IsEquipmentInventoryOpen)
+            {
+                equipmentManager.CloseEquipmentInventoryWindow();
+                return;
+            }
+
+            playerUIManager.CloseAllMenuWindows();
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
         {
             RefreshMenuInput(activeScene);
+        }
+
+        private static bool TryCancelUpgradeConfirmation()
+        {
+            PlayerUIWeaponUpgradeManager upgrade = PlayerUIManager.Instance?.PlayerUIWeaponUpgradeManager;
+            if (upgrade?.IsConfirmationOpen != true)
+            {
+                return false;
+            }
+            upgrade.CancelUpgradeWeapon();
+            return true;
         }
 
         private void RefreshMenuInput(Scene activeScene)

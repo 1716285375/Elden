@@ -247,7 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -309,72 +309,6 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
---- !u!1001 &220503263
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 925276684}
-    m_Modifications:
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 130
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.0697365
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 80
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_worldLocation
-      value: 
-      objectReference: {fileID: 11400000, guid: db6d7bcc8a96b02448198ae5fce75032, type: 2}
-    - target: {fileID: 7010940596096726253, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_Name
-      value: Nature Trigger A02_Graveyard -> A01_CliffPath
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
---- !u!4 &220503264 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-  m_PrefabInstance: {fileID: 220503263}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &313357623
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,7 +338,8 @@ Transform:
   m_LocalPosition: {x: 72, y: 17.94246, z: 151}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 797856870}
   m_Father: {fileID: 857016693}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &313357625
@@ -419,7 +354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 271294674669322707, guid: 036b7f6bfa4f44447952004b69b2bd11, type: 3}
+  m_characterGameObject: {fileID: 8019074394833838315, guid: f0fb059681cb16746a598d3f4117988d, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -496,6 +431,18 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 1512424376
       objectReference: {fileID: 0}
+    - target: {fileID: 7416472201752827280, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
+      propertyPath: m_itemID
+      value: 20100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7416472201752827280, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
+      propertyPath: m_pickupType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7416472201752827280, guid: 5cfd09acbe55c0e47a1b79c98d54fc55, type: 3}
+      propertyPath: m_trackDroppingCreaturePosition
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -555,7 +502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -617,6 +564,76 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
+--- !u!1 &797856869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 797856870}
+  - component: {fileID: 797856872}
+  - component: {fileID: 797856871}
+  m_Layer: 0
+  m_Name: Encounter Area
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &797856870
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797856869}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 313357624}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &797856871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797856869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58084440a533cdd48965c30ce6f3c1ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossArenaController
+  m_bossID: 1101
+  m_fogWallRoot: {fileID: 0}
+  m_bossMusicSource: {fileID: 0}
+  m_bossMusic: {fileID: 0}
+--- !u!65 &797856872
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797856869}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 18, y: 8, z: 18}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &835053645
 GameObject:
   m_ObjectHideFlags: 1
@@ -758,7 +775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -767,40 +784,6 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
---- !u!1 &925276683
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 925276684}
-  m_Layer: 0
-  m_Name: Nature Streaming Triggers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &925276684
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 925276683}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 220503264}
-  - {fileID: 2140798521}
-  - {fileID: 1396834239}
-  m_Father: {fileID: 1456641060}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &958260743
 GameObject:
   m_ObjectHideFlags: 0
@@ -845,7 +828,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -898,7 +881,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1004,7 +987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1057,7 +1040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1216,7 +1199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1269,7 +1252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1278,76 +1261,6 @@ MonoBehaviour:
   m_manuallySetStats: 0
   m_maximumHealth: 100
   m_maximumStamina: 100
---- !u!1001 &1396834238
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 925276684}
-    m_Modifications:
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 195
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 16.189617
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_area
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_worldLocation
-      value: 
-      objectReference: {fileID: 11400000, guid: 9d8a840836d66684c920de5654be1179, type: 2}
-    - target: {fileID: 7010940596096726253, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_Name
-      value: Nature Trigger A02_Graveyard -> A04_GateTower
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
---- !u!4 &1396834239 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-  m_PrefabInstance: {fileID: 1396834238}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1456641059
 GameObject:
   m_ObjectHideFlags: 0
@@ -1382,7 +1295,6 @@ Transform:
   - {fileID: 1562801666}
   - {fileID: 136341671}
   - {fileID: 857016693}
-  - {fileID: 925276684}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1529323148
@@ -1482,7 +1394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 5936224535332028667, guid: 1a62a686cf8408c4db6c4572613c8a67, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1535,7 +1447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1588,7 +1500,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d05018385be4845ab2b5c6aaeb2976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterSpawner
-  m_characterGameObject: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+  m_characterGameObject: {fileID: 3926411903737531769, guid: e609d21b8c5d2814aaeda475788e1791, type: 3}
   m_patrolPathID: 0
   m_repeatPatrol: 0
   m_isSleeping: 0
@@ -1628,76 +1540,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &2140798520
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 925276684}
-    m_Modifications:
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 18.02933
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 170
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_area
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4564210673088552835, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_worldLocation
-      value: 
-      objectReference: {fileID: 11400000, guid: 6dffcb5802236db4d914e80a8f9be289, type: 2}
-    - target: {fileID: 7010940596096726253, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-      propertyPath: m_Name
-      value: Nature Trigger A02_Graveyard -> A03_MainGate
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
---- !u!4 &2140798521 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2517055178814943700, guid: a6a205ffefc7bb14d9514b0a5f4b1261, type: 3}
-  m_PrefabInstance: {fileID: 2140798520}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
