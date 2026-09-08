@@ -53,6 +53,26 @@ namespace ZZ.Editor
             {
                 controller.AddParameter("isTwoHandingLeftWeapon", AnimatorControllerParameterType.Bool);
             }
+            AnimatorState jumpTemplate = action.states.Single(child => child.state.name == "MainJumpLightAttack").state;
+            AnimatorState leftJump = action.states.FirstOrDefault(child => child.state.name == "OffHand_JumpLight").state;
+            if (leftJump == null)
+            {
+                leftJump = action.AddState("OffHand_JumpLight");
+                foreach (StateMachineBehaviour behaviour in jumpTemplate.behaviours)
+                {
+                    EditorUtility.CopySerialized(behaviour, leftJump.AddStateMachineBehaviour(behaviour.GetType()));
+                }
+                foreach (AnimatorStateTransition sourceTransition in jumpTemplate.transitions)
+                {
+                    AnimatorStateTransition copy = leftJump.AddTransition(sourceTransition.destinationState);
+                    EditorUtility.CopySerialized(sourceTransition, copy);
+                }
+            }
+            leftJump.motion = Adapt((AnimationClip)jumpTemplate.motion,
+                Load(clips, "straight_sword_main_jump_light_attack_01"), "OffHand_JumpLight", true);
+            leftJump.mirror = true;
+            leftJump.writeDefaultValues = jumpTemplate.writeDefaultValues;
+            EditorUtility.SetDirty(leftJump);
             foreach (AnimatorState state in controller.layers.SelectMany(layer => States(layer.stateMachine)))
             {
                 if (state.name.StartsWith("TwoHand") || state.name.Contains("Two Handed"))
@@ -83,6 +103,10 @@ namespace ZZ.Editor
                 else if (candidate.StartsWith("OffHand_Attack_"))
                 {
                     candidate = prefix + "_off_light_attack_" + candidate.Substring(candidate.Length - 2);
+                }
+                else if (candidate == "OffHand_JumpLight")
+                {
+                    candidate = prefix + "_main_jump_light_attack_01";
                 }
                 else if (heavy && candidate.StartsWith("core_th_"))
                 {

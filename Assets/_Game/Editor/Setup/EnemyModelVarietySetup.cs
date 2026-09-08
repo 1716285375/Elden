@@ -64,6 +64,7 @@ namespace ZZ.Editor
             GameObject root = PrefabUtility.LoadPrefabContents(sourcePath);
             try
             {
+                root.SetActive(false);
                 root.name = name + (boss ? " Boss" : " Enemy");
                 Animator oldAnimator = root.GetComponentInChildren<Animator>(true);
                 GameObject oldVisual = oldAnimator.gameObject;
@@ -71,6 +72,10 @@ namespace ZZ.Editor
                 visual.name = name + " Visuals";
                 visual.transform.localPosition = Vector3.zero;
                 visual.transform.localRotation = Quaternion.identity;
+                if (name == "Golem_01")
+                {
+                    ConfigureGolemMaterial(visual);
+                }
                 foreach (Transform child in visual.GetComponentsInChildren<Transform>(true))
                 {
                     child.gameObject.layer = oldVisual.layer;
@@ -84,11 +89,27 @@ namespace ZZ.Editor
                 {
                     Object.DestroyImmediate(collider);
                 }
+                foreach (Joint joint in visual.GetComponentsInChildren<Joint>(true))
+                {
+                    Object.DestroyImmediate(joint);
+                }
+                foreach (Rigidbody importedBody in visual.GetComponentsInChildren<Rigidbody>(true))
+                {
+                    Object.DestroyImmediate(importedBody);
+                }
                 Animator animator = visual.GetComponentInChildren<Animator>(true);
                 if (animator == null || animator.avatar == null || !animator.avatar.isHuman)
                 {
                     throw new InvalidOperationException(name + " requires a valid humanoid rig.");
                 }
+                foreach (Animator secondary in visual.GetComponentsInChildren<Animator>(true))
+                {
+                    if (secondary != animator)
+                    {
+                        Object.DestroyImmediate(secondary);
+                    }
+                }
+                animator.avatar = BuildRigAvatar(animator, name);
                 animator.runtimeAnimatorController = oldAnimator.runtimeAnimatorController;
                 animator.applyRootMotion = oldAnimator.applyRootMotion;
                 animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
@@ -100,7 +121,11 @@ namespace ZZ.Editor
                     {
                         continue;
                     }
-                    Component copy = animator.gameObject.AddComponent(component.GetType());
+                    Component copy = animator.gameObject.GetComponent(component.GetType());
+                    if (copy == null)
+                    {
+                        copy = animator.gameObject.AddComponent(component.GetType());
+                    }
                     EditorUtility.CopySerialized(component, copy);
                     remap[component] = copy;
                 }
@@ -135,6 +160,7 @@ namespace ZZ.Editor
                     }
                 }
                 Object.DestroyImmediate(oldVisual);
+                root.SetActive(true);
                 Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true)
                     .Where(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy).ToArray();
                 if (renderers.Length == 0)
@@ -160,12 +186,75 @@ namespace ZZ.Editor
                 NavMeshAgent agent = root.GetComponent<NavMeshAgent>();
                 agent.height = height;
                 agent.radius = capsule.radius;
+                var target = new GameObject("Lock On Target");
+                target.transform.SetParent(root.transform, false);
+                target.transform.localPosition = Vector3.up * height * 0.72f;
+                var character = new SerializedObject(root.GetComponent<AICharacterManager>());
+                character.FindProperty("m_lockOnTransform").objectReferenceValue = target.transform;
+                character.ApplyModifiedPropertiesWithoutUndo();
+                CharacterUIManager characterUI = root.GetComponentInChildren<CharacterUIManager>(true);
+                if (characterUI != null)
+                {
+                    Vector3 uiPosition = characterUI.transform.localPosition;
+                    uiPosition.y = height + 0.3f;
+                    characterUI.transform.localPosition = uiPosition;
+                }
                 return PrefabUtility.SaveAsPrefabAsset(root, outputPath);
             }
             finally
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
+        }
+
+        private static Avatar BuildRigAvatar(Animator animator, string name)
+        {
+            HumanDescription description = animator.avatar.humanDescription;
+            Transform[] transforms = animator.GetComponentsInChildren<Transform>(true);
+            var bones = transforms.GroupBy(bone => bone.name).ToDictionary(group => group.Key, group => group.First());
+            description.human = description.human.Where(bone => bones.ContainsKey(bone.boneName)).ToArray();
+            description.skeleton = transforms.GroupBy(bone => bone.name).Select(group => group.First())
+                .Select(bone => new SkeletonBone
+                {
+                    name = bone.name,
+                    position = bone.localPosition,
+                    rotation = bone.localRotation,
+                    scale = bone.localScale
+                }).ToArray();
+            Avatar built = AvatarBuilder.BuildHumanAvatar(animator.gameObject, description);
+            if (!built.isValid || !built.isHuman)
+            {
+                Object.DestroyImmediate(built);
+                throw new InvalidOperationException("Cannot build a valid humanoid Avatar for " + name);
+            }
+            built.name = name + " Runtime Avatar";
+            string path = k_Output + "/" + built.name + ".asset";
+            Avatar saved = AssetDatabase.LoadAssetAtPath<Avatar>(path);
+            if (saved == null)
+            {
+                AssetDatabase.CreateAsset(built, path);
+                return built;
+            }
+            EditorUtility.CopySerialized(built, saved);
+            Object.DestroyImmediate(built);
+            return saved;
+        }
+
+        private static void ConfigureGolemMaterial(GameObject visual)
+        {
+            Renderer renderer = visual.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            string path = k_Output + "/Golem Stone.mat";
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null)
+            {
+                material = new Material(renderer.sharedMaterial) { name = "Golem Stone" };
+                AssetDatabase.CreateAsset(material, path);
+            }
+            // The recovered dungeon material emits white without a mask, obscuring the stone texture.
+            material.DisableKeyword("_EMISSION");
+            material.SetColor("_EmissionColor", Color.black);
+            EditorUtility.SetDirty(material);
+            renderer.sharedMaterial = material;
         }
 
         private static void AssignSpawners(GameObject[] variants, StringBuilder report)

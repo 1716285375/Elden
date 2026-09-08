@@ -69,6 +69,7 @@ namespace ZZ
                 weapon == null ||
                 !player.IsOwner ||
                 player.CharacterNetworkManager == null ||
+                player.CharacterNetworkManager.IsAttacking.Value ||
                 player.CharacterNetworkManager.CurrentStamina.Value <= 0f)
             {
                 return false;

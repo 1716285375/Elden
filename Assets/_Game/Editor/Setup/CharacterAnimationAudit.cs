@@ -109,6 +109,20 @@ namespace ZZ.Editor
                             break;
                         }
                         Animator animator = ai.GetComponentInChildren<Animator>(true);
+                        if (frame == 0)
+                        {
+                            foreach (BossArenaController arena in Object.FindObjectsByType<BossArenaController>(FindObjectsSortMode.None))
+                            {
+                                var arenaData = new SerializedObject(arena);
+                                BoxCollider trigger = arena.GetComponent<BoxCollider>();
+                                report.AppendLine($"ARENA id={arenaData.FindProperty("m_bossID").intValue} " +
+                                    $"bound={arenaData.FindProperty("m_boundBoss")?.objectReferenceValue} " +
+                                    $"enabled={trigger.enabled} active={arena.isActiveAndEnabled} trigger={trigger.isTrigger} " +
+                                    $"inside={trigger.bounds.Contains(player.transform.position)} " +
+                                    $"ignored={Physics.GetIgnoreLayerCollision(arena.gameObject.layer, player.gameObject.layer)} " +
+                                    $"bossID={ai.GetComponent<BossCharacterManager>()?.BossID}");
+                            }
+                        }
                         string clips = string.Join(",", Enumerable.Range(0, animator.layerCount)
                             .SelectMany(layer => animator.GetCurrentAnimatorClipInfo(layer)).Select(c => c.clip.name));
                         report.AppendLine($"{ai.name} t={frame} dead={ai.IsDead} awake={ai.IsAwake} state={ai.CurrentState} " +

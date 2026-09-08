@@ -921,8 +921,12 @@ namespace ZZ
 
             if (m_characterManager is PlayerManager player &&
                 player.PlayerNetworkManager.IsUsingLeftHand.Value &&
-                attackType is AttackType.LightAttack01 or AttackType.LightAttack02 or AttackType.LightAttack03)
+                attackType is AttackType.LightAttack01 or AttackType.LightAttack02 or AttackType.LightAttack03 or AttackType.LightJumpingAttack01)
             {
+                if (attackType == AttackType.LightJumpingAttack01)
+                {
+                    return Animator.StringToHash("Action Override.OffHand_JumpLight");
+                }
                 return Animator.StringToHash(attackType == AttackType.LightAttack02
                     ? "Action Override.OffHand_Attack_02" : "Action Override.OffHand_Attack_01");
             }
