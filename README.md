@@ -40,11 +40,13 @@ Zephyring（疾风回响）是一个以近战博弈、角色成长和世界探�
 
 ### 新游戏与角色创建
 
-从标题画面进入 New Game，选择职业、外观与角色名称，随后加载游戏世界。
+从标题画面进入 New Game，选择职业、发型与角色名称，随后加载游戏世界。
 
 <p align="center">
   <img src="Docs/Media/new-game.gif" alt="新游戏与角色创建流程" width="720">
 </p>
+
+### 战斗与移动
 
 <table>
   <tr>
@@ -52,12 +54,29 @@ Zephyring（疾风回响）是一个以近战博弈、角色成长和世界探�
     <th width="50%">移动动作</th>
   </tr>
   <tr>
-    <td align="center">轻攻击连段、重攻击、跑攻与跳跃攻击</td>
-    <td align="center">行走、奔跑、冲刺、翻滚、后撤步与跳跃</td>
+    <td align="center">轻攻击连段、重攻击蓄力、跑攻与跳跃攻击</td>
+    <td align="center">行走、奔跑、冲刺、翻滚、后撤步、跳跃与潜行</td>
   </tr>
   <tr>
     <td><img src="Docs/Media/combat.gif" alt="玩家战斗动作展示" width="100%"></td>
     <td><img src="Docs/Media/movement.gif" alt="玩家移动动作展示" width="100%"></td>
+  </tr>
+</table>
+
+### 敌人 AI 与界面系统
+
+<table>
+  <tr>
+    <th width="50%">敌人 AI 对抗</th>
+    <th width="50%">菜单与 HUD</th>
+  </tr>
+  <tr>
+    <td align="center">锁定目标、闪避、反击与敌人受击反馈</td>
+    <td align="center">HUD、角色菜单与装备面板</td>
+  </tr>
+  <tr>
+    <td><img src="Docs/Media/enemy.gif" alt="敌人 AI 对抗展示" width="100%"></td>
+    <td><img src="Docs/Media/ui.gif" alt="界面系统展示" width="100%"></td>
   </tr>
 </table>
 
@@ -129,6 +148,8 @@ Zephyring（疾风回响）是一个以近战博弈、角色成长和世界探�
 
 ```text
 Assets/_Game/
+├── Art/           # 本地美术资源（Git 忽略）
+├── Audio/         # 本地音频资源（Git 忽略）
 ├── Data/          # 物品、角色动作、AI 与世界配置
 ├── Editor/        # 内容配置、验证和开发工具
 ├── Prefabs/       # 角色、UI、世界对象与特效预制体
@@ -141,6 +162,19 @@ Assets/_Game/
 ```
 
 运行时代码集中在 `Assets/_Game/Scripts`，按角色、战斗、物品、存档、UI、世界和渲染等稳定领域划分；详细约定见 `Docs/Architecture/ProjectArchitecture.md`。
+
+开发实验与效果验证放在 `Assets/_Dev`；第三方内容位于 `Assets/ThirdParty` 和 `Assets/Plugins`。
+`Library`、`Temp`、`Logs`、`obj` 和 IDE 工程文件由工具生成，不用于存放项目源文件。
+移动 Unity 资源时使用 Editor 的 Project 窗口，并保留对应 `.meta`，以维持场景和预制体引用。
+
+### 开发文档
+
+- [编码规范](CLAUDE.md)
+- [项目环境与上下文](Docs/AI/UnityProjectContext.md)
+- [代码目录与程序集边界](Docs/Architecture/ProjectArchitecture.md)
+
+美术、音频和部分插件已被 Git 忽略，克隆仓库后需要从本地资源备份补齐；
+`Packages/manifest.json` 中的两个 `file:` 依赖也需要对应的本地包目录。
 
 <p align="right">(<a href="#readme-top">返回顶部</a>)</p>
 
