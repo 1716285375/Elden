@@ -1,0 +1,16 @@
+{
+    "name": "ZZ.Combat.Rules",
+    "rootNamespace": "ZZ",
+    "references": [
+        "ZZ.Foundation"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
