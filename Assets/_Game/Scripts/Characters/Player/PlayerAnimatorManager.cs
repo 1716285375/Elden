@@ -164,12 +164,14 @@ namespace ZZ
         /// <summary>Allows rotation again during an attack's recovery window.</summary>
         public void EnableCanRotate()
         {
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.Rotation, true);
             m_player?.SetCanRotate(true);
         }
 
         /// <summary>Locks rotation during an attack's active frames.</summary>
         public void DisableCanRotate()
         {
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.Rotation, false);
             m_player?.SetCanRotate(false);
         }
 
@@ -182,7 +184,7 @@ namespace ZZ
         /// <summary>Forwards the authored combo-window end event to combat state.</summary>
         public void DisableCanDoCombo()
         {
-            m_player?.PlayerCombatManager?.CloseAttackInputQueueWindow();
+            m_player?.PlayerCombatManager?.CloseTransitionWindow();
         }
 
         /// <summary>Opens the roll-attack input window during dodge recovery.</summary>
@@ -203,19 +205,26 @@ namespace ZZ
             m_player?.PlayerCombatManager?.DisableCanPerformCommittedAttack();
         }
 
-        // The following receivers satisfy authored attack animation events.
-        // They are reserved for roll-cancel, move-cancel, and weapon-trail systems.
-
         public void EnableCanRoll()
         {
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.RollCancel, true);
             m_player?.LocomotionManager?.SetCanRoll(true);
         }
 
-        public void EnableCanMoveCancel() { }
+        public void EnableCanMoveCancel()
+        {
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.MoveCancel, true);
+        }
 
-        public void ActivateMainHandWeaponTrail() { }
+        public void ActivateMainHandWeaponTrail()
+        {
+            m_player?.EquipmentManager?.SetMainHandTrailWindow(true);
+        }
 
-        public void DeactivateMainHandWeaponTrail() { }
+        public void DeactivateMainHandWeaponTrail()
+        {
+            m_player?.EquipmentManager?.SetMainHandTrailWindow(false);
+        }
 
         /// <summary>Rebuilds the full-body ladder layer for state changes and late join.</summary>
         public void SetLadderPresentation(

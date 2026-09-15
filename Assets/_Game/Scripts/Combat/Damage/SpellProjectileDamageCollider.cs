@@ -16,6 +16,9 @@ namespace ZZ
         }
 
         /// <inheritdoc />
+        public override bool SupportsParry => false;
+
+        /// <inheritdoc />
         protected override void OnTriggerEnter(Collider other)
         {
             int previousTargetCount = CharactersDamaged.Count;
@@ -27,13 +30,7 @@ namespace ZZ
         }
 
         /// <inheritdoc />
-        protected override bool CheckForParry(CharacterManager damageTarget)
-        {
-            return false;
-        }
-
-        /// <inheritdoc />
-        protected override float GetBlockingDotValues(CharacterManager damageTarget)
+        protected override float ResolveGuardFacingDot(CharacterManager damageTarget)
         {
             if (damageTarget == null)
             {

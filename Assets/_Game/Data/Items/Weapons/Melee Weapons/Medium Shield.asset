@@ -18,12 +18,15 @@ MonoBehaviour:
   m_itemID: 3
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 0
+  m_isInfinite: 0
   m_itemWeight: 0
   m_weaponModel: {fileID: 1582763652874089129, guid: 68dabc27d2a6f924c9a0a9c4779d8550, type: 3}
   m_isUnarmed: 0
   m_weaponModelType: 1
   m_weaponClass: 4
   m_weaponAnimator: {fileID: 22100000, guid: fe357cc515d2e9b4d8ec0a69c7c43912, type: 2}
+  m_moveset: {fileID: 11400000, guid: be6f7ea183fd9bc45b896ba67844be06, type: 2}
   m_weaponPivotPosition: {x: 0, y: 0, z: 0}
   m_weaponPivotRotation: {x: 0, y: 0, z: 0}
   m_weaponPivotScale: {x: 1, y: 1, z: 1}

@@ -122,12 +122,19 @@ namespace ZZ
             }
 
             character.CharacterSoundFXManager?.PlayBlockingSoundEffect();
+            CombatVfx.PlayGuard(ContactPoint);
+            PresentImpactFeedback(character, HitOutcome.Blocked, PoiseDamage * 0.5f);
             if (processingMode == DamageProcessingMode.Authoritative)
             {
                 ApplyHealthDamage(character, resolvedDamage);
                 character.CharacterStatsManager?.ApplyBlockingStaminaDamage(
                     PoiseDamage,
                     BlockingStability);
+                if (character is PlayerManager player &&
+                    player.CharacterNetworkManager.CurrentStamina.Value > 0f)
+                {
+                    player.PlayerCombatManager.RecordSuccessfulBlock();
+                }
             }
         }
 

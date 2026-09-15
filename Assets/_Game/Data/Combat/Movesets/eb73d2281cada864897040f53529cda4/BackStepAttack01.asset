@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f34f6b5d1a659bb49ba69ce2c24539ad, type: 3}
+  m_Name: BackStepAttack01
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.AttackDefinition
+  m_defenseRulesVersion: 1
+  m_attackId: 100058
+  m_attackType: 8
+  m_entryCommand: 1
+  m_staminaCost: 12
+  m_damageMultiplier: 1.15
+  m_poiseDamage: 10
+  m_stanceDamage: 10
+  m_physicalDamage: 0
+  m_magicDamage: 0
+  m_fireDamage: 0
+  m_lightningDamage: 0
+  m_holyDamage: 0
+  m_parryLevel: 1
+  m_isBlockable: 1
+  m_hyperArmorPoise: 0
+  m_hyperArmorWindow:
+    m_start: 0
+    m_end: 0
+  m_activePhase:
+    m_start: 0.2
+    m_end: 0.6
+  m_recoveryPhase:
+    m_start: 0.6
+    m_end: 1
+  m_tracking:
+    m_turnSpeed: 0
+    m_maximumAngle: 0
+    m_maximumDistance: 0
+  m_motion:
+    m_forwardStepDistance: 0
+    m_stepDuration: 0
+    m_targetCorrectionDistance: 0
+    m_allowsControllerMotion: 0
+  m_reaction:
+    m_reactionPower: 0
+    m_poiseBreakReaction: 0
+    m_stanceBreakReaction: 0
+    m_canLaunch: 0
+  m_animationState: 
+  m_transitions: []
+  m_nextLightAttack: {fileID: 0}
+  m_nextHeavyAttack: {fileID: 0}

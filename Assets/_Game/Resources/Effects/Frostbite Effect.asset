@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.FrostbiteEffect
   m_timedEffectID: 5
   m_defaultTimeLengthOnEffect: 60
+  m_statusDefinition: {fileID: 11400000, guid: 598b26e24efe7134c837970981d8f0f0, type: 2}
   m_hpPercentageDamage: 10
   m_staminaRegenerationModifierEffect: {fileID: 11400000, guid: 343a359a6c75e134bb02533349eb981e, type: 2}

@@ -43,6 +43,7 @@ Transform:
   - {fileID: 1475405260699116760}
   - {fileID: 955465963823483469}
   - {fileID: 4632193612292529326}
+  - {fileID: 3771839317279688750}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7589505882548601795
@@ -240,6 +241,61 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   MaxFocusPoints:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorPhysicalAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorMagicAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorFireAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorLightningAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorHolyAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  BasePoiseDefense:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorPoiseDefense:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  OffensivePoiseBonus:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  TotalPoiseDamage:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  CurrentStance:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  CanBeKnockedOffLadder:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
@@ -517,6 +573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d7abc0088cdafe44a1dc869a7570658, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterCombatManager
+  m_parryStrength: 1
   m_currentAttackType: 0
   m_previousPoiseDamageTaken: 0
   m_criticalAttackDistanceCheck: 0.7
@@ -589,6 +646,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e5ddb6092ae7e45b1b062e8233f6b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterEffectsManager
+  m_bleedDefinition: {fileID: 11400000, guid: f3def0770f79ed843a2a47761144f029, type: 2}
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_criticalBloodSplatterVFX: {fileID: 0}
   m_poisonedVFX: {fileID: 0}
@@ -630,6 +688,13 @@ MonoBehaviour:
   m_attackDistance: 3.25
   m_attackCooldown: 2.6
   m_defaultAttackAction: {fileID: 0}
+  m_combatStanceAttacks: []
+  m_minimumPursuitDistanceRatio: 0.75
+  m_pursuitTargetMode: 2
+  m_combatStanceMode: 1
+  m_walkSpeed: 1.35
+  m_runSpeed: 3.5
+  m_sprintSpeed: 5.5
   m_willCircleTarget: 1
   m_combatStrafeAnimationAmount: 0.5
   m_combatStrafeSpeed: 1.35
@@ -687,10 +752,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 644edb7de7c69e94590b351dabbfeebc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterInventoryManager
+  m_itemsInInventory: []
   m_droppableItems:
   - {fileID: 11400000, guid: 5ee2cbf3f6258c44ca6bbca7eca92069, type: 2}
   - {fileID: 11400000, guid: 811f6e8071a2ca742b30f1c625275670, type: 2}
   m_dropItemChance: 10
+  m_characterShopID: 0
+  m_characterShop: {fileID: 0}
 --- !u!1 &1957558510727032389
 GameObject:
   m_ObjectHideFlags: 0
@@ -1113,6 +1181,79 @@ MonoBehaviour:
   m_poisonBuildup: 0
   m_bleedBuildup: 0
   m_frostBuildup: 0
+--- !u!1 &4915073015065297081
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3771839317279688750}
+  - component: {fileID: 7698635051381004449}
+  - component: {fileID: 3665530558498678098}
+  m_Layer: 10
+  m_Name: Combat HurtBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3771839317279688750
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915073015065297081}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4296357772144242619}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &7698635051381004449
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915073015065297081}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.38
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &3665530558498678098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915073015065297081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b8f6c0055665947baf757377bae81b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.HurtBox
+  m_owner: {fileID: 4286986041506688607}
+  m_bodyPart: Torso
+  m_damageMultiplier: 1
+  m_poiseMultiplier: 1
+  m_isMovementOnly: 0
 --- !u!1 &6101956380877691694
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,6 +1362,9 @@ MonoBehaviour:
   m_fillImage: {fileID: 0}
   m_shouldScaleBarLengthWithStats: 0
   m_widthScaleMultiplier: 2
+  m_shouldTweenValue: 1
+  m_valueTweenDuration: 0.25
+  m_valueTweenEase: 6
   m_defaultTimeBeforeBarHides: 3
   m_healthChangeText: {fileID: 2158316218558955548}
 --- !u!1 &6635284474805295539

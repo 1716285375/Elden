@@ -151,8 +151,8 @@ namespace ZZ.Tests
             Assert.That(combatSource, Does.Contain("m_canPerformOffHandCombo"));
             Assert.That(combatSource, Does.Contain("IsUsingLeftHand.Value"));
             Assert.That(
-                combatSource,
-                Does.Contain("SetCharacterActionHand(false)"));
+                File.ReadAllText("Assets/_Game/Scripts/Combat/Core/PlayerAttackController.cs"),
+                Does.Contain("weapon != m_player.InventoryManager.CurrentLeftHandWeapon"));
             Assert.That(
                 GetRuntimeType("ZZ.PlayerCombatManager").GetProperty(
                     "CanPerformOffHandCombo"),
@@ -323,8 +323,8 @@ namespace ZZ.Tests
         [Test]
         public static void DualAttackReplicationUsesExistingAttackRpc()
         {
-            string combatSource = ReadRuntimeSource(
-                "Character/Player/PlayerCombatManager.cs");
+            string combatSource = File.ReadAllText(
+                "Assets/_Game/Scripts/Combat/Core/PlayerAttackController.cs");
             string animatorSource = ReadRuntimeSource(
                 "Character/CharacterAnimatorManager.cs");
 

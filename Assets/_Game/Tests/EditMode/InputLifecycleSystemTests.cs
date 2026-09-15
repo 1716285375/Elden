@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -42,6 +43,47 @@ namespace ZZ.Tests
             }
 
             GetField("s_instance").SetValue(null, m_previousInstance);
+        }
+
+        [Test]
+        public void BoundInputUsesTheCombatBufferAndClearsItWhenControlsStop()
+        {
+            GameObject player = PrefabUtility.LoadPrefabContents(
+                "Assets/_Game/Prefabs/Characters/Player/Player.prefab");
+            try
+            {
+                Component manager = player.GetComponent("PlayerManager");
+                Component combat = player.GetComponent("PlayerCombatManager");
+                manager.GetType().GetProperty("PlayerCombatManager").SetValue(manager, combat);
+                GetField("m_player").SetValue(m_input, manager);
+                object buffer = combat.GetType().GetProperty("CommandBuffer").GetValue(combat);
+                Assert.That(m_inputType.GetProperty("CommandBuffer").GetValue(m_input), Is.SameAs(buffer));
+                Type commandType = buffer.GetType().GetMethod("Push").GetParameters()[0].ParameterType;
+                buffer.GetType().GetMethod("Push").Invoke(buffer,
+                    new[] { Enum.Parse(commandType, "LightAttack") });
+                Invoke("ClearAttackInputQueue");
+                Assert.That(buffer.GetType().GetProperty("Count").GetValue(buffer), Is.EqualTo(0));
+            }
+            finally
+            {
+                GetField("m_player").SetValue(m_input, null);
+                PrefabUtility.UnloadPrefabContents(player);
+            }
+        }
+
+        [Test]
+        public void HeavyHeldStateEndsOnReleaseAndControlDisable()
+        {
+            Invoke("EnablePlayerControls");
+            Invoke("OnRTStarted", default(InputAction.CallbackContext));
+            PropertyInfo held = m_inputType.GetProperty("IsHeavyAttackHeld");
+            Assert.That(held, Is.Not.Null);
+            Assert.That(held.GetValue(m_input), Is.True);
+            Invoke("OnRTCanceled", default(InputAction.CallbackContext));
+            Assert.That(held.GetValue(m_input), Is.False);
+            Invoke("OnRTStarted", default(InputAction.CallbackContext));
+            Invoke("DisablePlayerControls");
+            Assert.That(held.GetValue(m_input), Is.False);
         }
 
         [Test]

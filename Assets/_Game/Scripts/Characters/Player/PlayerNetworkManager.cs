@@ -166,6 +166,8 @@ namespace ZZ
                 k_DefaultQuickSlotItemID,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
+        private int m_healthFlaskCapacity = k_DefaultHealthFlaskCount;
+        private int m_focusPointFlaskCapacity = k_DefaultFocusPointFlaskCount;
         private readonly NetworkVariable<int> m_remainingHealthFlasks =
             new NetworkVariable<int>(
                 k_DefaultHealthFlaskCount,
@@ -526,14 +528,37 @@ namespace ZZ
             WorldAIManager.Instance?.DisableAllBossFights();
             PlayerManager player = GetComponent<PlayerManager>();
             int currentRunes = player?.PlayerStatsManager?.Runes ?? 0;
-            if (currentRunes > 0)
-            {
-                player.PlayerCombatManager?.CreateDeadSpot(
-                    player.transform.position,
-                    currentRunes);
-            }
+            player?.PlayerCombatManager?.CreateDeadSpot(
+                player.transform.position,
+                currentRunes);
 
             WorldGameSessionManager.Instance?.ReviveHost(player);
+        }
+
+        /// <summary>Gets the health-flask allocation restored when resting.</summary>
+        public int HealthFlaskCapacity => m_healthFlaskCapacity;
+        public int FocusPointFlaskCapacity => m_focusPointFlaskCapacity;
+
+        /// <summary>Restores the owner's persistent flask allocation independently of remaining charges.</summary>
+        public void ConfigureFlaskCapacity(int healthFlasks, int focusPointFlasks)
+        {
+            if (IsSpawned && !IsOwner)
+            {
+                return;
+            }
+            m_healthFlaskCapacity = Mathf.Max(0, healthFlasks);
+            m_focusPointFlaskCapacity = Mathf.Max(0, focusPointFlasks);
+        }
+
+        /// <summary>Refills both flask types to the owner's configured allocation.</summary>
+        public void RefillFlasks()
+        {
+            if (IsSpawned && !IsOwner)
+            {
+                return;
+            }
+            m_remainingHealthFlasks.Value = m_healthFlaskCapacity;
+            m_remainingFocusPointFlasks.Value = m_focusPointFlaskCapacity;
         }
 
         /// <summary>Returns the synchronized count for one flask category.</summary>

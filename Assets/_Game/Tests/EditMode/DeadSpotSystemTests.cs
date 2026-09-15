@@ -74,6 +74,32 @@ namespace ZZ.Tests
         }
 
         [Test]
+        public void DestroyedDeadSpotReferenceReloadsTheResource()
+        {
+            GameObject owner = new GameObject("Effects resource test");
+            GameObject staleReference = new GameObject("Stale recovery reference");
+            try
+            {
+                Type effectsType = GetRuntimeType("ZZ.WorldCharacterEffectsManager");
+                Component effects = owner.AddComponent(effectsType);
+                effectsType.GetField("m_deadSpotVFX", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(effects, staleReference);
+                UnityEngine.Object.DestroyImmediate(staleReference);
+                Assert.That(effectsType.GetProperty("DeadSpotVFX").GetValue(effects),
+                    Is.EqualTo(Resources.Load<GameObject>("Effects/Dead Spot")));
+                Assert.That(effectsType.GetProperty("DeadSpotVFX").GetValue(effects), Is.Not.Null);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(owner);
+                if (staleReference != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(staleReference);
+                }
+            }
+        }
+
+        [Test]
         public void DeadSpotPrefabHasNetworkInteractionAndVfx()
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
@@ -126,7 +152,7 @@ namespace ZZ.Tests
             string networkSource = File.ReadAllText(
                 "Assets/_Game/Scripts/Characters/Player/PlayerNetworkManager.cs");
             string combatSource = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/PlayerCombatManager.cs");
+                "Assets/_Game/Scripts/World/Progression/RuneRecoveryController.cs");
 
             Assert.That(
                 networkSource,
@@ -142,7 +168,7 @@ namespace ZZ.Tests
         public void SceneRestoreDoesNotChargeRunesTwiceAndUnsubscribes()
         {
             string combatSource = File.ReadAllText(
-                "Assets/_Game/Scripts/Characters/Player/PlayerCombatManager.cs");
+                "Assets/_Game/Scripts/World/Progression/RuneRecoveryController.cs");
 
             Assert.That(
                 combatSource,

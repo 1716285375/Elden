@@ -7,29 +7,33 @@ namespace ZZ
     /// </summary>
     public class AIDamageCollider : DamageCollider
     {
+        protected override bool UsesWeaponTrace => true;
+
         private AICharacterCombatManager m_combatManager;
 
         /// <inheritdoc />
-        protected override bool CheckForParry(CharacterManager damageTarget)
+        public override void NotifyParry(CharacterManager parryingCharacter)
         {
-            if (!CanParryDamageTarget(damageTarget))
+            if (parryingCharacter == null)
             {
-                return false;
+                return;
             }
 
             m_combatManager ??= GetComponentInParent<AICharacterCombatManager>();
-            if (m_combatManager != null &&
-                !m_combatManager.TryRegisterDamageTarget(damageTarget) &&
-                !damageTarget.IsOwner)
+            bool wasRegisteredByServer = m_combatManager == null ||
+                m_combatManager.TryRegisterDamageTarget(parryingCharacter);
+            if (!wasRegisteredByServer && !parryingCharacter.IsOwner)
             {
-                return true;
+                return;
             }
 
-            return ProcessSuccessfulParry(damageTarget);
+            base.NotifyParry(parryingCharacter);
         }
 
-        protected override void Damage(
+        /// <inheritdoc />
+        protected override void DispatchDamage(
             CharacterManager target,
+            in DamagePayload payload,
             Vector3 contactPoint,
             bool wasBlocked)
         {
@@ -46,7 +50,7 @@ namespace ZZ
                 return;
             }
 
-            base.Damage(target, contactPoint, wasBlocked);
+            base.DispatchDamage(target, payload, contactPoint, wasBlocked);
             if (wasRegisteredByServer)
             {
                 m_combatManager.RecordSuccessfulHit(target);

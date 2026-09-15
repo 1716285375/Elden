@@ -10,6 +10,9 @@ namespace ZZ
         FileName = "AI Attack Action")]
     public class AICharacterAttackAction : ScriptableObject
     {
+        [SerializeField] private AttackDefinition m_attackDefinition;
+        public AttackDefinition AttackDefinition => m_attackDefinition;
+
         [Header("Presentation")]
         [SerializeField] private AttackType m_attackType = AttackType.LightAttack01;
         [SerializeField] private bool m_isParryable = true;
@@ -34,8 +37,8 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_holyDamage;
         [SerializeField, Min(0f)] private float m_poiseDamage = 15f;
 
-        public AttackType AttackType => m_attackType;
-        public bool IsParryable => m_isParryable;
+        public AttackType AttackType => m_attackDefinition != null ? m_attackDefinition.AttackType : m_attackType;
+        public bool IsParryable => m_attackDefinition != null ? m_attackDefinition.ParryLevel > 0 : m_isParryable;
         public bool UseCharacterActionAnimation => m_useCharacterActionAnimation;
         public CharacterActionAnimation CharacterActionAnimation =>
             m_characterActionAnimation;
@@ -44,12 +47,12 @@ namespace ZZ
         public float SelectionWeight => m_selectionWeight;
         public float RecoveryTime => m_recoveryTime;
         public AICharacterAttackAction ComboAction => m_comboAction;
-        public float PhysicalDamage => m_physicalDamage;
-        public float MagicDamage => m_magicDamage;
-        public float FireDamage => m_fireDamage;
-        public float LightningDamage => m_lightningDamage;
-        public float HolyDamage => m_holyDamage;
-        public float PoiseDamage => m_poiseDamage;
+        public float PhysicalDamage => m_attackDefinition != null ? m_attackDefinition.PhysicalDamage : m_physicalDamage;
+        public float MagicDamage => m_attackDefinition != null ? m_attackDefinition.MagicDamage : m_magicDamage;
+        public float FireDamage => m_attackDefinition != null ? m_attackDefinition.FireDamage : m_fireDamage;
+        public float LightningDamage => m_attackDefinition != null ? m_attackDefinition.LightningDamage : m_lightningDamage;
+        public float HolyDamage => m_attackDefinition != null ? m_attackDefinition.HolyDamage : m_holyDamage;
+        public float PoiseDamage => m_attackDefinition != null ? m_attackDefinition.PoiseDamage : m_poiseDamage;
 
         /// <summary>Gets whether the target is inside this attack's authored range.</summary>
         public bool IsInRange(float targetDistance)

@@ -239,6 +239,79 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3765061918237382532}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &640603027117150717
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2028486207970907816}
+  - component: {fileID: 7394604932964768597}
+  - component: {fileID: 3617371676779604839}
+  m_Layer: 10
+  m_Name: Combat HurtBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2028486207970907816
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640603027117150717}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 990768477755873551}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &7394604932964768597
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640603027117150717}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.65
+  m_Height: 3.2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.6, z: 0}
+--- !u!114 &3617371676779604839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640603027117150717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b8f6c0055665947baf757377bae81b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.HurtBox
+  m_owner: {fileID: 3117961225244426419}
+  m_bodyPart: Torso
+  m_damageMultiplier: 1
+  m_poiseMultiplier: 1
+  m_isMovementOnly: 0
 --- !u!1 &649120767052637728
 GameObject:
   m_ObjectHideFlags: 0
@@ -4078,6 +4151,7 @@ Transform:
   - {fileID: 6602418044449371741}
   - {fileID: 3204801234433917666}
   - {fileID: 7108630092623100656}
+  - {fileID: 2028486207970907816}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8896947818356506603
@@ -4607,6 +4681,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d7abc0088cdafe44a1dc869a7570658, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterCombatManager
+  m_parryStrength: 1
   m_currentAttackType: 0
   m_previousPoiseDamageTaken: 0
   m_criticalAttackDistanceCheck: 0.7
@@ -4679,6 +4754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e5ddb6092ae7e45b1b062e8233f6b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.CharacterEffectsManager
+  m_bleedDefinition: {fileID: 11400000, guid: f3def0770f79ed843a2a47761144f029, type: 2}
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_criticalBloodSplatterVFX: {fileID: 0}
   m_poisonedVFX: {fileID: 0}

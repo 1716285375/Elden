@@ -26,6 +26,7 @@ MonoBehaviour:
   m_weaponModelType: 0
   m_weaponClass: 2
   m_weaponAnimator: {fileID: 22100000, guid: 3196b6da8a336584db60c913f07e1d9c, type: 2}
+  m_moveset: {fileID: 11400000, guid: 0edd3222613d16449b3c9c7dac88f495, type: 2}
   m_weaponPivotPosition: {x: 0, y: 0, z: 0}
   m_weaponPivotRotation: {x: 0, y: 0, z: 0}
   m_weaponPivotScale: {x: 1, y: 1, z: 1}

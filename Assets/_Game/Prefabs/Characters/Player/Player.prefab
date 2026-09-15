@@ -143,6 +143,9 @@ MonoBehaviour:
   m_fillImage: {fileID: 0}
   m_shouldScaleBarLengthWithStats: 0
   m_widthScaleMultiplier: 2
+  m_shouldTweenValue: 1
+  m_valueTweenDuration: 0.25
+  m_valueTweenEase: 6
   m_defaultTimeBeforeBarHides: 3
   m_healthChangeText: {fileID: 1633607557918140540}
 --- !u!1 &766316054384584731
@@ -145678,6 +145681,79 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponModelInstantiationSlot
   m_weaponModelSlot: 3
+--- !u!1 &2921911040682842087
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3772424075177069382}
+  - component: {fileID: 4790409902737788330}
+  - component: {fileID: 7147798949260486621}
+  m_Layer: 8
+  m_Name: Combat HurtBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3772424075177069382
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921911040682842087}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5925388870315372678}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &4790409902737788330
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921911040682842087}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.35
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &7147798949260486621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921911040682842087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b8f6c0055665947baf757377bae81b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.HurtBox
+  m_owner: {fileID: 6368077256085200356}
+  m_bodyPart: Torso
+  m_damageMultiplier: 1
+  m_poiseMultiplier: 1
+  m_isMovementOnly: 0
 --- !u!1 &2941268009351439876
 GameObject:
   m_ObjectHideFlags: 0
@@ -146322,6 +146398,7 @@ Transform:
   - {fileID: 810886663696141468}
   - {fileID: 7520643900993098255}
   - {fileID: 7476735646324519938}
+  - {fileID: 3772424075177069382}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -0, z: -0}
 --- !u!114 &6896408444743424835
@@ -146556,6 +146633,61 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  ArmorPhysicalAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorMagicAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorFireAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorLightningAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorHolyAbsorption:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  BasePoiseDefense:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  ArmorPoiseDefense:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  OffensivePoiseBonus:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  TotalPoiseDamage:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  CurrentStance:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  CanBeKnockedOffLadder:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
   PoisonBuildup:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -146725,6 +146857,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2f95d7e66f74446bf6d4a88ae5ebdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerInventoryManager
+  m_itemsInInventory: []
   m_unarmedWeapon: {fileID: 11400000, guid: 2a596d5d34a342543b07c4c1d603d60d, type: 2}
   m_weaponsInRightHandSlots:
   - {fileID: 11400000, guid: 56fe0958176792a498531c0014699ac9, type: 2}
@@ -146748,7 +146881,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c0478e237862c6146a51b5f21ec4bd4e, type: 2}
   - {fileID: 0}
   m_quickSlotItemIndex: 0
-  m_itemsInInventory: []
+  m_itemsInStorage: []
 --- !u!114 &6156979858456878683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146761,6 +146894,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cbc42a481feedb49b0a41b68dc4b8c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerCombatManager
+  m_parryStrength: 1
   m_currentAttackType: 0
   m_previousPoiseDamageTaken: 0
   m_criticalAttackDistanceCheck: 0.7
@@ -146807,6 +146941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33477e764d5737a4baa4e31ed5d86f53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PlayerEffectsManager
+  m_bleedDefinition: {fileID: 11400000, guid: f3def0770f79ed843a2a47761144f029, type: 2}
   m_bloodSplatterVFX: {fileID: 1749097799505083475, guid: cd8ae04f0906320429f9c16f38f0b5eb, type: 3}
   m_criticalBloodSplatterVFX: {fileID: 0}
   m_poisonedVFX: {fileID: 0}

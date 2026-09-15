@@ -19,6 +19,8 @@ namespace ZZ
         private InputAction m_openCharacterMenuAction;
         private InputAction m_closeMenuAction;
         private Coroutine m_delayedCloseRoutine;
+        private GameSettingsPanel m_settingsPanel;
+        private Button m_settingsButton;
 
         public bool IsCharacterMenuOpen => IsMenuOpen;
 
@@ -69,6 +71,7 @@ namespace ZZ
             OpenMenu();
             if (IsMenuOpen)
             {
+                EnsureSettingsButton();
                 m_initialButton?.Select();
             }
         }
@@ -97,7 +100,32 @@ namespace ZZ
         public override void CloseMenu()
         {
             CancelDelayedClose();
+            m_settingsPanel?.gameObject.SetActive(false);
             base.CloseMenu();
+        }
+
+        private void EnsureSettingsButton()
+        {
+            if (m_settingsButton != null || MenuWindow == null)
+            {
+                return;
+            }
+            m_settingsButton = GameSettingsPanel.CreateButton(MenuWindow.transform, "Settings", OpenSettings);
+            RectTransform rect = m_settingsButton.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.77f, 0.87f);
+            rect.anchorMax = new Vector2(0.94f, 0.94f);
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            m_settingsButton.GetComponent<LayoutElement>().ignoreLayout = true;
+        }
+
+        private void OpenSettings()
+        {
+            if (m_settingsPanel == null)
+            {
+                m_settingsPanel = GameSettingsPanel.Create(MenuWindow.transform);
+            }
+            m_settingsPanel.Open(() => m_settingsButton.Select());
         }
 
         /// <summary>
@@ -141,6 +169,11 @@ namespace ZZ
 
         private void OnCloseMenuPerformed(InputAction.CallbackContext context)
         {
+            if (m_settingsPanel != null && m_settingsPanel.gameObject.activeInHierarchy)
+            {
+                m_settingsPanel.Close();
+                return;
+            }
             if (TryCancelUpgradeConfirmation())
             {
                 return;

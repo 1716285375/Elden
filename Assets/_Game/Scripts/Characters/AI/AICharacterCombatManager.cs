@@ -327,6 +327,7 @@ namespace ZZ
         {
             if (m_aiCharacter != null && m_aiCharacter.IsServer)
             {
+                ActionRunner.SetWindow(CombatWindowType.Hit, true);
                 m_leftHandDamageCollider?.OpenDamageCollider();
             }
         }
@@ -342,6 +343,7 @@ namespace ZZ
         {
             if (m_aiCharacter != null && m_aiCharacter.IsServer)
             {
+                ActionRunner.SetWindow(CombatWindowType.Hit, true);
                 m_rightHandDamageCollider?.OpenDamageCollider();
             }
         }
@@ -349,6 +351,7 @@ namespace ZZ
         /// <summary>Closes every active AI damage collider.</summary>
         public void CloseDamageColliders()
         {
+            ActionRunner.SetWindow(CombatWindowType.Hit, false);
             m_leftHandDamageCollider?.CloseDamageCollider();
             m_rightHandDamageCollider?.CloseDamageCollider();
         }
@@ -563,6 +566,12 @@ namespace ZZ
             return player != null ? 1f : 0f;
         }
 
+        protected override AttackDefinition ResolveAttackDefinition(AttackType attackType, WeaponItem weapon)
+        {
+            return m_currentAttackAction != null && m_currentAttackAction.AttackType == attackType
+                ? m_currentAttackAction.AttackDefinition : base.ResolveAttackDefinition(attackType, weapon);
+        }
+
         private void ConfigureDamageCollider(AIDamageCollider damageCollider)
         {
             if (damageCollider == null)
@@ -580,6 +589,8 @@ namespace ZZ
                     m_currentAttackAction.LightningDamage,
                     m_currentAttackAction.HolyDamage,
                     m_currentAttackAction.PoiseDamage);
+                damageCollider.SetStanceDamage(m_currentAttackAction.AttackDefinition != null
+                    ? m_currentAttackAction.AttackDefinition.StanceDamage : m_currentAttackAction.PoiseDamage);
                 return;
             }
 

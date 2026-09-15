@@ -81,15 +81,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2420991618769048996, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
       propertyPath: m_Controller
-      value:
+      value: 
       objectReference: {fileID: 22100000, guid: 7deae92f29a099949a33080816ddd37e, type: 2}
     - target: {fileID: 3129814830756751105, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
       propertyPath: m_character
-      value:
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4713752444425064866, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
       propertyPath: m_Name
       value: Ranger AI
+      objectReference: {fileID: 0}
+    - target: {fileID: 8022505868384787350, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
+      propertyPath: m_owner
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2825352268374875321, guid: 184030d21fab8d244a45fbd19631639b, type: 3}
@@ -137,7 +141,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4fde62d96725554792a8eb70522ec60, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIDamageCollider
 --- !u!195 &1456862463816492431 stripped
 NavMeshAgent:
@@ -153,7 +157,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4664d1bfd0ba41242847f04d6cd6161b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterAnimatorManager
 --- !u!114 &5206410669398338822 stripped
 MonoBehaviour:
@@ -164,7 +168,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f64d8b9e4fdf97459b371d75477ae72, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterNetworkManager
 --- !u!114 &6943588758702224968 stripped
 MonoBehaviour:
@@ -175,7 +179,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4fde62d96725554792a8eb70522ec60, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIDamageCollider
 --- !u!1 &7122757826470803932 stripped
 GameObject:
@@ -192,7 +196,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 21815b7b6d8880540abea02d36dcd40f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIRangerEquipmentManager
   m_bow: {fileID: 11400000, guid: efa5932c0d326c54f8e7d9b353c5d744, type: 2}
   m_bowObject: {fileID: 257298632504326839}
@@ -209,8 +213,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c742abeedf4d8d4a8880ea91d7a7fa5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIRangerCombatManager
+  m_parryStrength: 1
   m_currentAttackType: 0
   m_previousPoiseDamageTaken: 0
   m_criticalAttackDistanceCheck: 0.7
@@ -244,7 +249,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdde19a97cd01b342abae930d76682e9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AIRangerManager
   ShowTopMostFoldoutHeaderGroup: 1
   m_animator: {fileID: 156101316955110874}
@@ -263,8 +268,8 @@ MonoBehaviour:
   m_lineOfSightLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_combatStanceDistance: 20
-  m_attackDistance: 20
+  m_combatStanceDistance: 3.2
+  m_attackDistance: 2.1
   m_attackCooldown: 2.6
   m_defaultAttackAction: {fileID: 11400000, guid: f8275eb3e6b2f574b83b4c7084ee05a5, type: 2}
   m_combatStanceAttacks:
@@ -312,7 +317,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 644edb7de7c69e94590b351dabbfeebc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterInventoryManager
 --- !u!136 &8349363570502949164 stripped
 CapsuleCollider:

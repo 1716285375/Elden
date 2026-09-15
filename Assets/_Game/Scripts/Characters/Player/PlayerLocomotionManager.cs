@@ -354,13 +354,14 @@ namespace ZZ
         /// <summary>
         /// Validates a jump intent, consumes stamina, and starts the authored take-off animation.
         /// </summary>
-        public void AttemptToPerformJump()
+        /// <returns>Whether the jump actually started.</returns>
+        public bool AttemptToPerformJump()
         {
             if (m_player == null ||
                 !m_player.IsOwner ||
                 m_player.PlayerCombatManager?.IsUsingItem == true)
             {
-                return;
+                return false;
             }
 
             float currentStamina = m_player.CharacterNetworkManager != null
@@ -374,13 +375,13 @@ namespace ZZ
                 m_player.PlayerAnimatorManager == null ||
                 !m_player.PlayerAnimatorManager.CanPlayJumpStartAnimation())
             {
-                return;
+                return false;
             }
 
             PlayerStatsManager statsManager = m_player.PlayerStatsManager;
             if (statsManager == null || !statsManager.TryConsumeStamina(m_jumpStaminaCost))
             {
-                return;
+                return false;
             }
 
             m_playerInputManager ??= PlayerInputManager.Instance;
@@ -389,6 +390,7 @@ namespace ZZ
             SetSprinting(false);
             m_player.BeginJump();
             m_player.PlayerAnimatorManager.PlayJumpStartAnimation();
+            return true;
         }
 
         /// <summary>
@@ -407,29 +409,32 @@ namespace ZZ
         /// <summary>
         /// Validates a dodge request and selects a roll or backstep from the current movement input.
         /// </summary>
-        public void AttemptToPerformDodge()
+        /// <returns>Whether a roll or backstep actually started.</returns>
+        public bool AttemptToPerformDodge()
         {
             if (m_player == null || !m_player.IsOwner)
             {
-                return;
+                return false;
             }
 
             if (IsClimbingLadder)
             {
                 JumpOffLadder();
-                return;
+                return false;
             }
 
             if (!CanRoll)
             {
-                return;
+                return false;
             }
 
             if (m_player.IsPerformingAction)
             {
-                if (m_player.PlayerCombatManager?.HasArrowNotched != true)
+                bool canCancelAttack = m_player.PlayerCombatManager?.ActionRunner.Windows
+                    .IsOpen(CombatWindowType.RollCancel) == true;
+                if (!canCancelAttack && m_player.PlayerCombatManager?.HasArrowNotched != true)
                 {
-                    return;
+                    return false;
                 }
 
                 m_player.PlayerCombatManager.CancelNotchedProjectile(true);
@@ -439,33 +444,34 @@ namespace ZZ
             m_playerCamera ??= PlayerCamera.Instance;
             if (m_playerInputManager == null)
             {
-                return;
+                return false;
             }
 
             if (m_playerInputManager.MoveAmount > 0f)
             {
                 if (m_playerCamera == null || m_playerCamera.CameraObject == null)
                 {
-                    return;
+                    return false;
                 }
 
                 if (!TryConsumeDodgeStamina())
                 {
-                    return;
+                    return false;
                 }
 
                 SetSprinting(false);
                 PerformRoll();
-                return;
+                return true;
             }
 
             if (!TryConsumeDodgeStamina())
             {
-                return;
+                return false;
             }
 
             SetSprinting(false);
             PerformBackstep();
+            return true;
         }
 
         /// <summary>
@@ -1291,6 +1297,7 @@ namespace ZZ
 
         private void PlayDodgeAction(CharacterActionAnimation targetAnimation)
         {
+            m_player.PlayerCombatManager?.ResetActionState();
             const bool k_IsPerformingAction = true;
             const bool k_ShouldApplyRootMotion = true;
             const bool k_CanRotate = false;

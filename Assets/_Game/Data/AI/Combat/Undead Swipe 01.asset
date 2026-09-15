@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 794448893d67eb64ca608ce9ad394be7, type: 3}
   m_Name: Undead Swipe 01
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.AICharacterAttackAction
+  m_attackDefinition: {fileID: 11400000, guid: 8b4cff9e0ed2fd3478e672821cc2d7e6, type: 2}
   m_attackType: 0
   m_isParryable: 1
+  m_useCharacterActionAnimation: 0
+  m_characterActionAnimation: 23
   m_minimumRange: 0
   m_maximumRange: 2.1
   m_selectionWeight: 1

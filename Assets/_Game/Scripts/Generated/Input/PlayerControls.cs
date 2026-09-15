@@ -747,7 +747,7 @@ namespace ZZ
                 {
                     ""name"": """",
                     ""id"": ""e28919fb-6fdc-4463-bcf4-418911ca037d"",
-                    ""path"": ""<Keyboard>/c"",
+                    ""path"": ""<Keyboard>/v"",
                     ""interactions"": ""press"",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",

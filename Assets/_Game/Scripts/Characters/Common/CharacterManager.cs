@@ -94,7 +94,9 @@ namespace ZZ
         public bool CanMove => m_canMove;
         public bool CanRotate => m_canRotate;
         public bool ShouldApplyRootMotion => m_shouldApplyRootMotion;
-        public bool IsInvulnerable => m_isInvulnerable;
+        public bool HasDedicatedHurtBoxes { get; private set; }
+        public bool IsInvulnerable => m_isInvulnerable ||
+            (!IsDead && IsPerformingAction && m_characterAnimatorManager?.IsDodgeInvulnerable == true);
 
         /// <summary>Gets whether this character type may present a world-space Health bar.</summary>
         public bool HasFloatingHPBar => m_hasFloatingHPBar;
@@ -120,6 +122,7 @@ namespace ZZ
             m_characterUIManager = GetComponentInChildren<CharacterUIManager>(true);
             m_lockOnTransform ??= FindCriticalAnchor();
             m_characterAnimatorManager?.Initialize(m_animator);
+            HasDedicatedHurtBoxes = GetComponentInChildren<HurtBox>(true) != null;
         }
 
         public override void OnNetworkSpawn()
@@ -175,6 +178,8 @@ namespace ZZ
 
             if (isPerformingAction && m_isPerformingAction)
             {
+                m_characterCombatManager?.ActionRunner.End();
+                m_characterCombatManager?.CloseAllDamageColliders();
                 m_characterEffectsManager?.DestroyAllCurrentActionEffects();
                 if (this is PlayerManager player &&
                     player.PlayerCombatManager?.IsHoldingSpellInput == true)
@@ -445,6 +450,7 @@ namespace ZZ
                 return;
             }
 
+            GetComponent<CombatHitFeedback>()?.Stop();
             m_hasFrozenStateSnapshot = true;
             m_canMoveBeforeFrozen = m_canMove;
             m_canRotateBeforeFrozen = m_canRotate;

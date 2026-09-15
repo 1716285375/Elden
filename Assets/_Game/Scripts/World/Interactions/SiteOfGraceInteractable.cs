@@ -137,6 +137,7 @@ namespace ZZ
             if (!TryResolvePlayer(playerNetworkObjectId, out PlayerManager player) ||
                 player.OwnerClientId != rpcParams.Receive.SenderClientId ||
                 player.IsDead ||
+                player.IsPerformingAction || m_restRoutine != null ||
                 !IsPlayerWithinInteractionDistance(player))
             {
                 return;
@@ -274,8 +275,11 @@ namespace ZZ
         {
             yield return new WaitForSeconds(m_restDuration);
 
-            player?.ResetActionFlags();
-            if (player != null && player.IsOwner)
+            if (player != null && !player.IsDead)
+            {
+                player.ResetActionFlags();
+            }
+            if (player != null && player.IsOwner && !player.IsDead)
             {
                 PlayerUIManager.Instance?.PlayerUIPopUpManager
                     ?.CloseAllPopUpWindows();
@@ -299,6 +303,8 @@ namespace ZZ
                 Mathf.Max(0f, networkManager.MaxHealth.Value);
             networkManager.CurrentStamina.Value =
                 Mathf.Max(0f, networkManager.MaxStamina.Value);
+            networkManager.CurrentFocusPoints.Value = Mathf.Max(0f, networkManager.MaxFocusPoints.Value);
+            player.PlayerNetworkManager?.RefillFlasks();
         }
 
         private bool IsPlayerWithinInteractionDistance(PlayerManager player)

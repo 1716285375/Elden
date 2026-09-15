@@ -212,9 +212,7 @@ namespace ZZ
             NetworkManager networkManager = NetworkManager.Singleton;
             if (networkManager == null ||
                 !networkManager.IsListening ||
-                !networkManager.IsServer ||
-                m_instantiatedCharacter == null ||
-                !m_instantiatedCharacter.IsSpawned)
+                !networkManager.IsServer)
             {
                 return false;
             }
@@ -222,6 +220,17 @@ namespace ZZ
             if (IsBoss &&
                 WorldSaveGameManager.Instance?.GetBossProgress(m_bossID) ==
                     BossProgressState.Defeated)
+            {
+                return false;
+            }
+
+            if (m_instantiatedCharacter == null)
+            {
+                m_hasResolvedSpawn = false;
+                return AttemptToSpawnCharacter() != null;
+            }
+
+            if (!m_instantiatedCharacter.IsSpawned)
             {
                 return false;
             }

@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efeb866ced2838d42b5d28302ab5c8cf, type: 3}
   m_Name: Watcher Sweep
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
+  m_attackDefinition: {fileID: 11400000, guid: c47e2fb85d3d06243bd809383c01f8a8, type: 2}
   m_attackType: 1
   m_isParryable: 0
+  m_useCharacterActionAnimation: 0
+  m_characterActionAnimation: 23
   m_minimumRange: 1.15
   m_maximumRange: 3.25
   m_selectionWeight: 2

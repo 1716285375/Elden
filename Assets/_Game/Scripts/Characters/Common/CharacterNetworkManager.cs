@@ -747,6 +747,33 @@ namespace ZZ
         /// <summary>
         /// Sends an owner-predicted attack animation to the server for replication to remote clients.
         /// </summary>
+        /// <summary>Replicates a recovery-to-movement cancel without inventing an animation enum value.</summary>
+        [ServerRpc]
+        public void NotifyServerOfAttackCancelServerRpc(ServerRpcParams serverRpcParams = default)
+        {
+            if (serverRpcParams.Receive.SenderClientId != OwnerClientId)
+            {
+                return;
+            }
+
+            CancelAttackForClientsClientRpc();
+        }
+
+        [ClientRpc]
+        private void CancelAttackForClientsClientRpc()
+        {
+            if (IsOwner || m_characterManager == null || m_characterManager.IsDead ||
+                m_characterCombatManager?.ActionRunner.Phase == CombatActionPhase.None)
+            {
+                return;
+            }
+
+            m_characterCombatManager?.ActionRunner.End();
+            m_characterCombatManager?.CloseAllDamageColliders();
+            m_characterManager.SetActionState(false, false, true, true);
+            m_characterAnimatorManager?.PlayEmptyActionAnimation();
+        }
+
         [ServerRpc]
         public void NotifyServerOfAttackActionServerRpc(
             AttackType attackType,
@@ -829,6 +856,15 @@ namespace ZZ
                     parryingCharacter) ||
                 (parriedCharacter.transform.position -
                     parryingCharacter.transform.position).sqrMagnitude > 16f)
+            {
+                return;
+            }
+
+            AttackDefinition attack = parriedCharacter.CharacterCombatManager?.ActionRunner.Attack;
+            float facing = DamageCollider.CalculateBlockingDot(parryingCharacter.transform.forward,
+                parriedCharacter.transform.position - parryingCharacter.transform.position);
+            if (!ParryRules.CanParry(attack != null ? attack.ParryLevel : 1,
+                    parryingCharacter.CharacterCombatManager?.ParryStrength ?? 1, facing))
             {
                 return;
             }
@@ -1123,6 +1159,7 @@ namespace ZZ
             float frostBuildup,
             Vector3 contactPoint,
             bool wasBlocked,
+            float stanceDamage = -1f,
             RpcParams rpcParams = default)
         {
             CharacterManager target = ResolveCharacter(targetNetworkObjectId);
@@ -1161,7 +1198,7 @@ namespace ZZ
                 bleedBuildup,
                 frostBuildup,
                 contactPoint,
-                wasBlocked);
+                wasBlocked, stanceDamage);
         }
 
         [ClientRpc]
@@ -1180,7 +1217,8 @@ namespace ZZ
             float bleedBuildup,
             float frostBuildup,
             Vector3 contactPoint,
-            bool wasBlocked)
+            bool wasBlocked,
+            float stanceDamage)
         {
             if (NetworkManager != null &&
                 NetworkManager.LocalClientId == initiatingClientId)
@@ -1211,6 +1249,7 @@ namespace ZZ
                 return;
             }
 
+            runtimeEffect.SetStanceDamage(stanceDamage >= 0f ? stanceDamage : poiseDamage);
             DamageProcessingMode processingMode = target.IsOwner
                 ? DamageProcessingMode.Authoritative
                 : DamageProcessingMode.ReplicatedPresentation;
@@ -1317,10 +1356,9 @@ namespace ZZ
                 return false;
             }
 
-            ulong authorizedClientId = attacker is AICharacterManager &&
-                target is PlayerManager
-                    ? target.OwnerClientId
-                    : attacker.OwnerClientId;
+            ulong authorizedClientId = attacker is AICharacterManager
+                ? Unity.Netcode.NetworkManager.ServerClientId
+                : attacker.OwnerClientId;
             return senderClientId == authorizedClientId;
         }
 

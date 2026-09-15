@@ -169,6 +169,14 @@ namespace ZZ
 
         [SerializeField] private Animator m_animator;
 
+        [Header("Dodge Windows")]
+        [Tooltip("Overrides the serialized windows below when assigned.")]
+        [SerializeField] private DodgeDefinition m_rollDodge;
+        [SerializeField] private DodgeDefinition m_backstepDodge;
+        [Tooltip("Fallback windows kept so existing characters behave exactly as before.")]
+        [SerializeField] private ActionWindow m_rollInvulnerability = new ActionWindow(0.08f, 0.55f);
+        [SerializeField] private ActionWindow m_backstepInvulnerability = new ActionWindow(0.08f, 0.35f);
+
         [Header("Damage Reactions")]
         [SerializeField] private List<AnimationClip> m_hitForwardAnimations = new();
         [SerializeField] private List<AnimationClip> m_hitBackwardAnimations = new();
@@ -186,8 +194,116 @@ namespace ZZ
         private AnimationClip m_lastPingDamageAnimationPlayed;
         private RuntimeAnimatorController m_parameterController;
         private readonly HashSet<int> m_optionalBoolParameters = new();
+        private bool m_warnedAboutFallbackDodge;
 
         protected Animator CharacterAnimator => m_animator;
+
+        /// <summary>Returns whether the action layer is playing and reports its normalized progress.</summary>
+        public bool TryGetActionLayerNormalizedTime(out float normalizedTime)
+        {
+            normalizedTime = 0f;
+            if (!TryGetActionLayerStateInfo(out AnimatorStateInfo state))
+            {
+                return false;
+            }
+
+            normalizedTime = state.normalizedTime;
+            return true;
+        }
+
+        /// <summary>Exposes the action layer state for the combat clock.</summary>
+        public bool TryGetActionLayerStateInfo(out AnimatorStateInfo state)
+        {
+            state = default;
+            if (m_animator == null || m_animator.runtimeAnimatorController == null)
+            {
+                return false;
+            }
+
+            int layer = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            if (layer < 0)
+            {
+                return false;
+            }
+
+            state = m_animator.IsInTransition(layer)
+                ? m_animator.GetNextAnimatorStateInfo(layer)
+                : m_animator.GetCurrentAnimatorStateInfo(layer);
+            return true;
+        }
+
+        /// <summary>Returns the authored invulnerability window for a roll or a backstep.</summary>
+        public ActionWindow GetDodgeWindow(bool isRoll)
+        {
+            if (isRoll)
+            {
+                if (m_rollDodge != null)
+                {
+                    return m_rollDodge.Invulnerability;
+                }
+
+                WarnAboutFallbackDodge("Roll");
+                return m_rollInvulnerability;
+            }
+
+            if (m_backstepDodge != null)
+            {
+                return m_backstepDodge.Invulnerability;
+            }
+
+            WarnAboutFallbackDodge("Backstep");
+            return m_backstepInvulnerability;
+        }
+
+        /// <summary>Whether any dodge still relies on the migration fallback windows.</summary>
+        public bool UsesFallbackDodgeWindows => m_rollDodge == null || m_backstepDodge == null;
+
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        private void WarnAboutFallbackDodge(string kind)
+        {
+            if (m_warnedAboutFallbackDodge)
+            {
+                return;
+            }
+
+            m_warnedAboutFallbackDodge = true;
+            Debug.LogWarning(
+                $"{name} has no {kind} DodgeDefinition assigned and is using the legacy fallback " +
+                "IFrame window. Assign a DodgeDefinition; the fallback will be removed.",
+                this);
+        }
+
+        /// <summary>Reads authored dodge progress on every peer, with no persistent immunity flag.</summary>
+        public bool IsDodgeInvulnerable
+        {
+            get
+            {
+                if (m_characterManager is not PlayerManager || m_animator == null ||
+                    m_animator.runtimeAnimatorController == null)
+                {
+                    return false;
+                }
+
+                int layer = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+                if (layer < 0)
+                {
+                    return false;
+                }
+
+                AnimatorStateInfo state = m_animator.IsInTransition(layer)
+                    ? m_animator.GetNextAnimatorStateInfo(layer)
+                    : m_animator.GetCurrentAnimatorStateInfo(layer);
+                bool roll = state.fullPathHash == s_rollForwardState;
+                bool backstep = state.fullPathHash == s_backStepState;
+                if (!roll && !backstep)
+                {
+                    return false;
+                }
+
+                return GetDodgeWindow(roll).Contains(state.normalizedTime);
+            }
+        }
+
 
         protected virtual void Awake()
         {
@@ -519,6 +635,26 @@ namespace ZZ
         /// <summary>
         /// Starts an attack action and cross-fades the action override layer to its attack state.
         /// </summary>
+        public bool CanPlayAttack(AttackType attackType, WeaponItem weapon)
+        {
+            if (m_animator == null || m_characterManager == null ||
+                (weapon != null && !UpdateAnimatorController(weapon)))
+            {
+                return false;
+            }
+
+            int layer = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            return layer >= 0 && m_animator.HasState(layer, ResolveAttackStateHash(attackType, weapon));
+        }
+
+        private int ResolveAttackStateHash(AttackType attackType, WeaponItem weapon)
+        {
+            AttackDefinition attack = weapon?.GetAttackDefinition(attackType);
+            return attack != null && !string.IsNullOrWhiteSpace(attack.AnimationState)
+                ? Animator.StringToHash(attack.AnimationState)
+                : GetAttackStateHash(attackType);
+        }
+
         public void PlayTargetAttackActionAnimation(
             AttackType attackType,
             WeaponItem weapon = null,
@@ -543,7 +679,7 @@ namespace ZZ
                 return;
             }
 
-            int attackStateHash = GetAttackStateHash(attackType);
+            int attackStateHash = ResolveAttackStateHash(attackType, weapon);
             if (!m_animator.HasState(actionLayerIndex, attackStateHash))
             {
                 Debug.LogError(

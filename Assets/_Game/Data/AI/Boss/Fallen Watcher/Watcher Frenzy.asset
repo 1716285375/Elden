@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efeb866ced2838d42b5d28302ab5c8cf, type: 3}
   m_Name: Watcher Frenzy
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
+  m_attackDefinition: {fileID: 11400000, guid: e0af30e33cffa56439460b3e5347b0ad, type: 2}
   m_attackType: 3
   m_isParryable: 1
+  m_useCharacterActionAnimation: 0
+  m_characterActionAnimation: 23
   m_minimumRange: 0.45
   m_maximumRange: 2.75
   m_selectionWeight: 3.5

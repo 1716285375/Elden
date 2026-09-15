@@ -60,8 +60,7 @@ namespace ZZ
                 !player.IsPerformingAction &&
                 player.IsGrounded &&
                 networkManager != null &&
-                networkManager.CurrentStamina.Value > 0f &&
-                networkManager.CurrentFocusPoints.Value >= FocusPointsCost &&
+                CanAffordCast(player, false) &&
                 player.InventoryManager?.CurrentSpell == this &&
                 casterWeapon != null &&
                 casterWeapon.SpellClass == m_spellClass;
@@ -90,7 +89,11 @@ namespace ZZ
             CasterWeaponItem casterWeapon,
             bool isRightHand)
         {
-            ConsumeCastingResources(player, false);
+            if (!TryConsumeCastingResources(player, false))
+            {
+                player?.PlayerCombatManager?.CancelChargingSpell();
+                return;
+            }
             player?.PlayerCombatManager?.ReplicateSpellRelease(
                 isRightHand,
                 false);
@@ -102,7 +105,11 @@ namespace ZZ
             CasterWeaponItem casterWeapon,
             bool isRightHand)
         {
-            ConsumeCastingResources(player, true);
+            if (!TryConsumeCastingResources(player, true))
+            {
+                player?.PlayerCombatManager?.CancelChargingSpell();
+                return;
+            }
             player?.PlayerCombatManager?.ReplicateSpellRelease(
                 isRightHand,
                 true);
@@ -165,13 +172,27 @@ namespace ZZ
             }
         }
 
-        private void ConsumeCastingResources(
+        /// <summary>Checks both complete costs without consuming either resource.</summary>
+        public bool CanAffordCast(PlayerManager player, bool isFullyCharged)
+        {
+            CharacterNetworkManager network = player?.CharacterNetworkManager;
+            float staminaCost = GetStaminaCost(isFullyCharged);
+            int focusPointsCost = GetFocusPointsCost(isFullyCharged);
+            return network != null && !float.IsNaN(staminaCost) && !float.IsInfinity(staminaCost) &&
+                staminaCost >= 0f && focusPointsCost >= 0 &&
+                network.CurrentStamina.Value >= staminaCost &&
+                network.CurrentFocusPoints.Value >= focusPointsCost;
+        }
+
+        private bool TryConsumeCastingResources(
             PlayerManager player,
             bool isFullyCharged)
         {
-            if (player?.IsOwner != true || player.PlayerStatsManager == null)
+            if (player?.IsOwner != true || player.PlayerStatsManager == null ||
+                !player.PlayerStatsManager.IsSpawned || !player.PlayerStatsManager.IsOwner ||
+                !CanAffordCast(player, isFullyCharged))
             {
-                return;
+                return false;
             }
 
             float staminaCost = GetStaminaCost(isFullyCharged);
@@ -185,6 +206,8 @@ namespace ZZ
             {
                 player.PlayerStatsManager.TryConsumeFocusPoints(focusPointsCost);
             }
+
+            return true;
         }
 
         private static void InstantiateActionEffect(

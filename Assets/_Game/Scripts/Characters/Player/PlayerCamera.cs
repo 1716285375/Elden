@@ -182,6 +182,7 @@ namespace ZZ
         /// <param name="duration">Shake duration in unscaled seconds.</param>
         public void Shake(float strength, float duration)
         {
+            strength *= GameSettings.ShakeIntensity;
             if (m_feedbackPivot == null || strength <= 0f || duration <= 0f)
             {
                 return;
@@ -449,6 +450,8 @@ namespace ZZ
             }
 
             Vector2 lookRotation = ConsumeLookRotation();
+            lookRotation *= GameSettings.LookSensitivity;
+            lookRotation.y *= GameSettings.InvertLook ? -1f : 1f;
             m_leftAndRightLookAngle += lookRotation.x;
             m_upAndDownLookAngle -= lookRotation.y;
             m_upAndDownLookAngle = Mathf.Clamp(
@@ -490,6 +493,8 @@ namespace ZZ
 
             // Consumed even while locked on so the pointer glide never carries stale movement.
             Vector2 lookRotation = ConsumeLookRotation();
+            lookRotation *= GameSettings.LookSensitivity;
+            lookRotation.y *= GameSettings.InvertLook ? -1f : 1f;
             PlayerLockOnManager lockOnManager = m_player.LockOnManager;
             if (lockOnManager != null && lockOnManager.IsLockedOn)
             {

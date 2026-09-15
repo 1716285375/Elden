@@ -16,6 +16,13 @@ namespace ZZ
         public bool WasBlocked { get; protected set; }
         public bool WasTargetInvulnerable { get; protected set; }
         public float PoiseDamage { get; protected set; }
+        public float StanceDamage { get; private set; }
+
+        /// <summary>Snapshots stance separately from reaction poise before the effect is dispatched.</summary>
+        public void SetStanceDamage(float damage)
+        {
+            StanceDamage = Mathf.Max(0f, damage);
+        }
         public float ProjectedHealth { get; private set; }
         public float ProjectedPoise { get; private set; }
         public int ProjectedStance { get; private set; }
@@ -54,6 +61,7 @@ namespace ZZ
             HolyDamage = Mathf.Max(0f, holyDamage);
             ContactPoint = contactPoint;
             PoiseDamage = Mathf.Max(0f, poiseDamage);
+            SetStanceDamage(poiseDamage);
         }
 
         /// <summary>Calculates combined raw damage with the existing minimum-hit rule.</summary>
@@ -73,17 +81,40 @@ namespace ZZ
                 return CalculateDamage();
             }
 
-            float combinedDamage = CalculateAbsorbedDamage(
-                    PhysicalDamage,
-                    statsManager.ArmorPhysicalAbsorption) +
-                CalculateAbsorbedDamage(MagicDamage, statsManager.ArmorMagicAbsorption) +
-                CalculateAbsorbedDamage(FireDamage, statsManager.ArmorFireAbsorption) +
-                CalculateAbsorbedDamage(
-                    LightningDamage,
-                    statsManager.ArmorLightningAbsorption) +
-                CalculateAbsorbedDamage(HolyDamage, statsManager.ArmorHolyAbsorption);
+            float combinedDamage =
+                ResolveChannelDamage(DamageType.Physical, PhysicalDamage, statsManager) +
+                ResolveChannelDamage(DamageType.Magic, MagicDamage, statsManager) +
+                ResolveChannelDamage(DamageType.Fire, FireDamage, statsManager) +
+                ResolveChannelDamage(DamageType.Lightning, LightningDamage, statsManager) +
+                ResolveChannelDamage(DamageType.Holy, HolyDamage, statsManager);
             FinalDamageDealt = Mathf.Max(1, Mathf.RoundToInt(combinedDamage));
             return FinalDamageDealt;
+        }
+
+        /// <summary>Runs one channel through the shared defense and absorption formula.</summary>
+        protected static float ResolveChannelDamage(
+            DamageType damageType,
+            float damage,
+            CharacterStatsManager statsManager)
+        {
+            return DamageResolver.ResolveChannel(
+                damage,
+                statsManager.GetDefense(damageType),
+                statsManager.GetArmorAbsorption(damageType));
+        }
+
+        /// <summary>Hands one settled hit to the feedback layer as a complete result.</summary>
+        protected void PresentImpactFeedback(
+            CharacterManager target,
+            HitOutcome outcome,
+            float impactPoiseDamage)
+        {
+            bool poiseBroken = ProjectedPoise <= 0f;
+            CombatHitFeedback.Present(new HitResult(outcome, CharacterCausingDamage, target, default,
+                new HitSettlement(FinalDamageDealt, 0f, impactPoiseDamage, 0f, poiseBroken, false,
+                    false, false, false, ProjectedHealth <= 0f,
+                    ReactionResolver.ResolveReaction(ReactionProfile.Default, impactPoiseDamage,
+                        poiseBroken, false))));
         }
 
         /// <summary>Updates deterministic presentation projections without mutating network state.</summary>
@@ -97,12 +128,14 @@ namespace ZZ
                 : 0f;
             ProjectedHealth = CalculateProjectedHealth(currentHealth, damage);
             ProjectedPoise = statsManager != null
-                ? statsManager.RemainingPoise - Mathf.Max(0f, PoiseDamage)
+                ? statsManager.RemainingPoise - (character.CharacterCombatManager != null
+                    ? character.CharacterCombatManager.ActionRunner.PreviewPoiseDamage(PoiseDamage)
+                    : Mathf.Max(0f, PoiseDamage))
                 : 0f;
             AICharacterCombatManager aiCombatManager =
                 character?.CharacterCombatManager as AICharacterCombatManager;
             ProjectedStance = aiCombatManager != null
-                ? aiCombatManager.CurrentStance - Mathf.RoundToInt(PoiseDamage)
+                ? aiCombatManager.CurrentStance - Mathf.RoundToInt(StanceDamage)
                 : 0;
         }
 
@@ -147,8 +180,7 @@ namespace ZZ
             float damage,
             float absorption)
         {
-            return Mathf.Max(0f, damage) *
-                (1f - Mathf.Clamp(absorption, 0f, 100f) / 100f);
+            return DamageResolver.ResolveChannel(damage, 0f, absorption);
         }
     }
 }

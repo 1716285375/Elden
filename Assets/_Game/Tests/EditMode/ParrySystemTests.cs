@@ -94,28 +94,50 @@ namespace ZZ.Tests
         }
 
         [Test]
-        public void EveryConcreteMeleeColliderOverridesParryBoundary()
+        public void ParryBoundaryIsDeclaredByTheDetectorAndResolvedByTheRules()
         {
             Type damageCollider = GetRuntimeType("ZZ.DamageCollider");
-            Type meleeCollider = GetRuntimeType("ZZ.MeleeWeaponDamageCollider");
+            Type rangeCollider = GetRuntimeType("ZZ.RangeProjectileDamageCollider");
+            Type spellCollider = GetRuntimeType("ZZ.SpellProjectileDamageCollider");
             Type aiCollider = GetRuntimeType("ZZ.AIDamageCollider");
 
-            Assert.That(damageCollider.GetMethod(
-                "CheckForParry",
-                BindingFlags.NonPublic | BindingFlags.Instance),
+            PropertyInfo supportsParry = damageCollider.GetProperty(
+                "SupportsParry", BindingFlags.Public | BindingFlags.Instance);
+            Assert.That(supportsParry, Is.Not.Null);
+            Assert.That(supportsParry.GetMethod.IsVirtual, Is.True);
+            Assert.That(rangeCollider.GetProperty(
+                "SupportsParry",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 Is.Not.Null);
-            Assert.That(meleeCollider.GetMethod(
-                "CheckForParry",
-                BindingFlags.NonPublic |
-                BindingFlags.Instance |
-                BindingFlags.DeclaredOnly),
+            Assert.That(spellCollider.GetProperty(
+                "SupportsParry",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 Is.Not.Null);
             Assert.That(aiCollider.GetMethod(
-                "CheckForParry",
-                BindingFlags.NonPublic |
-                BindingFlags.Instance |
-                BindingFlags.DeclaredOnly),
+                "NotifyParry",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 Is.Not.Null);
+            Assert.That(GetRuntimeType("ZZ.CombatResolver").GetMethod(
+                "TryParry", BindingFlags.Public | BindingFlags.Static), Is.Not.Null);
+        }
+
+        [Test]
+        public void ProjectileCollidersOptOutOfParry()
+        {
+            foreach (string typeName in new[] { "ZZ.RangeProjectileDamageCollider", "ZZ.SpellProjectileDamageCollider" })
+            {
+                Type colliderType = GetRuntimeType(typeName);
+                GameObject host = new GameObject("Projectile parry test", typeof(BoxCollider));
+                try
+                {
+                    object collider = host.AddComponent(colliderType);
+                    Assert.That(colliderType.GetProperty("SupportsParry").GetValue(collider), Is.False);
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(host);
+                }
+            }
         }
 
         [Test]

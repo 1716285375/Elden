@@ -43,6 +43,15 @@ namespace ZZ
         [SerializeField, Range(0f, 100f)] private float m_blockingHolyAbsorption = 35f;
         [SerializeField, Range(0f, 100f)] private float m_blockingStability = 50f;
 
+        [Header("Resistance")]
+        [SerializeField, Min(0f)] private float m_magicDefense;
+        [SerializeField, Min(0f)] private float m_fireDefense;
+        [SerializeField, Min(0f)] private float m_lightningDefense;
+        [SerializeField, Min(0f)] private float m_holyDefense;
+
+        [Header("Guard")]
+        [SerializeField] private GuardProfile m_guardProfile;
+
         [Header("Armor Absorption")]
         [SerializeField, Range(0f, 100f)] private float m_armorPhysicalAbsorption;
         [SerializeField, Range(0f, 100f)] private float m_armorMagicAbsorption;
@@ -98,6 +107,9 @@ namespace ZZ
 
         /// <summary>Gets the percentage of incoming guard stamina damage prevented.</summary>
         public float BlockingStability => Mathf.Clamp(m_blockingStability, 0f, 100f);
+
+        /// <summary>Gets the authored guard arc and stability for the equipped blocking item.</summary>
+        public GuardProfile CurrentGuardProfile => m_guardProfile;
 
         /// <summary>Gets the accumulated negative Poise modifier from recent hits.</summary>
         public float TotalPoiseDamage => Mathf.Min(
@@ -194,7 +206,51 @@ namespace ZZ
         public int StrengthModifier => m_strengthModifier;
 
         /// <summary>Gets base Strength plus every active additive modifier.</summary>
+        public float PhysicalDefense => m_characterNetworkManager != null
+            ? Mathf.Max(0, m_characterNetworkManager.Vitality.Value) * 0.5f +
+                Mathf.Max(0, m_characterNetworkManager.Endurance.Value) * 0.25f : 0f;
+
+        /// <summary>Gets the authored Magic defense.</summary>
+        public float MagicDefense => Mathf.Max(0f, m_magicDefense);
+
+        /// <summary>Gets the authored Fire defense.</summary>
+        public float FireDefense => Mathf.Max(0f, m_fireDefense);
+
+        /// <summary>Gets the authored Lightning defense.</summary>
+        public float LightningDefense => Mathf.Max(0f, m_lightningDefense);
+
+        /// <summary>Gets the authored Holy defense.</summary>
+        public float HolyDefense => Mathf.Max(0f, m_holyDefense);
+
         public int TotalStrength => Mathf.Max(0, StrengthLevel + m_strengthModifier);
+
+        /// <summary>Gets the defense applied to one damage channel.</summary>
+        public float GetDefense(DamageType damageType)
+        {
+            return damageType switch
+            {
+                DamageType.Physical => PhysicalDefense,
+                DamageType.Magic => MagicDefense,
+                DamageType.Fire => FireDefense,
+                DamageType.Lightning => LightningDefense,
+                DamageType.Holy => HolyDefense,
+                _ => 0f
+            };
+        }
+
+        /// <summary>Gets the armor absorption applied to one damage channel.</summary>
+        public float GetArmorAbsorption(DamageType damageType)
+        {
+            return damageType switch
+            {
+                DamageType.Physical => ArmorPhysicalAbsorption,
+                DamageType.Magic => ArmorMagicAbsorption,
+                DamageType.Fire => ArmorFireAbsorption,
+                DamageType.Lightning => ArmorLightningAbsorption,
+                DamageType.Holy => ArmorHolyAbsorption,
+                _ => 0f
+            };
+        }
 
         /// <summary>Gets the base Rune reward granted when this character dies.</summary>
         public int RunesDroppedOnDeath => Mathf.Max(0, m_runesDroppedOnDeath);
@@ -440,7 +496,9 @@ namespace ZZ
         /// <summary>Accumulates an incoming hit and returns whether it breaks current Poise.</summary>
         public bool ApplyPoiseDamage(float poiseDamage)
         {
-            float resolvedPoiseDamage = Mathf.Max(0f, poiseDamage);
+            float resolvedPoiseDamage = m_characterManager?.CharacterCombatManager != null
+                ? m_characterManager.CharacterCombatManager.ActionRunner.ConsumeHyperArmor(Mathf.Max(0f, poiseDamage))
+                : Mathf.Max(0f, poiseDamage);
             if (resolvedPoiseDamage <= 0f)
             {
                 return false;
@@ -637,6 +695,13 @@ namespace ZZ
                 blockingWeapon?.BlockingHolyAbsorption ?? 0f);
             m_blockingStability = ClampBlockingValue(
                 blockingWeapon?.BlockingStability ?? 0f);
+            m_guardProfile = blockingWeapon?.GuardProfile;
+        }
+
+        /// <summary>Applies an authored guard profile without changing absorption values.</summary>
+        public void SetGuardProfile(GuardProfile guardProfile)
+        {
+            m_guardProfile = guardProfile;
         }
 
         /// <summary>

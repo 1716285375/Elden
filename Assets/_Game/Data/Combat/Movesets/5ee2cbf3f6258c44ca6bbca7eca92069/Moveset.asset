@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33cbaedbac8cd7248b70e925c9b2818b, type: 3}
+  m_Name: Moveset
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.WeaponMoveset
+  m_attacks:
+  - {fileID: 11400000, guid: e28f5d9014033de4385d95c239a9d17b, type: 2}
+  - {fileID: 11400000, guid: 63ca1a2526e83a94eb8587ec6e60c2d4, type: 2}
+  - {fileID: 11400000, guid: 2aa6282ab22a73649944515a6131058e, type: 2}
+  - {fileID: 11400000, guid: 7243c6cc0d4f7ef4fb127a3c3cd2cb40, type: 2}
+  - {fileID: 11400000, guid: 0cdad43b530ac394ebb440c44b8714d2, type: 2}
+  - {fileID: 11400000, guid: 0ea071d3776f9b641a247d66f9a2ec43, type: 2}
+  - {fileID: 11400000, guid: 9ca89a230de79be468433050e6d7e02e, type: 2}
+  - {fileID: 11400000, guid: d8b7ff2807f7dd84e8638f398c229ec6, type: 2}
+  - {fileID: 11400000, guid: a01d8fb0fa996854696f0a0b01a25878, type: 2}
+  - {fileID: 11400000, guid: 801d51531859bea4f82ecd2372c2e8e1, type: 2}
+  - {fileID: 11400000, guid: e465826db1d2e9d4ea2e3ef59b626fbb, type: 2}
+  - {fileID: 11400000, guid: 0b18b0aef9c62424492566e29f5a13b0, type: 2}
+  - {fileID: 11400000, guid: 3b76dbe9e1b1d374b92f54eb0248a7b1, type: 2}
+  - {fileID: 11400000, guid: cfbaa88f2e82d86429be579ea7eef449, type: 2}
+  - {fileID: 11400000, guid: c6dbb863f70ad8d4c8c8e29b0cf5c3a4, type: 2}
+  - {fileID: 11400000, guid: dfc5656fd62aab44491bab75b2dfb382, type: 2}
+  - {fileID: 11400000, guid: 8782c3e8ae2d474478ba97eb8ca23211, type: 2}
+  m_guardCounter: {fileID: 11400000, guid: 0ea071d3776f9b641a247d66f9a2ec43, type: 2}
+  m_rollAttack: {fileID: 0}
+  m_backstepAttack: {fileID: 0}
+  m_runningAttack: {fileID: 0}
+  m_jumpAttack: {fileID: 0}

@@ -489,6 +489,7 @@ namespace ZZ
         /// </summary>
         public void CloseDamageCollider()
         {
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.Hit, false);
             GetCurrentWeaponManager()?.CloseDamageCollider();
         }
 
@@ -501,6 +502,7 @@ namespace ZZ
         /// <summary>Closes only the equipped main-hand weapon's damage window.</summary>
         public void CloseMainHandDamageCollider()
         {
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.Hit, false);
             CurrentRightHandWeaponManager?.CloseDamageCollider();
         }
 
@@ -513,6 +515,7 @@ namespace ZZ
         /// <summary>Closes only the equipped off-hand weapon's damage window.</summary>
         public void CloseOffHandDamageCollider()
         {
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.Hit, false);
             CurrentLeftHandWeaponManager?.CloseDamageCollider();
         }
 
@@ -524,6 +527,13 @@ namespace ZZ
             GetCurrentWeaponManager()?.SetRangedWeaponState(
                 hasArrowNotched,
                 isHoldingArrow);
+        }
+
+        public void SetMainHandTrailWindow(bool isOpen)
+        {
+            WeaponManager weapon = IsTwoHanding() ? CurrentTwoHandWeaponManager : CurrentRightHandWeaponManager;
+            weapon?.SetTrailWindow(isOpen);
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.WeaponTrail, isOpen);
         }
 
         private WeaponManager GetCurrentWeaponManager()
@@ -543,7 +553,8 @@ namespace ZZ
         private void OpenDamageCollider(WeaponManager weaponManager)
         {
             m_characterSoundFXManager?.PlayWeaponWhoosh(weaponManager?.Weapon);
-            weaponManager?.ToggleWeaponTrail(true);
+            weaponManager?.PresentDamageWindow();
+            m_player?.PlayerCombatManager?.ActionRunner.SetWindow(CombatWindowType.Hit, true);
             if (m_player == null ||
                 !m_player.IsOwner ||
                 weaponManager == null)

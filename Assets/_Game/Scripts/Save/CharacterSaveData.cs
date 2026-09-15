@@ -59,6 +59,8 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_currentStamina = k_DefaultCurrentStamina;
         [SerializeField, Min(0f)] private float m_currentFocusPoints =
             k_DefaultCurrentFocusPoints;
+        [SerializeField, Min(0)] private int m_healthFlaskCapacity = 3;
+        [SerializeField, Min(0)] private int m_focusPointFlaskCapacity = 1;
         [SerializeField, Min(0)] private int m_currentHealthFlasksRemaining = 3;
         [SerializeField, Min(0)] private int m_currentFocusPointFlasksRemaining = 1;
         [SerializeField] private int m_currentSpellID = k_DefaultSpellID;
@@ -301,6 +303,19 @@ namespace ZZ
         {
             get => m_currentSpellID;
             set => m_currentSpellID = Mathf.Max(-1, value);
+        }
+
+        /// <summary>Gets or sets the rest allocation, retaining larger balances from legacy saves.</summary>
+        public int HealthFlaskCapacity
+        {
+            get => Mathf.Max(m_healthFlaskCapacity, m_currentHealthFlasksRemaining);
+            set => m_healthFlaskCapacity = Mathf.Max(0, value);
+        }
+
+        public int FocusPointFlaskCapacity
+        {
+            get => Mathf.Max(m_focusPointFlaskCapacity, m_currentFocusPointFlasksRemaining);
+            set => m_focusPointFlaskCapacity = Mathf.Max(0, value);
         }
 
         /// <summary>Gets or sets the owner's remaining Health Flask uses.</summary>

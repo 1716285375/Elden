@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efeb866ced2838d42b5d28302ab5c8cf, type: 3}
   m_Name: Watcher Claw
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.BossAttackData
+  m_attackDefinition: {fileID: 11400000, guid: 3e9f05dff95b22641a740cd5e9f866a9, type: 2}
   m_attackType: 0
   m_isParryable: 1
+  m_useCharacterActionAnimation: 0
+  m_characterActionAnimation: 23
   m_minimumRange: 0.6
   m_maximumRange: 2.35
   m_selectionWeight: 3

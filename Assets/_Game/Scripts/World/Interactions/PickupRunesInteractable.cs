@@ -88,13 +88,20 @@ namespace ZZ
         {
             if (!IsServer ||
                 m_hasBeenClaimed ||
-                rpcParams.Receive.SenderClientId != DeadSpotOwnerClientId ||
-                !TryResolvePlayer(playerNetworkObjectId, out PlayerManager player) ||
+                rpcParams.Receive.SenderClientId != DeadSpotOwnerClientId)
+            {
+                return;
+            }
+            if (!TryResolvePlayer(playerNetworkObjectId, out PlayerManager player) ||
                 player.OwnerClientId != DeadSpotOwnerClientId ||
                 player.IsDead ||
                 Vector3.SqrMagnitude(player.transform.position - transform.position) >
                     k_MaximumPickupDistance * k_MaximumPickupDistance)
             {
+                RejectReclaimClientRpc(new ClientRpcParams
+                {
+                    Send = new ClientRpcSendParams { TargetClientIds = new[] { DeadSpotOwnerClientId } }
+                });
                 return;
             }
 
@@ -109,6 +116,13 @@ namespace ZZ
             };
             RestoreRunesClientRpc(RuneCount, clientRpcParams);
             StartCoroutine(DespawnAtEndOfFrame());
+        }
+
+        [ClientRpc]
+        private void RejectReclaimClientRpc(ClientRpcParams clientRpcParams = default)
+        {
+            // A distance/death race must not permanently lock the owner's recovery point.
+            m_localPickupRequested = false;
         }
 
         [ClientRpc]

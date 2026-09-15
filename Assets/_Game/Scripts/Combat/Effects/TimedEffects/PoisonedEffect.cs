@@ -7,10 +7,12 @@ namespace ZZ
         MenuName = "ZZ/Character Effects/Timed/Poisoned")]
     public class PoisonedEffect : TimedCharacterEffect
     {
+        [SerializeField] private StatusEffectDefinition m_statusDefinition;
         [SerializeField, Min(0f)] private float m_poisonDamage = 10f;
 
         /// <summary>Gets the non-negative Health damage applied by each shared tick.</summary>
-        public float PoisonDamage => Mathf.Max(0f, m_poisonDamage);
+        public float PoisonDamage => m_statusDefinition != null
+            ? m_statusDefinition.FlatDamage : Mathf.Max(0f, m_poisonDamage);
 
         /// <inheritdoc />
         public override void ProcessEffect(CharacterManager character)

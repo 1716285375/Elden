@@ -14,7 +14,9 @@ namespace ZZ
         [SerializeField] private ParticleSystem m_particleWeaponTrail;
         [SerializeField] private TrailRenderer m_rendererWeaponTrail;
 
+        private CharacterManager m_weaponOwner;
         private AttackType m_currentAttackType = AttackType.LightAttack01;
+        private bool m_hasExplicitTrailWindow;
 
         /// <summary>Gets the per-character runtime weapon item driving this model.</summary>
         public WeaponItem Weapon { get; private set; }
@@ -59,6 +61,7 @@ namespace ZZ
         public void Initialize(CharacterManager weaponOwner, WeaponItem weapon)
         {
             Weapon = weapon;
+            m_weaponOwner = weaponOwner;
             SpellInstantiationLocation ??=
                 GetComponentInChildren<SpellInstantiationLocation>(true);
             m_meleeDamageCollider ??=
@@ -95,7 +98,16 @@ namespace ZZ
         public void OpenDamageCollider()
         {
             m_meleeDamageCollider?.OpenDamageCollider();
-            ToggleWeaponTrail(true);
+            PresentDamageWindow();
+        }
+
+        /// <summary>Shows implicit trails on every peer without enabling remote damage detection.</summary>
+        public void PresentDamageWindow()
+        {
+            if (!m_hasExplicitTrailWindow)
+            {
+                ToggleWeaponTrail(true);
+            }
         }
 
         /// <summary>
@@ -104,6 +116,22 @@ namespace ZZ
         public void CloseDamageCollider()
         {
             m_meleeDamageCollider?.CloseDamageCollider();
+            if (!m_hasExplicitTrailWindow)
+            {
+                ToggleWeaponTrail(false);
+            }
+        }
+
+        /// <summary>Gives authored trail events ownership independently of the damaging frames.</summary>
+        public void SetTrailWindow(bool isOpen)
+        {
+            m_hasExplicitTrailWindow = true;
+            ToggleWeaponTrail(isOpen);
+        }
+
+        public void ResetTrailWindow()
+        {
+            m_hasExplicitTrailWindow = false;
             ToggleWeaponTrail(false);
         }
 
@@ -148,18 +176,21 @@ namespace ZZ
             }
 
             float damageModifier = Weapon.GetAttackDamageModifier(attackType);
+            AttackDefinition attack = Weapon.GetAttackDefinition(attackType);
             m_meleeDamageCollider.SetDamageValues(
-                GetUpgradedDamage(Weapon.PhysicalDamage, Weapon.UpgradeLevel) *
+                Weapon.GetAttackPower(Weapon.PhysicalDamage, m_weaponOwner, true, false) *
                     damageModifier,
-                GetUpgradedDamage(Weapon.MagicDamage, Weapon.UpgradeLevel) *
+                Weapon.GetAttackPower(Weapon.MagicDamage, m_weaponOwner, false, true) *
                     damageModifier,
-                GetUpgradedDamage(Weapon.FireDamage, Weapon.UpgradeLevel) *
+                Weapon.GetAttackPower(Weapon.FireDamage, m_weaponOwner, false, false) *
                     damageModifier,
-                GetUpgradedDamage(Weapon.LightningDamage, Weapon.UpgradeLevel) *
+                Weapon.GetAttackPower(Weapon.LightningDamage, m_weaponOwner, false, false) *
                     damageModifier,
-                GetUpgradedDamage(Weapon.HolyDamage, Weapon.UpgradeLevel) *
+                Weapon.GetAttackPower(Weapon.HolyDamage, m_weaponOwner, false, false) *
                     damageModifier,
-                Weapon.BasePoiseDamage);
+                attack != null ? attack.PoiseDamage : Weapon.BasePoiseDamage);
+            m_meleeDamageCollider.SetStanceDamage(
+                attack != null ? attack.StanceDamage : Weapon.BasePoiseDamage);
             m_meleeDamageCollider.SetBuildupValues(
                 Weapon.PoisonBuildup,
                 Weapon.BleedBuildup,

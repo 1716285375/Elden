@@ -1,7 +1,6 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ZZ
 {
@@ -16,6 +15,11 @@ namespace ZZ
         [SerializeField] private bool m_canBlock = true;
 
         private PlayerManager m_player;
+        private PlayerAttackController m_attackController;
+        private GuardController m_guard;
+        private SpellCombatController m_spells;
+        private PlayerCriticalAttackController m_critical;
+        private ConsumableController m_consumables;
         private WeaponItem m_chargingWeapon;
         private float m_chargeStartTime;
         private bool m_canComboWithMainHandWeapon;
@@ -23,25 +27,19 @@ namespace ZZ
         private bool m_canQueueNextAttack;
         private bool m_canPerformCommittedAttack;
         private AttackType m_committedAttackType;
-        private SpellItem m_currentCastingSpell;
-        private CasterWeaponItem m_currentCasterWeapon;
-        private float m_spellChargeStartTime;
-        private bool m_isCastingRightHandSpell;
-        private bool m_hasReachedFullSpellCharge;
-        private bool m_hasReleasedSpell;
         private RangedWeaponItem m_currentRangedWeapon;
         private RangedProjectileItem m_currentProjectileBeingUsed;
         private ProjectileSlot m_currentProjectileSlot;
-        private QuickSlotItem m_currentQuickSlotItem;
-        private bool m_isUsingItem;
-        private Coroutine m_restoreDeadSpotRoutine;
-        private PickupRunesInteractable m_activeDeadSpot;
+        private RuneRecoveryController m_runeRecovery;
 
         /// <summary>Gets the weapon currently selected by the player's action hand.</summary>
         public WeaponItem CurrentWeaponBeingUsed => ResolveCurrentWeapon();
 
         /// <summary>Gets whether the locally owned player is holding a heavy attack.</summary>
         public bool IsChargingAttack => m_chargingWeapon != null;
+
+        /// <summary>Commands that arrived before gameplay could run them.</summary>
+        public CombatCommandBuffer CommandBuffer { get; } = new CombatCommandBuffer();
 
         /// <summary>Gets whether the current main-hand attack accepts its next combo input.</summary>
         public bool CanComboWithMainHandWeapon => m_canComboWithMainHandWeapon;
@@ -53,15 +51,13 @@ namespace ZZ
         public bool CanQueueNextAttack => m_canQueueNextAttack;
 
         /// <summary>Gets whether gameplay currently permits a new block.</summary>
-        public bool CanBlock => m_canBlock;
+        public bool CanBlock => m_guard.CanBlock;
 
         /// <summary>Gets whether this owner currently holds either spell-casting input.</summary>
-        public bool IsChargingSpell => m_currentCastingSpell != null && !m_hasReleasedSpell;
+        public bool IsChargingSpell => m_spells.IsChargingSpell;
 
         /// <summary>Gets whether replicated input still holds the active spell charge.</summary>
-        public bool IsHoldingSpellInput => IsChargingSpell &&
-            (m_player?.PlayerNetworkManager?.IsChargingRightSpell.Value == true ||
-                m_player?.PlayerNetworkManager?.IsChargingLeftSpell.Value == true);
+        public bool IsHoldingSpellInput => m_spells.IsHoldingSpellInput;
 
         /// <summary>Gets the ammunition copy committed when the current shot began.</summary>
         public RangedProjectileItem CurrentProjectileBeingUsed =>
@@ -71,158 +67,185 @@ namespace ZZ
         public ProjectileSlot CurrentProjectileSlot => m_currentProjectileSlot;
 
         /// <summary>Gets whether an upper-body quick-slot action currently owns the right hand.</summary>
-        public bool IsUsingItem => m_isUsingItem;
+        public bool IsUsingItem => m_consumables.IsUsingItem;
 
         protected override void Awake()
         {
             base.Awake();
             m_player = GetComponent<PlayerManager>();
+            m_attackController = new PlayerAttackController(m_player);
+            m_guard = new GuardController(m_player);
+            m_guard.SetCanBlock(m_canBlock);
+            m_spells = new SpellCombatController(m_player);
+            m_consumables = new ConsumableController(m_player);
+            m_critical = new PlayerCriticalAttackController(m_player);
+            m_runeRecovery = new RuneRecoveryController(m_player);
+        }
+
+        /// <summary>Commits affordable attacks before any animation or network presentation starts.</summary>
+        public bool TryStartAttack(AttackType attackType, WeaponItem weapon)
+        {
+            return m_attackController != null && m_attackController.TryStart(attackType, weapon);
         }
 
         private void OnEnable()
         {
-            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            m_runeRecovery.Enable();
         }
 
         private void OnDisable()
         {
-            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-            if (m_restoreDeadSpotRoutine != null)
-            {
-                StopCoroutine(m_restoreDeadSpotRoutine);
-                m_restoreDeadSpotRoutine = null;
-            }
+            m_runeRecovery.Disable();
+            CommandBuffer.Clear();
+            ActionRunner.End();
         }
 
-        private void Update()
+        /// <summary>
+        /// Runs a command now if gameplay allows it and reports whether anything started. Commands
+        /// that cannot run yet stay in <see cref="CommandBuffer"/> until they expire.
+        /// </summary>
+        public bool TryExecuteCommand(CombatCommand command)
         {
-            if (!IsChargingSpell ||
-                m_hasReachedFullSpellCharge ||
-                m_player == null ||
-                !m_player.IsOwner)
-            {
-                return;
-            }
-
-            if (Time.time - m_spellChargeStartTime < m_fullyChargedSpellDuration)
-            {
-                return;
-            }
-
-            m_hasReachedFullSpellCharge = true;
-            m_player.PlayerNetworkManager?.SetSpellFullyChargedState(true);
-        }
-
-        /// <summary>Creates one Host-owned Rune recovery point at a death position.</summary>
-        public bool CreateDeadSpot(
-            Vector3 position,
-            int runeCount,
-            bool removePlayersRunes = true)
-        {
-            NetworkManager networkManager = NetworkManager.Singleton;
-            if (networkManager?.IsHost != true ||
+            if (command == CombatCommand.None ||
                 m_player == null ||
                 !m_player.IsOwner ||
-                runeCount <= 0)
+                m_player.IsDead)
             {
                 return false;
             }
 
-            GameObject deadSpotPrefab =
-                WorldCharacterEffectsManager.Instance?.DeadSpotVFX;
-            if (deadSpotPrefab == null)
+            switch (command)
             {
-                Debug.LogError(
-                    "WorldCharacterEffectsManager is missing the Dead Spot prefab.",
-                    this);
-                return false;
+                case CombatCommand.LightAttack:
+                    return TryExecuteLightAttack();
+                case CombatCommand.HeavyAttack:
+                    return TryExecuteHeavyAttack();
+                case CombatCommand.Dodge:
+                    return m_player.LocomotionManager?.AttemptToPerformDodge() == true;
+                case CombatCommand.Jump:
+                    return m_player.LocomotionManager?.AttemptToPerformJump() == true;
+                case CombatCommand.Skill:
+                    return TryExecuteAshOfWar();
+                default:
+                    return false;
             }
-
-            GameObject deadSpotObject = Instantiate(
-                deadSpotPrefab,
-                position,
-                Quaternion.identity);
-            NetworkObject networkObject =
-                deadSpotObject.GetComponent<NetworkObject>();
-            PickupRunesInteractable deadSpot =
-                deadSpotObject.GetComponent<PickupRunesInteractable>();
-            if (networkObject == null || deadSpot == null)
-            {
-                Debug.LogError(
-                    "The Dead Spot prefab requires NetworkObject and PickupRunesInteractable.",
-                    deadSpotObject);
-                Destroy(deadSpotObject);
-                return false;
-            }
-
-            networkObject.Spawn(true);
-            if (!deadSpot.InitializeDeadSpot(runeCount, m_player.OwnerClientId))
-            {
-                networkObject.Despawn(true);
-                return false;
-            }
-
-            m_activeDeadSpot = deadSpot;
-            if (!removePlayersRunes)
-            {
-                return true;
-            }
-
-            m_player.PlayerStatsManager?.AddRunes(-runeCount);
-            WorldSaveGameManager saveGameManager = WorldSaveGameManager.Instance;
-            saveGameManager?.RecordDeadSpot(position, runeCount, false);
-            if (saveGameManager?.CanSaveGame == true)
-            {
-                saveGameManager.SaveGame();
-            }
-
-            return true;
         }
 
-        /// <summary>Restores a saved Dead Spot after the gameplay Scene becomes active.</summary>
+        /// <summary>Performs the current hand's light or heavy weapon action.</summary>
+        public void PerformMainHandAction(bool isHeavyAttack)
+        {
+            WeaponItem weapon = CurrentWeaponBeingUsed;
+            if (weapon == null)
+            {
+                return;
+            }
+
+            bool isTwoHanding = m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true;
+            WeaponItemBasedAction action = isHeavyAttack
+                ? isTwoHanding ? weapon.TwoHandRightHeavyAction : weapon.RightHandHeavyAction
+                : isTwoHanding ? weapon.TwoHandRightAction : weapon.RightHandAction;
+            PerformWeaponBasedAction(action, weapon);
+        }
+
+        private bool TryExecuteLightAttack()
+        {
+            if (m_consumables.IsUsingItem)
+            {
+                return false;
+            }
+
+            uint sequenceBefore = ActionRunner.Sequence;
+            bool wasPerformingAction = m_player.IsPerformingAction;
+            PerformMainHandAction(false);
+            return ActionRunner.Sequence != sequenceBefore ||
+                !wasPerformingAction && m_player.IsPerformingAction;
+        }
+
+        /// <summary>
+        /// Heavy input begins a charge or a guard counter instead of releasing immediately, so a
+        /// tap still has to be released before the attack happens.
+        /// </summary>
+        private bool TryExecuteHeavyAttack()
+        {
+            if (m_consumables.IsUsingItem || IsChargingAttack)
+            {
+                return false;
+            }
+
+            uint sequenceBefore = ActionRunner.Sequence;
+            BeginChargingHeavyAttack();
+            if (IsChargingAttack && PlayerInputManager.Instance?.IsHeavyAttackHeld == false)
+            {
+                ReleaseChargingHeavyAttack();
+            }
+
+            return IsChargingAttack || ActionRunner.Sequence != sequenceBefore;
+        }
+
+        private bool TryExecuteAshOfWar()
+        {
+            if (m_consumables.IsUsingItem)
+            {
+                return false;
+            }
+
+            WeaponItem weapon = SelectWeaponToPerformAshOfWar();
+            if (weapon?.AshOfWarAction == null)
+            {
+                return false;
+            }
+
+            uint sequenceBefore = ActionRunner.Sequence;
+            bool wasPerformingAction = m_player.IsPerformingAction;
+            weapon.AshOfWarAction.AttemptToPerformAction(m_player);
+            return ActionRunner.Sequence != sequenceBefore ||
+                !wasPerformingAction && m_player.IsPerformingAction;
+        }
+
+        /// <summary>Retries buffered commands every frame so early presses are not swallowed.</summary>
+        private void TickCommandBuffer()
+        {
+            if (m_player == null || !m_player.IsOwner || m_player.IsDead)
+            {
+                CommandBuffer.Clear();
+                return;
+            }
+
+            if (CommandBuffer.Count == 0)
+            {
+                return;
+            }
+
+            CommandBuffer.RemoveExpired(Time.time);
+            CommandBuffer.TryConsumeFirstExecutable(TryExecuteCommand, out _);
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            TickCommandBuffer();
+            if (m_player != null && m_player.IsOwner && !m_player.IsDead &&
+                m_player.CharacterNetworkManager.IsAttacking.Value &&
+                ActionRunner.Windows.IsOpen(CombatWindowType.MoveCancel) &&
+                PlayerInputManager.Instance?.MoveAmount > 0f)
+            {
+                m_player.ResetActionFlags();
+                m_player.PlayerAnimatorManager.PlayEmptyActionAnimation();
+                m_player.CharacterNetworkManager.NotifyServerOfAttackCancelServerRpc();
+            }
+
+            m_spells.Tick(m_fullyChargedSpellDuration);
+        }
+
+        /// <summary>Compatibility facade for death callbacks and existing save restoration.</summary>
+        public bool CreateDeadSpot(Vector3 position, int runeCount, bool removePlayersRunes = true)
+        {
+            return m_runeRecovery.CreateDeadSpot(position, runeCount, removePlayersRunes);
+        }
+
         public void RestoreDeadSpotFromSaveIfNeeded()
         {
-            if (m_restoreDeadSpotRoutine == null)
-            {
-                m_restoreDeadSpotRoutine = StartCoroutine(
-                    RestoreDeadSpotAfterSceneChange());
-            }
-        }
-
-        private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
-        {
-            if (activeScene.buildIndex > 0)
-            {
-                RestoreDeadSpotFromSaveIfNeeded();
-            }
-        }
-
-        private IEnumerator RestoreDeadSpotAfterSceneChange()
-        {
-            yield return null;
-
-            m_restoreDeadSpotRoutine = null;
-            CharacterSaveData saveData =
-                WorldSaveGameManager.Instance?.CurrentCharacterData;
-            if (NetworkManager.Singleton?.IsHost != true ||
-                m_player == null ||
-                !m_player.IsOwner ||
-                SceneManager.GetActiveScene().buildIndex <= 0 ||
-                m_activeDeadSpot != null ||
-                saveData?.HasDeadSpot != true ||
-                saveData.DeadSpotRuneCount <= 0)
-            {
-                yield break;
-            }
-
-            Vector3 deadSpotPosition = new Vector3(
-                saveData.DeadSpotPositionX,
-                saveData.DeadSpotPositionY,
-                saveData.DeadSpotPositionZ);
-            CreateDeadSpot(
-                deadSpotPosition,
-                saveData.DeadSpotRuneCount,
-                false);
+            m_runeRecovery.RestoreDeadSpotFromSaveIfNeeded();
         }
 
         /// <summary>
@@ -230,7 +253,7 @@ namespace ZZ
         /// </summary>
         public void PerformWeaponBasedAction(WeaponItemBasedAction weaponAction, WeaponItem weapon)
         {
-            if (m_isUsingItem || weaponAction == null || weapon == null)
+            if (m_consumables.IsUsingItem || weaponAction == null || weapon == null)
             {
                 return;
             }
@@ -241,59 +264,25 @@ namespace ZZ
         /// <summary>Begins a flask action or requests one additional authored sip.</summary>
         public void AttemptToUseFlask(FlaskItem flask)
         {
-            if (flask == null || m_player == null || !m_player.IsOwner)
-            {
-                return;
-            }
-
-            if (m_isUsingItem)
-            {
-                RequestAdditionalFlaskUse(flask);
-                return;
-            }
-
-            BeginQuickSlotItemUse(flask, true);
+            m_consumables.AttemptToUseFlask(flask);
         }
 
         /// <summary>Reconstructs one remote player's quick-slot action from its stable item ID.</summary>
         public void PerformQuickSlotItemActionFromRpc(QuickSlotItem quickSlotItem)
         {
-            if (quickSlotItem != null && m_player?.IsOwner != true)
-            {
-                BeginQuickSlotItemUse(quickSlotItem, false);
-            }
+            m_consumables.PerformQuickSlotItemActionFromRpc(quickSlotItem);
         }
 
         /// <summary>Animation Event: resolves the currently presented item's success frame.</summary>
         public void SuccessfullyUseQuickSlotItem()
         {
-            if (!m_isUsingItem || m_currentQuickSlotItem == null)
-            {
-                return;
-            }
-
-            m_currentQuickSlotItem.SuccessfullyUseItem(m_player);
+            m_consumables.SuccessfullyUseQuickSlotItem();
         }
 
         /// <summary>Consumes the continuation flag when Drink 01 or Drink 02 begins.</summary>
         public void HandleFlaskDrinkStateEntered()
         {
-            if (!m_isUsingItem || m_currentQuickSlotItem is not FlaskItem flask)
-            {
-                return;
-            }
-
-            if (m_player?.IsOwner == true)
-            {
-                m_player.PlayerNetworkManager?.SetChuggingState(false);
-            }
-
-            if (GetRemainingFlaskCount(flask) <= 0)
-            {
-                PresentQuickSlotItemModel(flask.EmptyFlaskItemModel);
-                m_player?.CharacterSoundFXManager?.PlayFlaskSound(true);
-                m_player?.PlayerAnimatorManager?.PlayQuickSlotItemAnimation(true);
-            }
+            m_consumables.HandleFlaskDrinkStateEntered();
         }
 
         /// <summary>Refreshes the held presentation after a replicated flask count changes.</summary>
@@ -302,62 +291,19 @@ namespace ZZ
             int previousFlaskCount,
             int currentFlaskCount)
         {
-            if (!m_isUsingItem ||
-                m_currentQuickSlotItem is not FlaskItem flask ||
-                flask.RestoresHealth != healthFlask)
-            {
-                return;
-            }
-
-            if (currentFlaskCount < previousFlaskCount &&
-                m_player?.IsOwner != true)
-            {
-                flask.PlaySuccessfulUseFeedback(m_player);
-            }
-
-            if (currentFlaskCount <= 0)
-            {
-                PresentQuickSlotItemModel(flask.EmptyFlaskItemModel);
-                m_player?.PlayerNetworkManager?.SetChuggingState(false);
-                m_player?.PlayerAnimatorManager?.PlayQuickSlotItemAnimation(true);
-            }
+            m_consumables.HandleRemainingFlasksChanged(healthFlask, previousFlaskCount, currentFlaskCount);
         }
 
         /// <summary>Ends the upper-body action and restores all gameplay permissions.</summary>
         public void ResetQuickSlotItemUse()
         {
-            if (!m_isUsingItem)
-            {
-                return;
-            }
-
-            m_isUsingItem = false;
-            m_currentQuickSlotItem = null;
-            m_player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
-            m_player?.LocomotionManager?.SetCanRun(true);
-            m_player?.LocomotionManager?.SetCanRoll(true);
-            m_player?.EquipmentManager?.SetWeaponsHidden(false);
-            m_player?.PlayerAnimatorManager?.SetFlaskChuggingState(false);
-            if (m_player?.IsOwner == true)
-            {
-                m_player.PlayerNetworkManager?.SetChuggingState(false);
-                if (m_player.PlayerNetworkManager?.IsSpawned == true)
-                {
-                    m_player.PlayerNetworkManager.SetWeaponsHiddenServerRpc(false);
-                }
-            }
+            m_consumables.ResetQuickSlotItemUse();
         }
 
         /// <summary>Interrupts a quick-slot action when a full-body action or modal state takes over.</summary>
         public void CancelQuickSlotItemUse()
         {
-            if (!m_isUsingItem)
-            {
-                return;
-            }
-
-            m_player?.PlayerAnimatorManager?.PlayEmptyUpperBodyAnimation();
-            ResetQuickSlotItemUse();
+            m_consumables.CancelQuickSlotItemUse();
         }
 
         /// <summary>Validates, two-hands, and presents one held ammunition slot.</summary>
@@ -545,147 +491,55 @@ namespace ZZ
             CasterWeaponItem casterWeapon,
             bool isRightHand)
         {
-            if (spell == null ||
-                casterWeapon == null ||
-                IsChargingSpell ||
-                !spell.CanICastThisSpell(m_player, casterWeapon))
-            {
-                return;
-            }
-
-            SetBlocking(false);
-            CancelChargingAttack();
-            m_currentCastingSpell = spell;
-            m_currentCasterWeapon = casterWeapon;
-            m_isCastingRightHandSpell = isRightHand;
-            m_spellChargeStartTime = Time.time;
-            m_hasReachedFullSpellCharge = false;
-            m_hasReleasedSpell = false;
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(isRightHand);
-            m_player.PlayerNetworkManager?.SetSpellFullyChargedState(false);
-            m_player.PlayerNetworkManager?.SetChargingSpellState(isRightHand, true);
-            CharacterActionAnimation animation = isRightHand
-                ? CharacterActionAnimation.ChargeSpellRight
-                : CharacterActionAnimation.ChargeSpellLeft;
-            ReplicateSpellAction(animation);
+            m_spells.BeginChargingSpell(spell, casterWeapon, isRightHand);
         }
 
         /// <summary>Releases the active spell only for the hand that began its charge.</summary>
         public void ReleaseChargingSpell(bool isRightHand)
         {
-            if (!IsChargingSpell || m_isCastingRightHandSpell != isRightHand)
-            {
-                return;
-            }
-
-            SpellItem spell = m_currentCastingSpell;
-            CasterWeaponItem casterWeapon = m_currentCasterWeapon;
-            bool isFullyCharged = m_hasReachedFullSpellCharge;
-            m_hasReleasedSpell = true;
-            m_player.PlayerNetworkManager?.SetChargingSpellState(isRightHand, false);
-            if (isFullyCharged)
-            {
-                spell.SuccessfullyCastSpellFullCharge(
-                    m_player,
-                    casterWeapon,
-                    isRightHand);
-            }
-            else
-            {
-                spell.SuccessfullyCastSpell(m_player, casterWeapon, isRightHand);
-            }
+            m_spells.ReleaseChargingSpell(isRightHand);
         }
 
         /// <summary>Aborts a held spell without releasing a projectile.</summary>
         public void CancelChargingSpell()
         {
-            if (m_player?.PlayerNetworkManager != null)
-            {
-                m_player.PlayerNetworkManager.SetChargingSpellState(
-                    m_isCastingRightHandSpell,
-                    false);
-                m_player.PlayerNetworkManager.SetSpellFullyChargedState(false);
-            }
-
-            ClearLocalSpellState();
-            m_player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
+            m_spells.CancelChargingSpell();
         }
 
         /// <summary>Replicates the correct normal or full-charge hand release.</summary>
         public void ReplicateSpellRelease(bool isRightHand, bool isFullyCharged)
         {
-            CharacterActionAnimation animation = (isRightHand, isFullyCharged) switch
-            {
-                (true, true) =>
-                    CharacterActionAnimation.ReleaseFullChargeSpellRight,
-                (false, true) =>
-                    CharacterActionAnimation.ReleaseFullChargeSpellLeft,
-                (true, false) => CharacterActionAnimation.ReleaseSpellRight,
-                _ => CharacterActionAnimation.ReleaseSpellLeft
-            };
-            ReplicateSpellAction(animation);
+            m_spells.ReplicateSpellRelease(isRightHand, isFullyCharged);
         }
 
         /// <summary>Animation Event: creates warm-up effects from replicated spell data.</summary>
         public void InstantiateSpellWarmUpEffects()
         {
-            bool isRightHand = ResolveCurrentSpellHand();
-            CasterWeaponItem casterWeapon = ResolveCasterWeapon(isRightHand);
-            m_player?.InventoryManager?.CurrentSpell?.InstantiateSpellWarmUpEffects(
-                m_player,
-                casterWeapon,
-                isRightHand);
+            m_spells.InstantiateSpellWarmUpEffects();
         }
 
         /// <summary>Animation Event: instantiates the released projectile on this peer.</summary>
         public void InstantiateCurrentSpell()
         {
-            bool isRightHand = ResolveCurrentSpellHand();
-            CasterWeaponItem casterWeapon = ResolveCasterWeapon(isRightHand);
-            SpellItem spell = m_player?.InventoryManager?.CurrentSpell;
-            if (spell == null || casterWeapon == null)
-            {
-                return;
-            }
-
-            bool isFullyCharged =
-                m_player.PlayerNetworkManager?.IsSpellFullyCharged.Value == true;
-            spell.InstantiateSpell(
-                m_player,
-                casterWeapon,
-                isRightHand,
-                isFullyCharged);
+            m_spells.InstantiateCurrentSpell();
         }
 
         /// <summary>Ends local spell presentation and clears owner-written charge state.</summary>
         public void CompleteSpellCast()
         {
-            m_player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
-            if (m_player?.IsOwner == true)
-            {
-                m_player.PlayerNetworkManager?.SetChargingSpellState(
-                    m_isCastingRightHandSpell,
-                    false);
-                m_player.PlayerNetworkManager?.SetSpellFullyChargedState(false);
-            }
-
-            ClearLocalSpellState();
+            m_spells.CompleteSpellCast();
         }
 
         /// <summary>Returns the loaded catalyst anchor for one casting hand.</summary>
         public Transform GetSpellInstantiationTransform(bool isRightHand)
         {
-            WeaponManager weaponManager = isRightHand
-                ? m_player?.EquipmentManager?.CurrentRightHandWeaponManager
-                : m_player?.EquipmentManager?.CurrentLeftHandWeaponManager;
-            return weaponManager?.SpellInstantiationLocation
-                ?.InstantiationTransform;
+            return m_spells.GetSpellInstantiationTransform(isRightHand);
         }
 
         /// <summary>Executes the Ash of War selected for the current hand state.</summary>
         public void AttemptToPerformAshOfWar()
         {
-            if (m_isUsingItem)
+            if (m_consumables.IsUsingItem)
             {
                 return;
             }
@@ -705,49 +559,13 @@ namespace ZZ
         /// <summary>Starts or ends owner-authoritative blocking with the off-hand weapon.</summary>
         public bool SetBlocking(bool isBlocking, WeaponItem blockingWeapon = null)
         {
-            CharacterNetworkManager networkManager =
-                m_player?.CharacterNetworkManager;
-            if (m_player == null ||
-                !m_player.IsOwner ||
-                networkManager == null ||
-                !networkManager.IsSpawned)
-            {
-                return false;
-            }
-
-            if (!isBlocking)
-            {
-                networkManager.SetBlockingState(false);
-                return true;
-            }
-
-            if (!m_canBlock ||
-                m_player.IsDead ||
-                m_player.IsPerformingAction ||
-                networkManager.IsAttacking.Value ||
-                networkManager.IsBlocking.Value ||
-                blockingWeapon == null)
-            {
-                return false;
-            }
-
-            networkManager.SetSneakingState(false);
-            m_player.PlayerStatsManager?.SetBlockingStats(blockingWeapon);
-            bool isRightHandBlock =
-                m_player.PlayerNetworkManager?.IsTwoHandingRightWeapon.Value == true;
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(isRightHandBlock);
-            networkManager.SetBlockingState(true);
-            return true;
+            return m_guard.SetBlocking(isBlocking, blockingWeapon);
         }
 
         /// <summary>Allows authored action windows to enable or disable blocking.</summary>
         public void SetCanBlock(bool canBlock)
         {
-            m_canBlock = canBlock;
-            if (!m_canBlock)
-            {
-                SetBlocking(false);
-            }
+            m_guard.SetCanBlock(canBlock);
         }
 
         /// <summary>
@@ -791,7 +609,7 @@ namespace ZZ
                 return false;
             }
 
-            if (!m_player.IsGrounded && m_player.IsPerformingAction)
+            if (!m_player.IsGrounded && m_player.IsPerformingAction && !m_player.IsJumping)
             {
                 return false;
             }
@@ -799,6 +617,7 @@ namespace ZZ
             bool canPerformRollAttack = CanPerformRollingAttack();
             bool canPerformBackstepAttack = CanPerformBackstepAttack();
             if (m_player.IsPerformingAction &&
+                !(m_player.IsJumping && !m_player.IsGrounded) &&
                 !canPerformRollAttack &&
                 !canPerformBackstepAttack &&
                 !m_canPerformOffHandCombo)
@@ -813,12 +632,7 @@ namespace ZZ
                 canPerformBackstepAttack,
                 m_player.LocomotionManager?.IsSprinting == true,
                 CurrentAttackType);
-            DisableCanPerformCommittedAttack();
-            DisableCanCombo();
-            m_player.PlayerNetworkManager?.SetCharacterActionHand(false);
-            ReplicateAttack(attackType, offHandWeapon);
-            networkManager.NotifyServerOfAttackActionServerRpc(attackType);
-            return true;
+            return TryStartAttack(attackType, offHandWeapon);
         }
 
         /// <summary>Applies EP125 movement-state priority to a validated dual attack.</summary>
@@ -830,7 +644,7 @@ namespace ZZ
             bool isSprinting,
             AttackType previousAttack)
         {
-            if (!isGrounded && !isPerformingAction)
+            if (!isGrounded)
             {
                 return AttackType.DualJumpAttack;
             }
@@ -869,9 +683,40 @@ namespace ZZ
         /// <summary>
         /// Begins an owner-controlled heavy attack charge using the equipped right-hand weapon.
         /// </summary>
+        public void RecordSuccessfulBlock() => m_guard.RecordSuccessfulBlock();
+
+        public void ClearGuardCounter() => m_guard.ClearCounter();
+
+        private bool TryPerformGuardCounter()
+        {
+            if (!m_guard.CanCounter)
+            {
+                return false;
+            }
+
+            WeaponItem weapon = ResolveCurrentWeapon();
+            AttackDefinition guardCounter = weapon?.Moveset?.GuardCounter;
+            bool started = guardCounter != null
+                ? m_attackController.TryStart(guardCounter.AttackType, weapon, true)
+                : m_attackController.TryStart(AttackType.HeavyAttack02, weapon, true);
+            if (!started)
+            {
+                return false;
+            }
+
+            m_guard.ClearCounter();
+            SetBlocking(false);
+            return true;
+        }
+
         public void BeginChargingHeavyAttack()
         {
-            if (m_isUsingItem)
+            if (TryPerformGuardCounter())
+            {
+                return;
+            }
+
+            if (m_consumables.IsUsingItem)
             {
                 return;
             }
@@ -943,6 +788,7 @@ namespace ZZ
         /// </summary>
         public void EnableCanCombo()
         {
+            ActionRunner.SetWindow(CombatWindowType.Combo, true);
             bool isOffHandAction =
                 m_player?.PlayerNetworkManager?.IsUsingLeftHand.Value == true &&
                 m_player.PlayerNetworkManager.IsTwoHandingWeapon.Value == false;
@@ -960,25 +806,38 @@ namespace ZZ
                 HasNextMainHandComboAttack(CurrentAttackType);
             m_canComboWithMainHandWeapon =
                 m_canQueueNextAttack;
+            ConsumeBufferedAttack();
         }
 
         /// <summary>Closes the current main-hand combo window.</summary>
         public void DisableCanCombo()
         {
+            ActionRunner.SetWindow(CombatWindowType.Combo, false);
             m_canComboWithMainHandWeapon = false;
             m_canPerformOffHandCombo = false;
             m_canQueueNextAttack = false;
         }
 
-        /// <summary>
-        /// Closes the authored queue window and consumes its oldest valid attack intent.
-        /// </summary>
-        public void CloseAttackInputQueueWindow()
+        /// <summary>Closes the current transition window. It never consumes buffered commands.</summary>
+        public void CloseTransitionWindow()
         {
-            if (!m_canQueueNextAttack || !TryConsumeQueuedAttackInput())
+            DisableCanCombo();
+        }
+
+        /// <summary>
+        /// Runs a buffered light or heavy command as soon as the transition window makes it legal,
+        /// which is what makes an early press resolve into the follow-up attack.
+        /// </summary>
+        private bool ConsumeBufferedAttack()
+        {
+            if (m_player == null ||
+                !m_player.IsOwner ||
+                m_player.IsDead)
             {
-                DisableCanCombo();
+                return false;
             }
+
+            return CommandBuffer.TryConsumeFirstExecutable(TryExecuteCommand, out _);
         }
 
         /// <summary>
@@ -1000,12 +859,7 @@ namespace ZZ
                 return false;
             }
 
-            DisableCanCombo();
-            SetCurrentWeaponActionHand();
-            ReplicateAttack(nextAttack, CurrentWeaponBeingUsed);
-            m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
-                nextAttack);
-            return true;
+            return TryStartAttack(nextAttack, CurrentWeaponBeingUsed);
         }
 
         /// <summary>Executes the running attack before normal light-attack resolution.</summary>
@@ -1025,8 +879,7 @@ namespace ZZ
             }
 
             m_player.LocomotionManager.StopSprinting();
-            PerformMovingAttack(AttackType.RunningAttack01);
-            return true;
+            return PerformMovingAttack(AttackType.RunningAttack01);
         }
 
         /// <summary>Consumes the active roll or backstep recovery window as a moving attack.</summary>
@@ -1045,9 +898,7 @@ namespace ZZ
             }
 
             AttackType attackType = m_committedAttackType;
-            DisableCanPerformCommittedAttack();
-            PerformMovingAttack(attackType);
-            return true;
+            return PerformMovingAttack(attackType);
         }
 
         /// <summary>Opens the authored roll-attack recovery window on the local owner.</summary>
@@ -1096,7 +947,8 @@ namespace ZZ
             CompleteSpellCast();
             DisableCanCombo();
             DisableCanPerformCommittedAttack();
-            PlayerInputManager.Instance?.ClearAttackInputQueue();
+            // Normal animation completion must preserve early input for the next action.
+            // Death, input suspension, ownership loss and component disable clear it explicitly.
         }
 
         /// <inheritdoc />
@@ -1110,221 +962,28 @@ namespace ZZ
                 ?.CloseDamageCollider();
             equipmentManager?.CurrentTwoHandWeaponManager
                 ?.CloseDamageCollider();
+            equipmentManager?.CurrentRightHandWeaponManager?.ResetTrailWindow();
+            equipmentManager?.CurrentLeftHandWeaponManager?.ResetTrailWindow();
+            equipmentManager?.CurrentTwoHandWeaponManager?.ResetTrailWindow();
         }
 
         /// <inheritdoc />
         public override bool AttemptRiposte(CharacterManager targetCharacter)
         {
-            CharacterNetworkManager targetNetworkManager =
-                targetCharacter?.CharacterNetworkManager;
-            if (targetCharacter == null ||
-                targetNetworkManager == null ||
-                !targetNetworkManager.IsRipostable.Value ||
-                targetNetworkManager.IsBeingCriticallyDamaged.Value ||
-                !TryGetCriticalAttackWeapon(
-                    out MeleeWeaponItem riposteWeapon,
-                    out WeaponManager weaponManager) ||
-                weaponManager.MeleeDamageCollider == null)
-            {
-                return false;
-            }
-
-            SetCriticalAttackActionHand();
-            m_player.CharacterNetworkManager?.SetSneakingState(false);
-            float damageModifier = riposteWeapon.RiposteAttack01Modifier;
-            CharacterNetworkManager attackerNetworkManager =
-                m_player.CharacterNetworkManager;
-            if (attackerNetworkManager == null ||
-                !attackerNetworkManager.IsSpawned ||
-                !targetNetworkManager.IsSpawned)
-            {
-                ProcessRiposteFromServer(
-                    targetCharacter,
-                    riposteWeapon,
-                    CharacterActionAnimation.Riposted,
-                    riposteWeapon.PhysicalDamage * damageModifier,
-                    riposteWeapon.MagicDamage * damageModifier,
-                    riposteWeapon.FireDamage * damageModifier,
-                    riposteWeapon.LightningDamage * damageModifier,
-                    riposteWeapon.HolyDamage * damageModifier,
-                    0f);
-                return true;
-            }
-
-            attackerNetworkManager.NotifyServerOfRiposteServerRpc(
-                targetCharacter.NetworkObjectId,
-                m_player.NetworkObjectId,
-                riposteWeapon.ItemID,
-                CharacterActionAnimation.Riposted,
-                riposteWeapon.PhysicalDamage * damageModifier,
-                riposteWeapon.MagicDamage * damageModifier,
-                riposteWeapon.FireDamage * damageModifier,
-                riposteWeapon.LightningDamage * damageModifier,
-                riposteWeapon.HolyDamage * damageModifier,
-                0f);
-            return true;
+            return m_critical != null && m_critical.AttemptRiposte(targetCharacter);
         }
 
         /// <inheritdoc />
         public override bool AttemptBackstab(RaycastHit hit)
         {
-            CharacterManager targetCharacter =
-                hit.collider?.GetComponentInParent<CharacterManager>();
-            CharacterNetworkManager targetNetworkManager =
-                targetCharacter?.CharacterNetworkManager;
-            if (targetCharacter == null ||
-                targetCharacter.CharacterCombatManager?.CanBeBackstabbed != true ||
-                targetNetworkManager == null ||
-                targetNetworkManager.IsBeingCriticallyDamaged.Value ||
-                !TryGetCriticalAttackWeapon(
-                    out MeleeWeaponItem backstabWeapon,
-                    out WeaponManager weaponManager) ||
-                weaponManager.MeleeDamageCollider == null)
-            {
-                return false;
-            }
-
-            SetCriticalAttackActionHand();
-            m_player.CharacterNetworkManager?.SetSneakingState(false);
-            float damageModifier = backstabWeapon.BackstabAttack01Modifier;
-            CharacterNetworkManager attackerNetworkManager =
-                m_player.CharacterNetworkManager;
-            if (attackerNetworkManager == null ||
-                !attackerNetworkManager.IsSpawned ||
-                !targetNetworkManager.IsSpawned)
-            {
-                ProcessBackstabFromServer(
-                    targetCharacter,
-                    backstabWeapon,
-                    CharacterActionAnimation.Backstabbed,
-                    backstabWeapon.PhysicalDamage * damageModifier,
-                    backstabWeapon.MagicDamage * damageModifier,
-                    backstabWeapon.FireDamage * damageModifier,
-                    backstabWeapon.LightningDamage * damageModifier,
-                    backstabWeapon.HolyDamage * damageModifier,
-                    0f);
-                return true;
-            }
-
-            attackerNetworkManager.NotifyTheServerOfBackstabServerRpc(
-                targetCharacter.NetworkObjectId,
-                m_player.NetworkObjectId,
-                backstabWeapon.ItemID,
-                CharacterActionAnimation.Backstabbed,
-                backstabWeapon.PhysicalDamage * damageModifier,
-                backstabWeapon.MagicDamage * damageModifier,
-                backstabWeapon.FireDamage * damageModifier,
-                backstabWeapon.LightningDamage * damageModifier,
-                backstabWeapon.HolyDamage * damageModifier,
-                0f);
-            return true;
+            return m_critical != null && m_critical.AttemptBackstab(hit);
         }
 
         /// <summary>
-        /// Consumes the stamina cost of the current attack on the locally owned player.
-        /// Called from an attack animation event.
+        /// Compatibility receiver for legacy clips. Stamina is paid once by PlayerAttackController at commit.
         /// </summary>
         public void DrainStaminaBasedOnAttack()
         {
-            if (m_player == null || !m_player.IsOwner)
-            {
-                return;
-            }
-
-            WeaponItem weapon = CurrentWeaponBeingUsed;
-            if (weapon == null)
-            {
-                return;
-            }
-
-            float staminaCost = weapon.BaseStaminaCost *
-                weapon.GetStaminaCostMultiplier(CurrentAttackType);
-            m_player.PlayerStatsManager?.TryConsumeStamina(staminaCost);
-        }
-
-        private void BeginQuickSlotItemUse(
-            QuickSlotItem quickSlotItem,
-            bool notifyNetwork)
-        {
-            if (quickSlotItem == null || m_player == null || m_isUsingItem)
-            {
-                return;
-            }
-
-            m_isUsingItem = true;
-            m_currentQuickSlotItem = quickSlotItem;
-            m_player.LocomotionManager?.StopSprinting();
-            m_player.LocomotionManager?.SetCanRun(false);
-            m_player.LocomotionManager?.SetCanRoll(false);
-            m_player.EquipmentManager?.SetWeaponsHidden(true);
-
-            bool isEmpty = quickSlotItem is FlaskItem flask &&
-                GetRemainingFlaskCount(flask) <= 0;
-            GameObject model = isEmpty && quickSlotItem is FlaskItem emptyFlask
-                ? emptyFlask.EmptyFlaskItemModel
-                : quickSlotItem.ItemModel;
-            PresentQuickSlotItemModel(model);
-            m_player.PlayerAnimatorManager?.SetFlaskChuggingState(false);
-            m_player.PlayerAnimatorManager?.PlayQuickSlotItemAnimation(isEmpty);
-            if (isEmpty)
-            {
-                m_player.CharacterSoundFXManager?.PlayFlaskSound(true);
-            }
-
-            if (!notifyNetwork || !m_player.IsOwner ||
-                m_player.PlayerNetworkManager?.IsSpawned != true)
-            {
-                return;
-            }
-
-            m_player.PlayerNetworkManager.SetChuggingState(false);
-            m_player.PlayerNetworkManager.SetWeaponsHiddenServerRpc(true);
-            m_player.PlayerNetworkManager
-                .NotifyServerOfQuickSlotItemActionServerRpc(quickSlotItem.ItemID);
-        }
-
-        private void RequestAdditionalFlaskUse(FlaskItem requestedFlask)
-        {
-            if (m_currentQuickSlotItem != requestedFlask ||
-                m_player?.PlayerNetworkManager == null ||
-                m_player.PlayerNetworkManager.IsChugging.Value)
-            {
-                return;
-            }
-
-            if (GetRemainingFlaskCount(requestedFlask) <= 0)
-            {
-                PresentQuickSlotItemModel(requestedFlask.EmptyFlaskItemModel);
-                m_player.CharacterSoundFXManager?.PlayFlaskSound(true);
-                m_player.PlayerAnimatorManager?.PlayQuickSlotItemAnimation(true);
-                return;
-            }
-
-            m_player.PlayerNetworkManager.SetChuggingState(true);
-        }
-
-        private int GetRemainingFlaskCount(FlaskItem flask)
-        {
-            return flask != null && m_player?.PlayerNetworkManager != null
-                ? m_player.PlayerNetworkManager.GetRemainingFlaskCount(
-                    flask.RestoresHealth)
-                : 0;
-        }
-
-        private void PresentQuickSlotItemModel(GameObject model)
-        {
-            m_player?.CharacterEffectsManager?.DestroyAllCurrentActionEffects();
-            Transform itemParent = m_player?.EquipmentManager?.QuickSlotItemParent;
-            if (model == null || itemParent == null)
-            {
-                return;
-            }
-
-            GameObject itemModel = Instantiate(model, itemParent);
-            itemModel.transform.SetLocalPositionAndRotation(
-                Vector3.zero,
-                Quaternion.identity);
-            m_player.CharacterEffectsManager?.RegisterCurrentActionEffect(itemModel);
         }
 
         private WeaponItem ResolveCurrentWeapon()
@@ -1542,32 +1201,6 @@ namespace ZZ
             m_player?.LocomotionManager?.SetCanRun(true);
         }
 
-        private bool TryGetCriticalAttackWeapon(
-            out MeleeWeaponItem criticalWeapon,
-            out WeaponManager weaponManager)
-        {
-            bool usesLeftWeapon =
-                m_player?.PlayerNetworkManager
-                    ?.IsTwoHandingLeftWeapon.Value == true;
-            criticalWeapon = (usesLeftWeapon
-                ? m_player?.InventoryManager?.CurrentLeftHandWeapon
-                : m_player?.InventoryManager?.CurrentRightHandWeapon) as
-                    MeleeWeaponItem;
-            weaponManager = usesLeftWeapon
-                ? m_player?.EquipmentManager?.CurrentLeftHandWeaponManager
-                : m_player?.EquipmentManager?.CurrentRightHandWeaponManager;
-            return criticalWeapon != null && weaponManager != null;
-        }
-
-        private void SetCriticalAttackActionHand()
-        {
-            bool usesLeftWeapon =
-                m_player?.PlayerNetworkManager
-                    ?.IsTwoHandingLeftWeapon.Value == true;
-            m_player?.PlayerNetworkManager?.SetCharacterActionHand(
-                !usesLeftWeapon);
-        }
-
         private bool CanBeginChargingAttack()
         {
             return m_player != null &&
@@ -1585,55 +1218,6 @@ namespace ZZ
             m_player?.CharacterNetworkManager?.SetChargingAttackState(false);
         }
 
-        private void ReplicateSpellAction(CharacterActionAnimation animation)
-        {
-            const bool k_IsPerformingAction = true;
-            const bool k_ShouldApplyRootMotion = false;
-            const bool k_CanRotate = true;
-            const bool k_CanMove = false;
-            m_player?.PlayerAnimatorManager?.PlayTargetActionAnimation(
-                animation,
-                k_IsPerformingAction,
-                k_ShouldApplyRootMotion,
-                k_CanRotate,
-                k_CanMove);
-            m_player?.CharacterNetworkManager
-                ?.NotifyServerOfActionAnimationServerRpc(
-                    animation,
-                    k_IsPerformingAction,
-                    k_ShouldApplyRootMotion,
-                    k_CanRotate,
-                    k_CanMove);
-        }
-
-        private bool ResolveCurrentSpellHand()
-        {
-            if (m_currentCastingSpell != null)
-            {
-                return m_isCastingRightHandSpell;
-            }
-
-            return m_player?.PlayerNetworkManager?.IsUsingLeftHand.Value != true;
-        }
-
-        private CasterWeaponItem ResolveCasterWeapon(bool isRightHand)
-        {
-            return (isRightHand
-                ? m_player?.InventoryManager?.CurrentRightHandWeapon
-                : m_player?.InventoryManager?.CurrentLeftHandWeapon) as
-                    CasterWeaponItem;
-        }
-
-        private void ClearLocalSpellState()
-        {
-            m_currentCastingSpell = null;
-            m_currentCasterWeapon = null;
-            m_spellChargeStartTime = 0f;
-            m_isCastingRightHandSpell = false;
-            m_hasReachedFullSpellCharge = false;
-            m_hasReleasedSpell = false;
-        }
-
         private void EnableCommittedAttack(AttackType attackType)
         {
             if (m_player == null || !m_player.IsOwner || !m_player.IsPerformingAction)
@@ -1645,48 +1229,9 @@ namespace ZZ
             m_canPerformCommittedAttack = true;
         }
 
-        private void PerformMovingAttack(AttackType attackType)
+        private bool PerformMovingAttack(AttackType attackType)
         {
-            DisableCanCombo();
-            SetCurrentWeaponActionHand();
-            ReplicateAttack(attackType, CurrentWeaponBeingUsed);
-            m_player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(
-                attackType);
-        }
-
-        private bool TryConsumeQueuedAttackInput()
-        {
-            PlayerInputManager inputManager = PlayerInputManager.Instance;
-            if (inputManager == null ||
-                !inputManager.TryDequeueAttackInput(out AttackInput attackInput))
-            {
-                return false;
-            }
-
-            AttackType requestedOpeningAttack =
-                attackInput.InputType == AttackInputType.Heavy
-                    ? AttackType.HeavyAttack01
-                    : AttackType.LightAttack01;
-            if (TryPerformMainHandCombo(requestedOpeningAttack))
-            {
-                return true;
-            }
-
-            if (m_player == null ||
-                !m_player.IsOwner ||
-                !m_player.IsPerformingAction ||
-                m_player.CharacterNetworkManager == null ||
-                m_player.CharacterNetworkManager.CurrentStamina.Value <= 0f)
-            {
-                return false;
-            }
-
-            DisableCanCombo();
-            SetCurrentWeaponActionHand();
-            ReplicateAttack(requestedOpeningAttack, CurrentWeaponBeingUsed);
-            m_player.CharacterNetworkManager.NotifyServerOfAttackActionServerRpc(
-                requestedOpeningAttack);
-            return true;
+            return TryStartAttack(attackType, CurrentWeaponBeingUsed);
         }
 
         private static bool ShouldUseChargedAttack(
@@ -1705,8 +1250,14 @@ namespace ZZ
             m_player?.PlayerNetworkManager?.SetCharacterActionHand(isRightHandAction);
         }
 
-        private static bool HasNextMainHandComboAttack(AttackType currentAttack)
+        private bool HasNextMainHandComboAttack(AttackType currentAttack)
         {
+            AttackDefinition attack = CurrentWeaponBeingUsed?.GetAttackDefinition(currentAttack);
+            if (attack != null)
+            {
+                return attack.HasFollowUp;
+            }
+
             return currentAttack == AttackType.LightAttack01 ||
                 currentAttack == AttackType.LightAttack02 ||
                 currentAttack == AttackType.HeavyAttack01 ||
@@ -1719,12 +1270,25 @@ namespace ZZ
                 currentAttack == AttackType.DualAttack02;
         }
 
-        private static bool TryGetNextMainHandComboAttack(
+        private bool TryGetNextMainHandComboAttack(
             AttackType currentAttack,
             AttackType requestedOpeningAttack,
             out AttackType nextAttack)
         {
             nextAttack = default;
+            AttackDefinition attack = CurrentWeaponBeingUsed?.GetAttackDefinition(currentAttack);
+            if (attack != null)
+            {
+                AttackDefinition next = attack.GetFollowUp(requestedOpeningAttack);
+                if (next == null)
+                {
+                    return false;
+                }
+
+                nextAttack = next.AttackType;
+                return true;
+            }
+
             if (requestedOpeningAttack == AttackType.LightAttack01)
             {
                 if (currentAttack == AttackType.LightAttack01)

@@ -105,8 +105,19 @@ namespace ZZ
             ? m_focusFlaskVFX
             : m_healingFlaskVFX;
         /// <summary>Gets the networked Rune recovery-point presentation.</summary>
-        public GameObject DeadSpotVFX => m_deadSpotVFX ??=
-            Resources.Load<GameObject>(k_DeadSpotResourcePath);
+        public GameObject DeadSpotVFX
+        {
+            get
+            {
+                // Unity's missing/destroyed object references are not CLR null.
+                if (m_deadSpotVFX == null)
+                {
+                    m_deadSpotVFX = Resources.Load<GameObject>(k_DeadSpotResourcePath);
+                }
+
+                return m_deadSpotVFX;
+            }
+        }
         /// <summary>Gets the replicated local presentation used by poisoned characters.</summary>
         public GameObject PoisonedVFX => m_poisonedVFX ??=
             Resources.Load<GameObject>(k_PoisonedVFXResourcePath);

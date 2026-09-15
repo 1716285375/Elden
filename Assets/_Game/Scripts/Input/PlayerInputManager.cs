@@ -10,7 +10,6 @@ namespace ZZ
     {
         private const string k_GameplaySceneName =
             WorldScenePathLayout.MasterSceneName;
-        private const int k_MaxQueuedAttackInputs = 2;
 
         private static PlayerInputManager s_instance;
         public static PlayerInputManager Instance => s_instance;
@@ -34,9 +33,17 @@ namespace ZZ
         [Header("Attack Input Buffer")]
         [SerializeField, Min(0f)] private float m_inputBufferDuration = 0.3f;
 
+        /// <summary>Commands awaiting an action that is able to consume them.</summary>
+        public CombatCommandBuffer CommandBuffer =>
+            m_player?.PlayerCombatManager?.CommandBuffer ?? m_unboundCommandBuffer;
+
+        private readonly CombatCommandBuffer m_unboundCommandBuffer = new CombatCommandBuffer();
+
+        /// <summary>Whether the melee heavy input is still held when a buffered press becomes executable.</summary>
+        public bool IsHeavyAttackHeld { get; private set; }
+
         private PlayerControls m_playerControls;
         private PlayerManager m_player;
-        private readonly Queue<AttackInput> m_attackInputQueue = new();
         private bool m_hasDodgeInput;
         private bool m_hasJumpInput;
         private bool m_hasSneakInput;
@@ -221,7 +228,9 @@ namespace ZZ
                 return;
             }
 
+            ClearAttackInputQueue();
             m_player = localPlayer;
+            CommandBuffer.Lifetime = m_inputBufferDuration;
             ClearAttackInputQueue();
         }
 
@@ -279,6 +288,7 @@ namespace ZZ
             m_isRangedRTInput = false;
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
+            IsHeavyAttackHeld = false;
             m_hasLTInput = false;
             m_hasLBInput = false;
             m_isLBInputHeld = false;
@@ -343,43 +353,32 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Records one attack only while the current combat animation permits queuing.
+        /// Records a command on the frame it was pressed and executes it as soon as gameplay allows.
+        /// Commands that cannot run yet stay buffered until they expire.
         /// </summary>
-        public bool TryQueueAttackInput(AttackInputType inputType)
+        public bool TryDispatchCombatCommand(CombatCommand command)
         {
-            if (m_player?.PlayerCombatManager?.CanQueueNextAttack != true)
+            if (command == CombatCommand.None || !IsMovementInputEnabled ||
+                m_player == null || !m_player.IsOwner || m_player.IsDead)
             {
                 return false;
             }
 
-            RemoveExpiredAttackInputs(Time.time);
-            if (m_attackInputQueue.Count >= k_MaxQueuedAttackInputs)
+            CommandBuffer.Push(command);
+            PlayerCombatManager combat = m_player.PlayerCombatManager;
+            if (combat == null)
             {
                 return false;
             }
 
-            m_attackInputQueue.Enqueue(new AttackInput(inputType, Time.time));
-            return true;
+            return CommandBuffer.TryConsumeFirstExecutable(combat.TryExecuteCommand, out _);
         }
 
-        /// <summary>Returns the oldest unexpired buffered attack.</summary>
-        public bool TryDequeueAttackInput(out AttackInput attackInput)
-        {
-            RemoveExpiredAttackInputs(Time.time);
-            if (m_attackInputQueue.Count == 0)
-            {
-                attackInput = default;
-                return false;
-            }
-
-            attackInput = m_attackInputQueue.Dequeue();
-            return true;
-        }
-
-        /// <summary>Clears every attack intent that no longer belongs to the current action.</summary>
+        /// <summary>Clears every command that no longer belongs to the current action.</summary>
         public void ClearAttackInputQueue()
         {
-            m_attackInputQueue.Clear();
+            CommandBuffer.Clear();
+            m_unboundCommandBuffer.Clear();
         }
 
         private void HandleAllInputs()
@@ -450,7 +449,7 @@ namespace ZZ
 
             m_hasDodgeInput = false;
             m_player?.PlayerCombatManager?.SetBlocking(false);
-            m_player?.LocomotionManager?.AttemptToPerformDodge();
+            TryDispatchCombatCommand(CombatCommand.Dodge);
         }
 
         private void HandleSprinting()
@@ -467,7 +466,7 @@ namespace ZZ
 
             m_hasJumpInput = false;
             m_player?.PlayerCombatManager?.SetBlocking(false);
-            m_player?.LocomotionManager?.AttemptToPerformJump();
+            TryDispatchCombatCommand(CombatCommand.Jump);
         }
 
         private void HandleSneakInput()
@@ -507,19 +506,16 @@ namespace ZZ
                 {
                     PerformRangedProjectileAction(ProjectileSlot.Main);
                 }
-                else if (!TryQueueAttackInput(AttackInputType.Light))
+                else
                 {
-                    PerformRightHandAction();
+                    TryDispatchCombatCommand(CombatCommand.LightAttack);
                 }
             }
 
             if (m_hasRTStartedInput)
             {
                 m_hasRTStartedInput = false;
-                if (!TryQueueAttackInput(AttackInputType.Heavy))
-                {
-                    m_player?.PlayerCombatManager?.BeginChargingHeavyAttack();
-                }
+                TryDispatchCombatCommand(CombatCommand.HeavyAttack);
             }
 
             if (m_hasRTReleasedInput)
@@ -750,6 +746,7 @@ namespace ZZ
             }
             else
             {
+                IsHeavyAttackHeld = true;
                 m_hasRTStartedInput = true;
             }
         }
@@ -777,6 +774,7 @@ namespace ZZ
 
         private void OnRTCanceled(InputAction.CallbackContext context)
         {
+            IsHeavyAttackHeld = false;
             if (!IsMovementInputEnabled)
             {
                 return;
@@ -921,27 +919,6 @@ namespace ZZ
             m_isRangedRTInput = false;
             m_player?.PlayerCombatManager?.CancelNotchedProjectile(true);
             m_player?.PlayerNetworkManager?.SetAimingState(false);
-        }
-
-        private void RemoveExpiredAttackInputs(float currentTime)
-        {
-            while (m_attackInputQueue.Count > 0 &&
-                IsAttackInputExpired(
-                    m_attackInputQueue.Peek(),
-                    currentTime,
-                    m_inputBufferDuration))
-            {
-                m_attackInputQueue.Dequeue();
-            }
-        }
-
-        private static bool IsAttackInputExpired(
-            AttackInput attackInput,
-            float currentTime,
-            float bufferDuration)
-        {
-            return currentTime >
-                attackInput.Timestamp + Mathf.Max(0f, bufferDuration);
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)

@@ -59,6 +59,11 @@ namespace ZZ
                 return;
             }
 
+            if (character is PlayerManager damagedPlayer)
+            {
+                damagedPlayer.PlayerCombatManager?.ClearGuardCounter();
+            }
+
             int resolvedDamage = CalculateDamage(
                 character.CharacterStatsManager);
             UpdateProjectedState(character, resolvedDamage);
@@ -74,6 +79,7 @@ namespace ZZ
                 ContactPoint,
                 hitDirection);
             character.CharacterSoundFXManager?.PlayDamageGrunt();
+            PresentImpactFeedback(character, HitOutcome.Damaged, PoiseDamage);
             IsPoiseBroken = ProjectedPoise <= 0f;
             if (processingMode == DamageProcessingMode.Authoritative)
             {
@@ -101,7 +107,7 @@ namespace ZZ
                 character.CharacterCombatManager as AICharacterCombatManager;
             if (processingMode != DamageProcessingMode.Authoritative &&
                 aiCombatManager?.WouldBreakStance(
-                    Mathf.RoundToInt(PoiseDamage)) == true)
+                    Mathf.RoundToInt(StanceDamage)) == true)
             {
                 character.CharacterAnimatorManager
                     ?.PlayLocalAnimationInstantly(
@@ -151,64 +157,25 @@ namespace ZZ
         /// </summary>
         public static float CalculateHitAngle(Transform attacker, Transform target)
         {
-            if (attacker == null || target == null)
-            {
-                return 0f;
-            }
-
-            Vector3 targetForward = Vector3.ProjectOnPlane(
-                target.forward,
-                Vector3.up);
-            Vector3 incomingDirection = Vector3.ProjectOnPlane(
-                target.position - attacker.position,
-                Vector3.up);
-            if (targetForward.sqrMagnitude <= Mathf.Epsilon ||
-                incomingDirection.sqrMagnitude <= Mathf.Epsilon)
-            {
-                return 0f;
-            }
-
-            return Vector3.SignedAngle(
-                targetForward.normalized,
-                incomingDirection.normalized,
-                Vector3.up);
+            return ReactionResolver.CalculateHitAngle(attacker, target);
         }
 
-        /// <summary>
-        /// Classifies a signed incoming angle into the struck side of the target.
-        /// </summary>
         public static DamageDirection GetDamageDirection(float hitAngle)
         {
-            float normalizedAngle = Mathf.DeltaAngle(0f, hitAngle);
-            if (normalizedAngle >= -45f && normalizedAngle <= 45f)
-            {
-                return DamageDirection.Back;
-            }
-
-            if (normalizedAngle > 45f && normalizedAngle < 145f)
-            {
-                return DamageDirection.Left;
-            }
-
-            if (normalizedAngle < -45f && normalizedAngle > -145f)
-            {
-                return DamageDirection.Right;
-            }
-
-            return DamageDirection.Front;
+            return ReactionResolver.GetDamageDirection(hitAngle);
         }
 
         private void CalculateStanceDamage(CharacterManager character)
         {
             if (character is not AICharacterManager aiCharacter ||
-                PoiseDamage <= 0f)
+                StanceDamage <= 0f)
             {
                 return;
             }
 
             AICharacterCombatManager combatManager =
                 aiCharacter.GetComponent<AICharacterCombatManager>();
-            combatManager?.DamageStance(Mathf.RoundToInt(PoiseDamage));
+            combatManager?.DamageStance(Mathf.RoundToInt(StanceDamage));
         }
     }
 }

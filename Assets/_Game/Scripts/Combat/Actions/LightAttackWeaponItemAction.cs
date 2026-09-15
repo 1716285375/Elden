@@ -56,7 +56,8 @@ namespace ZZ
                 return;
             }
 
-            PerformAttack(player, weapon, m_attackType);
+            bool isCrouching = player.CharacterNetworkManager?.IsSneaking.Value == true;
+            PerformAttack(player, weapon, isCrouching ? AttackType.RollAttack01 : m_attackType);
         }
     }
 }

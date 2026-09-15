@@ -75,13 +75,13 @@ namespace ZZ.Tests
         [Test]
         public void DamageRequestSkipsInitiatorAndPreservesEnvironmentHits()
         {
-            string colliderSource = File.ReadAllText(k_DamageColliderSourcePath);
+            string colliderSource = File.ReadAllText("Assets/_Game/Scripts/Combat/Resolution/HitDamageDispatcher.cs");
             string networkSource = File.ReadAllText(k_NetworkSourcePath);
 
             Assert.That(colliderSource,
                 Does.Contain("DamageProcessingMode.PredictedPresentation"));
             Assert.That(colliderSource,
-                Does.Contain("m_characterCausingDamage != null"));
+                Does.Contain("attacker != null"));
             Assert.That(networkSource,
                 Does.Contain("NetworkManager.LocalClientId == initiatingClientId"));
             Assert.That(networkSource,

@@ -220,7 +220,7 @@ namespace ZZ.Tests
                 "Assets/_Game/Scripts/UI/Gameplay/Player/PlayerUIHUDManager.cs"));
             string damageSource = File.ReadAllText(Path.Combine(
                 root,
-                "Assets/_Game/Scripts/Combat/Damage/DamageCollider.cs"));
+                "Assets/_Game/Scripts/Combat/Resolution/HitDamageDispatcher.cs"));
             string takeBuildupSource = File.ReadAllText(Path.Combine(
                 root,
                 "Assets/_Game/Scripts/Combat/Effects/InstantEffects/TakeBuildupEffect.cs"));

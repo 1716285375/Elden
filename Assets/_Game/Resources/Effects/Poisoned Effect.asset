@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.PoisonedEffect
   m_timedEffectID: 2
   m_defaultTimeLengthOnEffect: 120
+  m_statusDefinition: {fileID: 11400000, guid: 8ae83141000d8114abecb49b0ddbe3a8, type: 2}
   m_poisonDamage: 10

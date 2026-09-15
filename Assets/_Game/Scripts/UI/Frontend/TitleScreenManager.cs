@@ -45,6 +45,7 @@ namespace ZZ
         [SerializeField] private GameObject[] m_primaryPresentationObjects;
 
         private CharacterSlot m_currentSelectedSlot = CharacterSlot.NoSlot;
+        private GameSettingsPanel m_settingsPanel;
 
         /// <summary>Gets the authored classes displayed by character creation.</summary>
         public CharacterClass[] StartingClasses
@@ -139,19 +140,23 @@ namespace ZZ
             saveGameManager.LoadGame();
         }
 
-        /// <summary>Opens the placeholder settings screen.</summary>
+        /// <summary>Opens shared persistent device settings.</summary>
         public void OpenSettings()
         {
             m_mainMenu?.SetActive(false);
             SetPrimaryPresentationVisible(false);
-            m_settingsMenu?.SetActive(true);
-            m_settingsReturnButton?.Select();
+            if (m_settingsPanel == null)
+            {
+                m_settingsPanel = GameSettingsPanel.Create(transform);
+            }
+            m_settingsPanel.Open(CloseSettings);
         }
 
-        /// <summary>Returns from the placeholder settings screen.</summary>
+        /// <summary>Returns from settings and restores title-menu focus.</summary>
         public void CloseSettings()
         {
             m_settingsMenu?.SetActive(false);
+            m_settingsPanel?.gameObject.SetActive(false);
             m_mainMenu?.SetActive(true);
             SetPrimaryPresentationVisible(true);
             m_settingsButton?.Select();

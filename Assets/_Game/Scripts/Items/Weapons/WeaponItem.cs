@@ -13,6 +13,7 @@ namespace ZZ
         [SerializeField] private WeaponModelType m_weaponModelType;
         [SerializeField] private WeaponClass m_weaponClass;
         [SerializeField] private AnimatorOverrideController m_weaponAnimator;
+        [SerializeField] private WeaponMoveset m_moveset;
 
         [Header("Weapon Pivot")]
         [SerializeField] private Vector3 m_weaponPivotPosition;
@@ -34,11 +35,25 @@ namespace ZZ
         [Header("Upgrade")]
         [SerializeField] private UpgradeLevel m_upgradeLevel;
 
+        [Header("Damage Channels")]
+        [Tooltip("Optional per-channel overrides. Leave Base Damage at 0 to reuse the values above.")]
+        [SerializeField] private DamageChannel m_physicalChannel;
+        [SerializeField] private DamageChannel m_magicChannel;
+        [SerializeField] private DamageChannel m_fireChannel;
+        [SerializeField] private DamageChannel m_lightningChannel;
+        [SerializeField] private DamageChannel m_holyChannel;
+
         [Header("Attribute Requirements")]
         [SerializeField, Min(0)] private int m_strengthRequirement;
         [SerializeField, Min(0)] private int m_dexterityRequirement;
         [SerializeField, Min(0)] private int m_intelligenceRequirement;
         [SerializeField, Min(0)] private int m_faithRequirement;
+
+        [Header("Attribute Scaling")]
+        [SerializeField, Range(0f, 2f)] private float m_strengthScaling = 0.35f;
+        [SerializeField, Range(0f, 2f)] private float m_dexterityScaling = 0.25f;
+        [SerializeField, Range(0f, 2f)] private float m_intelligenceScaling = 0.5f;
+        [SerializeField, Range(0f, 2f)] private float m_faithScaling = 0.5f;
 
         [Header("Action Costs")]
         [SerializeField, Min(0f)] private float m_baseStaminaCost;
@@ -51,6 +66,9 @@ namespace ZZ
         [SerializeField, Range(0f, 100f)] private float m_blockingLightningAbsorption;
         [SerializeField, Range(0f, 100f)] private float m_blockingHolyAbsorption;
         [SerializeField, Range(0f, 100f)] private float m_blockingStability;
+
+        [Header("Guard")]
+        [SerializeField] private GuardProfile m_guardProfile;
 
         [Header("Sound Effects")]
         [SerializeField] private AudioClip[] m_whooshes = System.Array.Empty<AudioClip>();
@@ -103,6 +121,119 @@ namespace ZZ
         /// <summary>Gets the complete animation override set used by this weapon.</summary>
         public AnimatorOverrideController WeaponAnimator => m_weaponAnimator;
 
+        public WeaponMoveset Moveset => m_moveset;
+
+        /// <summary>Checks effective Strength and all other requirements before paying an action cost.</summary>
+        public bool MeetsRequirements(CharacterManager character)
+        {
+            if (character == null)
+            {
+                return false;
+            }
+
+            CharacterNetworkManager network = character.CharacterNetworkManager;
+            if (network == null)
+            {
+                return false;
+            }
+
+            int strength = character.CharacterStatsManager != null
+                ? character.CharacterStatsManager.TotalStrength : network.Strength.Value;
+            bool twoHanded = character is PlayerManager player &&
+                player.PlayerNetworkManager.IsTwoHandingWeapon.Value;
+            return WeaponAttackRating.MeetsRequirements(strength, network.Dexterity.Value,
+                network.Intelligence.Value, network.Faith.Value, twoHanded,
+                StrengthRequirement, DexterityRequirement, IntelligenceRequirement, FaithRequirement);
+        }
+
+        /// <summary>Resolves reinforced and attribute-scaled attack power for one authored channel.</summary>
+        public float GetAttackPower(float baseDamage, CharacterManager character, bool isPhysical, bool isMagic)
+        {
+            float reinforced = WeaponManager.GetUpgradedDamage(baseDamage, UpgradeLevel);
+            CharacterNetworkManager network = character != null ? character.CharacterNetworkManager : null;
+            if (network == null || reinforced <= 0f)
+            {
+                return reinforced;
+            }
+
+            int strength = character.CharacterStatsManager != null
+                ? character.CharacterStatsManager.TotalStrength : network.Strength.Value;
+            bool twoHanded = character is PlayerManager player &&
+                player.PlayerNetworkManager.IsTwoHandingWeapon.Value;
+            float scaling = isPhysical
+                ? WeaponAttackRating.AttributeBonus(twoHanded ? Mathf.FloorToInt(strength * 1.5f) : strength,
+                    m_strengthScaling) + WeaponAttackRating.AttributeBonus(network.Dexterity.Value, m_dexterityScaling)
+                : WeaponAttackRating.AttributeBonus(isMagic ? network.Intelligence.Value : network.Faith.Value,
+                    isMagic ? m_intelligenceScaling : m_faithScaling);
+            return reinforced * (1f + scaling);
+        }
+
+
+        /// <summary>Gets the authored guard arc and stability used while blocking with this item.</summary>
+        public GuardProfile GuardProfile => m_guardProfile;
+
+        /// <summary>Gets the authored scaling for one damage channel.</summary>
+        public DamageChannel GetDamageChannel(DamageType damageType)
+        {
+            return damageType switch
+            {
+                DamageType.Physical => m_physicalChannel,
+                DamageType.Magic => m_magicChannel,
+                DamageType.Fire => m_fireChannel,
+                DamageType.Lightning => m_lightningChannel,
+                DamageType.Holy => m_holyChannel,
+                _ => default
+            };
+        }
+
+        /// <summary>
+        /// Resolves attack power for one channel using that channel's own attribute scaling, so
+        /// Fire can scale with Faith while Lightning scales with Dexterity on the same weapon.
+        /// </summary>
+        public float GetChannelAttackPower(DamageType damageType, CharacterManager character)
+        {
+            DamageChannel channel = GetDamageChannel(damageType);
+            float baseDamage = channel.BaseDamage > 0f ? channel.BaseDamage : GetBaseDamage(damageType);
+            float reinforced = WeaponManager.GetUpgradedDamage(baseDamage, UpgradeLevel);
+            CharacterNetworkManager network = character != null ? character.CharacterNetworkManager : null;
+            if (network == null || reinforced <= 0f)
+            {
+                return reinforced;
+            }
+
+            int strength = character.CharacterStatsManager != null
+                ? character.CharacterStatsManager.TotalStrength : network.Strength.Value;
+            bool twoHanded = character is PlayerManager player &&
+                player.PlayerNetworkManager.IsTwoHandingWeapon.Value;
+            return reinforced * (1f + WeaponAttackRating.ResolveChannel(channel,
+                twoHanded ? Mathf.FloorToInt(strength * 1.5f) : strength,
+                network.Dexterity.Value, network.Intelligence.Value, network.Faith.Value));
+        }
+
+        private float GetBaseDamage(DamageType damageType)
+        {
+            return damageType switch
+            {
+                DamageType.Physical => m_physicalDamage,
+                DamageType.Magic => m_magicDamage,
+                DamageType.Fire => m_fireDamage,
+                DamageType.Lightning => m_lightningDamage,
+                DamageType.Holy => m_holyDamage,
+                _ => 0f
+            };
+        }
+
+        public AttackDefinition GetAttackDefinition(AttackType attackType)
+        {
+            return m_moveset != null ? m_moveset.GetAttack(attackType) : null;
+        }
+
+        public float GetAttackStaminaCost(AttackType attackType)
+        {
+            AttackDefinition attack = GetAttackDefinition(attackType);
+            return attack != null ? attack.StaminaCost : BaseStaminaCost * GetStaminaCostMultiplier(attackType);
+        }
+
         /// <summary>Gets the local hand-slot position adjustment for this weapon model.</summary>
         public Vector3 WeaponPivotPosition => m_weaponPivotPosition;
 
@@ -142,16 +273,16 @@ namespace ZZ
         /// <summary>Gets whether this weapon has reached the supported reinforcement cap.</summary>
         public bool IsFullyUpgraded => m_upgradeLevel >= UpgradeLevel.Level10;
 
-        /// <summary>Gets the reserved strength requirement.</summary>
+        /// <summary>Gets the minimum effective Strength needed to attack.</summary>
         public int StrengthRequirement => m_strengthRequirement;
 
-        /// <summary>Gets the reserved dexterity requirement.</summary>
+        /// <summary>Gets the minimum Dexterity needed to attack.</summary>
         public int DexterityRequirement => m_dexterityRequirement;
 
-        /// <summary>Gets the reserved intelligence requirement.</summary>
+        /// <summary>Gets the minimum Intelligence needed to attack.</summary>
         public int IntelligenceRequirement => m_intelligenceRequirement;
 
-        /// <summary>Gets the reserved faith requirement.</summary>
+        /// <summary>Gets the minimum Faith needed to attack.</summary>
         public int FaithRequirement => m_faithRequirement;
 
         /// <summary>Gets the base stamina cost reserved for weapon actions.</summary>
@@ -239,6 +370,12 @@ namespace ZZ
         /// </summary>
         public float GetAttackDamageModifier(AttackType attackType)
         {
+            AttackDefinition attack = GetAttackDefinition(attackType);
+            if (attack != null)
+            {
+                return attack.DamageMultiplier;
+            }
+
             switch (attackType)
             {
                 case AttackType.HeavyAttack01:

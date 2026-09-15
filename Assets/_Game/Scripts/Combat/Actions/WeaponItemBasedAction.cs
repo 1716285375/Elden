@@ -75,8 +75,7 @@ namespace ZZ
                 return false;
             }
 
-            PerformAttack(player, weapon, attackType);
-            return true;
+            return player.PlayerCombatManager?.TryStartAttack(attackType, weapon) == true;
         }
 
         protected static void PerformAttack(
@@ -84,14 +83,7 @@ namespace ZZ
             WeaponItem weapon,
             AttackType attackType)
         {
-            player.PlayerCombatManager?.DisableCanCombo();
-            player.PlayerNetworkManager?.SetCharacterActionHand(
-                player.PlayerNetworkManager.IsTwoHandingLeftWeapon.Value == false &&
-                (player.PlayerNetworkManager.IsTwoHandingWeapon.Value ||
-                    weapon != player.InventoryManager.CurrentLeftHandWeapon));
-            player.PlayerCombatManager?.ReplicateAttack(attackType, weapon);
-            player.CharacterNetworkManager?.NotifyServerOfAttackActionServerRpc(
-                attackType);
+            player.PlayerCombatManager?.TryStartAttack(attackType, weapon);
         }
 
         internal void AssignActionID(int actionID)

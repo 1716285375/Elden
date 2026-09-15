@@ -6,6 +6,8 @@ namespace ZZ
     [RequireComponent(typeof(CharacterManager))]
     public class CharacterEffectsManager : MonoBehaviour
     {
+        [SerializeField] private StatusEffectDefinition m_bleedDefinition;
+
         [Header("Visual Effects")]
         [SerializeField] private GameObject m_bloodSplatterVFX;
         [SerializeField] private GameObject m_criticalBloodSplatterVFX;
@@ -117,7 +119,7 @@ namespace ZZ
         {
             GameObject criticalVFX = m_criticalBloodSplatterVFX != null
                 ? m_criticalBloodSplatterVFX
-                : m_bloodSplatterVFX;
+                : CombatVfx.CriticalImpact != null ? CombatVfx.CriticalImpact : m_bloodSplatterVFX;
             SpawnBloodSplatter(criticalVFX, contactPoint, hitDirection, 1.5f);
         }
 
@@ -279,6 +281,10 @@ namespace ZZ
                 return false;
             }
 
+            CharacterStatsManager stats = m_character.CharacterStatsManager;
+            float resistance = stats == null ? 0f : buildupType == Buildup.Poison
+                ? stats.ArmorImmunity : stats.ArmorRobustness;
+            buildupAmount *= 100f / (100f + Mathf.Max(0f, resistance));
             float currentBuildup = networkManager.GetBuildup(buildupType);
             if (!networkManager.TrySetBuildup(
                     buildupType,
@@ -293,6 +299,18 @@ namespace ZZ
                 networkManager.GetBuildup(buildupType) >= capacity)
             {
                 TriggerPoison(networkManager);
+            }
+            else if (buildupType == Buildup.Bleed && capacity > 0f &&
+                networkManager.GetBuildup(buildupType) >= capacity)
+            {
+                // Consume buildup first so value-change callbacks cannot trigger a second proc.
+                networkManager.TrySetBuildup(Buildup.Bleed, 0f);
+                float damage = m_bleedDefinition != null
+                    ? m_bleedDefinition.CalculateProcDamage(networkManager.MaxHealth.Value)
+                    : Mathf.Max(0f, networkManager.MaxHealth.Value) * 0.12f + 20f;
+                ProcessEffectDamage(damage);
+                PlayBloodSplatterVFX(m_character.transform.position + Vector3.up, Vector3.up);
+                m_character.CharacterSoundFXManager?.PlayDamageGrunt();
             }
             else if (buildupType == Buildup.Frost &&
                 capacity > 0f &&

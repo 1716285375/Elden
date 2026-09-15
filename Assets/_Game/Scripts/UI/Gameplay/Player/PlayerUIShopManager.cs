@@ -34,6 +34,7 @@ namespace ZZ
         private Button m_smithButton;
         private Button m_shopBackButton;
         private RectTransform m_slotContainer;
+        private ScrollRect m_inventoryScroll;
         private TMP_Text m_shopTitleText;
         private TMP_Text m_modeText;
         private TMP_Text m_categoryText;
@@ -185,6 +186,11 @@ namespace ZZ
         /// <summary>Routes one slot click through the current Buy or Sell policy.</summary>
         public bool BuyOrSellItem(Item item)
         {
+            if (!IsMenuOpen || m_shopkeeperInventory?.CanTradeWith(m_player) != true)
+            {
+                CloseMenu();
+                return false;
+            }
             SelectItem(item);
             bool didComplete = m_currentMode == ShopBuyOrSell.Buying
                 ? m_shopkeeperInventory?.TryPurchaseItem(item, m_player) == true
@@ -206,6 +212,23 @@ namespace ZZ
         {
             m_currentItem = item;
             RefreshDetails();
+            KeepSelectedSlotVisible();
+        }
+
+        private void KeepSelectedSlotVisible()
+        {
+            RectTransform selected = EventSystem.current?.currentSelectedGameObject?.transform as RectTransform;
+            if (m_inventoryScroll == null || selected == null || !selected.IsChildOf(m_slotContainer))
+            {
+                return;
+            }
+            Canvas.ForceUpdateCanvases();
+            Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(
+                m_inventoryScroll.viewport, selected);
+            Rect visible = m_inventoryScroll.viewport.rect;
+            float offset = bounds.min.y < visible.yMin ? visible.yMin - bounds.min.y :
+                bounds.max.y > visible.yMax ? visible.yMax - bounds.max.y : 0f;
+            m_slotContainer.anchoredPosition += Vector2.up * offset;
         }
 
         public int GetDisplayedValue(Item item)
@@ -352,7 +375,8 @@ namespace ZZ
             {
                 foreach (Item item in source)
                 {
-                    if (!MatchesCategory(item, m_currentCategory))
+                    if (!MatchesCategory(item, m_currentCategory) ||
+                        m_currentMode == ShopBuyOrSell.Selling && !AICharacterInventoryManager.CanSellItem(item))
                     {
                         continue;
                     }
@@ -476,7 +500,7 @@ namespace ZZ
                 : "No items available";
             int displayedValue = GetDisplayedValue(m_currentItem);
             m_currentItemValueText.text = m_currentItem != null
-                ? $"Value: {displayedValue}"
+                ? $"{(m_currentMode == ShopBuyOrSell.Buying ? "Buy one" : "Sell entry")}: {displayedValue} runes"
                 : "Value: --";
             int runes = m_player?.PlayerStatsManager?.Runes ?? 0;
             m_runesText.text = $"Runes: {runes}";
@@ -575,10 +599,27 @@ namespace ZZ
                 22f,
                 TextAlignmentOptions.Center);
 
+            GameObject viewport = CreateUIObject("Inventory Viewport", m_shopPanel.transform);
+            viewport.AddComponent<RectMask2D>();
+            viewport.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.1f);
+            LayoutElement viewportLayout = viewport.AddComponent<LayoutElement>();
+            viewportLayout.flexibleHeight = 1f;
+            viewportLayout.minHeight = 280f;
+            m_inventoryScroll = viewport.AddComponent<ScrollRect>();
+            m_inventoryScroll.horizontal = false;
+            m_inventoryScroll.movementType = ScrollRect.MovementType.Clamped;
+            m_inventoryScroll.scrollSensitivity = 35f;
+            m_inventoryScroll.viewport = viewport.GetComponent<RectTransform>();
             GameObject slotContainer = CreateUIObject(
                 "Inventory Slots",
-                m_shopPanel.transform);
+                viewport.transform);
             m_slotContainer = slotContainer.GetComponent<RectTransform>();
+            m_slotContainer.anchorMin = new Vector2(0f, 1f);
+            m_slotContainer.anchorMax = Vector2.one;
+            m_slotContainer.pivot = new Vector2(0.5f, 1f);
+            m_slotContainer.sizeDelta = Vector2.zero;
+            m_inventoryScroll.content = m_slotContainer;
+            slotContainer.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             VerticalLayoutGroup slotLayout =
                 slotContainer.AddComponent<VerticalLayoutGroup>();
             slotLayout.spacing = 5f;
@@ -586,9 +627,6 @@ namespace ZZ
             slotLayout.childControlWidth = true;
             slotLayout.childForceExpandHeight = false;
             slotLayout.childForceExpandWidth = true;
-            LayoutElement slotsLayout = slotContainer.AddComponent<LayoutElement>();
-            slotsLayout.flexibleHeight = 1f;
-            slotsLayout.minHeight = 360f;
 
             m_currentItemNameText = CreateText(
                 "Selected Item",
@@ -614,6 +652,15 @@ namespace ZZ
                 ReturnToContextMenu);
 
             menuRoot.SetActive(false);
+        }
+
+        private void LateUpdate()
+        {
+            if (IsMenuOpen && (m_player == null || m_player.IsDead || m_dialogueSource == null ||
+                (m_player.transform.position - m_dialogueSource.transform.position).sqrMagnitude > 36f))
+            {
+                CloseMenu();
+            }
         }
 
         /// <summary>Returns one wrapped category step for shared input tests.</summary>

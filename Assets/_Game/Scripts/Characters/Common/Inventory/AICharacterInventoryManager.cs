@@ -78,7 +78,7 @@ namespace ZZ
         /// <summary>Purchases one item copy and commits finite stock after payment.</summary>
         public bool TryPurchaseItem(Item shopItem, PlayerManager player)
         {
-            if (!EnsureShopInventory() ||
+            if (!CanTradeWith(player) || !EnsureShopInventory() ||
                 player == null ||
                 player.IsSpawned && !player.IsOwner ||
                 shopItem == null ||
@@ -125,10 +125,10 @@ namespace ZZ
         public bool TrySellItem(Item playerItem, PlayerManager player)
         {
             PlayerInventoryManager inventory = player?.InventoryManager;
-            if (!EnsureShopInventory() ||
+            if (!CanTradeWith(player) || !EnsureShopInventory() ||
                 player == null ||
                 player.IsSpawned && !player.IsOwner ||
-                playerItem == null ||
+                !CanSellItem(playerItem) ||
                 inventory == null ||
                 !inventory.ItemsInInventory.Contains(playerItem))
             {
@@ -136,6 +136,10 @@ namespace ZZ
             }
 
             int sellValue = CalculateSellValue(playerItem);
+            if ((long)player.PlayerStatsManager.Runes + sellValue > int.MaxValue)
+            {
+                return false;
+            }
             bool shouldReleaseItem = !playerItem.IsStackable;
             if (!inventory.RemoveItemFromInventory(playerItem))
             {
@@ -152,12 +156,32 @@ namespace ZZ
             return true;
         }
 
-        /// <summary>Returns the tutorial sell price without merchant cash limits.</summary>
+        /// <summary>Returns the full entry price: each unit sells for one quarter of its buy value.</summary>
         public static int CalculateSellValue(Item item)
         {
-            return item == null
-                ? 0
-                : Mathf.Max(0, Mathf.RoundToInt(item.ItemValue / 4f));
+            if (item == null)
+            {
+                return 0;
+            }
+            int unitValue = Mathf.Max(0, Mathf.RoundToInt(item.ItemValue / 4f));
+            int amount = item.IsStackable ? Mathf.Max(0, item.CurrentItemAmount) : 1;
+            return (int)System.Math.Min(int.MaxValue, (long)unitValue * amount);
+        }
+
+        /// <summary>Protects progression keys, reusable flasks, and entries without a sale price.</summary>
+        public static bool CanSellItem(Item item)
+        {
+            return item != null && item is not KeyItem && item is not FlaskItem &&
+                CalculateSellValue(item) > 0;
+        }
+
+        /// <summary>Rejects transactions after death, despawn, or leaving the merchant's interaction range.</summary>
+        public bool CanTradeWith(PlayerManager player)
+        {
+            return player != null && !player.IsDead && player.PlayerStatsManager != null &&
+                (!player.IsSpawned || player.IsOwner) && Character != null && !Character.IsDead &&
+                isActiveAndEnabled &&
+                (player.transform.position - transform.position).sqrMagnitude <= 36f;
         }
 
         /// <summary>Writes current stock after a successful mutation.</summary>

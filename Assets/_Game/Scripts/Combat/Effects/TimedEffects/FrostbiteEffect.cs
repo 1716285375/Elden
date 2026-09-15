@@ -7,6 +7,7 @@ namespace ZZ
         MenuName = "ZZ/Character Effects/Timed/Frostbite")]
     public class FrostbiteEffect : TimedCharacterEffect
     {
+        [SerializeField] private StatusEffectDefinition m_statusDefinition;
         [SerializeField, Range(0f, 100f)] private float m_hpPercentageDamage = 10f;
         [SerializeField]
         private ModifyStaminaRegenerationForATimeEffect
@@ -16,7 +17,8 @@ namespace ZZ
 
         /// <summary>Gets the maximum-Health percentage dealt once on trigger.</summary>
         public float HPPercentageDamage =>
-            Mathf.Clamp(m_hpPercentageDamage, 0f, 100f);
+            m_statusDefinition != null ? m_statusDefinition.MaxHealthPercent :
+                Mathf.Clamp(m_hpPercentageDamage, 0f, 100f);
 
         /// <summary>Gets the reusable Stamina modifier started by Frostbite.</summary>
         public ModifyStaminaRegenerationForATimeEffect

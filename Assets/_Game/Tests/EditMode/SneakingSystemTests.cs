@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ZZ.Tests
 {
@@ -25,12 +26,31 @@ namespace ZZ.Tests
             string generatedControls = File.ReadAllText("Assets/_Game/Scripts/Generated/Input/PlayerControls.cs");
 
             Assert.That(inputActions, Does.Contain("\"name\": \"Sneak\""));
-            Assert.That(inputActions, Does.Contain("<Keyboard>/c"));
+            Assert.That(inputActions, Does.Contain("<Keyboard>/v"));
             Assert.That(inputActions, Does.Contain("<Gamepad>/leftStickPress"));
             Assert.That(generatedControls, Does.Contain("public InputAction @Sneak"));
             Assert.That(
                 ReadRuntimeSource("Input/PlayerInputManager.cs"),
                 Does.Contain("ToggleSneakingState()"));
+        }
+
+        [Test]
+        public void KeyboardSkillAndSneakUseDifferentControls()
+        {
+            InputActionAsset asset = InputActionAsset.FromJson(File.ReadAllText(
+                "Assets/_Game/Settings/Input/PlayerControls.inputactions"));
+            try
+            {
+                string[] skillPaths = asset.FindAction("LT", true).bindings.Select(binding => binding.path).ToArray();
+                foreach (InputBinding binding in asset.FindAction("Sneak", true).bindings)
+                {
+                    Assert.That(skillPaths, Does.Not.Contain(binding.path));
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(asset);
+            }
         }
 
         [Test]
@@ -75,9 +95,11 @@ namespace ZZ.Tests
             string aiNetworkSource = ReadRuntimeSource(
                 "Character/AI/AICharacterNetworkManager.cs");
 
-            Assert.That(combatSource, Does.Contain("m_charactersTargetingMe"));
-            Assert.That(combatSource, Does.Contain("m_stealthObjectsCurrentlyStandingIn"));
-            Assert.That(combatSource, Does.Contain("SetHiddenState(isHidden)"));
+            string targetingSource = ReadRuntimeSource("Characters/Common/StealthTargetingController.cs");
+            Assert.That(combatSource, Does.Contain("StealthTargeting?.IsHidden"));
+            Assert.That(targetingSource, Does.Contain("m_charactersTargetingMe"));
+            Assert.That(targetingSource, Does.Contain("m_stealthObjectsCurrentlyStandingIn"));
+            Assert.That(targetingSource, Does.Contain("SetHiddenState(isHidden)"));
             Assert.That(aiSource, Does.Contain("m_sneakingDetectionRadiusMultiplier = 0.25f"));
             Assert.That(aiSource, Does.Contain("AddCharacterTargetingMe(this)"));
             Assert.That(aiSource, Does.Contain("RemoveCharacterTargetingMe(this)"));

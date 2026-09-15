@@ -206,6 +206,9 @@ namespace ZZ
                     Mathf.Max(0f, CharacterNetworkManager.MaxStamina.Value);
                 if (PlayerNetworkManager != null)
                 {
+                    PlayerNetworkManager.CurrentFocusPoints.Value =
+                        Mathf.Max(0f, PlayerNetworkManager.MaxFocusPoints.Value);
+                    PlayerNetworkManager.RefillFlasks();
                     PlayerNetworkManager.IsSprinting.Value = false;
                 }
 
@@ -320,6 +323,8 @@ namespace ZZ
                 CharacterNetworkManager.CurrentFocusPoints.Value;
             currentData.CurrentHealthFlasksRemaining =
                 PlayerNetworkManager.RemainingHealthFlasks.Value;
+            currentData.HealthFlaskCapacity = PlayerNetworkManager.HealthFlaskCapacity;
+            currentData.FocusPointFlaskCapacity = PlayerNetworkManager.FocusPointFlaskCapacity;
             currentData.CurrentFocusPointFlasksRemaining =
                 PlayerNetworkManager.RemainingFocusPointFlasks.Value;
             currentData.CurrentSpellID = InventoryManager.CurrentSpell?.ItemID ?? -1;
@@ -419,6 +424,8 @@ namespace ZZ
             PlayerNetworkManager.HairColorBlue.Value = currentData.HairColorBlue;
             InventoryManager.RestoreInventory(currentData);
             InventoryManager.RestoreStorage(currentData);
+            PlayerNetworkManager.ConfigureFlaskCapacity(
+                currentData.HealthFlaskCapacity, currentData.FocusPointFlaskCapacity);
             PlayerNetworkManager.RemainingHealthFlasks.Value =
                 currentData.CurrentHealthFlasksRemaining;
             PlayerNetworkManager.RemainingFocusPointFlasks.Value =
@@ -508,8 +515,8 @@ namespace ZZ
                 }
             }
 
-            PlayerNetworkManager.RemainingHealthFlasks.Value = healthFlasks;
-            PlayerNetworkManager.RemainingFocusPointFlasks.Value = focusPointFlasks;
+            PlayerNetworkManager.ConfigureFlaskCapacity(healthFlasks, focusPointFlasks);
+            PlayerNetworkManager.RefillFlasks();
         }
 
         private void SaveInventoryData(CharacterSaveData currentData)

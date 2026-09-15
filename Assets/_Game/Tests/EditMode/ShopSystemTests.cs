@@ -182,6 +182,29 @@ namespace ZZ.Tests
             return new SerializedObject(item).FindProperty("m_itemValue").intValue;
         }
 
+        [TestCase(1, 5)]
+        [TestCase(20, 100)]
+        [TestCase(99, 495)]
+        public void SellingMaterialStackPaysForEveryRemovedUnit(int amount, int expectedRunes)
+        {
+            Object item = Object.Instantiate(AssetDatabase.LoadMainAssetAtPath(
+                "Assets/_Game/Data/Items/Upgrade Materials/Small Smithing Stone.asset"));
+            try
+            {
+                SerializedObject serializedItem = new(item);
+                serializedItem.FindProperty("m_itemValue").intValue = 20;
+                serializedItem.ApplyModifiedPropertiesWithoutUndo();
+                item.GetType().GetMethod("SetCurrentItemAmount").Invoke(item, new object[] { amount });
+                System.Type inventoryType = System.Type.GetType("ZZ.AICharacterInventoryManager, Assembly-CSharp");
+                object value = inventoryType.GetMethod("CalculateSellValue").Invoke(null, new[] { item });
+                Assert.That(value, Is.EqualTo(expectedRunes));
+            }
+            finally
+            {
+                Object.DestroyImmediate(item);
+            }
+        }
+
         private static string ReadProjectFile(string projectRelativePath)
         {
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;

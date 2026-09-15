@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,9 @@ namespace ZZ
         private const float k_BackstabAlignmentDuration = 0.15f;
         private const float k_MinimumBackstabAngle = 145f;
 
+        [SerializeField, Min(1)] private int m_parryStrength = 1;
+        public int ParryStrength => Mathf.Max(1, m_parryStrength);
+
         [SerializeField] private AttackType m_currentAttackType;
         [SerializeField, Min(0f)] private float m_previousPoiseDamageTaken;
 
@@ -27,12 +31,17 @@ namespace ZZ
         private Transform m_riposteReceiverTransform;
         private Transform m_backstabReceiverTransform;
         private CharacterManager m_pendingCriticalDamageSource;
-        private readonly List<CharacterManager> m_charactersTargetingMe = new();
-        private readonly List<StealthObject> m_stealthObjectsCurrentlyStandingIn =
-            new();
         private GameObject m_activeDrawnProjectile;
+        private ICombatActionClock m_actionClock;
 
         protected CharacterManager Character { get; private set; }
+
+        /// <summary>Owns the target registry and concealment volumes behind <see cref="IsHidden"/>.</summary>
+        public StealthTargetingController StealthTargeting { get; private set; }
+
+        /// <summary>Held input intents, kept apart from the edge-triggered command buffer.</summary>
+        public CombatIntentState Intent { get; } = new CombatIntentState();
+        public CombatActionRunner ActionRunner { get; } = new CombatActionRunner();
 
         /// <summary>Gets or sets the attack type of the current attack action.</summary>
         public AttackType CurrentAttackType
@@ -51,38 +60,14 @@ namespace ZZ
         public bool CanBeBackstabbed => m_canBeBackstabbed;
 
         /// <summary>Gets the living characters currently treating this character as a target.</summary>
-        public IReadOnlyList<CharacterManager> CharactersTargetingMe
-        {
-            get
-            {
-                RemoveInvalidTargetingCharacters();
-                return m_charactersTargetingMe;
-            }
-        }
+        public IReadOnlyList<CharacterManager> CharactersTargetingMe =>
+            StealthTargeting != null ? StealthTargeting.CharactersTargetingMe : Array.Empty<CharacterManager>();
 
         /// <summary>Gets whether no living character currently has this character targeted.</summary>
-        public bool IsHidden
-        {
-            get
-            {
-                RemoveInvalidTargetingCharacters();
-                bool isHidden = m_charactersTargetingMe.Count == 0;
-                SyncHiddenState(isHidden);
-                return isHidden;
-            }
-        }
+        public bool IsHidden => StealthTargeting?.IsHidden == true;
 
         /// <summary>Gets whether the character currently overlaps any authored concealment volume.</summary>
-        public bool IsInsideStealthObject
-        {
-            get
-            {
-                m_stealthObjectsCurrentlyStandingIn.RemoveAll(
-                    stealthObject => stealthObject == null ||
-                        !stealthObject.isActiveAndEnabled);
-                return m_stealthObjectsCurrentlyStandingIn.Count > 0;
-            }
-        }
+        public bool IsInsideStealthObject => StealthTargeting?.IsInsideStealthObject == true;
 
         /// <summary>Gets whether this character owns a replicated notched projectile.</summary>
         public bool HasArrowNotched =>
@@ -91,58 +76,43 @@ namespace ZZ
         protected virtual void Awake()
         {
             Character = GetComponent<CharacterManager>();
+            StealthTargeting = new StealthTargetingController(Character);
+        }
+
+        /// <summary>Advances data-authored windows for the running action instance.</summary>
+        protected virtual void Update()
+        {
+            if (!ActionRunner.IsRunning)
+            {
+                return;
+            }
+
+            m_actionClock ??= new AnimatorCombatClock(Character?.CharacterAnimatorManager);
+            ActionRunner.Tick(m_actionClock);
         }
 
         /// <summary>Registers one character that has selected this character as its target.</summary>
         public void AddCharacterTargetingMe(CharacterManager targetingCharacter)
         {
-            RemoveInvalidTargetingCharacters();
-            if (targetingCharacter == null ||
-                targetingCharacter == Character ||
-                m_charactersTargetingMe.Contains(targetingCharacter))
-            {
-                return;
-            }
-
-            m_charactersTargetingMe.Add(targetingCharacter);
-            SyncHiddenState(false);
+            StealthTargeting?.AddCharacterTargetingMe(targetingCharacter);
         }
 
         /// <summary>Removes one character that no longer targets this character.</summary>
         public void RemoveCharacterTargetingMe(CharacterManager targetingCharacter)
         {
-            m_charactersTargetingMe.Remove(targetingCharacter);
-            RemoveInvalidTargetingCharacters();
-            SyncHiddenState(m_charactersTargetingMe.Count == 0);
+            StealthTargeting?.RemoveCharacterTargetingMe(targetingCharacter);
         }
 
         /// <summary>Registers an authored concealment volume currently containing this character.</summary>
         public void AddStealthObject(StealthObject stealthObject)
         {
-            if (stealthObject != null &&
-                !m_stealthObjectsCurrentlyStandingIn.Contains(stealthObject))
-            {
-                m_stealthObjectsCurrentlyStandingIn.Add(stealthObject);
-            }
+            StealthTargeting?.AddStealthObject(stealthObject);
         }
 
         /// <summary>Removes an authored concealment volume that no longer contains this character.</summary>
         public void RemoveStealthObject(StealthObject stealthObject)
         {
-            m_stealthObjectsCurrentlyStandingIn.Remove(stealthObject);
-        }
-
-        private void RemoveInvalidTargetingCharacters()
-        {
-            m_charactersTargetingMe.RemoveAll(targetingCharacter =>
-                targetingCharacter == null ||
-                targetingCharacter.IsDead ||
-                !targetingCharacter.gameObject.activeInHierarchy);
-        }
-
-        private void SyncHiddenState(bool isHidden)
-        {
-            Character?.CharacterNetworkManager?.SetHiddenState(isHidden);
+            StealthTargeting?.RemoveStealthObject(stealthObject);
         }
 
         /// <summary>
@@ -166,6 +136,13 @@ namespace ZZ
             Character?.CharacterAnimatorManager?.PlayTargetAttackActionAnimation(
                 attackType,
                 animatorWeapon);
+            ActionRunner.Begin(ResolveAttackDefinition(attackType, animatorWeapon), Character,
+                animatorWeapon, attackType);
+        }
+
+        protected virtual AttackDefinition ResolveAttackDefinition(AttackType attackType, WeaponItem weapon)
+        {
+            return weapon != null ? weapon.GetAttackDefinition(attackType) : null;
         }
 
         /// <summary>Stores the latest hit intensity for follow-up combat decisions.</summary>
@@ -193,24 +170,28 @@ namespace ZZ
         /// <summary>Animation Event: opens this owner's active Parry frames.</summary>
         public void EnableIsParrying()
         {
+            ActionRunner.SetWindow(CombatWindowType.Parry, true);
             Character?.CharacterNetworkManager?.SetParryingState(true);
         }
 
         /// <summary>Animation Event: closes this owner's active Parry frames.</summary>
         public void DisableIsParrying()
         {
+            ActionRunner.SetWindow(CombatWindowType.Parry, false);
             Character?.CharacterNetworkManager?.SetParryingState(false);
         }
 
         /// <summary>Animation Event: marks the owner's current attack as Parryable.</summary>
         public void EnableIsParryable()
         {
+            ActionRunner.SetWindow(CombatWindowType.Parryable, true);
             Character?.CharacterNetworkManager?.SetParryableState(true);
         }
 
         /// <summary>Animation Event: closes the owner's Parryable attack frames.</summary>
         public void DisableIsParryable()
         {
+            ActionRunner.SetWindow(CombatWindowType.Parryable, false);
             Character?.CharacterNetworkManager?.SetParryableState(false);
         }
 
@@ -463,6 +444,8 @@ namespace ZZ
                 return;
             }
 
+            CombatVfx.PlayParry(parryingCharacter.LockOnTransform.position);
+
             CloseAllDamageColliders();
             if (Character is AICharacterManager aiCharacter)
             {
@@ -656,6 +639,7 @@ namespace ZZ
         /// <summary>Clears transient combat windows when the action layer returns to neutral.</summary>
         public virtual void ResetActionState()
         {
+            ActionRunner.End();
             DestroyDrawnProjectile();
             if (Character?.IsSpawned == true && Character.IsOwner)
             {

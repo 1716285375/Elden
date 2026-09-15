@@ -20,6 +20,7 @@ namespace ZZ.Tests
         private Component m_player;
         private Component m_combat;
         private Component m_network;
+        private object m_spells;
         private UnityEngine.Object m_spell;
         private UnityEngine.Object m_catalyst;
 
@@ -54,7 +55,10 @@ namespace ZZ.Tests
             m_player.GetType().GetProperty("PlayerStatsManager")
                 .SetValue(m_player, null);
             SetField(m_combat, "m_player", m_player);
+            m_spells = Activator.CreateInstance(Type.GetType("ZZ.SpellCombatController, Assembly-CSharp", true), new object[] { m_player });
+            SetField(m_combat, "m_spells", m_spells);
             GetResource("CurrentStamina").Reset(100f);
+            GetResource("CurrentFocusPoints").Reset(100f);
         }
 
         [TearDown]
@@ -90,14 +94,14 @@ namespace ZZ.Tests
         {
             PrepareCharge();
             InvokeCombat("ReleaseChargingSpell", true);
-            SetField(m_combat, "m_spellChargeStartTime", Time.time - 10f);
+            SetField(m_spells, "m_spellChargeStartTime", Time.time - 10f);
 
-            InvokeCombat("Update");
+            m_spells.GetType().GetMethod("Tick").Invoke(m_spells, new object[] { 1.5f });
 
-            Assert.That(GetField(m_combat, "m_hasReachedFullSpellCharge"), Is.False);
+            Assert.That(GetField(m_spells, "m_hasReachedFullSpellCharge"), Is.False);
             Assert.That(m_combat.GetType().GetProperty("IsChargingSpell")
                 .GetValue(m_combat), Is.False);
-            Assert.That(GetField(m_combat, "m_currentCastingSpell"), Is.SameAs(m_spell),
+            Assert.That(GetField(m_spells, "m_currentCastingSpell"), Is.SameAs(m_spell),
                 "The release animation still needs its committed spell snapshot.");
         }
 
@@ -120,12 +124,64 @@ namespace ZZ.Tests
                 .GetValue(m_combat), Is.True);
         }
 
+        [TestCase(24f, 100f, false, false)]
+        [TestCase(25f, 25f, false, true)]
+        [TestCase(100f, 24f, false, false)]
+        [TestCase(34f, 100f, true, false)]
+        [TestCase(35f, 35f, true, true)]
+        public void ReleaseRequiresBothCompleteResourceCosts(
+            float stamina, float focusPoints, bool fullyCharged, bool expected)
+        {
+            SetField(m_spell, "m_staminaCost", 25f);
+            SetField(m_spell, "m_focusPointsCost", 25);
+            SetField(m_spell, "m_fullChargeModifier", 1.4f);
+            GetResource("CurrentStamina").Reset(stamina);
+            GetResource("CurrentFocusPoints").Reset(focusPoints);
+
+            object canAfford = m_spell.GetType().GetMethod("CanAffordCast")
+                .Invoke(m_spell, new object[] { m_player, fullyCharged });
+
+            Assert.That(canAfford, Is.EqualTo(expected));
+            Assert.That(GetResource("CurrentStamina").Value, Is.EqualTo(stamina));
+            Assert.That(GetResource("CurrentFocusPoints").Value, Is.EqualTo(focusPoints));
+        }
+
+        [Test]
+        public void InsufficientChargeResourcesCancelWithoutPartialPayment()
+        {
+            PrepareCharge();
+            SetField(m_spells, "m_hasReachedFullSpellCharge", true);
+            GetResource("CurrentStamina").Reset(1f);
+
+            InvokeCombat("ReleaseChargingSpell", true);
+
+            Assert.That(GetField(m_spells, "m_currentCastingSpell"), Is.Null);
+            Assert.That(GetResource("CurrentStamina").Value, Is.EqualTo(1f));
+            Assert.That(GetResource("CurrentFocusPoints").Value, Is.EqualTo(100f));
+        }
+
+        [Test]
+        public void ReleaseKeepsCommittedSpellAndCatalystAfterInventoryChanges()
+        {
+            PrepareCharge();
+            Component inventory = m_root.GetComponent("PlayerInventoryManager");
+            SetField(inventory, "m_currentSpell", null);
+
+            object resolvedSpell = m_spells.GetType().GetMethod("ResolveCurrentSpell",
+                BindingFlags.Instance | BindingFlags.NonPublic).Invoke(m_spells, null);
+            object resolvedCatalyst = m_spells.GetType().GetMethod("ResolveCasterWeapon",
+                BindingFlags.Instance | BindingFlags.NonPublic).Invoke(m_spells, new object[] { true });
+
+            Assert.That(resolvedSpell, Is.SameAs(m_spell));
+            Assert.That(resolvedCatalyst, Is.SameAs(m_catalyst));
+        }
+
         private void PrepareCharge()
         {
-            SetField(m_combat, "m_currentCastingSpell", m_spell);
-            SetField(m_combat, "m_currentCasterWeapon", m_catalyst);
-            SetField(m_combat, "m_isCastingRightHandSpell", true);
-            SetField(m_combat, "m_spellChargeStartTime", Time.time);
+            SetField(m_spells, "m_currentCastingSpell", m_spell);
+            SetField(m_spells, "m_currentCasterWeapon", m_catalyst);
+            SetField(m_spells, "m_isCastingRightHandSpell", true);
+            SetField(m_spells, "m_spellChargeStartTime", Time.time);
         }
 
         private NetworkVariable<float> GetResource(string name)

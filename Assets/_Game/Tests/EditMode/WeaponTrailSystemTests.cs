@@ -132,7 +132,7 @@ namespace ZZ.Tests
                 "private void OpenDamageCollider(WeaponManager weaponManager)",
                 StringComparison.Ordinal);
             int trailToggle = source.IndexOf(
-                "weaponManager?.ToggleWeaponTrail(true)",
+                "weaponManager?.PresentDamageWindow()",
                 methodStart,
                 StringComparison.Ordinal);
             int ownerGuard = source.IndexOf(

@@ -5,10 +5,9 @@ namespace ZZ
     /// </summary>
     public class MeleeWeaponDamageCollider : DamageCollider
     {
+        protected override bool UsesWeaponTrace => true;
+
         /// <inheritdoc />
-        protected override bool CheckForParry(CharacterManager damageTarget)
-        {
-            return base.CheckForParry(damageTarget);
-        }
+        public override bool UsesActionSnapshot => true;
     }
 }
