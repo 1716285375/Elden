@@ -54,10 +54,13 @@ namespace ZZ.Tests
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 k_PoisonedVFXPath);
             Assert.That(prefab, Is.Not.Null);
-            ParticleSystem particles = prefab.GetComponent<ParticleSystem>();
-            Assert.That(particles, Is.Not.Null);
-            Assert.That(particles.main.loop, Is.True);
-            Assert.That(particles.main.playOnAwake, Is.True);
+            ParticleSystem[] layers = prefab.GetComponentsInChildren<ParticleSystem>(true);
+            Assert.That(layers, Is.Not.Empty);
+            foreach (ParticleSystem particles in layers)
+            {
+                Assert.That(particles.main.loop, Is.True);
+                Assert.That(particles.main.playOnAwake, Is.True);
+            }
         }
 
         [Test]

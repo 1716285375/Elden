@@ -143,6 +143,12 @@ namespace ZZ.Tests
 
             Assert.That(particles, Is.Not.Null);
             Color frostColor = particles.main.startColor.colorMax;
+            Material particleMaterial = particles.GetComponent<ParticleSystemRenderer>().sharedMaterial;
+            Assert.That(particleMaterial, Is.Not.Null);
+            if (particleMaterial.HasProperty("_BaseColor"))
+            {
+                frostColor *= particleMaterial.GetColor("_BaseColor");
+            }
             Assert.That(frostColor.b, Is.GreaterThan(frostColor.r));
             Assert.That(Resources.Load<GameObject>("Effects/Frostbite VFX"),
                 Is.SameAs(vfx));
