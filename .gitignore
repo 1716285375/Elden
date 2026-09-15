@@ -145,6 +145,26 @@ __pycache__/
 
 # Generated Windows distribution
 /Releases/
+/[Dd]ist/
+*.exe
+*.app.zip
+*_Data/
+*_BackUpThisFolder_ButDontShipItWithYourGame/
+*_BurstDebugInformation_DoNotShip/
+
+# Generated lighting data (rebake locally; keep authored lighting settings)
+/Assets/**/Lighting/Baked/
+/Assets/**/Lighting/Baked.meta
+/Assets/**/LightingData.asset
+/Assets/**/LightingData.asset.meta
+/Assets/**/Lightmap-*
+/Assets/**/ReflectionProbe-*
+
+# Local model experiment outputs; keep scripts and documentation
+/SourceArt/Player/*.blend
+/SourceArt/Player/*.png
+/SourceArt/Player/player-blender-*.json
+/SourceArt/Player/Animation_Verification.txt
 
 # Docs
 /Docs/
