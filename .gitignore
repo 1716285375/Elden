@@ -53,6 +53,7 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.tmp
 *.user
@@ -142,8 +143,8 @@ InitTestScene*.unity*
 # Python bytecode cache
 __pycache__/
 
-# Rider
-.iead*
+# Generated Windows distribution
+/Releases/
 
 # Docs
 /Docs/
