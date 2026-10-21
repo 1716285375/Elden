@@ -17,8 +17,18 @@ $registry = Get-Content -LiteralPath $registryPath -Raw | ConvertFrom-Json
 $instance = $registry.PSObject.Properties | Where-Object { $_.Name -eq $ProjectPath } | Select-Object -ExpandProperty Value
 if (!$instance) { throw 'Open the complete project in Unity with UnitySkills enabled.' }
 $server = 'http://127.0.0.1:{0}' -f $instance.port
-$health = Invoke-RestMethod "$server/health" -TimeoutSec 15
-if ($health.projectName -ne 'Elden' -or $health.compilation.isCompiling) { throw 'Unity is not ready to build Elden.' }
+Write-Host 'Waiting for the local Unity editor to finish imports and maintenance.'
+$deadline = [DateTime]::UtcNow.AddMinutes(20)
+$ready = $false
+while ([DateTime]::UtcNow -lt $deadline) {
+    try {
+        $health = Invoke-RestMethod "$server/health" -TimeoutSec 5
+        $ready = $health.projectName -eq 'Elden' -and !$health.compilation.isCompiling -and $health.mainThreadIdleMs -lt 3000
+        if ($ready) { break }
+    } catch { }
+    Start-Sleep -Seconds 5
+}
+if (!$ready) { throw 'The local Unity editor did not become available.' }
 $body = @{ menuPath = 'Tools/ZZ/Build/Windows Player' } | ConvertTo-Json
 $preview = Invoke-RestMethod -Method Post "$server/skill/editor_execute_menu?expectProject=Elden&mode=dryRun" -ContentType application/json -Body $body -TimeoutSec 30
 if (!$preview.valid) { throw 'Unity build command validation failed.' }
