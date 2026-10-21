@@ -30,7 +30,9 @@
 
 项目使用 Unity 6000.3.11f1、URP、Input System、Netcode for GameObjects 和 AI Navigation。
 
-美术资源只保留在本地。Windows Release 工作流由能访问完整工程的本地 runner 构建，发布可运行压缩包，不上传素材工程或开发记录。克隆源码后，需要自行补齐资源才能在编辑器中运行。
+美术资源只保留在本地。本机编译 Windows 版本，Windows Release 工作流校验压缩包并检查启动，通过后发布到 Releases，不上传素材工程或开发记录。克隆源码后，需要自行补齐资源才能在编辑器中运行。
+
+在完整工程中打开 Unity，登录 GitHub CLI 后执行 `pwsh BuildScripts/PublishWindows.ps1` 即可发起构建和发布。
 
 ## 操作
 
