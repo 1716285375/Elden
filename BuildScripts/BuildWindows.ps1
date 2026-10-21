@@ -63,7 +63,16 @@ try {
 }
 $zip = Join-Path $OutputDirectory 'Elden-Windows.zip'
 if (Test-Path -LiteralPath $zip) { throw 'Use a fresh runner output directory.' }
-[IO.Compression.ZipFile]::CreateFromDirectory($buildDirectory, $zip, [IO.Compression.CompressionLevel]::Optimal, $false)
+$archive = [IO.Compression.ZipFile]::Open($zip, [IO.Compression.ZipArchiveMode]::Create)
+try {
+    foreach ($file in Get-ChildItem -LiteralPath $buildDirectory -Recurse -File) {
+        $relative = [IO.Path]::GetRelativePath($buildDirectory, $file.FullName).Replace('\', '/')
+        if ($relative -match '(^|/)[^/]*(_BurstDebugInformation_DoNotShip|_BackUpThisFolder_ButDontShipItWithYourGame)(/|$)' -or $file.Extension -in @('.pdb', '.mdb', '.log')) {
+            continue
+        }
+        [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $file.FullName, $relative, [IO.Compression.CompressionLevel]::Optimal) | Out-Null
+    }
+} finally { $archive.Dispose() }
 if ((Get-Item $zip).Length -ge 2GB) { throw 'Build archive exceeds the GitHub Release asset limit.' }
 $hashFile = $zip + '.sha256'
 '{0}  Elden-Windows.zip' -f (Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() | Set-Content $hashFile -Encoding ascii

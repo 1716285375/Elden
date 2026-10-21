@@ -238,3 +238,8 @@ __pycache__/
 !/Media/
 !/Media/character-creation.gif
 !/Media/gameplay.jpg
+
+# Unity-generated player build metadata
+/Assets/Resources/PerformanceTestRun*.json*
+/Assets/packages-merged-link/
+/Assets/packages-merged-link.meta
