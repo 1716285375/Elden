@@ -1,0 +1,20 @@
+.level-menu { background-color: rgb(16,15,12); }
+.level-menu__content { width: 100%; height: 100%; }
+.level-menu__body { flex-direction: row; flex-grow: 1; min-height: 0; margin-top: 24px; }
+.level-menu__attributes { width: 62%; padding-right: 32px; }
+.level-menu__summary { width: 38%; padding-left: 32px; border-left-width: 1px; border-left-color: rgb(74,66,48); }
+.level-menu__value { color: rgb(227,207,169); font-size: 30px; margin: 8px 0 26px 0; white-space: normal; }
+.level-menu__value--invalid { color: rgb(231,148,141); }
+.level-attribute { padding: 8px 16px; margin-bottom: 8px; background-color: rgb(30,28,22); }
+.level-attribute__heading { flex-direction: row; justify-content: space-between; }
+.level-attribute__name { color: rgb(229,226,215); font-size: 20px; }
+.level-attribute__value { color: rgb(184,175,151); font-size: 20px; }
+.level-attribute--changed .level-attribute__value { color: rgb(145,205,181); }
+.level-attribute__controls { flex-direction: row; align-items: center; }
+.menu-overlay .level-attribute__step { min-height: 36px; width: 42px; padding: 2px; margin: 4px 8px; }
+.level-menu__feedback { margin: 20px 0 12px 0; }
+.level-menu__footer { flex-direction: row; justify-content: flex-end; }
+.level-menu__footer .menu-command { min-width: 160px; margin-left: 12px; }
+.level-menu__veil { position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(7,6,5,0.9); }
+.level-menu__confirmation { width: 540px; max-width: 90%; padding: 32px; border-width: 1px; border-color: rgb(191,168,121); border-radius: 0; background-color: rgb(27,25,19); }
+.level-menu__confirmation .menu-description { margin-bottom: 26px; }

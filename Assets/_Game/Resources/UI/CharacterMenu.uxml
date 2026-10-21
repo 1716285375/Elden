@@ -1,0 +1,51 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="CharacterMenu.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay character-menu">
+        <ui:VisualElement class="character-menu__card">
+            <ui:Label text="旅途之间" class="menu-eyebrow" />
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--status" picking-mode="Ignore" />
+                <ui:Label name="character-name" text="旅人" class="menu-title" />
+            </ui:VisualElement>
+            <ui:Label name="character-currency" class="menu-description" />
+            <ui:VisualElement class="character-menu__commands">
+                <ui:Button name="resume" text="继续旅途" class="menu-command" />
+                <ui:Button name="weapons" text="武器" class="menu-command" />
+                <ui:Button name="equipment" text="装备" class="menu-command character-menu__command--equipment" />
+                <ui:Button name="inventory" text="物品" class="menu-command character-menu__command--inventory" />
+                <ui:Button name="status" text="状态" class="menu-command character-menu__command--status" />
+                <ui:Button name="save" text="保存进度" class="menu-command" />
+                <ui:Button name="settings" text="系统" class="menu-command character-menu__command--system" />
+                <ui:Button name="title" text="返回标题" class="menu-command" />
+                <ui:Button name="quit" text="退出游戏" class="menu-command" />
+            </ui:VisualElement>
+            <ui:Label text="打开菜单不会暂停世界，请在安全处整备。" class="menu-description" />
+        </ui:VisualElement>
+        <ui:VisualElement name="status-panel" class="character-status">
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--status" picking-mode="Ignore" />
+                <ui:Label text="状态" class="menu-title" />
+            </ui:VisualElement>
+            <ui:Label name="status-name" class="character-status__name" />
+            <ui:ScrollView class="character-status__scroll" horizontal-scroller-visibility="Hidden">
+                <ui:VisualElement class="character-status__columns">
+                    <ui:VisualElement name="status-attributes" class="character-status__column" />
+                    <ui:VisualElement name="status-resources" class="character-status__column" />
+                    <ui:VisualElement name="status-defense" class="character-status__column" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+            <ui:VisualElement class="character-status__footer menu-footer">
+                <ui:Label text="确认角色的状态" class="menu-description" />
+                <ui:Button name="status-back" text="Esc：返回" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="exit-confirmation" class="character-menu__confirmation">
+            <ui:Label text="结束本次旅途？" class="menu-section-title" />
+            <ui:Label name="exit-description" class="menu-description" />
+            <ui:Button name="cancel-exit" text="留下，继续旅途" class="menu-command" />
+            <ui:Button name="confirm-exit" text="确认离开" class="menu-command" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

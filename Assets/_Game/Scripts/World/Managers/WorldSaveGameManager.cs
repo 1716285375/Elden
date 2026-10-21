@@ -5,7 +5,6 @@ using System.IO;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace ZZ
 {
@@ -17,9 +16,6 @@ namespace ZZ
             "ZZ.LastPlayedCharacterSlot";
         private const float k_SceneEventRetryTimeoutSeconds = 30f;
 
-        [FormerlySerializedAs("worldSceneName")]
-        [SerializeField] private string m_worldSceneName =
-            WorldScenePathLayout.MasterSceneName;
         [SerializeField] private int m_startingSceneIndex = 1;
 
         [Header("Dialogue")]
@@ -852,7 +848,7 @@ namespace ZZ
         public int GetWorldSceneIndex()
         {
             return SceneUtility.GetBuildIndexByScenePath(
-                $"{WorldScenePathLayout.LevelFolder}/{m_worldSceneName}.unity");
+                WorldScenePathLayout.GameplayScenePath);
         }
 
         private SaveFileDataWriter CreateWriter(CharacterSlot characterSlot)
@@ -893,6 +889,7 @@ namespace ZZ
 
         private IEnumerator LoadScene(int sceneIndex)
         {
+            ThreadPriority previousPriority = Application.backgroundLoadingPriority;
             try
             {
                 string scenePath = SceneUtility.GetScenePathByBuildIndex(sceneIndex);
@@ -916,6 +913,9 @@ namespace ZZ
 
                 PlayerUIManager.Instance?.PlayerUILoadingScreenManager
                     ?.ActivateLoadingScreen();
+                // Render the overlay before starting asset integration on the main thread.
+                Application.backgroundLoadingPriority = ThreadPriority.Low;
+                yield return null;
                 if (networkManager != null && networkManager.IsListening)
                 {
                     yield return LoadNetworkScene(networkManager, sceneName);
@@ -936,6 +936,7 @@ namespace ZZ
             }
             finally
             {
+                Application.backgroundLoadingPriority = previousPriority;
                 m_sceneLoadIsInProgress = false;
             }
         }

@@ -1,0 +1,4 @@
+.save-menu { background-color: rgb(16,15,12); }
+.save-menu__card { width: 720px; max-width: 95%; padding: 36px; background-color: rgb(25,23,18); border-top-width: 2px; border-top-color: rgb(211,186,132); }
+.save-menu__name { margin-top: 28px; white-space: normal; }
+.save-menu__status { padding: 22px; margin: 28px 0; background-color: rgb(24,41,54); }

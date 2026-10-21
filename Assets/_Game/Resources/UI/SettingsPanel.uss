@@ -1,0 +1,76 @@
+#settings-overlay { padding: 3% 2.5%; align-items: stretch; justify-content: flex-start; }
+#settings-overlay .settings-panel {
+    width: 100%; height: 100%; padding: 0; border-width: 0;
+    background-image: none; background-color: transparent;
+}
+.settings-panel__header { flex-shrink: 0; }
+.settings-panel__header .menu-eyebrow { display: none; }
+.settings-panel__header .menu-heading {
+    width: 45%; height: 44px; margin-bottom: 20px;
+    background-image: url("EldenRing/Elements/MENU_FL_Cursor_Half.png");
+}
+#settings-overlay .menu-title { font-size: 25px; }
+.settings-panel__header .menu-section-icon { width: 34px; height: 34px; margin-right: 10px; }
+.settings-panel__header .menu-description { margin-left: 18%; font-size: 18px; }
+.settings-panel__body { flex-grow: 1; min-height: 0; width: 66%; margin-left: 18%; }
+.settings-panel__navigation {
+    flex-shrink: 0; height: 58px; flex-direction: row; align-items: center;
+    border-bottom-width: 1px; border-bottom-color: rgba(174,154,104,0.3);
+}
+#settings-overlay .settings-panel__navigation { background-image: none; }
+#settings-overlay .settings-panel__tab {
+    width: 60px; min-width: 60px; height: 46px; min-height: 46px;
+    margin: 0 18px 0 0; padding: 6px; border-width: 0;
+    background-color: transparent; -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgb(142,134,105);
+}
+#settings-overlay .settings-panel__tab--audio { background-image: url("EldenRing/Elements/MENU_Tab_Audio_01.png"); }
+#settings-overlay .settings-panel__tab--controls { background-image: url("EldenRing/Elements/MENU_Tab_Camera.png"); }
+#settings-overlay .settings-panel__tab--display { background-image: url("EldenRing/Elements/MENU_Tab_Graphic.png"); }
+#settings-overlay .settings-panel__tab--impact { background-image: url("EldenRing/Elements/MENU_Tab_Option.png"); }
+#settings-overlay .settings-panel__tab:hover,
+#settings-overlay .settings-panel__tab:focus,
+#settings-overlay .settings-panel__tab.menu-tab--selected {
+    -unity-background-image-tint-color: rgb(239,222,166);
+    border-bottom-width: 1px; border-bottom-color: rgb(219,202,149);
+}
+.settings-panel__navigation .settings-panel__note { display: none; }
+.settings-panel__content { flex-grow: 1; min-height: 0; padding-top: 20px; }
+.settings-page .menu-section-title, .settings-page .settings-panel__note { display: none; }
+.settings-row { flex-direction: row; align-items: center; min-height: 44px; margin-bottom: 4px; padding: 0 22px; }
+.settings-row__title { width: 46%; font-size: 19px; flex-shrink: 0; }
+.settings-row .menu-description { display: none; }
+.settings-row__control { flex-direction: row; align-items: center; flex-grow: 1; min-width: 0; }
+.settings-row__value { width: 64px; flex-shrink: 0; color: rgb(225,218,193); font-size: 18px; -unity-text-align: middle-right; }
+#settings-overlay .menu-slider { margin: 0 16px 0 0; min-height: 30px; }
+#settings-overlay .menu-slider .unity-base-slider__tracker {
+    background-image: url("EldenRing/Elements/MENU_FL_Slider.png"); background-color: transparent; height: 5px;
+}
+#settings-overlay .menu-slider .unity-base-slider__dragger {
+    background-image: url("EldenRing/Elements/MENU_FL_SliderAnchor.png");
+    background-color: transparent; border-width: 0; width: 10px; height: 18px;
+}
+#settings-overlay .menu-toggle, #settings-overlay .menu-dropdown {
+    min-height: 44px; margin: 0 0 4px 0; padding: 0 22px; background-color: transparent;
+}
+#settings-overlay .menu-toggle .unity-toggle__label,
+#settings-overlay .menu-dropdown .unity-base-field__label { width: 46%; min-width: 0; flex-grow: 0; font-size: 19px; }
+#settings-overlay .menu-dropdown .unity-base-popup-field__input {
+    background-color: transparent; border-width: 0; min-height: 36px;
+}
+#settings-overlay .menu-toggle .unity-toggle__input { flex-grow: 1; justify-content: flex-start; }
+#settings-overlay .settings-row--focused,
+#settings-overlay .menu-toggle:hover, #settings-overlay .menu-toggle:focus,
+#settings-overlay .menu-dropdown:hover, #settings-overlay .menu-dropdown:focus {
+    background-image: url("EldenRing/Elements/MENU_FL_Cursor_Wide.png"); background-color: transparent;
+}
+.settings-panel__footer { flex-direction: row; align-items: flex-end; margin-left: 18%; width: 66%; padding-top: 18px; }
+.settings-panel__footer-copy { flex-grow: 1; }
+.settings-panel__footer .menu-description { font-size: 17px; white-space: normal; }
+.settings-panel__save-status { font-size: 13px; color: rgb(153,146,125); margin-top: 6px; }
+#settings-overlay .settings-panel__footer .menu-command {
+    min-height: 32px; margin: 0; padding: 4px 12px; font-size: 17px; border-width: 0;
+}
+.settings-panel--compact .settings-panel__body,
+.settings-panel--compact .settings-panel__footer { width: 80%; margin-left: 10%; }
+.settings-panel--compact .settings-panel__header .menu-description { margin-left: 10%; }

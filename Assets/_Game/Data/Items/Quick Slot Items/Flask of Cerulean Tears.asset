@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: Flask of Cerulean Tears
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.FlaskItem
   m_itemName: Flask of Cerulean Tears
-  m_itemIcon: {fileID: 8664929240884413937, guid: 841a8a418677d4f4e979858045deeaa9, type: 2}
+  m_itemIcon: {fileID: 1256218584, guid: d6d9754315ab7b341ac6d33d8ec47cda, type: 3}
   m_itemDescription: A sacred flask that restores Focus Points at the drink success
     frame.
   m_itemID: 15
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 0
+  m_isInfinite: 0
   m_itemModel: {fileID: 156559210574365274, guid: 0ca6b028c54a9344a994ab0e2a37b722, type: 3}
   m_useItemAnimation: {fileID: 7400000, guid: 95daa1dc3a107aa4fb20736a4cf1602d, type: 2}
   m_isConsumable: 1

@@ -13,7 +13,7 @@ namespace ZZ
             int layerIndex)
         {
             CharacterManager characterManager = animator.GetComponentInParent<CharacterManager>();
-            characterManager?.ResetActionFlags();
+            characterManager?.CharacterAnimatorManager?.CompleteActionFromAnimator();
         }
     }
 }

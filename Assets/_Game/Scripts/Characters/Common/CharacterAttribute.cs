@@ -1,6 +1,6 @@
 namespace ZZ
 {
-    /// <summary>Identifies the seven attributes available to the Level Up preview.</summary>
+    /// <summary>Identifies the eight attributes available to the Level Up preview.</summary>
     public enum CharacterAttribute
     {
         Vigor,
@@ -9,6 +9,7 @@ namespace ZZ
         Strength,
         Dexterity,
         Intelligence,
-        Faith
+        Faith,
+        Arcane
     }
 }

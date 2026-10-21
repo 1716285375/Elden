@@ -40,6 +40,7 @@ namespace ZZ
         [SerializeField, Range(0.1f, 1f)] private float m_unavailableIconAlpha =
             0.35f;
 
+        private WeaponUpgradeView m_view;
         private WeaponItem m_currentSelectedWeapon;
         private UpgradeMaterial m_currentUpgradeCost;
         private Button m_lastSelectedWeaponButton;
@@ -49,7 +50,7 @@ namespace ZZ
         public WeaponItem CurrentSelectedWeapon => m_currentSelectedWeapon;
         public UpgradeMaterial CurrentUpgradeCost => m_currentUpgradeCost;
         public bool IsConfirmationOpen =>
-            m_confirmationPopup?.activeSelf == true;
+            m_view != null ? m_view.IsConfirmationOpen : m_confirmationPopup?.activeSelf == true;
 
         /// <summary>Opens the shared upgrade service and selects the right-hand weapon.</summary>
         public void OpenWeaponUpgradeMenu()
@@ -63,10 +64,18 @@ namespace ZZ
                 return;
             }
 
+            EnsureToolkitMenu();
             CloseConfirmationPopup(false);
             RefreshWeaponIcons();
             SelectRightHandWeapon();
-            m_rightWeaponButton?.Select();
+            if (m_view != null)
+            {
+                m_view.FocusSelection();
+            }
+            else
+            {
+                m_rightWeaponButton?.Select();
+            }
         }
 
         /// <summary>Defers service opening past dialogue HUD restoration.</summary>
@@ -129,6 +138,11 @@ namespace ZZ
                     $"+{(int)m_currentSelectedWeapon.UpgradeLevel + 1}?";
             }
 
+            if (m_view != null)
+            {
+                m_view.ShowConfirmation();
+                return true;
+            }
             m_confirmationPopup?.transform.SetAsLastSibling();
             m_confirmationPopup?.SetActive(true);
             m_confirmButton?.Select();
@@ -214,6 +228,23 @@ namespace ZZ
                     m_currentUpgradeCost.CurrentItemAmount;
         }
 
+        private void EnsureToolkitMenu()
+        {
+            if (m_view != null || MenuWindow == null || !Application.isPlaying)
+            {
+                return;
+            }
+            CanvasGroup legacy = MenuWindow.GetComponent<CanvasGroup>();
+            if (legacy == null)
+            {
+                legacy = MenuWindow.AddComponent<CanvasGroup>();
+            }
+            legacy.alpha = 0f;
+            legacy.interactable = false;
+            legacy.blocksRaycasts = false;
+            m_view = WeaponUpgradeView.Create(MenuWindow.transform, this);
+        }
+
         private IEnumerator OpenMenuAfterFixedFrameRoutine()
         {
             yield return new WaitForFixedUpdate();
@@ -245,6 +276,7 @@ namespace ZZ
             PlayerInventoryManager inventory = ResolveLocalInventory();
             ApplyWeaponIcon(m_rightWeaponIcon, inventory?.CurrentRightHandWeapon);
             ApplyWeaponIcon(m_leftWeaponIcon, inventory?.CurrentLeftHandWeapon);
+            m_view?.RefreshWeapons(inventory?.CurrentRightHandWeapon, inventory?.CurrentLeftHandWeapon);
         }
 
         private void RefreshUpgradeDetails()
@@ -302,6 +334,8 @@ namespace ZZ
                         : m_unavailableColor;
             }
 
+            m_view?.ShowDetails(m_currentSelectedWeapon, upgradeCost, ownedAmount,
+                CanUpgradeCurrentSelection());
             ResetWeaponIconAlpha();
             ApplySelectedIconAvailability(hasCost && !isFullyUpgraded);
         }
@@ -320,6 +354,11 @@ namespace ZZ
             m_canCommitCurrentSelection = false;
             m_confirmationPopup?.SetActive(false);
             SetWeaponButtonsInteractable(true);
+            if (m_view != null)
+            {
+                m_view.HideConfirmation(restoreSelection);
+                return;
+            }
             if (restoreSelection &&
                 m_lastSelectedWeaponButton != null &&
                 m_lastSelectedWeaponButton.IsInteractable())

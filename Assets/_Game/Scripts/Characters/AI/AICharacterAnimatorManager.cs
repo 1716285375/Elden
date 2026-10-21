@@ -20,12 +20,14 @@ namespace ZZ
 
         private AICharacterManager m_aiCharacter;
         private AICharacterCombatManager m_combatManager;
+        private OriginalCreatureCombat m_originalCombat;
 
         protected override void Awake()
         {
             base.Awake();
             m_aiCharacter = GetComponentInParent<AICharacterManager>();
             m_combatManager = GetComponentInParent<AICharacterCombatManager>();
+            m_originalCombat = GetComponent<OriginalCreatureCombat>();
             if (CharacterAnimator != null)
             {
                 CharacterAnimator.keepAnimatorStateOnDisable = true;
@@ -177,6 +179,10 @@ namespace ZZ
 
         private void OnAnimatorMove()
         {
+            if (m_originalCombat != null && m_originalCombat.isActiveAndEnabled)
+            {
+                return;
+            }
             if (CharacterAnimator != null)
             {
                 m_aiCharacter?.ApplyRootMotion(

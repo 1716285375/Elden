@@ -168,3 +168,24 @@ __pycache__/
 
 # Docs
 /Docs/
+
+# Locally recovered source media follows the existing Art/Audio boundary.
+/Assets/_Game/Resources/UI/EldenRing/
+/Assets/_Game/Resources/UI/EldenRing.meta
+/Assets/_Game/Resources/UI/Origins/
+/Assets/_Game/Resources/UI/Origins.meta
+/Assets/_Game/Resources/UI/Fonts/Original*
+/Assets/_Game/Data/Animations/Player/a*.anim*
+
+# Other recovered maps are local authoring outputs; the playable cave is versioned.
+/Assets/_Game/Scenes/Recovered/
+/Assets/_Game/Scenes/Recovered.meta
+/Assets/_Game/Scenes/Maps/*/
+!/Assets/_Game/Scenes/Maps/m31/
+/Assets/_Game/Scenes/Maps/*.meta
+!/Assets/_Game/Scenes/Maps/m31.meta
+/Assets/_Game/Scenes/Maps/m31/*
+!/Assets/_Game/Scenes/Maps/m31/SCN_m31_03_00_00.unity
+!/Assets/_Game/Scenes/Maps/m31/SCN_m31_03_00_00.unity.meta
+!/Assets/_Game/Scenes/Maps/m31/Groveside Navigation.asset
+!/Assets/_Game/Scenes/Maps/m31/Groveside Navigation.asset.meta

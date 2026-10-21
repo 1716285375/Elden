@@ -1,0 +1,81 @@
+.menu-overlay {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    padding: 5%; align-items: center; justify-content: center;
+    background-color: rgba(18,17,14,0.91);
+    -unity-font: url("Fonts/OriginalChinese.ttf");
+    color: rgb(237,233,221); font-size: 20px;
+}
+.menu-eyebrow { color: rgb(195,178,139); font-size: 16px; letter-spacing: 4px; margin: 0 0 8px 0; }
+.menu-title { font-size: 42px; color: rgb(244,238,220); margin: 0 0 8px 0; }
+.menu-description { color: rgb(158,176,189); font-size: 17px; white-space: normal; }
+.menu-section-title { color: rgb(225,205,163); font-size: 26px; margin: 4px 0 24px 0; }
+.menu-overlay .menu-command, .menu-overlay .menu-tab {
+    min-height: 50px; padding: 10px 20px; margin: 0 0 8px 0;
+    color: rgb(236,231,218); background-color: rgb(38,35,27);
+    border-width: 1px; border-color: rgba(155,175,186,0.22); border-radius: 0;
+    transition-property: background-color, border-color; transition-duration: 0.12s;
+}
+.menu-overlay .menu-command:hover, .menu-overlay .menu-tab:hover { background-color: rgb(40,60,76); }
+.menu-overlay .menu-command:focus, .menu-overlay .menu-tab:focus { border-color: rgb(241,209,147); background-color: rgb(44,59,72); }
+.menu-overlay .menu-command:active, .menu-overlay .menu-tab:active { background-color: rgb(80,76,62); }
+.menu-overlay .menu-command:disabled { background-color: rgb(26,38,48); color: rgb(115,132,144); border-color: rgb(45,59,68); }
+.menu-tab { -unity-text-align: middle-center; }
+.menu-tabs { width: 100%; flex-direction: row; flex-wrap: wrap; margin-bottom: 18px; padding-bottom: 4px; border-bottom-width: 1px; border-bottom-color: rgba(190,170,124,0.35); }
+.menu-tabs .menu-tab { min-width: 130px; margin-right: 12px; }
+.menu-overlay .menu-tab { background-color: rgba(42,39,32,0.55); border-width: 0; border-bottom-width: 2px; border-bottom-color: transparent; border-radius: 0; }
+.menu-overlay .menu-tab--selected { background-color: rgba(102,88,54,0.35); border-bottom-color: rgb(222,191,128); color: rgb(255,235,187); }
+.menu-overlay .menu-command { background-color: rgba(46,43,35,0.85); border-color: rgba(166,149,111,0.3); border-radius: 1px; }
+.menu-overlay .menu-command:hover, .menu-overlay .menu-tab:hover { background-color: rgba(88,77,53,0.75); }
+.menu-overlay .menu-command:focus, .menu-overlay .menu-tab:focus { background-color: rgba(88,77,53,0.75); border-color: rgb(232,205,149); }
+.menu-overlay .menu-description { color: rgb(187,180,162); }
+.menu-toggle { min-height: 56px; padding: 12px; margin-bottom: 8px; background-color: rgba(46,42,33,0.6); }
+.menu-toggle .unity-toggle__label { color: rgb(232,228,213); flex-grow: 1; min-width: 180px; }
+.menu-toggle .unity-toggle__input { flex-grow: 0; min-width: 120px; justify-content: flex-end; }
+.menu-toggle .unity-toggle__checkmark { width: 22px; height: 22px; margin-right: 10px; border-width: 1px; border-color: rgb(192,175,140); background-color: rgb(30,28,22); }
+.menu-toggle:checked .unity-toggle__checkmark { background-color: rgb(211,186,132); }
+.menu-toggle .unity-toggle__text { color: rgb(210,197,170); font-size: 17px; }
+.menu-toggle:focus { border-bottom-width: 2px; border-bottom-color: rgb(231,199,140); }
+.menu-dropdown { min-height: 56px; margin: 0 0 16px 0; align-items: center; }
+.menu-dropdown .unity-base-field__label { min-width: 130px; color: rgb(232,228,213); }
+.menu-overlay .menu-dropdown .unity-base-popup-field__input { min-height: 44px; background-color: rgb(40,37,30); color: rgb(236,231,218); padding-left: 14px; }
+.menu-overlay .menu-dropdown:focus .unity-base-popup-field__input,
+.menu-overlay .menu-dropdown:checked .unity-base-popup-field__input,
+.menu-overlay .menu-dropdown:active .unity-base-popup-field__input,
+.menu-overlay .menu-dropdown:hover .unity-base-popup-field__input,
+.menu-overlay .menu-dropdown .unity-base-popup-field__input:focus,
+.menu-overlay .menu-dropdown .unity-base-popup-field__input:active,
+.menu-overlay .menu-dropdown .unity-base-popup-field__input:checked {
+    background-color: rgb(72,63,43); border-color: rgb(220,192,135);
+}
+.menu-dropdown .unity-base-popup-field__arrow { -unity-background-image-tint-color: rgb(220,192,135); }
+.menu-slider { flex-grow: 1; min-height: 36px; margin-right: 16px; }
+.menu-slider .unity-base-slider__tracker { height: 5px; background-color: rgb(65,59,44); }
+.menu-slider .unity-base-slider__dragger { width: 16px; height: 22px; background-color: rgb(219,194,141); border-radius: 4px; }
+.menu-slider:focus .unity-base-slider__dragger { background-color: rgb(255,229,169); }
+.menu-overlay .unity-scroller { width: 10px; margin-left: 12px; }
+.menu-overlay .unity-scroller .unity-button { display: none; }
+.menu-overlay .unity-scroller__low-button, .menu-overlay .unity-scroller__high-button { display: none; }
+.menu-overlay .unity-scroller__slider { margin: 0; padding: 0; }
+.menu-overlay .unity-scroller .unity-base-slider__tracker { width: 4px; background-color: rgb(48,43,33); border-width: 0; }
+.menu-overlay .unity-scroller .unity-base-slider__dragger { width: 6px; background-color: rgb(120,131,130); border-radius: 3px; border-width: 0; }
+
+.inventory-row { flex-direction: row; align-items: center; height: 76px; padding: 8px 12px; }
+.inventory-row__icon { width: 52px; height: 52px; margin-right: 12px; }
+.inventory-row__copy { flex-shrink: 1; }
+.inventory-row__name { font-size: 17px; color: rgb(235,230,213); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inventory-row__quantity { font-size: 14px; color: rgb(160,178,190); }
+.unity-base-dropdown__container-outer {
+    background-color: rgb(31,29,23); border-width: 1px; border-color: rgb(168,150,111);
+    border-radius: 0; padding: 6px;
+    -unity-font: url("Fonts/OriginalChinese.ttf");
+}
+.unity-base-dropdown__container-inner { background-color: rgb(31,29,23); }
+.unity-base-dropdown__item { min-height: 42px; background-color: rgb(31,29,23); }
+.unity-base-dropdown__item:hover, .unity-base-dropdown__item:checked { background-color: rgb(76,65,42); }
+.unity-base-dropdown__label { color: rgb(236,230,213); font-size: 19px; padding: 8px 12px; }
+.unity-base-dropdown__checkmark { -unity-background-image-tint-color: rgb(220,192,135); }
+.menu-overlay .unity-list-view__empty-label { display: none; }
+.menu-tabs { background-image: url("EldenRing/MENU_Gradation.png"); }
+.menu-overlay .unity-collection-view__item:hover { background-color: rgb(55,49,35); }
+.menu-overlay .unity-collection-view__item--selected,
+.menu-overlay .unity-collection-view__item--selected:hover { background-color: rgb(76,65,42); }

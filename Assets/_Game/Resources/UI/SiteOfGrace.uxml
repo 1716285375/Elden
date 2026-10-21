@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="SiteOfGrace.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay grace-menu">
+        <ui:VisualElement class="grace-menu__card">
+            <ui:Label text="片刻安宁" class="menu-eyebrow" />
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--grace" picking-mode="Ignore" />
+                <ui:Label text="赐福休憩" class="menu-title" />
+            </ui:VisualElement>
+            <ui:Label name="grace-runes" class="grace-menu__runes" />
+            <ui:Button name="level-up" text="提升等级" class="menu-command" />
+            <ui:Label text="分配属性，为下一段旅途做好准备。" class="menu-description grace-menu__hint" />
+            <ui:Button name="memorize" text="记忆" class="menu-command" />
+            <ui:Button name="storage" text="整理仓库" class="menu-command" />
+            <ui:Label text="在随身背包与赐福仓库之间存取物品。" class="menu-description grace-menu__hint" />
+            <ui:Button name="travel" text="快速旅行" class="menu-command" />
+            <ui:Label name="travel-hint" class="menu-description grace-menu__hint" />
+            <ui:Button name="leave" text="继续旅途" class="menu-command" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

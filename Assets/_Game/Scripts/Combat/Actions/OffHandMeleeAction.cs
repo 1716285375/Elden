@@ -23,6 +23,11 @@ namespace ZZ
                 player.PlayerCombatManager.SetBlocking(true, weapon);
                 return;
             }
+            if (player.CharacterNetworkManager.IsAttacking.Value)
+            {
+                player.PlayerCombatManager.TryPerformMainHandCombo(AttackType.LightAttack01);
+                return;
+            }
             JumpAttackContext jump = ResolveJumpAttackContext(player.IsGrounded, player.IsJumping);
             if (jump == JumpAttackContext.Airborne)
             {

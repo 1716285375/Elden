@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace ZZ
 {
@@ -33,6 +34,14 @@ namespace ZZ
         private Coroutine m_waitThenAddRunesCoroutine;
         private int m_pendingRunesToAdd;
         private int m_displayedRunes;
+        private CombatHudView m_toolkit;
+
+        public CombatHudView Toolkit => m_toolkit;
+
+        private void OnEnable()
+        {
+            ShowHUD();
+        }
 
         /// <summary>Gets the Rune amount waiting to merge into the displayed balance.</summary>
         public int PendingRunesToAdd => m_pendingRunesToAdd;
@@ -50,6 +59,7 @@ namespace ZZ
         public void SetNewHealthValue(float currentHealth)
         {
             m_healthBar?.SetStat(currentHealth);
+            m_toolkit?.SetHealth(currentHealth, m_boundNetworkManager?.MaxHealth.Value ?? 1f);
         }
 
         /// <summary>
@@ -58,6 +68,7 @@ namespace ZZ
         public void SetMaxHealthValue(float maximumHealth)
         {
             m_healthBar?.SetMaxStat(maximumHealth);
+            m_toolkit?.SetHealth(m_boundNetworkManager?.CurrentHealth.Value ?? maximumHealth, maximumHealth);
             RefreshHUD();
         }
 
@@ -65,6 +76,7 @@ namespace ZZ
         public void SetHealthBarPoisoned(bool isPoisoned)
         {
             m_healthBar?.SetPoisonedColor(isPoisoned);
+            m_toolkit?.SetPoisoned(isPoisoned);
         }
 
         /// <summary>
@@ -73,6 +85,7 @@ namespace ZZ
         public void SetNewStaminaValue(float currentStamina)
         {
             m_staminaBar?.SetStat(currentStamina);
+            m_toolkit?.SetStamina(currentStamina, m_boundNetworkManager?.MaxStamina.Value ?? 1f);
         }
 
         /// <summary>
@@ -81,6 +94,7 @@ namespace ZZ
         public void SetMaxStaminaValue(float maximumStamina)
         {
             m_staminaBar?.SetMaxStat(maximumStamina);
+            m_toolkit?.SetStamina(m_boundNetworkManager?.CurrentStamina.Value ?? maximumStamina, maximumStamina);
             RefreshHUD();
         }
 
@@ -88,12 +102,14 @@ namespace ZZ
         public void SetNewFocusPointsValue(float currentFocusPoints)
         {
             m_focusPointsBar?.SetStat(currentFocusPoints);
+            m_toolkit?.SetFocus(currentFocusPoints, m_boundNetworkManager?.MaxFocusPoints.Value ?? 1f);
         }
 
         /// <summary>Updates the local Focus Point range.</summary>
         public void SetMaxFocusPointsValue(float maximumFocusPoints)
         {
             m_focusPointsBar?.SetMaxStat(maximumFocusPoints);
+            m_toolkit?.SetFocus(m_boundNetworkManager?.CurrentFocusPoints.Value ?? maximumFocusPoints, maximumFocusPoints);
             RefreshHUD();
         }
 
@@ -210,8 +226,42 @@ namespace ZZ
                     OnIsPoisonedChanged;
             }
 
+            if (Application.isPlaying && m_toolkit == null)
+            {
+                m_toolkit = CombatHudView.Create(transform);
+                if (m_toolkit != null)
+                {
+                    m_healthBar?.gameObject.SetActive(false);
+                    m_staminaBar?.gameObject.SetActive(false);
+                    m_focusPointsBar?.gameObject.SetActive(false);
+                    m_runesCountText?.gameObject.SetActive(false);
+                    m_runesToAddText?.gameObject.SetActive(false);
+                    // The authored Runes HUD container also owns the legacy decorative backplate.
+                    Transform currencyRoot = m_runesCountText?.transform.parent;
+                    if (currencyRoot != null && currencyRoot != transform && currencyRoot.IsChildOf(transform))
+                    {
+                        currencyRoot.gameObject.SetActive(false);
+                    }
+                }
+            }
             gameObject.SetActive(true);
             RefreshStatBars();
+            RefreshToolkit();
+            ShowHUD();
+        }
+
+        /// <summary>Restores event-driven values after a UIDocument is rebuilt on re-enable.</summary>
+        public void RefreshToolkit()
+        {
+            if (m_toolkit == null || m_boundNetworkManager == null)
+            {
+                return;
+            }
+            m_toolkit.SetHealth(m_boundNetworkManager.CurrentHealth.Value, m_boundNetworkManager.MaxHealth.Value);
+            m_toolkit.SetStamina(m_boundNetworkManager.CurrentStamina.Value, m_boundNetworkManager.MaxStamina.Value);
+            m_toolkit.SetFocus(m_boundNetworkManager.CurrentFocusPoints.Value, m_boundNetworkManager.MaxFocusPoints.Value);
+            m_toolkit.SetPoisoned(m_boundNetworkManager.IsPoisoned.Value);
+            m_toolkit.SetCurrency(m_displayedRunes, FormatRuneChange(m_pendingRunesToAdd));
         }
 
         /// <summary>
@@ -313,7 +363,7 @@ namespace ZZ
         /// <summary>Restores gameplay HUD groups after every modal menu closes.</summary>
         public void ShowHUD()
         {
-            SetHUDVisibility(true);
+            SetHUDVisibility(!Application.isPlaying || SceneManager.GetActiveScene().name != "SCN_MainMenu");
         }
 
         /// <summary>Shows the center-screen reticle only during first-person aiming.</summary>
@@ -610,6 +660,7 @@ namespace ZZ
 
         private void SetHUDVisibility(bool isVisible)
         {
+            m_toolkit?.SetVisible(isVisible);
             if (m_hudCanvasGroups == null)
             {
                 return;
@@ -658,6 +709,7 @@ namespace ZZ
 
         private void SetRuneCountText(int runeCount)
         {
+            m_toolkit?.SetCurrency(runeCount, FormatRuneChange(m_pendingRunesToAdd));
             if (m_runesCountText != null)
             {
                 m_runesCountText.text = Mathf.Max(0, runeCount).ToString();
@@ -666,13 +718,14 @@ namespace ZZ
 
         private void SetPendingRuneText(int pendingRunes)
         {
+            m_toolkit?.SetCurrency(m_displayedRunes, FormatRuneChange(pendingRunes));
             if (m_runesToAddText == null)
             {
                 return;
             }
 
             m_runesToAddText.text = FormatRuneChange(pendingRunes);
-            m_runesToAddText.gameObject.SetActive(pendingRunes != 0);
+            m_runesToAddText.gameObject.SetActive(m_toolkit == null && pendingRunes != 0);
         }
     }
 }

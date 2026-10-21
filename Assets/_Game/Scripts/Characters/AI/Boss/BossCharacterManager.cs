@@ -73,8 +73,6 @@ namespace ZZ
             }
             m_bossID = bossID;
             m_bossName = bossName;
-            m_encounterBossID.Value = bossID;
-            m_encounterBossName.Value = new FixedString128Bytes(bossName);
         }
 
         public override void OnNetworkSpawn()
@@ -86,6 +84,8 @@ namespace ZZ
 
             if (IsServer)
             {
+                m_encounterBossID.Value = m_bossID;
+                m_encounterBossName.Value = new FixedString128Bytes(m_bossName);
                 m_aiCharacter.RestoreBossAwakeningProgress(
                     m_aiCharacter.OriginSpawner?.HasBossBeenAwakened == true);
                 InitializeServerHealth();
@@ -140,6 +140,26 @@ namespace ZZ
         internal BossAttackData SelectAttack(float targetDistance)
         {
             return GetCurrentPhase()?.SelectAttack(targetDistance);
+        }
+
+        /// <summary>Resolves the exact replicated action across every authored health phase.</summary>
+        internal BossAttackData FindAttackAction(uint attackId)
+        {
+            foreach (BossPhaseData phase in m_phases)
+            {
+                if (phase == null)
+                {
+                    continue;
+                }
+                foreach (BossAttackData attack in phase.Attacks)
+                {
+                    if (attack?.AttackDefinition?.AttackId == attackId)
+                    {
+                        return attack;
+                    }
+                }
+            }
+            return null;
         }
 
         internal int GetPhaseIndexForHealth(float currentHealth, float maximumHealth)

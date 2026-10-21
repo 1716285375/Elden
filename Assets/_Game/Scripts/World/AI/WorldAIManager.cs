@@ -156,13 +156,15 @@ namespace ZZ
         /// <summary>Registers one scene-authored spawner without duplicates.</summary>
         public void RegisterSpawner(AICharacterSpawner characterSpawner)
         {
-            if (characterSpawner == null ||
-                m_characterSpawners.Contains(characterSpawner))
+            if (characterSpawner == null)
             {
                 return;
             }
 
-            m_characterSpawners.Add(characterSpawner);
+            if (!m_characterSpawners.Contains(characterSpawner))
+            {
+                m_characterSpawners.Add(characterSpawner);
+            }
             if (m_hasSpawnedCharacters && IsServerReady())
             {
                 characterSpawner.AttemptToSpawnCharacter();
@@ -253,11 +255,12 @@ namespace ZZ
 
         private IEnumerator SpawnAllCharactersRoutine()
         {
+            yield return null;
             AICharacterSpawner[] orderedSpawners = GetOrderedSpawners();
             foreach (AICharacterSpawner characterSpawner in orderedSpawners)
             {
                 characterSpawner.AttemptToSpawnCharacter();
-                yield return new WaitForFixedUpdate();
+                yield return null;
             }
 
             m_hasSpawnedCharacters = true;
@@ -307,7 +310,7 @@ namespace ZZ
         {
             while (!m_hasSpawnedCharacters)
             {
-                if (IsServerReady())
+                if (IsServerReady() && !VillageSceneWarmup.IsLoading)
                 {
                     SpawnAllCharacters();
                     yield break;

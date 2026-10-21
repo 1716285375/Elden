@@ -1,0 +1,20 @@
+.upgrade-menu { background-color: rgb(16,15,12); }
+.upgrade-menu__content { width: 100%; height: 100%; }
+.upgrade-menu__body { flex-direction: column; flex-grow: 1; min-height: 0; margin-top: 16px; }
+.upgrade-menu__hands { width: 100%; flex-direction: row; margin-bottom: 18px; border-bottom-width: 1px; border-bottom-color: rgba(190,170,124,0.35); }
+.menu-overlay .upgrade-menu__hand { flex-grow: 1; flex-direction: row; align-items: center; min-height: 64px; padding: 10px; margin-right: 12px; }
+.upgrade-menu__hand-icon { height: 42px; width: 42px; margin: 0 14px; }
+.upgrade-menu__hand-name { white-space: normal; font-size: 20px; -unity-text-align: middle-center; }
+.upgrade-menu__details { width: 100%; flex-grow: 1; min-height: 0; padding-left: 0; }
+.upgrade-menu__portrait { width: 140px; height: 140px; align-self: center; margin-bottom: 24px; }
+.upgrade-menu__level { color: rgb(226,202,155); font-size: 30px; margin-bottom: 32px; }
+.upgrade-menu__material { color: rgb(235,230,213); font-size: 24px; margin: 12px 0; }
+.upgrade-menu__cost { color: rgb(151,205,183); font-size: 22px; }
+.upgrade-menu__cost--missing { color: rgb(231,148,141); }
+.upgrade-menu__footer { flex-direction: row; align-items: center; margin-top: 24px; }
+.upgrade-menu__footer .menu-description { flex-grow: 1; flex-shrink: 1; margin-right: 24px; }
+.upgrade-menu__footer .menu-command { min-width: 160px; margin-left: 12px; }
+.upgrade-menu__veil { position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(7,6,5,0.9); }
+.upgrade-menu__confirmation { width: 540px; max-width: 90%; padding: 32px; border-width: 1px; border-color: rgb(191,168,121); border-radius: 0; background-color: rgb(27,25,19); }
+.upgrade-menu__confirmation .menu-description { margin-bottom: 26px; }
+.upgrade-menu { background-color: rgba(18,17,14,0.92); }

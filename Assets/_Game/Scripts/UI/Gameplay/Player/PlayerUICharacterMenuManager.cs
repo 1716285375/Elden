@@ -20,7 +20,7 @@ namespace ZZ
         private InputAction m_closeMenuAction;
         private Coroutine m_delayedCloseRoutine;
         private GameSettingsPanel m_settingsPanel;
-        private Button m_settingsButton;
+        private CharacterMenuView m_view;
 
         public bool IsCharacterMenuOpen => IsMenuOpen;
 
@@ -71,8 +71,8 @@ namespace ZZ
             OpenMenu();
             if (IsMenuOpen)
             {
-                EnsureSettingsButton();
-                m_initialButton?.Select();
+                EnsureToolkitMenu();
+                m_view.Focus("resume");
             }
         }
 
@@ -104,28 +104,36 @@ namespace ZZ
             base.CloseMenu();
         }
 
-        private void EnsureSettingsButton()
+        private void EnsureToolkitMenu()
         {
-            if (m_settingsButton != null || MenuWindow == null)
+            if (m_view != null || MenuWindow == null)
             {
                 return;
             }
-            m_settingsButton = GameSettingsPanel.CreateButton(MenuWindow.transform, "Settings", OpenSettings);
-            RectTransform rect = m_settingsButton.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.77f, 0.87f);
-            rect.anchorMax = new Vector2(0.94f, 0.94f);
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            m_settingsButton.GetComponent<LayoutElement>().ignoreLayout = true;
+            // Serialized children remain until prefab migration; they neither render nor receive input.
+            CanvasGroup legacy = MenuWindow.GetComponent<CanvasGroup>();
+            if (legacy == null)
+            {
+                legacy = MenuWindow.AddComponent<CanvasGroup>();
+            }
+            legacy.alpha = 0f;
+            legacy.interactable = false;
+            legacy.blocksRaycasts = false;
+            m_view = CharacterMenuView.Create(MenuWindow.transform, this);
         }
 
-        private void OpenSettings()
+        /// <summary>Opens Toolkit settings while retaining this menu's gameplay input ownership.</summary>
+        public void OpenSettings()
         {
+            if (!IsMenuOpen)
+            {
+                return;
+            }
             if (m_settingsPanel == null)
             {
                 m_settingsPanel = GameSettingsPanel.Create(MenuWindow.transform);
             }
-            m_settingsPanel.Open(() => m_settingsButton.Select());
+            m_settingsPanel.Open(() => m_view.Focus("settings"));
         }
 
         /// <summary>
@@ -148,6 +156,21 @@ namespace ZZ
         private void OnOpenCharacterMenuPerformed(
             InputAction.CallbackContext context)
         {
+            if (GameSettingsPanel.ClosedThisFrame ||
+                m_settingsPanel != null && m_settingsPanel.gameObject.activeInHierarchy)
+            {
+                return;
+            }
+            if (m_view != null && m_view.IsConfirmationOpen)
+            {
+                m_view.CancelExit();
+                return;
+            }
+            if (m_view != null && m_view.IsStatusOpen)
+            {
+                m_view.CloseStatus();
+                return;
+            }
             if (TryCancelUpgradeConfirmation())
             {
                 return;
@@ -160,7 +183,7 @@ namespace ZZ
 
             if (playerUIManager.IsMenuWindowOpen)
             {
-                playerUIManager.CloseAllMenuWindows();
+                OnCloseMenuPerformed(context);
                 return;
             }
 
@@ -169,9 +192,24 @@ namespace ZZ
 
         private void OnCloseMenuPerformed(InputAction.CallbackContext context)
         {
-            if (m_settingsPanel != null && m_settingsPanel.gameObject.activeInHierarchy)
+            if (PlayerUIManager.Instance?.PlayerUILoadingScreenManager?.IsLoadingScreenActive == true)
             {
-                m_settingsPanel.Close();
+                return;
+            }
+            if (GameSettingsPanel.ClosedThisFrame ||
+                m_settingsPanel != null && m_settingsPanel.gameObject.activeInHierarchy)
+            {
+                // Toolkit owns cancel while the overlay is open, including nested dropdown popups.
+                return;
+            }
+            if (m_view != null && m_view.IsConfirmationOpen)
+            {
+                m_view.CancelExit();
+                return;
+            }
+            if (m_view != null && m_view.IsStatusOpen)
+            {
+                m_view.CloseStatus();
                 return;
             }
             if (TryCancelUpgradeConfirmation())
@@ -181,6 +219,64 @@ namespace ZZ
             PlayerUIManager playerUIManager = PlayerUIManager.Instance;
             if (playerUIManager?.IsMenuWindowOpen != true)
             {
+                return;
+            }
+
+            if (playerUIManager.PlayerUISiteOfGraceManager?.IsMemoryOpen == true)
+            {
+                playerUIManager.PlayerUISiteOfGraceManager.CloseMemory();
+                return;
+            }
+
+            PlayerUITeleportLocationManager travel = playerUIManager.PlayerUITeleportLocationManager;
+            if (playerUIManager.PlayerUIInventoryManager?.IsMenuOpen == true)
+            {
+                playerUIManager.PlayerUIInventoryManager.ReturnToCharacterMenu();
+                return;
+            }
+            if (playerUIManager.PlayerUISaveGameManager?.IsSaveGameMenuOpen == true)
+            {
+                playerUIManager.PlayerUISaveGameManager.ReturnToCharacterMenu();
+                return;
+            }
+            if (travel?.IsMenuOpen == true)
+            {
+                if (travel.IsConfirmationOpen)
+                {
+                    travel.CancelTravel();
+                }
+                else
+                {
+                    travel.ReturnToSiteOfGrace();
+                }
+                return;
+            }
+
+            PlayerUILevelUpManager levelUp = playerUIManager.PlayerUILevelUpManager;
+            if (levelUp?.IsMenuOpen == true)
+            {
+                if (levelUp.IsConfirmationOpen)
+                {
+                    levelUp.CancelConfirmation();
+                }
+                else
+                {
+                    levelUp.ReturnToSiteOfGrace();
+                }
+                return;
+            }
+
+            PlayerUIStorageManager storage = playerUIManager.PlayerUIStorageManager;
+            if (storage?.IsMenuOpen == true)
+            {
+                storage.ReturnToSiteOfGrace();
+                return;
+            }
+
+            PlayerUIShopManager shop = playerUIManager.PlayerUIShopManager;
+            if (shop?.IsMenuOpen == true)
+            {
+                shop.NavigateBack();
                 return;
             }
 

@@ -1,0 +1,23 @@
+.shop-menu { background-color: rgb(16,15,12); }
+.shop-menu__context { width: 440px; max-width: 100%; }
+.shop-menu__intro { margin: 16px 0 26px 0; white-space: normal; }
+.shop-menu__trading { width: 100%; height: 100%; }
+.shop-menu__header { flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.shop-menu__body { flex-direction: row; flex-grow: 1; min-height: 0; }
+.shop-menu__catalog { width: 60%; padding-right: 32px; }
+.shop-menu__categories { flex-direction: row; }
+.shop-menu__categories .menu-tab { flex-grow: 1; margin-right: 10px; -unity-text-align: middle-center; }
+.shop-menu__list { flex-grow: 1; min-height: 0; margin-top: 14px; background-color: rgb(30,28,22); }
+.shop-menu__list .unity-collection-view__item--selected { background-color: rgb(76,65,42); border-left-width: 3px; border-left-color: rgb(220,192,135); }
+.shop-menu__details { width: 40%; padding-left: 32px; border-left-width: 1px; border-left-color: rgb(74,66,48); }
+.shop-menu__detail-scroll { flex-grow: 1; min-height: 0; }
+.shop-menu__details .menu-section-title { white-space: normal; }
+.shop-menu__portrait { width: 150px; height: 150px; align-self: center; margin: 20px 0; }
+.shop-menu__price { font-size: 30px; color: rgb(230,204,151); }
+.shop-menu__price--unaffordable { color: rgb(231,148,141); }
+.shop-menu__footer { flex-direction: row; align-items: center; margin-top: 24px; }
+.shop-menu__footer .menu-description { flex-grow: 1; flex-shrink: 1; margin-right: 24px; }
+.shop-menu__footer .menu-command { min-width: 180px; }
+.shop-menu { background-color: rgba(18,17,14,0.92); }
+.shop-menu__categories .menu-tab { flex-grow: 0; min-width: 140px; }
+.shop-menu__list { background-color: rgba(25,24,20,0.7); }

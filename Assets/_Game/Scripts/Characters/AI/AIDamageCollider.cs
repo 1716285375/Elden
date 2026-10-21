@@ -21,7 +21,7 @@ namespace ZZ
 
             m_combatManager ??= GetComponentInParent<AICharacterCombatManager>();
             bool wasRegisteredByServer = m_combatManager == null ||
-                m_combatManager.TryRegisterDamageTarget(parryingCharacter);
+                m_combatManager.TryRegisterDamageTarget(parryingCharacter, HitGroup);
             if (!wasRegisteredByServer && !parryingCharacter.IsOwner)
             {
                 return;
@@ -44,7 +44,7 @@ namespace ZZ
             }
 
             bool wasRegisteredByServer =
-                m_combatManager.TryRegisterDamageTarget(target);
+                m_combatManager.TryRegisterDamageTarget(target, HitGroup);
             if (!wasRegisteredByServer && !target.IsOwner)
             {
                 return;

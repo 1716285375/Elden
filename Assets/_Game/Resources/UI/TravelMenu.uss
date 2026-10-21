@@ -1,0 +1,17 @@
+.travel-menu { background-color: rgb(16,15,12); }
+.travel-menu__content { width: 100%; height: 100%; }
+.travel-menu__body { flex-direction: row; flex-grow: 1; min-height: 0; margin-top: 28px; }
+.travel-menu__catalog { width: 58%; padding-right: 32px; }
+.travel-menu__list { flex-grow: 1; min-height: 0; margin-top: 20px; background-color: rgb(30,28,22); }
+.travel-menu__list .unity-collection-view__item--selected { background-color: rgb(70,61,39); border-left-width: 3px; border-left-color: rgb(220,192,135); }
+.travel-menu__location { height: 72px; padding: 16px 24px; color: rgb(235,230,213); font-size: 23px; -unity-text-align: middle-left; }
+.travel-menu__details { width: 42%; padding: 24px 0 0 32px; border-left-width: 1px; border-left-color: rgb(74,66,48); }
+.travel-menu__details .menu-section-title { white-space: normal; }
+.travel-menu__action { margin-top: 36px; }
+.travel-menu__empty { margin-top: 24px; }
+.travel-menu__feedback { margin: 20px 0 12px 0; }
+.travel-menu__footer { flex-direction: row; justify-content: flex-end; }
+.travel-menu__footer .menu-command { min-width: 160px; margin-left: 12px; }
+.travel-menu__veil { position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(7,6,5,0.9); }
+.travel-menu__confirmation { width: 540px; max-width: 90%; padding: 32px; border-width: 1px; border-color: rgb(191,168,121); border-radius: 0; background-color: rgb(27,25,19); }
+.travel-menu__confirmation .menu-description { margin-bottom: 26px; }

@@ -6,6 +6,9 @@ namespace ZZ
     public static class WorldScenePathLayout
     {
         public const string ScenesRoot = "Assets/_Game/Scenes";
+        public const string GameplaySceneName = "SCN_m31_03_00_00";
+        public const string GameplayScenePath =
+            ScenesRoot + "/Maps/m31/" + GameplaySceneName + ".unity";
         public const string RegionsFolder = LevelFolder + "/Regions";
         public const string MasterSceneName = "SCN_LV01_AbandonedMonastery";
         public const string LevelFolderName = "LV01_AbandonedMonastery";

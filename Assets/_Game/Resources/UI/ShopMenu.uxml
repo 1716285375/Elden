@@ -1,0 +1,65 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="ShopMenu.uss" />
+    <Style src="InventoryItemGrid.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay shop-menu">
+        <ui:VisualElement name="shop-context" class="shop-menu__context">
+            <ui:Label text="旅途 · 补给与相逢" class="menu-eyebrow" />
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--shop" picking-mode="Ignore" />
+                <ui:Label name="merchant-name" class="menu-title" />
+            </ui:VisualElement>
+            <ui:Label text="为下一场战斗做好准备。" class="menu-description shop-menu__intro" />
+            <ui:Button name="talk" text="交谈" class="menu-command" />
+            <ui:Button name="buy" text="购买物品" class="menu-command" />
+            <ui:Button name="sell" text="出售物品" class="menu-command" />
+            <ui:Button name="smith" text="强化武器" class="menu-command" />
+            <ui:Button name="leave" text="离开" class="menu-command" />
+        </ui:VisualElement>
+        <ui:VisualElement name="shop-trading" class="shop-menu__trading">
+            <ui:VisualElement class="shop-menu__header">
+                <ui:VisualElement>
+                    <ui:Label text="旅途 · 行商" class="menu-eyebrow" />
+                    <ui:Label name="shop-heading" class="menu-title" />
+                </ui:VisualElement>
+                <ui:Label name="runes" class="menu-section-title" />
+            </ui:VisualElement>
+            <ui:VisualElement class="shop-menu__categories menu-tabs">
+                <ui:Button name="all" text="全部" class="menu-tab" />
+                <ui:Button name="armor" text="防具" class="menu-tab" />
+                <ui:Button name="weapons" text="武器" class="menu-tab" />
+            </ui:VisualElement>
+            <ui:VisualElement class="shop-menu__body">
+                <ui:VisualElement class="shop-menu__catalog">
+                    <ui:Label name="shop-count" class="menu-description" />
+                    <ui:Label name="shop-empty" text="此分类暂无可交易物品。" class="menu-description shop-menu__intro" />
+                    <ui:ListView name="shop-items" class="shop-menu__list" />
+                </ui:VisualElement>
+                <ui:VisualElement class="shop-menu__details">
+                    <ui:ScrollView class="shop-menu__detail-scroll">
+                        <ui:Image name="item-portrait" class="shop-menu__portrait" />
+                        <ui:Label name="item-title" class="menu-section-title" />
+                        <ui:Label name="item-price" class="shop-menu__price" />
+                        <ui:Label name="item-info" class="menu-description shop-menu__intro" />
+                    </ui:ScrollView>
+                    <ui:Button name="trade" text="确认交易" class="menu-command" />
+                </ui:VisualElement>
+                <ui:ScrollView name="shop-character-stats" class="shop-menu__status" horizontal-scroller-visibility="Hidden" />
+            </ui:VisualElement>
+            <ui:VisualElement class="shop-menu__footer menu-footer">
+                <ui:Label name="shop-feedback" class="menu-description" />
+                <ui:Button name="back" text="返回交谈" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="trade-confirmation" class="shop-menu__veil" style="display: none;">
+            <ui:VisualElement class="shop-menu__confirmation">
+                <ui:Label name="trade-confirmation-description" class="menu-description" />
+                <ui:VisualElement class="shop-menu__confirmation-actions menu-footer">
+                    <ui:Button name="confirm-trade" text="确定" class="menu-command" />
+                    <ui:Button name="cancel-trade" text="取消" class="menu-command" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

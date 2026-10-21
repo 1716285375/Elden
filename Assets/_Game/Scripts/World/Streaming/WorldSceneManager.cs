@@ -19,7 +19,7 @@ namespace ZZ
 
         /// <summary>The world Scene that remains loaded for the whole gameplay session.</summary>
         public const string PersistentWorldSceneID =
-            WorldScenePathLayout.MasterSceneName;
+            WorldScenePathLayout.GameplaySceneName;
 
         private static WorldSceneManager s_instance;
 

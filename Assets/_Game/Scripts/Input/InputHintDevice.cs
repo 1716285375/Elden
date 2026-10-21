@@ -12,6 +12,7 @@ namespace ZZ
         private static InputDevice s_activeDevice;
 
         public static bool IsGamepad => s_activeDevice is Gamepad;
+        public static Gamepad ActiveGamepad => s_activeDevice as Gamepad;
         public static event Action DeviceChanged;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -62,12 +63,12 @@ namespace ZZ
 
         private static void SetDevice(InputDevice device)
         {
-            bool wasGamepad = IsGamepad;
-            s_activeDevice = device;
-            if (wasGamepad != IsGamepad)
+            if (s_activeDevice == device)
             {
-                DeviceChanged?.Invoke();
+                return;
             }
+            s_activeDevice = device;
+            DeviceChanged?.Invoke();
         }
     }
 }

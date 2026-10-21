@@ -1,186 +1,99 @@
-<a id="readme-top"></a>
+# Elden · Unity 动作 RPG 实验项目
 
-<div align="center">
-  <img src="Assets/_Game/UI/Frontend/HiFi/MenuLogo.png" alt="Zephyring logo" width="420">
+以角色创建、第三人称近战、装备和敌人 AI 为核心的 Unity 6 项目。当前可玩场景为**近林洞窟 `m31_03_00_00`**；旧修道院与 Viking Village 不再是游戏入口。
 
-  <h1>Zephyring · 疾风回响</h1>
+这是持续开发中的项目，尚未完成《艾尔登法环》的完整复刻。以下展示以 **2026-10-21 本地工作区**为准，不沿用旧 README 的地图、图片或演示。
 
-  <p>一款使用 Unity 6 制作的第三人称风格化动作角色扮演游戏。</p>
+## 当前实机展示
 
-  [![Unity](https://img.shields.io/badge/Unity-6000.3.11f1-000000?style=for-the-badge&logo=unity)](https://unity.com/)
-  [![C Sharp](https://img.shields.io/badge/C%23-gameplay-512BD4?style=for-the-badge&logo=csharp)](https://learn.microsoft.com/dotnet/csharp/)
-  [![URP](https://img.shields.io/badge/URP-17.3-222C37?style=for-the-badge&logo=unity)](https://docs.unity3d.com/Manual/urp/urp-introduction.html)
-  [![Netcode](https://img.shields.io/badge/Netcode-2.13-0055FF?style=for-the-badge&logo=unity)](https://docs-multiplayer.unity3d.com/netcode/current/about/)
+[观看本次录制的功能展示视频](Showcase/2026-10-21/showcase.mp4) · [分段素材与验证说明](Showcase/2026-10-21/README.md)
 
-  [功能演示](#功能演示) · [快速开始](#快速开始) · [操作方式](#操作方式) · [项目结构](#项目结构)
-</div>
+![本次新录制的标题与角色创建](Showcase/2026-10-21/preview.gif)
 
-<details>
-  <summary>目录</summary>
-  <ol>
-    <li><a href="#关于项目">关于项目</a></li>
-    <li><a href="#功能演示">功能演示</a></li>
-    <li><a href="#核心功能">核心功能</a></li>
-    <li><a href="#技术栈">技术栈</a></li>
-    <li><a href="#快速开始">快速开始</a></li>
-    <li><a href="#操作方式">操作方式</a></li>
-    <li><a href="#项目结构">项目结构</a></li>
-  </ol>
-</details>
+[查看完整实机画面总览](Showcase/2026-10-21/overview.jpg)
 
-## 关于项目
+视频由当前 Unity Game View 重新录制，覆盖标题、出身选择、角色外观、洞窟探索、战斗交互与游戏菜单。脚本驱动演示操作；录制素材经过剪辑，不能作为实时帧率或加载性能证明。视频为无声画面记录，不代表音效已经完整验收。
 
-Zephyring（疾风回响）是一个以近战博弈、角色成长和世界探索为核心的第三人称动作 RPG 项目。游戏包含完整的标题界面、角色创建、固定槽位存档、玩家战斗与移动、敌人 AI、装备和物品系统，以及按区域加载的开放场景。
+## 已接入的游戏内容
 
-项目以组件化角色架构组织玩法逻辑，并使用 Netcode for GameObjects 同步角色状态和动作。画面基于 URP，结合风格化材质、描边、后处理和分区场景构建明亮的幻想世界。
-
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
-
-## 功能演示
-
-### 新游戏与角色创建
-
-从标题画面进入 New Game，选择职业、发型与角色名称，随后加载游戏世界。
-
-<p align="center">
-  <img src="Docs/Media/new-game.gif" alt="新游戏与角色创建流程" width="720">
-</p>
-
-### 战斗与移动
-
-<table>
-  <tr>
-    <th width="50%">战斗动作</th>
-    <th width="50%">移动动作</th>
-  </tr>
-  <tr>
-    <td align="center">轻攻击连段、重攻击蓄力、跑攻与跳跃攻击</td>
-    <td align="center">行走、奔跑、冲刺、翻滚、后撤步、跳跃与潜行</td>
-  </tr>
-  <tr>
-    <td><img src="Docs/Media/combat.gif" alt="玩家战斗动作展示" width="100%"></td>
-    <td><img src="Docs/Media/movement.gif" alt="玩家移动动作展示" width="100%"></td>
-  </tr>
-</table>
-
-### 敌人 AI 与界面系统
-
-<table>
-  <tr>
-    <th width="50%">敌人 AI 对抗</th>
-    <th width="50%">菜单与 HUD</th>
-  </tr>
-  <tr>
-    <td align="center">锁定目标、闪避、反击与敌人受击反馈</td>
-    <td align="center">HUD、角色菜单与装备面板</td>
-  </tr>
-  <tr>
-    <td><img src="Docs/Media/enemy.gif" alt="敌人 AI 对抗展示" width="100%"></td>
-    <td><img src="Docs/Media/ui.gif" alt="界面系统展示" width="100%"></td>
-  </tr>
-</table>
-
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
-
-## 核心功能
-
-- 角色创建：职业、性别、发型、发色与名称定制。
-- 动作战斗：轻重攻击连段、蓄力、双持、格挡、翻滚攻击、跳跃攻击、弓箭与法术。
-- 角色移动：自由移动、冲刺、跳跃、翻滚、潜行、锁定、攀梯和环境交互。
-- RPG 系统：属性、体力与专注值、装备、背包、快捷物品、商店、武器升级和存档。
-- 世界玩法：敌人及首领 AI、对话、赐福点、死亡回收、区域流式加载与多人状态同步。
-
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
-
-## 技术栈
-
-- Unity `6000.3.11f1`
-- Universal Render Pipeline `17.3.0`
-- Unity Input System `1.19.0`
-- Netcode for GameObjects `2.13.1` 与 Unity Transport
-- AI Navigation、Cinemachine、Animation Rigging、Timeline 与 Unity Recorder
-
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
-
-## 快速开始
-
-### 环境要求
-
-- Unity Hub
-- Unity Editor `6000.3.11f1`
-- Git（建议同时安装 Git LFS）
-
-### 本地运行
-
-1. 克隆项目：
-
-   ```powershell
-   git clone https://github.com/1716285375/Elden.git
-   cd Elden
-   ```
-
-2. 在 Unity Hub 中添加项目目录，并使用 `6000.3.11f1` 打开。
-
-3. 等待 Package Manager 完成依赖解析和资源导入。
-
-4. 打开 `Assets/_Game/Scenes/Frontend/SCN_MainMenu.unity`，点击 Play。
-
-> 首次导入会比后续启动耗时更久。若本地文件路径依赖不可用，请先在 `Packages/manifest.json` 中替换为你机器上的有效包路径。
-
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
-
-## 操作方式
-
-| 功能 | 键盘与鼠标 | 手柄 |
+| 系统 | 当前实现 | 验证范围 / 限制 |
 | --- | --- | --- |
-| 移动 / 镜头 | `WASD` / 鼠标 | 左摇杆 / 右摇杆 |
-| 翻滚 / 冲刺 | `Space` / `Left Shift` | `B / Circle` |
-| 跳跃 | `F` | `A / Cross` |
-| 轻攻击 / 重攻击 | 鼠标左键 / 鼠标右键 | `RB / R1` / `RT / R2` |
-| 格挡 / 战技 | `Left Ctrl` / `C` | `LB / L1` / `LT / L2` |
-| 交互 / 锁定 | `R` / `Tab` | `Y / Triangle` / 右摇杆按下 |
-| 使用 / 切换快捷物品 | `X` / `↓` | `X / Square` / 十字键下 |
-| 角色菜单 | `Esc` | `Start / Options` |
+| 标题与角色创建 | 标题菜单、10 种出身、男女体型、姓名、发型、肤色、眼睛、眉毛及 87 个脸部调节项 | 新建、磁盘保存、返回标题和重载已测；原版武器、法术配置仍有回退 |
+| 玩家模型与装备 | 模块化身体、脸部与眼球、头发、四个穿戴部位；剑盾和武器插槽 | 部分玩家动作仍使用旧动画；不能宣称动作与握持已完全还原 |
+| 操作与战斗 | 轻重攻击、连段、蓄力、翻滚、后撤、跳跃、举盾、弹反、锁定、双持切换及精力消耗 | 蓄力、动作衔接与武器姿态仍需继续校正 |
+| 敌人与 Boss | 6 只普通狼、1 只精英狼、法姆·亚兹拉的兽人；8 个原始出生点 | 3 类怪物共 34 招经过运行时动画、攻击窗口和扫掠检查；未覆盖完整原版 AI 决策 |
+| 动画与命中 | 怪物 664 个原始 Generic 动作；源根位移、TAE 攻击窗口、dummy 锚点及独立多段命中 | 逐帧矩阵校验通过；664 是动作库数量，不是实际 AI 招式数量 |
+| 地图与交互 | 近林洞窟静态放置、原始地图与 30 类组件碰撞、导航、出生点、赐福、Boss 入场及血条 | Boss 区域有可见地表缺失；录制中出现角色穿落。原版照明、着色和完整地图事件尚未还原 |
+| 背包与界面 | 武器、穿戴装备、物品分开入口；物品按类别切换；角色属性、设置、存档及加载界面 | 原始中英文字体已接入；全界面逐像素对齐仍未完成 |
+| 保存与网络基础 | 固定槽位、角色外观/装备保存、Host 启动、角色状态与招式 ID 同步 | 已测本地 Host；未完成多客户端回归 |
 
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
+## 当前验证结果
 
-## 项目结构
+- 原始怪物动作：**664 / 664** 导入并通过逐帧矩阵检查。
+- 怪物攻击：**34 / 34** 通过运行时 Animator、攻击窗口、源 TAE 扫掠及回收检查；这不是伤害数值或 AI 全行为验证。
+- EditMode 定向检查：**18 / 18**，覆盖招式路由、怪物预制体、碰撞绕序、地图构建与导航规则。
+- Boss 入场：原始区域触发、原始起身动作、玩家穿过 NPC 专用边界、中文血条和 **1417 / 1417 HP** 已通过。
+- 最近一次编辑器热加载：**4.461 秒**；最大帧间隔 **1679.90 ms**。仍存在明显卡顿，尚不能称为流畅加载。
+
+这些为本地定向验证，不等于完整游戏、独立构建或联机验收。[本次证据摘要](Showcase/2026-10-21/verification.md)。
+
+## 在本地打开
+
+1. 安装 **Unity 6000.3.11f1**，使用 Unity Hub 打开项目根目录。
+2. 等待 Package Manager 恢复依赖：URP 17.3、Input System 1.19、Netcode for GameObjects 2.13、AI Navigation 2.0。
+3. 准备本地美术与音频依赖，再打开 `Assets/_Game/Scenes/Frontend/SCN_MainMenu.unity` 运行。
+4. 从标题进入新游戏，选择出身与体型，编辑外观并确认创建。
+
+**仓库不包含完整解包美术、原始字体和音频数据。** 场景及预制体会引用这些本地资源；仅克隆仓库无法获得与视频一致的成品。原始导出数据位于本机 `F:/MyProject/RE/EldenRing/Converted`，工具与导入入口位于 `Assets/_Game/Editor/Setup`。商店插件和其他资源也须按各自许可在本地恢复。仓库并非可直接分发的游戏版本。
+
+当前构建入口仅有：
+
+```text
+Assets/_Game/Scenes/Frontend/SCN_MainMenu.unity
+Assets/_Game/Scenes/Maps/m31/SCN_m31_03_00_00.unity
+```
+
+## 主要操作
+
+以下来自当前输入资产；上下文操作和组合键由运行时代码处理。
+
+| 操作 | 键鼠 | Xbox 手柄 |
+| --- | --- | --- |
+| 移动 / 视角 | WASD / 鼠标 | 左摇杆 / 右摇杆 |
+| 翻滚 / 冲刺 | 轻按 / 长按空格 | 轻按 / 长按 B |
+| 跳跃 / 蹲伏 | F / X | A / 左摇杆按下 |
+| 轻攻击 / 防御 | 鼠标左键 / 右键 | RB / LB |
+| 重攻击 / 战技 | Shift + 左键 / Shift + 右键 | RT / LT |
+| 锁定开关 | Q / 鼠标中键 | 右摇杆按下 |
+| 交互 / 使用道具 | E / R | Y / X |
+| 切换左右手武器 | 方向键右 / 左 | 十字键右 / 左 |
+| 切换快捷道具 | 方向键下 / 滚轮向下 | 十字键下 |
+| 双手握持右 / 左武器 | 按住 E + 左 / 右键 | 按住 Y + RB / LB |
+| 打开菜单 / 返回 | Esc / Q | Menu / B |
+
+## 代码与资源结构
 
 ```text
 Assets/_Game/
-├── Art/           # 本地美术资源（Git 忽略）
-├── Audio/         # 本地音频资源（Git 忽略）
-├── Data/          # 物品、角色动作、AI 与世界配置
-├── Editor/        # 内容配置、验证和开发工具
-├── Prefabs/       # 角色、UI、世界对象与特效预制体
-├── Resources/     # 运行时加载的数据与资源
-├── Scenes/        # 主菜单、主世界和分区场景
-├── Scripts/       # 核心玩法代码
-├── Settings/      # 输入、渲染等项目配置
-├── Tests/         # Edit Mode 与 Play Mode 测试
-└── UI/            # 标题界面和 HUD 美术资源
+  Scripts/Characters/    角色、动画、装备、战斗与网络状态
+  Scripts/Combat/        指令缓冲、动作、命中与伤害结算
+  Scripts/Input/         输入映射与上下文处理
+  Scripts/UI/            前端与游戏内界面
+  Scripts/Save/          存档与场景路径
+  Scripts/World/         世界、AI、交互与加载
+  Data/                  玩法配置、控制器与预制体
+  Editor/Setup/          本地资源导入和场景配置
+  Editor/Validation/     定向运行时检查
+  Editor/Media/          当前实机录制脚本
+  Tests/                 EditMode / PlayMode 测试
+Showcase/                本次重新录制的展示和证据摘要
 ```
 
-运行时代码集中在 `Assets/_Game/Scripts`，按角色、战斗、物品、存档、UI、世界和渲染等稳定领域划分；详细约定见 `Docs/Architecture/ProjectArchitecture.md`。
+战斗沿用现有 `CombatResolver`，将源数据窗口、骨骼锚点和根位移接到统一命中链路；AI 招式同步使用具体定义 ID。没有把逆向分析结果当作原版源代码，也没有完整移植原版引擎。
 
-开发实验与效果验证放在 `Assets/_Dev`；第三方内容位于 `Assets/ThirdParty` 和 `Assets/Plugins`。
-`Library`、`Temp`、`Logs`、`obj` 和 IDE 工程文件由工具生成，不用于存放项目源文件。
-移动 Unity 资源时使用 Editor 的 Project 窗口，并保留对应 `.meta`，以维持场景和预制体引用。
+## 继续开发的重点
 
-### 开发文档
+本次录制暴露了地图缺面 / 角色穿落、部分头发材质破碎、Boss 毛发材质异常，以及赐福提示出现后未进入休息菜单的问题。它们没有在此次清理和文档提交中修复。
 
-- [编码规范](CLAUDE.md)
-- [项目环境与上下文](Docs/AI/UnityProjectContext.md)
-- [代码目录与程序集边界](Docs/Architecture/ProjectArchitecture.md)
 
-美术、音频和部分插件已被 Git 忽略，克隆仓库后需要从本地资源备份补齐；
-`Packages/manifest.json` 中的两个 `file:` 依赖也需要对应的本地包目录。
-
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
-
-## 致谢
-
-- README 结构参考 [Best-README-Template](https://github.com/othneildrew/Best-README-Template)。
-- 项目使用 Unity 官方的 URP、Input System、Netcode、AI Navigation、Cinemachine 与 Recorder 等软件包。
-
-<p align="right">(<a href="#readme-top">返回顶部</a>)</p>
+玩家完整原始动作和初始职业武器/技能、完整 AI 与伤害效果、地图表现和事件、加载卡顿，以及全 UI 对齐仍未完成。当前视频用于展示开发现状，不是“完整复刻”或正式发布承诺。

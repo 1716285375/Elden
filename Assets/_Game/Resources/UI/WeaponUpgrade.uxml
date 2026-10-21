@@ -1,0 +1,49 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="WeaponUpgrade.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay upgrade-menu">
+        <ui:VisualElement name="upgrade-content" class="upgrade-menu__content">
+            <ui:Label text="锻造 · 武器整备" class="menu-eyebrow" />
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--upgrade" picking-mode="Ignore" />
+                <ui:Label text="武器强化" class="menu-title" />
+            </ui:VisualElement>
+            <ui:VisualElement class="upgrade-menu__body">
+                <ui:VisualElement class="upgrade-menu__hands">
+                    <ui:Button name="right" class="menu-tab upgrade-menu__hand">
+                        <ui:Label text="右手武器" class="menu-description" picking-mode="Ignore" />
+                        <ui:Image name="right-icon" class="upgrade-menu__hand-icon" picking-mode="Ignore" />
+                        <ui:Label name="right-name" class="upgrade-menu__hand-name" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button name="left" class="menu-tab upgrade-menu__hand">
+                        <ui:Label text="左手武器" class="menu-description" picking-mode="Ignore" />
+                        <ui:Image name="left-icon" class="upgrade-menu__hand-icon" picking-mode="Ignore" />
+                        <ui:Label name="left-name" class="upgrade-menu__hand-name" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:ScrollView class="upgrade-menu__details">
+                    <ui:Image name="weapon-icon" class="upgrade-menu__portrait" />
+                    <ui:Label name="weapon-name" class="menu-section-title" />
+                    <ui:Label name="upgrade-level" class="upgrade-menu__level" />
+                    <ui:Label text="强化材料" class="menu-description" />
+                    <ui:Label name="material-name" class="upgrade-menu__material" />
+                    <ui:Label name="material-count" class="upgrade-menu__cost" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:VisualElement class="upgrade-menu__footer menu-footer">
+                <ui:Label name="upgrade-hint" class="menu-description" />
+                <ui:Button name="upgrade" text="强化武器" class="menu-command" />
+                <ui:Button name="back" text="离开锻造" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="upgrade-confirmation" class="upgrade-menu__veil">
+            <ui:VisualElement class="upgrade-menu__confirmation">
+                <ui:Label text="确认强化" class="menu-section-title" />
+                <ui:Label name="confirmation-description" class="menu-description" />
+                <ui:Button name="confirm" text="消耗材料并强化" class="menu-command" />
+                <ui:Button name="cancel" text="取消" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

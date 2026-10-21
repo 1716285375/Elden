@@ -67,6 +67,8 @@ namespace ZZ
             10,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
+        public NetworkVariable<int> Arcane = new NetworkVariable<int>(
+            10, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public NetworkVariable<float> CurrentHealth = new NetworkVariable<float>(
             0f,
             NetworkVariableReadPermission.Everyone,
@@ -777,16 +779,28 @@ namespace ZZ
         [ServerRpc]
         public void NotifyServerOfAttackActionServerRpc(
             AttackType attackType,
+            uint attackId = 0u,
             ServerRpcParams serverRpcParams = default)
         {
+            m_characterCombatManager ??= GetComponent<CharacterCombatManager>();
+            if (attackId != 0u &&
+                (m_characterCombatManager is not AICharacterCombatManager combat ||
+                 combat.CurrentAttackAction?.AttackDefinition?.AttackId != attackId ||
+                 combat.CurrentAttackAction.AttackType != attackType))
+            {
+                Debug.LogWarning("Rejected an attack definition not selected by this server-owned AI.", this);
+                return;
+            }
             PlayAttackActionForAllClientsClientRpc(
                 attackType,
+                attackId,
                 serverRpcParams.Receive.SenderClientId);
         }
 
         [ClientRpc]
         private void PlayAttackActionForAllClientsClientRpc(
             AttackType attackType,
+            uint attackId,
             ulong senderClientId)
         {
             if (NetworkManager.Singleton != null &&
@@ -796,6 +810,13 @@ namespace ZZ
             }
 
             m_characterCombatManager ??= GetComponent<CharacterCombatManager>();
+            if (attackId != 0u &&
+                (m_characterCombatManager is not AICharacterCombatManager combat ||
+                 !combat.TrySelectReplicatedAttack(attackId, attackType)))
+            {
+                Debug.LogError("Replicated AI attack definition is missing or belongs to another attack type.", this);
+                return;
+            }
             m_characterCombatManager?.ReplicateAttack(attackType);
         }
 

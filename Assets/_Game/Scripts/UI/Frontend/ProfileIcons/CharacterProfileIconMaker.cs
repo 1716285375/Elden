@@ -16,6 +16,7 @@ namespace ZZ
         private const string k_ProfileIconDirectoryName = "Icons";
 
         private static CharacterProfileIconMaker s_instance;
+        private CharacterCreationPreview m_appearancePreview;
 
         [SerializeField] private ProfileIconMakerManager m_dummyManager;
         [SerializeField] private Camera m_profileIconCamera;
@@ -107,13 +108,26 @@ namespace ZZ
         {
             if (characterData == null ||
                 characterSlot == CharacterSlot.NoSlot ||
-                m_dummyManager == null ||
-                m_profileIconCamera == null ||
-                m_iconRenderTextureTemplate == null ||
-                !m_dummyManager.EquipDummy(characterData))
+                m_iconRenderTextureTemplate == null)
             {
                 return null;
             }
+
+            if (m_appearancePreview == null)
+            {
+                m_dummyManager?.gameObject.SetActive(false);
+                if (m_profileIconCamera != null)
+                {
+                    m_profileIconCamera.enabled = false;
+                }
+                var previewObject = new GameObject("Saved Appearance Portrait");
+                previewObject.transform.SetParent(transform, false);
+                m_appearancePreview = previewObject.AddComponent<CharacterCreationPreview>();
+                m_appearancePreview.Initialize();
+                m_profileIconCamera = m_appearancePreview.Camera;
+                m_profileIconCamera.enabled = false;
+            }
+            m_appearancePreview.ApplySavedCharacter(characterData);
 
             Animator dummyAnimator =
                 m_dummyManager.GetComponentInChildren<Animator>(true);
@@ -140,7 +154,7 @@ namespace ZZ
         public static string GetProfileIconPath(CharacterSlot characterSlot)
         {
             return Path.Combine(
-                Application.streamingAssetsPath,
+                Application.persistentDataPath,
                 k_ProfileIconDirectoryName,
                 $"{characterSlot}.png");
         }

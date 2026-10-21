@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Unarmed
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.MeleeWeaponItem
   m_itemName: Unarmed
-  m_itemIcon: {fileID: 21300000, guid: acb985449c8a0dd42a22de227338e719, type: 3}
+  m_itemIcon: {fileID: 21300000, guid: 4a87d06971f055543a7fc829b04c5f81, type: 3}
   m_itemDescription: Bare hands used when no weapon is equipped.
   m_itemID: 0
   m_maxItemAmount: 1
@@ -39,10 +39,44 @@ MonoBehaviour:
   m_bleedBuildup: 0
   m_frostBuildup: 0
   m_upgradeLevel: 0
+  m_physicalChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_magicChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_fireChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_lightningChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_holyChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
   m_strengthRequirement: 0
   m_dexterityRequirement: 0
   m_intelligenceRequirement: 0
   m_faithRequirement: 0
+  m_strengthScaling: 0.35
+  m_dexterityScaling: 0.25
+  m_intelligenceScaling: 0.5
+  m_faithScaling: 0.5
   m_baseStaminaCost: 8
   m_basePoiseDamage: 5
   m_blockingPhysicalAbsorption: 35
@@ -51,6 +85,7 @@ MonoBehaviour:
   m_blockingLightningAbsorption: 10
   m_blockingHolyAbsorption: 15
   m_blockingStability: 15
+  m_guardProfile: {fileID: 0}
   m_whooshes:
   - {fileID: 8300000, guid: 1a44403d1b700cd44ac07d73b55bc152, type: 3}
   - {fileID: 8300000, guid: 33ad83188e8353c4aad2d3f7e7eb8919, type: 3}

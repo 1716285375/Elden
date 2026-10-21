@@ -1,6 +1,8 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
 
 namespace ZZ
 {
@@ -46,6 +48,41 @@ namespace ZZ
 
         private CharacterSlot m_currentSelectedSlot = CharacterSlot.NoSlot;
         private GameSettingsPanel m_settingsPanel;
+        private System.IDisposable m_startSubscription;
+        private Coroutine m_pendingStart;
+
+        private void OnEnable()
+        {
+            m_startSubscription = InputSystem.onAnyButtonPress.Call(_ =>
+            {
+                if (m_pressStartMenu != null && m_pressStartMenu.activeInHierarchy && m_pendingStart == null)
+                {
+                    m_pendingStart = StartCoroutine(PressStartAfterInput());
+                }
+            });
+        }
+
+        private void OnDisable()
+        {
+            m_startSubscription?.Dispose();
+            m_startSubscription = null;
+            if (m_pendingStart != null)
+            {
+                StopCoroutine(m_pendingStart);
+                m_pendingStart = null;
+            }
+        }
+
+        private System.Collections.IEnumerator PressStartAfterInput()
+        {
+            // Let the current UI submit finish before making the next menu selectable.
+            yield return null;
+            m_pendingStart = null;
+            if (m_pressStartMenu != null && m_pressStartMenu.activeInHierarchy)
+            {
+                PressStart();
+            }
+        }
 
         /// <summary>Gets the authored classes displayed by character creation.</summary>
         public CharacterClass[] StartingClasses
@@ -94,6 +131,10 @@ namespace ZZ
                 return;
             }
 
+            if (m_pressStartMenu != null && m_pressStartMenu.activeInHierarchy)
+            {
+                PlayerUIManager.Instance?.PlayMenuConfirmSound();
+            }
             m_pressStartMenu?.SetActive(false);
             m_mainMenu?.SetActive(true);
             SetPrimaryPresentationVisible(true);
@@ -514,7 +555,7 @@ namespace ZZ
                         unarmed
                     },
                     new[] { unarmed, unarmed, unarmed },
-                    null,
+                    database.GetHeadEquipmentByID(4),
                     database.GetBodyEquipmentByID(5),
                     database.GetHandEquipmentByID(6),
                     database.GetLegEquipmentByID(7),

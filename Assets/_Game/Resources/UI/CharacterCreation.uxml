@@ -1,0 +1,58 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <Style src="CharacterCreation.uss" />
+    <ui:VisualElement name="creation-root" class="creation-screen menu-overlay">
+        <ui:VisualElement class="creation-heading">
+            <ui:VisualElement class="creation-heading__icon" />
+            <ui:VisualElement>
+                <ui:Label text="创建角色" class="menu-title" />
+                <ui:Label name="creation-breadcrumb" text="角色资料" class="menu-description" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="creation-content" class="creation-content">
+            <ui:VisualElement name="creation-navigation" class="creation-navigation" />
+            <ui:VisualElement class="creation-details">
+                <ui:Label name="section-title" text="基本资料" class="menu-section-title" />
+                <ui:Label name="section-help" class="creation-section-help" />
+                <ui:ScrollView name="creation-controls" class="creation-controls" mode="Vertical" />
+                <ui:VisualElement name="creation-tools" class="creation-tools">
+                    <ui:Button name="reset-face" text="重置面容" class="menu-command" />
+                    <ui:Button name="random-face" text="随机面容" class="menu-command" />
+                </ui:VisualElement>
+                <ui:Button name="create" text="完成" class="menu-command creation-finish" />
+            </ui:VisualElement>
+            <ui:VisualElement class="creation-preview-panel">
+                <ui:Label name="preview-caption" text="角色预览" class="creation-preview-caption" />
+                <ui:VisualElement name="creation-attributes" class="creation-attributes">
+                    <ui:Label text="角色能力" class="creation-attributes__title" />
+                    <ui:Label name="class-details" />
+                </ui:VisualElement>
+                <ui:VisualElement name="character-preview" class="creation-preview" />
+                <ui:VisualElement class="creation-preview-actions">
+                    <ui:Button name="preview-mode" text="面部特写" class="menu-command" />
+                    <ui:Label text="拖动 · 旋转角色" class="creation-preview-hint" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="creation-footer" class="creation-footer">
+            <ui:Label name="creation-status" class="menu-description" />
+            <ui:VisualElement class="creation-input-hints">
+                <ui:Label text="E" class="creation-key" /><ui:Label text="确定" class="creation-input-label" />
+                <ui:Button name="cancel" text="Q　返回" class="creation-back" />
+                <ui:Label text="鼠标拖动" class="creation-key" /><ui:Label text="旋转角色" class="creation-input-label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="creation-confirmation" class="creation-confirmation">
+            <ui:VisualElement class="creation-confirmation__panel">
+                <ui:Label text="以此角色开始游戏吗？" class="menu-section-title" />
+                <ui:Label name="confirmation-summary" class="creation-confirmation__summary" />
+                <ui:Label text="确认后保存角色并进入世界。" class="menu-description" />
+                <ui:VisualElement class="creation-confirmation__actions">
+                    <ui:Button name="confirm-back" text="继续调整" class="menu-command" />
+                    <ui:Button name="confirm-create" text="开始游戏" class="menu-command" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

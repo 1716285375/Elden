@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,6 +20,9 @@ namespace ZZ
         protected List<Item> InventoryItems =>
             m_itemsInInventory ??= new List<Item>();
 
+        /// <summary>Signals a completed inventory collection change to active presentation subscribers.</summary>
+        public event Action InventoryChanged;
+
         protected virtual void Awake()
         {
             Character = GetComponent<CharacterManager>();
@@ -32,13 +36,23 @@ namespace ZZ
         /// <summary>Adds one runtime item, merging a compatible stack when possible.</summary>
         public bool AddItemToInventory(Item item)
         {
-            return AddItemToCollection(InventoryItems, item, "Inventory");
+            bool added = AddItemToCollection(InventoryItems, item, "Inventory");
+            if (added)
+            {
+                InventoryChanged?.Invoke();
+            }
+            return added;
         }
 
         /// <summary>Removes one matching runtime item or the requested stack amount.</summary>
         public bool RemoveItemFromInventory(Item item)
         {
-            return RemoveItemFromCollection(InventoryItems, item);
+            bool removed = RemoveItemFromCollection(InventoryItems, item);
+            if (removed)
+            {
+                InventoryChanged?.Invoke();
+            }
+            return removed;
         }
 
         /// <summary>Returns the total owned amount for one stable catalog item.</summary>
@@ -66,7 +80,12 @@ namespace ZZ
         /// <summary>Destroys every owned runtime item and empties the inventory.</summary>
         public void ClearRuntimeInventory()
         {
+            bool hadItems = InventoryItems.Count > 0;
             ClearRuntimeCollection(InventoryItems);
+            if (hadItems)
+            {
+                InventoryChanged?.Invoke();
+            }
         }
 
         /// <summary>Releases one transient item created from the item database.</summary>

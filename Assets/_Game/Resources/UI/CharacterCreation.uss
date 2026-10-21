@@ -1,0 +1,78 @@
+.creation-screen.menu-overlay { position:absolute; left:0; right:0; top:0; bottom:0; padding:34px 52px 24px; align-items:stretch; justify-content:flex-start; background-color:rgb(25,24,20); -unity-background-image-tint-color:rgb(139,131,108); color:rgb(220,215,195); }
+.creation-heading { flex-direction:row; align-items:center; min-height:48px; flex-shrink:0; margin-bottom:18px; }
+.creation-heading__icon { width:38px; height:38px; margin-right:14px; background-image:url("EldenRing/Elements/MENU_FL_CharaMake.png"); -unity-background-scale-mode:scale-to-fit; -unity-background-image-tint-color:rgb(195,182,142); }
+.creation-heading .menu-title { font-size:26px; margin:0; letter-spacing:1px; color:rgb(220,211,181); }
+.creation-heading .menu-description { font-size:15px; color:rgb(179,171,145); margin-top:8px; }
+.creation-content { flex-direction:row; flex-grow:1; flex-basis:0; min-height:0; width:100%; padding-left:40px; }
+.creation-navigation { display:none; }
+.creation-details { width:52%; flex-shrink:0; padding:32px 28px 12px 0; }
+.creation-details .menu-section-title { display:none; }
+.creation-section-help { display:none; }
+.creation-controls { flex-grow:1; flex-basis:0; min-height:0; }
+.creation-controls .unity-scroll-view__content-container { padding-right:12px; }
+.creation-controls .unity-scroller { width:8px; }
+.creation-preview-panel { flex-grow:1; flex-shrink:1; flex-basis:0; min-width:220px; margin-left:0; align-items:stretch; }
+.creation-preview-caption { display:none; }
+.creation-preview { width:100%; flex-grow:1; flex-basis:0; min-height:0; -unity-background-scale-mode:scale-to-fit; }
+.creation-preview-actions { flex-direction:row; align-items:center; justify-content:flex-end; flex-shrink:0; min-height:42px; }
+.creation-preview-hint { color:rgb(150,143,121); font-size:13px; margin-left:16px; }
+.creation-screen .creation-preview-actions .menu-command { min-height:34px; padding:5px 12px; font-size:14px; margin:0; background-image:none; background-color:transparent; border-width:0; color:rgb(191,182,150); }
+.creation-attributes { display:none; position:absolute; left:0; top:40px; width:160px; padding-left:10px; }
+.creation-screen--overview .creation-attributes { display:flex; }
+.creation-attributes__title { color:rgb(215,202,165); font-size:17px; margin-bottom:8px; }
+.creation-attributes #class-details { color:rgb(196,189,163); font-size:15px; white-space:normal; }
+.creation-screen--overview .creation-preview { margin-left:90px; width:auto; }
+.creation-field, .creation-screen .creation-details .menu-dropdown { flex-direction:row; align-items:center; margin:0 0 6px; min-height:46px; padding:4px 14px; background-color:rgba(106,100,77,0.08); }
+.creation-field > .unity-base-field__label, .creation-screen .creation-details .menu-dropdown > .unity-base-field__label { min-width:0; width:40%; margin:0; padding:0; font-size:20px; color:rgb(218,211,185); }
+.creation-field > .unity-base-field__input, .creation-screen .creation-details .menu-dropdown .unity-base-popup-field__input { flex-grow:1; flex-basis:0; min-width:0; min-height:36px; border-width:1px; border-color:rgba(173,161,120,0.35); background-color:rgba(18,18,15,0.24); color:rgb(222,215,190); padding:4px 12px; -unity-text-align:middle-center; }
+.creation-screen .creation-basics .menu-dropdown { margin-top:8px; }
+.creation-screen .creation-basics .menu-toggle { margin:22px 0 20px; min-height:38px; padding:4px 14px; background-color:transparent; }
+.creation-screen .creation-details .menu-toggle .unity-toggle__label { min-width:0; flex-grow:1; font-size:18px; color:rgb(200,193,166); }
+.creation-screen .creation-details .menu-toggle .unity-toggle__input { min-width:40px; }
+.creation-screen .creation-directory-row { width:100%; min-height:44px; margin:0 0 5px; padding:9px 16px; -unity-text-align:middle-left; background-image:none; background-color:rgba(107,101,79,0.09); border-width:0; color:rgb(219,211,184); font-size:20px; }
+.creation-screen .creation-directory-row:hover, .creation-screen .creation-directory-row:focus { background-image:url("EldenRing/Elements/MENU_FL_Cursor_Half.png"); background-color:rgba(136,124,83,0.15); color:rgb(242,230,189); }
+.creation-basics .creation-directory-row { margin-top:22px; }
+.creation-slider { flex-direction:row; align-items:center; min-height:46px; margin:0 0 4px; padding:6px 14px; background-color:rgba(107,101,79,0.07); }
+.creation-slider > .unity-base-field__label { min-width:0; width:40%; margin:0; padding:0 10px 0 0; color:rgb(215,207,178); font-size:19px; }
+.creation-slider > .unity-base-field__input { min-width:0; flex-grow:1; flex-basis:0; min-height:28px; background-color:transparent; }
+.creation-screen .creation-slider .unity-base-slider__text-field { width:54px; height:28px; min-height:28px; max-height:28px; align-self:center; padding:0; margin-left:12px; }
+.creation-screen .creation-slider .unity-base-text-field__input { background-color:transparent; color:rgb(218,204,160); border-width:0; padding:2px 4px; font-size:17px; -unity-text-align:middle-right; }
+.creation-screen .creation-slider .unity-base-slider__tracker { height:3px; background-image:none; background-color:rgb(109,104,78); }
+.creation-screen .creation-slider .unity-base-slider__dragger { width:4px; height:14px; background-color:rgb(199,187,143); border-width:0; border-radius:0; }
+.creation-slider .unity-base-slider__drag-container { min-height:28px; align-self:center; }
+.creation-tools { display:none; flex-direction:row; margin-top:16px; }
+.creation-screen .creation-tools .menu-command { flex-grow:1; flex-basis:0; margin-right:12px; font-size:16px; min-height:36px; padding:6px; background-image:none; background-color:transparent; border-width:1px; border-color:rgba(161,148,104,0.25); }
+.creation-screen .creation-finish { display:none; align-self:center; width:230px; flex-shrink:0; min-height:40px; padding:7px 18px; margin:18px 0 6px; font-size:18px; background-image:none; background-color:rgba(14,14,11,0.25); border-width:1px; border-color:rgba(190,173,117,0.55); }
+.creation-screen--overview .creation-finish { display:flex; }
+.creation-screen .creation-finish:hover, .creation-screen .creation-finish:focus { background-image:url("EldenRing/Elements/MENU_FL_Cursor_Half.png"); color:rgb(246,232,184); }
+.creation-swatches { flex-direction:row; flex-wrap:wrap; margin:12px 14px 26px; max-width:600px; }
+.creation-swatch { width:36px; height:32px; margin:0 5px 5px 0; border-width:1px; border-color:rgb(100,94,72); border-radius:0; }
+.creation-swatch:focus, .creation-swatch:hover { border-width:2px; border-color:rgb(237,216,154); }
+.creation-footer { flex-direction:column; align-items:flex-start; justify-content:flex-end; flex-shrink:0; min-height:70px; padding-top:8px; }
+.creation-footer .menu-description { font-size:15px; min-height:22px; margin-bottom:7px; color:rgb(192,184,157); }
+.creation-input-hints { flex-direction:row; align-items:center; }
+.creation-key { color:rgb(200,192,163); font-size:14px; padding:2px 5px; border-width:1px; border-color:rgba(157,146,105,0.45); }
+.creation-input-label { color:rgb(185,178,151); font-size:15px; margin:0 20px 0 6px; }
+.creation-back { color:rgb(194,185,152); font-size:15px; background-color:transparent; border-width:0; padding:3px 6px; margin-right:20px; }
+.creation-back:focus, .creation-back:hover { background-color:rgba(145,127,76,0.25); color:rgb(247,230,177); }
+.creation-confirmation { display:none; position:absolute; left:0; right:0; top:0; bottom:0; align-items:center; justify-content:center; background-color:rgba(0,0,0,0.72); }
+.creation-confirmation__panel { width:600px; max-width:90%; padding:34px 44px 28px; border-top-width:1px; border-bottom-width:1px; border-color:rgb(149,136,93); background-image:url("EldenRing/Elements/MENU_BaseMain_01.png"); background-color:rgb(26,25,20); }
+.creation-confirmation__panel .menu-section-title { font-size:23px; color:rgb(223,211,174); }
+.creation-confirmation__summary { font-size:20px; color:rgb(224,213,180); white-space:normal; margin:8px 0 22px; }
+.creation-confirmation__actions { flex-direction:row; margin-top:26px; }
+.creation-confirmation__actions .menu-command { flex-grow:1; flex-basis:0; margin:0 8px; font-size:18px; min-height:40px; padding:7px; }
+
+.creation-screen .creation-row--focused, .creation-screen .creation-directory-row:focus, .creation-screen .creation-directory-row:hover { background-image:url("EldenRing/Elements/MENU_FL_Cursor_Half.png"); -unity-background-image-tint-color:rgba(190,181,133,0.42); background-color:rgba(135,126,83,0.14); }
+.creation-screen .creation-finish:focus, .creation-screen .creation-finish:hover { -unity-background-image-tint-color:rgba(190,181,133,0.4); }
+.creation-screen .unity-base-text-field__input { --unity-selection-color:rgba(154,133,77,0.5); --unity-cursor-color:rgb(230,214,166); }
+.creation-style-grid { flex-direction:row; flex-wrap:wrap; margin:12px 14px 24px; }
+.creation-style { width:88px; height:108px; margin:0 8px 8px 0; border-width:1px; border-color:rgba(145,133,91,0.3); background-color:rgba(80,76,59,0.16); color:rgb(221,210,173); -unity-background-scale-mode:scale-to-fit; -unity-text-align:lower-right; padding:5px; font-size:14px; }
+.creation-style:hover, .creation-style:focus, .creation-style--selected { border-width:2px; border-color:rgb(202,181,118); background-color:rgba(155,139,86,0.18); }
+#page-肤色 .creation-swatches { max-width:440px; }
+#page-肤色 .creation-swatch { width:30px; height:28px; margin:0 4px 4px 0; }
+
+.creation-style-grid { max-width:320px; }
+
+#page-肤色 .creation-swatches { flex-direction:column; flex-wrap:nowrap; }
+.creation-palette-row { flex-direction:row; flex-shrink:0; }
+.creation-palette-row .creation-swatch { flex-shrink:0; }

@@ -73,8 +73,8 @@ namespace ZZ
         private IEnumerator Start()
         {
             // Finish additive scene processing before publishing any network objects.
-            yield return null;
             m_hasCompletedSceneInitialization = true;
+            yield return null;
             WorldAIManager.Instance?.RegisterSpawner(this);
             var retryDelay = new WaitForSeconds(0.5f);
             // Additive spawners can arrive during the initial spawn pass or before their NavMesh.
@@ -83,7 +83,6 @@ namespace ZZ
                 if (WorldAIManager.Instance != null)
                 {
                     WorldAIManager.Instance.RegisterSpawner(this);
-                    AttemptToSpawnCharacter();
                 }
                 yield return retryDelay;
             }

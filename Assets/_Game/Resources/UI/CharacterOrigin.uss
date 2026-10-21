@@ -1,0 +1,17 @@
+.origin-screen { padding: 3.7% 6.25% 2%; align-items: stretch; justify-content: flex-start; }
+.origin-screen .menu-title { font-size: 26px; height: 64px; flex-shrink: 0; border-bottom-width: 1px; border-color: rgba(173,158,115,0.4); }
+.origin-cards { flex-direction: row; flex-grow: 1; min-height: 0; justify-content: center; margin: 12px 0 18px; }
+.origin-card { flex-grow: 1; flex-basis: 0; margin: 0 6px; padding: 14px 16px 20px; color: rgb(215,208,186); background-image: url("EldenRing/Elements/MENU_FL_CharaSellectBase_3.png"); -unity-background-scale-mode: stretch-to-fill; background-color: transparent; border-width: 0; border-radius: 0; align-items: stretch; }
+.origin-card--selected, .origin-card:focus { background-image: url("EldenRing/Elements/MENU_FL_CharaSellectCorsol.png"); border-color: rgba(218,201,141,0.65); background-color: rgba(135,121,75,0.1); }
+.origin-pair { flex-direction: row; flex-grow: 1; min-height: 0; }
+.origin-portrait { flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 0; }
+.origin-card .unity-label { font-size: 25px; -unity-text-align: middle-center; flex-shrink: 0; height: 40px; }
+.origin-body-labels { flex-direction: row; height: 30px; flex-shrink: 0; }
+.origin-body-labels .unity-label { flex-grow: 1; flex-basis: 0; height: 30px; font-size: 20px; }
+.origin-card .origin-card__stats { position: absolute; left: 10%; right: 10%; top: 24%; height: auto; padding: 22px 30px; font-size: 22px; -unity-text-align: upper-left; background-color: rgba(12,11,9,0.94); }
+.origin-card--body { max-width: 38%; }
+.origin-footer { flex-shrink: 0; border-top-width: 1px; border-color: rgba(173,158,115,0.4); padding-top: 18px; font-size: 20px; }
+.origin-commands { flex-direction: row; align-items: center; margin-top: 8px; }
+.origin-commands .unity-button { color: rgb(215,208,186); background-color: transparent; border-width: 0; font-size: 20px; margin: 0 15px; }
+.origin-commands .unity-button:focus { background-color: rgba(155,139,86,0.25); }
+.origin-values { display: none; position: absolute; right: 7%; top: 18%; padding: 28px; font-size: 23px; background-color: rgba(12,11,9,0.96); }

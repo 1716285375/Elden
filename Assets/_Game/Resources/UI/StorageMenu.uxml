@@ -1,0 +1,43 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="StorageMenu.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay storage-menu">
+        <ui:VisualElement class="storage-menu__header">
+            <ui:VisualElement>
+                <ui:Label text="赐福 · 整备" class="menu-eyebrow" />
+                <ui:VisualElement class="menu-heading">
+                    <ui:VisualElement class="menu-section-icon menu-section-icon--storage" picking-mode="Ignore" />
+                    <ui:Label text="物品仓库" class="menu-title" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="storage-menu__categories">
+                <ui:Button name="all" text="全部" class="menu-tab" />
+                <ui:Button name="armor" text="防具" class="menu-tab" />
+                <ui:Button name="weapons" text="武器" class="menu-tab" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="storage-menu__body">
+            <ui:VisualElement class="storage-menu__column">
+                <ui:Label text="随身背包" class="menu-section-title" />
+                <ui:Label name="inventory-count" class="menu-description" />
+                <ui:Label name="inventory-empty" text="此分类没有可存入的物品。" class="menu-description" />
+                <ui:ListView name="inventory-items" class="storage-menu__list" />
+            </ui:VisualElement>
+            <ui:VisualElement class="storage-menu__column storage-menu__column--vault">
+                <ui:Label text="赐福仓库" class="menu-section-title" />
+                <ui:Label name="storage-count" class="menu-description" />
+                <ui:Label name="storage-empty" text="此分类尚未存放物品。" class="menu-description" />
+                <ui:ListView name="storage-items" class="storage-menu__list" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="storage-menu__selection">
+            <ui:Label name="selected-item" class="menu-description" />
+            <ui:Button name="transfer" class="menu-command" />
+        </ui:VisualElement>
+        <ui:VisualElement class="storage-menu__footer menu-footer">
+            <ui:Label name="storage-feedback" text="选择物品后确认存取。整组转移会保留数量和强化等级。" class="menu-description" />
+            <ui:Button name="back" text="返回赐福" class="menu-command" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

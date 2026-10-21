@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,16 +11,19 @@ namespace ZZ
         [SerializeField] private Button m_travelButton;
         [SerializeField] private Button m_returnButton;
 
-        private Button m_storageButton;
+        private SiteOfGraceView m_view;
+
+        public bool IsMemoryOpen => m_view?.IsMemoryOpen == true;
+
+        /// <summary>Closes the nested spell page without closing the grace menu.</summary>
+        public void CloseMemory()
+        {
+            m_view?.CloseMemory();
+        }
 
         /// <summary>Gets whether the Site of Grace menu currently owns local input.</summary>
         public bool IsSiteOfGraceMenuOpen =>
             IsMenuOpen;
-
-        private void Awake()
-        {
-            EnsureStorageButton();
-        }
 
         /// <summary>Opens the rest menu after the locally owned player finishes resting.</summary>
         public void OpenSiteOfGraceMenu()
@@ -34,27 +36,8 @@ namespace ZZ
                 return;
             }
 
-            bool canFastTravel =
-                playerUIManager.PlayerUITeleportLocationManager
-                    ?.CanFastTravel == true;
-            if (m_travelButton != null)
-            {
-                m_travelButton.interactable = canFastTravel;
-            }
-
-            if (m_storageButton != null)
-            {
-                m_storageButton.interactable =
-                    playerUIManager.LocalPlayer?.InventoryManager != null;
-            }
-
-            Button initialButton = m_levelUpButton != null
-                ? m_levelUpButton
-                : canFastTravel
-                    ? m_travelButton
-                    : m_returnButton;
-            initialButton?.Select();
-            initialButton?.OnSelect(null);
+            EnsureToolkitMenu();
+            m_view?.Refresh();
         }
 
         /// <summary>Closes only the Site of Grace menu.</summary>
@@ -89,43 +72,21 @@ namespace ZZ
             }
         }
 
-        private void EnsureStorageButton()
+        private void EnsureToolkitMenu()
         {
-            if (m_storageButton != null || m_levelUpButton == null)
+            if (m_view != null || MenuWindow == null || !Application.isPlaying)
             {
                 return;
             }
-
-            m_storageButton = Instantiate(
-                m_levelUpButton,
-                m_levelUpButton.transform.parent);
-            m_storageButton.name = "Storage Button";
-            m_storageButton.onClick = new Button.ButtonClickedEvent();
-            m_storageButton.onClick.AddListener(OpenStorageMenu);
-            m_storageButton.navigation = new Navigation
+            CanvasGroup legacy = MenuWindow.GetComponent<CanvasGroup>();
+            if (legacy == null)
             {
-                mode = Navigation.Mode.Automatic
-            };
-            TMP_Text tmpLabel =
-                m_storageButton.GetComponentInChildren<TMP_Text>(true);
-            if (tmpLabel != null)
-            {
-                tmpLabel.text = "Storage";
+                legacy = MenuWindow.AddComponent<CanvasGroup>();
             }
-            else
-            {
-                Text legacyLabel =
-                    m_storageButton.GetComponentInChildren<Text>(true);
-                if (legacyLabel != null)
-                {
-                    legacyLabel.text = "Storage";
-                }
-            }
-
-            int targetIndex = m_travelButton != null
-                ? m_travelButton.transform.GetSiblingIndex()
-                : m_levelUpButton.transform.GetSiblingIndex() + 1;
-            m_storageButton.transform.SetSiblingIndex(targetIndex);
+            legacy.alpha = 0f;
+            legacy.interactable = false;
+            legacy.blocksRaycasts = false;
+            m_view = SiteOfGraceView.Create(MenuWindow.transform, this);
         }
     }
 }

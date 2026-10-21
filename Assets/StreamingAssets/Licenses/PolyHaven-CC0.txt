@@ -1,0 +1,15 @@
+Poly Haven nature models and terrain textures
+
+Asset license: CC0 1.0 Universal
+Official license information: https://polyhaven.com/license
+CC0 reference: https://creativecommons.org/publicdomain/zero/1.0/
+
+Downloaded from Poly Haven official services on 2026-10-15.
+Asset IDs: fir_tree_01, tree_small_02, shrub_02, fern_02,
+rock_moss_set_01, coastal_cliff_02, grass_medium_01, grass_ground,
+brown_mud, coast_sand_01, brown_mud_rocks_01, forest_ground_04,
+cobblestone_floor_05, dark_rock.
+
+Local processing: FBX coordinate normalization, realtime LODs,
+URP material setup and texture channel packing.
+Full provenance: Docs/Release/PolyHavenSources.md

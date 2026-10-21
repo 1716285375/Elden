@@ -37,20 +37,8 @@ namespace ZZ.Demo
                 buttons = BuildGamepadButtons(state)
             });
 
-            // Dodge and Sprint share <Gamepad>/buttonEast in PlayerControls, so those two intents go
-            // over the keyboard where space and left shift are unambiguous.
-            int keyCount = (state.Sprint ? 1 : 0) + (state.Dodge ? 1 : 0);
-            var keys = new Key[keyCount];
-            int index = 0;
-            if (state.Sprint)
-            {
-                keys[index++] = Key.LeftShift;
-            }
-
-            if (state.Dodge)
-            {
-                keys[index] = Key.Space;
-            }
+            // Tap and hold share Space in the current input asset.
+            Key[] keys = state.Sprint || state.Dodge ? new[] { Key.Space } : Array.Empty<Key>();
 
             InputSystem.QueueStateEvent(m_keyboard, new KeyboardState(keys));
         }

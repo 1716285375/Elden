@@ -12,19 +12,19 @@ namespace ZZ.Editor
     public static class DemoCapture
     {
         private const string k_Category = "演示录制";
-        private const int k_FrameRate = 60;
+        private const int k_FrameRate = 30;
 
         /// <summary>Used by clips that stage the player first and then settle on their own.</summary>
         private const float k_StageSettleSeconds = 0.2f;
 
-        /// <summary>World pose with the monastery approach behind the player: red trees and flowers.</summary>
-        private const float k_ScenicX = 227f;
-        private const float k_ScenicZ = 249f;
-        private const float k_ScenicYaw = 270f;
+        /// <summary>Walkable pose at the current cave entrance.</summary>
+        private const float k_ScenicX = 63.63f;
+        private const float k_ScenicZ = -4.42f;
+        private const float k_ScenicYaw = 85f;
 
         /// <summary>Same spot facing the enemy that spawns there, for combat clips.</summary>
-        private const float k_EnemyPoseX = 235f;
-        private const float k_EnemyPoseZ = 249f;
+        private const float k_EnemyPoseX = 103f;
+        private const float k_EnemyPoseZ = 29f;
         private const float k_EnemyPoseYaw = 180f;
 
         [ZZTool(k_Category, "录制片段：新游戏", 10)]
@@ -84,6 +84,8 @@ namespace ZZ.Editor
                 "movement" => BuildMovementClip(),
                 "enemy" => BuildEnemyClip(),
                 "ui" => BuildUiClip(),
+                "boss" => BuildBossClip(),
+                "grace" => BuildGraceClip(),
                 "scout" => BuildScoutClip(),
                 _ => throw new InvalidOperationException($"Unknown demo clip '{clipName}'.")
             });
@@ -94,15 +96,15 @@ namespace ZZ.Editor
         {
             var steps = new List<DemoStep>
             {
-                new("title", 0.6f, default),
-                new("host", 0.6f, default, DemoMenuActions.StartNetworkAsHost),
-                new("main-menu", 0.8f, default, DemoMenuActions.PressStart),
-                new("open-creation", 0.9f, default, DemoMenuActions.OpenCharacterCreation),
-                new("class-menu", 0.8f, default, () => DemoMenuActions.PreviewClass(1)),
-                new("select-class", 0.35f, default, () => DemoMenuActions.SelectClass(1)),
-                new("hair-menu", 0.8f, default, () => DemoMenuActions.PreviewHairstyle(2)),
-                new("select-hairstyle", 0.35f, default, () => DemoMenuActions.SelectHairstyle(2)),
-                new("start-game", 1.7f, default, DemoMenuActions.StartCreatedGame)
+                new("title", 2f, default),
+                new("host", 0.7f, default, DemoMenuActions.StartNetworkAsHost),
+                new("main-menu", 2f, default, DemoMenuActions.PressStart),
+                new("open-creation", 3f, default, DemoMenuActions.OpenCharacterCreation),
+                new("origin", 3f, default, () =>
+                    UnityEngine.Object.FindFirstObjectByType<TitleScreenCharacterCreationManager>()?.ConfirmOrigin(1, false)),
+                new("appearance", 3f, default, () => DemoMenuActions.PreviewHairstyle(2)),
+                new("name", 2f, default, () =>
+                    UnityEngine.Object.FindFirstObjectByType<TitleScreenCharacterCreationManager>()?.SubmitCharacterName("Ashen"))
             };
 
             return new DemoClip("new-game", steps, k_FrameRate, 0f, false, false);
@@ -189,11 +191,17 @@ namespace ZZ.Editor
             var steps = new List<DemoStep>
             {
                 new("stage", 1.5f, default, StageAtScenicSpot),
-                new("hud", 1f, default),
-                new("open-character-menu", 1.6f, default, DemoMenuActions.OpenInGameCharacterMenu),
-                new("open-equipment", 1.4f, default, DemoMenuActions.OpenEquipmentMenu),
-                new("select-slot", 1f, default, () => DemoMenuActions.SelectEquipmentSlot(1)),
-                new("close", 0.8f, default, DemoMenuActions.CloseInGameMenus)
+                new("hud", 2f, default),
+                new("character-menu", 2f, default, DemoMenuActions.OpenInGameCharacterMenu),
+                new("weapons", 3f, default, () =>
+                    PlayerUIManager.Instance.PlayerUIEquipmentManager.OpenWeaponMenu()),
+                new("armor", 3f, default, DemoMenuActions.OpenEquipmentMenu),
+                new("items", 3f, default, () =>
+                    PlayerUIManager.Instance.PlayerUIInventoryManager.OpenInventory()),
+                new("menu", 0.5f, default, DemoMenuActions.OpenInGameCharacterMenu),
+                new("settings", 3f, default, () =>
+                    PlayerUIManager.Instance.PlayerUICharacterMenuManager.OpenSettings()),
+                new("close", 1.5f, default, DemoMenuActions.CloseInGameMenus)
             };
 
             return new DemoClip("ui", steps, k_FrameRate, k_StageSettleSeconds, true, false);
@@ -211,8 +219,8 @@ namespace ZZ.Editor
                 (k_EnemyPoseX, k_EnemyPoseZ, 90f),
                 (k_EnemyPoseX, k_EnemyPoseZ, 180f),
                 (k_EnemyPoseX, k_EnemyPoseZ, 270f),
-                (228f, 244f, 0f),
-                (242f, 256f, 0f)
+                (63.63f, -4.42f, 33f),
+                (103f, 29f, 180f)
             };
 
             var steps = new List<DemoStep>();
@@ -226,6 +234,42 @@ namespace ZZ.Editor
             }
 
             return new DemoClip("scout", steps, 30, 0.5f);
+        }
+
+        private static DemoClip BuildBossClip()
+        {
+            var steps = new List<DemoStep>
+            {
+                new("arena", 3f, default, () =>
+                {
+                    DemoStage.PlacePlayer(121f, 74f, 0f);
+                    PlayerManager player = DemoStage.FindOwnerPlayer();
+                    BossCharacterManager boss = UnityEngine.Object.FindFirstObjectByType<BossCharacterManager>(
+                        FindObjectsInactive.Include);
+                    if (boss == null) { throw new InvalidOperationException("Original cave Boss is missing."); }
+                    boss.GetComponent<AICharacterManager>().ActivateCharacter(player);
+                    boss.BeginEncounter(player);
+                }),
+                new("lock", 0.1f, new DemoInputState { LockOn = true }),
+                new("observe", 3f, default),
+                new("attack", 0.1f, new DemoInputState { LightAttack = true }),
+                new("recover", 2f, default),
+                new("dodge", 0.1f, new DemoInputState { Dodge = true }),
+                new("end", 2f, default)
+            };
+            return new DemoClip("boss", steps, k_FrameRate, 0.5f);
+        }
+
+        private static DemoClip BuildGraceClip()
+        {
+            var steps = new List<DemoStep>
+            {
+                new("entrance", 2f, default, StageAtScenicSpot),
+                new("interact", 0.1f, new DemoInputState { Interact = true }),
+                new("rest", 4f, default),
+                new("close", 1f, default, DemoMenuActions.CloseInGameMenus)
+            };
+            return new DemoClip("grace", steps, k_FrameRate, 0.5f);
         }
 
         private static void StageAtScenicSpot()

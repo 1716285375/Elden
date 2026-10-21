@@ -68,7 +68,7 @@ namespace ZZ
                 return;
             }
 
-            PlayerManager enteringPlayer = other.GetComponentInParent<PlayerManager>();
+            PlayerManager enteringPlayer = other.GetComponent<PlayerManager>();
             if (enteringPlayer == null || enteringPlayer.IsDead)
             {
                 return;
@@ -78,7 +78,11 @@ namespace ZZ
             {
                 TryFindBoss();
             }
-            m_boundBoss?.BeginEncounter(enteringPlayer);
+            if (m_boundBoss != null)
+            {
+                m_boundBoss.GetComponent<AICharacterManager>()?.ActivateCharacter(enteringPlayer);
+                m_boundBoss.BeginEncounter(enteringPlayer);
+            }
         }
 
         private void OnAIRegistered(AICharacterManager aiCharacter)

@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Small Smithing Stone
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.UpgradeMaterial
   m_itemName: Small Smithing Stone
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: -205293010, guid: 40c1558a0eb73414385b04164007a6b8, type: 3}
   m_itemDescription: A common stone used to strengthen armaments up to +3.
   m_itemID: 16
   m_maxItemAmount: 99
   m_currentItemAmount: 12
+  m_itemValue: 0
+  m_isInfinite: 0
   m_upgradeStone: 0

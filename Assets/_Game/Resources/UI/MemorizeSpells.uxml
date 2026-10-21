@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="InventoryItemGrid.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement name="memory-panel" class="menu-overlay memory-menu" style="display: none;">
+        <ui:VisualElement class="menu-heading">
+            <ui:VisualElement class="menu-section-icon menu-section-icon--status" picking-mode="Ignore" />
+            <ui:Label text="记忆" class="menu-title" />
+        </ui:VisualElement>
+        <ui:VisualElement class="memory-menu__body">
+            <ui:VisualElement class="memory-menu__catalog">
+                <ui:Label text="记忆空格" class="menu-section-title" />
+                <ui:VisualElement class="memory-menu__top">
+                <ui:Button name="memory-slot" class="memory-menu__slot menu-command">
+                    <ui:Image name="memory-slot-icon" class="memory-menu__slot-icon" picking-mode="Ignore" />
+                    <ui:Label name="memory-slot-name" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Label name="memory-summary" class="menu-description" />
+                </ui:VisualElement>
+                <ui:Label text="魔法／祷告" class="menu-section-title" />
+                <ui:ListView name="memory-spells" class="memory-menu__list" />
+                <ui:Label name="memory-empty" text="尚未获得魔法或祷告。" class="menu-description" />
+            </ui:VisualElement>
+            <ui:ScrollView class="memory-menu__details" horizontal-scroller-visibility="Hidden">
+                <ui:Label name="memory-name" class="menu-section-title" />
+                <ui:Image name="memory-icon" class="memory-menu__portrait" />
+                <ui:Label name="memory-cost" class="menu-description" />
+                <ui:Label name="memory-description" class="menu-description" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+        <ui:VisualElement class="memory-menu__footer menu-footer">
+            <ui:Label name="memory-feedback" text="选择要记忆的魔法或祷告" class="menu-description" />
+            <ui:Button name="memory-equip" text="记忆" class="menu-command" />
+            <ui:Button name="memory-back" text="返回" class="menu-command" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

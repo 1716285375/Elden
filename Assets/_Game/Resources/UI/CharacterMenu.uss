@@ -1,0 +1,47 @@
+.character-menu { align-items: flex-start; background-color: rgba(12,11,9,0.83); }
+.character-menu__card { width: 480px; max-height: 100%; padding: 24px 32px; background-color: rgb(25,23,18); border-left-width: 3px; border-left-color: rgb(197,170,120); }
+.character-menu__commands { margin: 24px 0 20px 0; }
+.character-menu .character-menu__commands .menu-command { -unity-text-align: middle-left; }
+.character-menu__confirmation { position: absolute; left: 38%; right: 14%; top: 28%; padding: 32px; background-color: rgb(27,25,19); border-width: 1px; border-color: rgb(197,170,120); border-radius: 0; }
+.character-menu__confirmation .menu-description { margin-bottom: 24px; }
+.character-status { position: absolute; left: 4%; right: 4%; top: 4%; bottom: 4%; }
+.character-status .menu-heading { height: 46px; margin-bottom: 16px; }
+.character-status__name { font-size: 21px; margin: 0 24px 24px 24px; padding-bottom: 12px; border-bottom-width: 1px; border-bottom-color: rgba(163,149,112,0.4); }
+.character-status__scroll { flex-grow: 1; min-height: 0; }
+.character-status__columns { flex-direction: row; }
+.character-status__column { width: 33.333%; padding: 0 24px; border-left-width: 1px; border-left-color: rgba(164,149,112,0.25); }
+.character-status__row { flex-direction: row; justify-content: space-between; min-height: 30px; font-size: 18px; }
+.character-status__value { -unity-text-align: middle-right; }
+.character-status__heading { font-size: 18px; color: rgb(190,180,145); margin: 22px 0 10px 0; }
+.character-status__footer { flex-direction: row; justify-content: space-between; align-items: center; padding-top: 14px; }
+.character-status__footer .menu-command { min-height: 36px; margin-bottom: 0; }
+
+.menu-overlay.character-menu { padding: 0; background-image: none; background-color: rgba(15,14,10,0.3); }
+.menu-overlay.character-menu .character-menu__card {
+    position: absolute; left: 2.5%; top: 19%; bottom: 7%; width: 25%; padding: 0;
+    border-width: 0; background-image: none; background-color: transparent;
+}
+.character-menu__card > .menu-eyebrow, .character-menu__card > .menu-heading,
+.character-menu__card > .menu-description { display: none; }
+.character-menu__commands { margin: 0; }
+.character-menu .character-menu__commands .menu-command {
+    min-height: 48px; margin-bottom: 6px; border-width: 0; background-image: none;
+    background-color: transparent; padding: 8px 14px 8px 60px; font-size: 18px;
+}
+.character-menu .character-menu__commands .menu-command:hover,
+.character-menu .character-menu__commands .menu-command:focus {
+    background-image: url("EldenRing/Elements/MENU_FL_Cursor_Half.png"); background-color: transparent;
+}
+.character-menu__commands #resume, .character-menu__commands #save,
+.character-menu__commands #title, .character-menu__commands #quit { min-height: 30px; padding: 3px 12px; font-size: 15px; }
+.character-menu__commands #resume { margin-bottom: 16px; }
+.character-menu__icon { position: absolute; left: 0; top: 0; width: 44px; height: 44px; -unity-background-scale-mode: scale-to-fit; }
+.character-menu__icon--equipment { background-image: url("EldenRing/Elements/MENU_Tab_Armor.png"); }
+.character-menu__icon--inventory { background-image: url("EldenRing/Elements/MENU_FL_Inventory.png"); }
+.character-menu__icon--status { background-image: url("EldenRing/Elements/MENU_FL_Status.png"); }
+.character-menu__icon--settings { background-image: url("EldenRing/Elements/MENU_FL_Sysytem.png"); }
+.menu-overlay.character-menu--status { background-image: url("EldenRing/Elements/MENU_BaseMain_01.png"); background-color: rgba(18,17,13,0.85); }
+
+.character-status .menu-heading .menu-title { font-size: 25px; }
+
+.character-menu__icon--weapons { background-image: url("EldenRing/Elements/MENU_FL_Attack.png"); }

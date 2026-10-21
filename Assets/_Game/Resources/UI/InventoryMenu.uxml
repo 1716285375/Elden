@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="InventoryMenu.uss" />
+    <Style src="InventoryItemGrid.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay inventory-menu">
+        <ui:VisualElement class="menu-heading">
+            <ui:VisualElement class="menu-section-icon inventory-menu__icon" picking-mode="Ignore" />
+            <ui:Label text="物品" class="menu-title" />
+        </ui:VisualElement>
+        <ui:VisualElement class="inventory-menu__body">
+            <ui:VisualElement class="inventory-menu__catalog">
+                <ui:Label name="item-category-name" class="inventory-menu__category-title" />
+                <ui:VisualElement class="inventory-menu__categories">
+                    <ui:Label name="category-previous" text="Q" class="inventory-menu__shoulder" />
+                    <ui:VisualElement name="item-categories" class="menu-tabs" />
+                    <ui:Label name="category-next" text="E" class="inventory-menu__shoulder" />
+                </ui:VisualElement>
+                <ui:TextField name="item-search" label="搜索" class="inventory-menu__search" />
+                <ui:ListView name="inventory-list" class="inventory-menu__list" />
+                <ui:Label name="inventory-empty" text="没有符合条件的物品。" class="menu-description" />
+            </ui:VisualElement>
+            <ui:ScrollView name="item-details" class="inventory-menu__details" focusable="true" horizontal-scroller-visibility="Hidden">
+                <ui:Label name="detail-name" class="menu-section-title" />
+                <ui:Image name="detail-icon" class="inventory-menu__portrait" />
+                <ui:Label name="detail-quantity" class="menu-description" />
+                <ui:Label name="detail-effect-heading" text="道具效果" class="inventory-menu__section" />
+                <ui:Label name="detail-description" class="menu-description" />
+            </ui:ScrollView>
+            <ui:ScrollView name="inventory-character-stats" class="inventory-menu__status" horizontal-scroller-visibility="Hidden" />
+        </ui:VisualElement>
+        <ui:VisualElement class="inventory-menu__footer menu-footer">
+            <ui:Label text="选择要确认的物品" class="menu-description" />
+            <ui:Button name="inspect" text="确认说明" class="menu-command" />
+            <ui:Button name="switch-display" text="切换显示（中）" class="menu-command" />
+            <ui:Button name="switch-view" text="切换显示（右）" class="menu-command" />
+            <ui:Button name="back" text="Esc：返回" class="menu-command" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -57,7 +57,10 @@ namespace ZZ
         /// <summary>Closes this menu and releases input when no modal remains open.</summary>
         public virtual void CloseMenu()
         {
-            m_menuWindow?.SetActive(false);
+            if (m_menuWindow != null)
+            {
+                m_menuWindow.SetActive(false);
+            }
             PlayerUIManager.Instance?.RefreshMenuWindowState();
         }
     }

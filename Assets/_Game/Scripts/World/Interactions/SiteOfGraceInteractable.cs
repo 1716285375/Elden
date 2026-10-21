@@ -15,6 +15,7 @@ namespace ZZ
 
         [Header("SITE OF GRACE")]
         [SerializeField, Min(1)] private int m_siteOfGraceID = 1;
+        [SerializeField] private string m_displayName;
         [SerializeField] private ParticleSystem[] m_graceParticles =
             System.Array.Empty<ParticleSystem>();
         [SerializeField] private Light m_graceLight;
@@ -34,6 +35,10 @@ namespace ZZ
 
         /// <summary>Gets the stable identifier stored in the character save file.</summary>
         public int SiteOfGraceID => m_siteOfGraceID;
+
+        /// <summary>Gets the authored travel label, with a unique fallback for existing scenes.</summary>
+        public string DisplayName => string.IsNullOrWhiteSpace(m_displayName) ?
+            $"赐福 · {m_siteOfGraceID}" : m_displayName;
 
         /// <summary>Gets the synchronized activation state.</summary>
         public bool IsActivated => m_isActivated.Value;

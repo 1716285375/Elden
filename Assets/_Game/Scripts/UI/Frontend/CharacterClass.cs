@@ -21,6 +21,9 @@ namespace ZZ
         [SerializeField, Min(1)] private int m_dexterity = 10;
         [SerializeField, Min(1)] private int m_intelligence = 10;
         [SerializeField, Min(1)] private int m_faith = 10;
+        [SerializeField, Min(1)] private int m_arcane = 10;
+        [SerializeField, Min(1)] private int m_level = 1;
+        [SerializeField] private int m_originId;
 
         [Header("Equipment")]
         [SerializeField] private WeaponItem[] m_rightHandWeapons =
@@ -95,6 +98,9 @@ namespace ZZ
         public int Intelligence => Mathf.Max(1, m_intelligence);
         /// <summary>Gets starting Faith.</summary>
         public int Faith => Mathf.Max(1, m_faith);
+        public int Arcane => Mathf.Max(1, m_arcane);
+        public int Level => Mathf.Max(1, m_level);
+        public int OriginId => m_originId;
         /// <summary>Gets the three right-hand starting slots.</summary>
         public WeaponItem[] RightHandWeapons => m_rightHandWeapons;
         /// <summary>Gets the three left-hand starting slots.</summary>

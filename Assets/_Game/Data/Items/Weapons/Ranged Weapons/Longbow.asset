@@ -13,17 +13,20 @@ MonoBehaviour:
   m_Name: Longbow
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.RangedWeaponItem
   m_itemName: Longbow
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 219976555, guid: 6f93caa650b8a1f43bc4dfc11b385e72, type: 3}
   m_itemDescription: A two-handed bow compatible with Arrow-class ammunition.
   m_itemID: 11
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 0
+  m_isInfinite: 0
   m_itemWeight: 0
   m_weaponModel: {fileID: 7364217939783419758, guid: e2cdb377f3433ca4f9d800d791630d6a, type: 3}
   m_isUnarmed: 0
   m_weaponModelType: 0
   m_weaponClass: 5
   m_weaponAnimator: {fileID: 22100000, guid: 7533fa8375efdeb47a17d1ef7dcbbbc2, type: 2}
+  m_moveset: {fileID: 0}
   m_weaponPivotPosition: {x: 0, y: 0, z: 0}
   m_weaponPivotRotation: {x: 0, y: 0, z: 0}
   m_weaponPivotScale: {x: 1, y: 1, z: 1}
@@ -32,11 +35,48 @@ MonoBehaviour:
   m_fireDamage: 0
   m_lightningDamage: 0
   m_holyDamage: 0
+  m_poisonBuildup: 0
+  m_bleedBuildup: 0
+  m_frostBuildup: 0
   m_upgradeLevel: 0
+  m_physicalChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_magicChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_fireChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_lightningChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
+  m_holyChannel:
+    m_baseDamage: 0
+    m_strengthScaling: 0
+    m_dexterityScaling: 0
+    m_intelligenceScaling: 0
+    m_faithScaling: 0
   m_strengthRequirement: 0
   m_dexterityRequirement: 0
   m_intelligenceRequirement: 0
   m_faithRequirement: 0
+  m_strengthScaling: 0.35
+  m_dexterityScaling: 0.25
+  m_intelligenceScaling: 0.5
+  m_faithScaling: 0.5
   m_baseStaminaCost: 10
   m_basePoiseDamage: 5
   m_blockingPhysicalAbsorption: 0
@@ -45,6 +85,7 @@ MonoBehaviour:
   m_blockingLightningAbsorption: 0
   m_blockingHolyAbsorption: 0
   m_blockingStability: 0
+  m_guardProfile: {fileID: 0}
   m_whooshes: []
   m_blockingSoundEffects: []
   m_rightHandAction: {fileID: 11400000, guid: d41f3d6a05d05d742bc46d537524944f, type: 2}

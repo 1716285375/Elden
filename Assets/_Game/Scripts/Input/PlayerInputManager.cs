@@ -9,7 +9,7 @@ namespace ZZ
     public class PlayerInputManager : MonoBehaviour
     {
         private const string k_GameplaySceneName =
-            WorldScenePathLayout.MasterSceneName;
+            WorldScenePathLayout.GameplaySceneName;
 
         private static PlayerInputManager s_instance;
         public static PlayerInputManager Instance => s_instance;
@@ -43,6 +43,8 @@ namespace ZZ
         public bool IsHeavyAttackHeld { get; private set; }
 
         private PlayerControls m_playerControls;
+        private InputAction m_walkAction;
+        private bool m_isWalkInputHeld;
         private PlayerManager m_player;
         private bool m_hasDodgeInput;
         private bool m_hasJumpInput;
@@ -54,6 +56,7 @@ namespace ZZ
         private bool m_isRBSpellInput;
         private bool m_isRangedRBInput;
         private bool m_isRangedRTInput;
+        private bool m_isTwoHandRTInput;
         private bool m_hasRTStartedInput;
         private bool m_hasRTReleasedInput;
         private bool m_hasLTInput;
@@ -61,6 +64,7 @@ namespace ZZ
         private bool m_isLBInputHeld;
         private bool m_isLBSpellInput;
         private bool m_hasLockOnInput;
+        private bool m_consumedInteractionChord;
         private bool m_hasInteractionInput;
         private bool m_hasUseQuickSlotItemInput;
         private bool m_isGameplayInputBlocked;
@@ -96,6 +100,12 @@ namespace ZZ
             m_playerControls.PlayerMovement.Dodge.performed += OnDodgePerformed;
             m_playerControls.PlayerMovement.Sprint.performed += OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled += OnSprintCanceled;
+            m_walkAction = m_playerControls.asset.FindAction("Player Movement/Walk");
+            if (m_walkAction != null)
+            {
+                m_walkAction.performed += OnWalkPerformed;
+                m_walkAction.canceled += OnWalkCanceled;
+            }
             m_playerControls.PlayerMovement.Jump.performed += OnJumpPerformed;
             m_playerControls.PlayerMovement.Sneak.performed += OnSneakPerformed;
             m_playerControls.PlayerMovement.SwitchRightWeapon.performed +=
@@ -143,6 +153,11 @@ namespace ZZ
             m_playerControls.PlayerMovement.Dodge.performed -= OnDodgePerformed;
             m_playerControls.PlayerMovement.Sprint.performed -= OnSprintPerformed;
             m_playerControls.PlayerMovement.Sprint.canceled -= OnSprintCanceled;
+            if (m_walkAction != null)
+            {
+                m_walkAction.performed -= OnWalkPerformed;
+                m_walkAction.canceled -= OnWalkCanceled;
+            }
             m_playerControls.PlayerMovement.Jump.performed -= OnJumpPerformed;
             m_playerControls.PlayerMovement.Sneak.performed -= OnSneakPerformed;
             m_playerControls.PlayerMovement.SwitchRightWeapon.performed -=
@@ -286,6 +301,7 @@ namespace ZZ
             m_isRBSpellInput = false;
             m_isRangedRBInput = false;
             m_isRangedRTInput = false;
+            m_isTwoHandRTInput = false;
             m_hasRTStartedInput = false;
             m_hasRTReleasedInput = false;
             IsHeavyAttackHeld = false;
@@ -297,6 +313,7 @@ namespace ZZ
             m_hasInteractionInput = false;
             m_hasUseQuickSlotItemInput = false;
             m_isSprintInputHeld = false;
+            m_isWalkInputHeld = false;
             m_isTwoHandInputHeld = false;
             m_hasTwoHandRightWeaponInput = false;
             m_hasTwoHandLeftWeaponInput = false;
@@ -437,6 +454,12 @@ namespace ZZ
             else if (MoveAmount > 0.5f)
             {
                 MoveAmount = 1f;
+            }
+            if (m_isWalkInputHeld && !m_isSprintInputHeld && MoveAmount > 0f)
+            {
+                MoveAmount = 0.5f;
+                VerticalInput *= 0.5f;
+                HorizontalInput *= 0.5f;
             }
         }
 
@@ -610,7 +633,7 @@ namespace ZZ
 
         private void HandleTwoHandInput()
         {
-            if (!m_isTwoHandInputHeld || m_player?.PlayerNetworkManager == null)
+            if (m_player?.PlayerNetworkManager == null)
             {
                 return;
             }
@@ -674,6 +697,9 @@ namespace ZZ
             m_isSprintInputHeld = false;
         }
 
+        private void OnWalkPerformed(InputAction.CallbackContext context) { m_isWalkInputHeld = true; }
+        private void OnWalkCanceled(InputAction.CallbackContext context) { m_isWalkInputHeld = false; }
+
         private void OnJumpPerformed(InputAction.CallbackContext context)
         {
             m_hasJumpInput = true;
@@ -702,7 +728,7 @@ namespace ZZ
 
         private void OnRBPerformed(InputAction.CallbackContext context)
         {
-            if (m_isRBSpellInput)
+            if (m_isRBSpellInput || m_isTwoHandInputHeld)
             {
                 return;
             }
@@ -712,6 +738,10 @@ namespace ZZ
 
         private void OnRBStarted(InputAction.CallbackContext context)
         {
+            if (m_isTwoHandInputHeld)
+            {
+                return;
+            }
             m_isRBSpellInput = TryBeginSpellInput(true);
             m_isRangedRBInput = !m_isRBSpellInput &&
                 ResolveAttackWeapon() is RangedWeaponItem;
@@ -739,6 +769,13 @@ namespace ZZ
 
         private void OnRTStarted(InputAction.CallbackContext context)
         {
+            m_isTwoHandRTInput = m_isTwoHandInputHeld;
+            if (m_isTwoHandInputHeld)
+            {
+                m_hasTwoHandRightWeaponInput = true;
+                m_consumedInteractionChord = true;
+                return;
+            }
             m_isRangedRTInput = ResolveAttackWeapon() is RangedWeaponItem;
             if (m_isRangedRTInput)
             {
@@ -774,6 +811,11 @@ namespace ZZ
 
         private void OnRTCanceled(InputAction.CallbackContext context)
         {
+            if (m_isTwoHandRTInput)
+            {
+                m_isTwoHandRTInput = false;
+                return;
+            }
             IsHeavyAttackHeld = false;
             if (!IsMovementInputEnabled)
             {
@@ -793,12 +835,18 @@ namespace ZZ
 
         private void OnLTPerformed(InputAction.CallbackContext context)
         {
+            if (m_isTwoHandInputHeld)
+            {
+                m_hasTwoHandLeftWeaponInput = true;
+                m_consumedInteractionChord = true;
+                return;
+            }
             m_hasLTInput = true;
         }
 
         private void OnLBPerformed(InputAction.CallbackContext context)
         {
-            if (m_isLBSpellInput)
+            if (m_isLBSpellInput || m_isTwoHandInputHeld)
             {
                 return;
             }
@@ -809,6 +857,10 @@ namespace ZZ
 
         private void OnLBStarted(InputAction.CallbackContext context)
         {
+            if (m_isTwoHandInputHeld)
+            {
+                return;
+            }
             m_isLBSpellInput = TryBeginSpellInput(false);
             m_hasLBInput = !m_isLBSpellInput;
             m_isLBInputHeld = !m_isLBSpellInput;
@@ -863,24 +915,28 @@ namespace ZZ
 
         private void OnTwoHandWeaponPerformed(InputAction.CallbackContext context)
         {
-            m_isTwoHandInputHeld = true;
+            m_isTwoHandInputHeld = context.ReadValueAsButton();
+            if (m_isTwoHandInputHeld)
+            {
+                m_consumedInteractionChord = false;
+            }
         }
 
         private void OnTwoHandWeaponCanceled(InputAction.CallbackContext context)
         {
             m_isTwoHandInputHeld = false;
-            m_hasTwoHandRightWeaponInput = false;
-            m_hasTwoHandLeftWeaponInput = false;
         }
 
         private void OnTwoHandRightWeaponPerformed(InputAction.CallbackContext context)
         {
             m_hasTwoHandRightWeaponInput = m_isTwoHandInputHeld;
+            m_consumedInteractionChord |= m_isTwoHandInputHeld;
         }
 
         private void OnTwoHandLeftWeaponPerformed(InputAction.CallbackContext context)
         {
             m_hasTwoHandLeftWeaponInput = m_isTwoHandInputHeld;
+            m_consumedInteractionChord |= m_isTwoHandInputHeld;
         }
 
         private void OnLockOnPerformed(InputAction.CallbackContext context)
@@ -890,7 +946,7 @@ namespace ZZ
 
         private void OnInteractPerformed(InputAction.CallbackContext context)
         {
-            m_hasInteractionInput = true;
+            m_hasInteractionInput = !m_consumedInteractionChord;
         }
 
         private void OnUseQuickSlotItemPerformed(InputAction.CallbackContext context)

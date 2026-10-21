@@ -1,186 +1,280 @@
 using System;
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
+using ToolkitButton = UnityEngine.UIElements.Button;
+using Slider = UnityEngine.UIElements.Slider;
+using Toggle = UnityEngine.UIElements.Toggle;
 
 namespace ZZ
 {
-    /// <summary>Shares a navigable settings panel between the title and character menus.</summary>
+    /// <summary>Native Toolkit settings shared by the title and in-game menus.</summary>
     public sealed class GameSettingsPanel : MonoBehaviour
     {
-        private Button m_volumeButton;
-        private TMP_Text m_volumeLabel;
-        private TMP_Text m_lookLabel;
-        private TMP_Text m_invertLabel;
-        private TMP_Text m_qualityLabel;
-        private TMP_Text m_fullscreenLabel;
-        private TMP_Text m_frameRateLabel;
-        private TMP_Text m_shakeLabel;
-        private TMP_Text m_hapticsLabel;
-        private TMP_Text m_hitStopLabel;
+        private static readonly string[] s_categories = { "audio", "controls", "display", "impact" };
+        private static readonly int[] s_frameRates = { 30, 60, 120, -1 };
+        private static int s_closedFrame = -1;
+        private UIDocument m_document;
+        private PanelSettings m_panel;
+        private VisualElement m_root;
         private Action m_closed;
+        private string m_category = "audio";
+        private IVisualElementScheduledItem m_pendingCommit;
 
-        /// <summary>Creates one responsive overlay beneath the owning menu's lifecycle.</summary>
-        public static GameSettingsPanel Create(Transform parent)
+        /// <summary>Prevents the same cancel event closing the parent after this overlay.</summary>
+        public static bool ClosedThisFrame => Application.isPlaying && s_closedFrame == Time.frameCount;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
         {
-            GameObject root = new("Settings", typeof(RectTransform), typeof(Canvas),
-                typeof(CanvasScaler), typeof(GraphicRaycaster), typeof(Image));
-            root.transform.SetParent(parent, false);
-            RectTransform rootRect = root.GetComponent<RectTransform>();
-            rootRect.anchorMin = Vector2.zero;
-            rootRect.anchorMax = Vector2.one;
-            rootRect.offsetMin = Vector2.zero;
-            rootRect.offsetMax = Vector2.zero;
-            Canvas canvas = root.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.overrideSorting = true;
-            canvas.sortingOrder = 900;
-            CanvasScaler scaler = root.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 0.5f;
-            root.GetComponent<Image>().color = new Color(0.035f, 0.04f, 0.035f, 0.98f);
-            GameSettingsPanel panel = root.AddComponent<GameSettingsPanel>();
-            panel.Build();
-            root.SetActive(false);
-            return panel;
+            s_closedFrame = -1;
         }
 
-        /// <summary>Opens settings and places keyboard/controller focus on the first control.</summary>
-        public void Open(Action closed)
+        private void OnEnable()
         {
-            m_closed = closed;
-            gameObject.SetActive(true);
-            RefreshLabels();
-            m_volumeButton.Select();
-        }
-
-        /// <summary>Closes the overlay and restores the owning menu's selection.</summary>
-        public void Close()
-        {
-            gameObject.SetActive(false);
-            Action closed = m_closed;
-            m_closed = null;
-            closed?.Invoke();
-        }
-
-        /// <summary>Creates a styled controller-navigable command.</summary>
-        public static Button CreateButton(Transform parent, string label, UnityAction clicked)
-        {
-            GameObject root = new(label, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
-            root.transform.SetParent(parent, false);
-            root.GetComponent<Image>().color = new Color(0.19f, 0.18f, 0.14f, 1f);
-            root.GetComponent<LayoutElement>().preferredHeight = 52f;
-            Button button = root.GetComponent<Button>();
-            button.onClick.AddListener(clicked);
-            ColorBlock colors = button.colors;
-            colors.selectedColor = new Color(1f, 0.85f, 0.5f);
-            colors.highlightedColor = colors.selectedColor;
-            button.colors = colors;
-            TMP_Text text = CreateLabel(root.transform, label);
-            RectTransform rect = text.rectTransform;
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(12f, 0f);
-            rect.offsetMax = new Vector2(-12f, 0f);
-            return button;
-        }
-
-        private void Build()
-        {
-            GameObject content = new("Settings Content", typeof(RectTransform), typeof(VerticalLayoutGroup));
-            content.transform.SetParent(transform, false);
-            RectTransform rect = content.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.22f, 0.1f);
-            rect.anchorMax = new Vector2(0.78f, 0.9f);
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
-            layout.spacing = 8f;
-            layout.childControlHeight = true;
-            layout.childControlWidth = true;
-            layout.childForceExpandHeight = false;
-            CreateLabel(content.transform, "SETTINGS");
-            m_volumeButton = CreateButton(content.transform, "Volume", () =>
+            if (m_document != null)
             {
-                GameSettings.SetVolume(GameSettings.Volume >= 0.99f ? 0f : GameSettings.Volume + 0.1f);
-                RefreshLabels();
-            });
-            m_volumeLabel = m_volumeButton.GetComponentInChildren<TMP_Text>();
-            m_lookLabel = AddOption(content.transform, "Camera", () =>
-                GameSettings.SetLook(GameSettings.LookSensitivity >= 3f ? 0.25f :
-                    GameSettings.LookSensitivity + 0.25f, GameSettings.InvertLook));
-            m_invertLabel = AddOption(content.transform, "Invert", () =>
-                GameSettings.SetLook(GameSettings.LookSensitivity, !GameSettings.InvertLook));
-            m_qualityLabel = AddOption(content.transform, "Quality", () =>
-                GameSettings.SetDisplay((GameSettings.Quality + 1) % Mathf.Max(1, QualitySettings.names.Length),
-                    GameSettings.Fullscreen, GameSettings.FrameRate));
-            m_fullscreenLabel = AddOption(content.transform, "Display", () =>
-                GameSettings.SetDisplay(GameSettings.Quality, !GameSettings.Fullscreen, GameSettings.FrameRate));
-            m_frameRateLabel = AddOption(content.transform, "Frame Limit", () =>
-            {
-                int next = GameSettings.FrameRate switch { 30 => 60, 60 => 120, 120 => -1, _ => 30 };
-                GameSettings.SetDisplay(GameSettings.Quality, GameSettings.Fullscreen, next);
-            });
-            m_shakeLabel = AddOption(content.transform, "Camera Shake", () =>
-                GameSettings.SetImpact(GameSettings.ShakeIntensity >= 1f ? 0f : GameSettings.ShakeIntensity + 0.25f,
-                    GameSettings.HapticsEnabled, GameSettings.HitStopEnabled));
-            m_hapticsLabel = AddOption(content.transform, "Vibration", () =>
-                GameSettings.SetImpact(GameSettings.ShakeIntensity, !GameSettings.HapticsEnabled,
-                    GameSettings.HitStopEnabled));
-            m_hitStopLabel = AddOption(content.transform, "Impact Pause", () =>
-                GameSettings.SetImpact(GameSettings.ShakeIntensity, GameSettings.HapticsEnabled,
-                    !GameSettings.HitStopEnabled));
-            CreateLabel(content.transform, "Select to cycle • Changes save automatically");
-            CreateButton(content.transform, "Back", Close);
-            Button[] buttons = content.GetComponentsInChildren<Button>();
-            for (int index = 0; index < buttons.Length; index++)
-            {
-                buttons[index].navigation = new Navigation
-                {
-                    mode = Navigation.Mode.Explicit,
-                    selectOnUp = buttons[(index + buttons.Length - 1) % buttons.Length],
-                    selectOnDown = buttons[(index + 1) % buttons.Length]
-                };
+                BindDocument();
             }
         }
 
-        private TMP_Text AddOption(Transform parent, string label, Action change)
+        private void OnDisable()
         {
-            return CreateButton(parent, label, () =>
+            FlushPreferences();
+            m_root = null;
+            m_closed = null;
+        }
+
+        private void OnDestroy()
+        {
+            if (m_panel != null)
             {
-                change();
-                RefreshLabels();
-            }).GetComponentInChildren<TMP_Text>();
+                if (Application.isPlaying)
+                {
+                    Destroy(m_panel);
+                }
+                else
+                {
+                    DestroyImmediate(m_panel);
+                }
+            }
         }
 
-        private void RefreshLabels()
+        /// <summary>Creates a disabled document without a Canvas or legacy controls.</summary>
+        public static GameSettingsPanel Create(Transform parent)
         {
-            m_volumeLabel.text = $"Master Volume: {Mathf.RoundToInt(GameSettings.Volume * 100f)}%";
-            m_lookLabel.text = $"Camera Sensitivity: {GameSettings.LookSensitivity:0.00}x";
-            m_invertLabel.text = $"Invert Camera Y: {(GameSettings.InvertLook ? "On" : "Off")}";
-            string[] names = QualitySettings.names;
-            m_qualityLabel.text = $"Quality: {(names.Length > 0 ? names[GameSettings.Quality] : "Default")}";
-            m_fullscreenLabel.text = $"Display: {(GameSettings.Fullscreen ? "Borderless Fullscreen" : "Windowed")}";
-            m_frameRateLabel.text = $"Frame Limit: {(GameSettings.FrameRate < 0 ? "Unlimited" : GameSettings.FrameRate.ToString())}";
-            m_shakeLabel.text = $"Camera Shake: {Mathf.RoundToInt(GameSettings.ShakeIntensity * 100f)}%";
-            m_hapticsLabel.text = $"Controller Vibration: {(GameSettings.HapticsEnabled ? "On" : "Off")}";
-            m_hitStopLabel.text = $"Impact Animation Pause: {(GameSettings.HitStopEnabled ? "On" : "Off")}";
+            VisualTreeAsset layout = Resources.Load<VisualTreeAsset>("UI/SettingsPanel");
+            ThemeStyleSheet theme = Resources.Load<ThemeStyleSheet>("UI/MenuPanelTheme");
+            if (layout == null || theme == null)
+            {
+                throw new InvalidOperationException("Settings Toolkit layout or theme is missing.");
+            }
+            GameObject instance = new GameObject("Settings");
+            instance.SetActive(false);
+            instance.transform.SetParent(parent, false);
+            PanelSettings settings = ScriptableObject.CreateInstance<PanelSettings>();
+            settings.themeStyleSheet = theme;
+            settings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+            settings.referenceResolution = new Vector2Int(1600, 900);
+            settings.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
+            settings.match = 0.5f;
+            settings.sortingOrder = 900;
+            UIDocument document = instance.AddComponent<UIDocument>();
+            document.panelSettings = settings;
+            document.visualTreeAsset = layout;
+            document.gameObject.AddComponent<MenuAudioFeedback>();
+            GameSettingsPanel panel = instance.AddComponent<GameSettingsPanel>();
+            panel.m_document = document;
+            panel.m_panel = settings;
+            return panel;
         }
 
-        private static TMP_Text CreateLabel(Transform parent, string label)
+        /// <summary>Opens the current category and gives Toolkit exclusive selection.</summary>
+        public void Open(Action closed)
         {
-            GameObject root = new("Label", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement));
-            root.transform.SetParent(parent, false);
-            TMP_Text text = root.GetComponent<TMP_Text>();
-            text.text = label;
-            text.fontSize = 28f;
-            text.alignment = TextAlignmentOptions.Center;
-            text.color = new Color(0.94f, 0.9f, 0.78f);
-            text.raycastTarget = false;
-            root.GetComponent<LayoutElement>().preferredHeight = 50f;
-            return text;
+            m_closed = closed;
+            if (!gameObject.activeSelf)
+            {
+                EventSystem.current?.SetSelectedGameObject(null);
+                gameObject.SetActive(true);
+            }
         }
+
+        /// <summary>Closes once and returns selection to the owner's callback.</summary>
+        public void Close()
+        {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
+            Action closed = m_closed;
+            s_closedFrame = Time.frameCount;
+            gameObject.SetActive(false);
+            closed?.Invoke();
+        }
+
+        private void BindDocument()
+        {
+            m_root = m_document.rootVisualElement;
+            foreach (string category in s_categories)
+            {
+                string selectedCategory = category;
+                m_root.Q<ToolkitButton>("tab-" + category).clicked += () => SelectCategory(selectedCategory);
+            }
+            m_root.Q<ToolkitButton>("back").clicked += Close;
+            m_root.RegisterCallback<NavigationCancelEvent>(evt =>
+            {
+                evt.StopPropagation();
+                Close();
+            });
+            m_root.RegisterCallback<GeometryChangedEvent>(evt => m_root?.Q(className: "settings-panel")
+                .EnableInClassList("settings-panel--compact", evt.newRect.width < 1200f));
+            BindPreferences();
+            BindRowFeedback();
+            RefreshValues();
+            SelectCategory(m_category);
+            VisualElement root = m_root;
+            root.schedule.Execute(() =>
+            {
+                if (m_root == root && gameObject.activeInHierarchy)
+                {
+                    root.Q<ToolkitButton>("tab-" + m_category).Focus();
+                }
+            });
+        }
+
+        private void BindPreferences()
+        {
+            m_root.Q<Slider>("volume").RegisterValueChangedCallback(evt =>
+                Preview(() => GameSettings.PreviewVolume(evt.newValue / 100f)));
+            m_root.Q<Slider>("look").RegisterValueChangedCallback(evt =>
+                Preview(() => GameSettings.PreviewLook(evt.newValue, GameSettings.InvertLook)));
+            m_root.Q<Toggle>("invert").RegisterValueChangedCallback(evt =>
+                Change(() => GameSettings.SetLook(GameSettings.LookSensitivity, evt.newValue)));
+            DropdownField quality = m_root.Q<DropdownField>("quality");
+            quality.choices = new List<string>(QualitySettings.names);
+            if (quality.choices.Count == 0)
+            {
+                quality.choices.Add("默认");
+                quality.SetEnabled(false);
+            }
+            quality.RegisterValueChangedCallback(_ => Change(() => GameSettings.SetDisplay(
+                quality.index, GameSettings.Fullscreen, GameSettings.FrameRate)));
+            DropdownField display = m_root.Q<DropdownField>("display");
+            display.choices = new List<string> { "窗口", "无边框全屏" };
+            display.RegisterValueChangedCallback(_ => Change(() => GameSettings.SetDisplay(
+                GameSettings.Quality, display.index == 1, GameSettings.FrameRate)));
+            DropdownField frameRate = m_root.Q<DropdownField>("frame-rate");
+            frameRate.choices = new List<string> { "30 FPS", "60 FPS", "120 FPS", "不限帧率" };
+            frameRate.RegisterValueChangedCallback(_ => Change(() => GameSettings.SetDisplay(
+                GameSettings.Quality, GameSettings.Fullscreen, s_frameRates[frameRate.index])));
+            m_root.Q<Slider>("shake").RegisterValueChangedCallback(evt => Preview(() => GameSettings.PreviewImpact(
+                evt.newValue / 100f, GameSettings.HapticsEnabled, GameSettings.HitStopEnabled)));
+            m_root.Q<Toggle>("haptics").RegisterValueChangedCallback(evt => Change(() => GameSettings.SetImpact(
+                GameSettings.ShakeIntensity, evt.newValue, GameSettings.HitStopEnabled)));
+            m_root.Q<Toggle>("hit-stop").RegisterValueChangedCallback(evt => Change(() => GameSettings.SetImpact(
+                GameSettings.ShakeIntensity, GameSettings.HapticsEnabled, evt.newValue)));
+        }
+
+        private void SelectCategory(string category)
+        {
+            m_category = category;
+            foreach (string candidate in s_categories)
+            {
+                bool isSelected = candidate == category;
+                m_root.Q("page-" + candidate).style.display = isSelected ? DisplayStyle.Flex : DisplayStyle.None;
+                m_root.Q<ToolkitButton>("tab-" + candidate)
+                    .EnableInClassList("menu-tab--selected", isSelected);
+            }
+            m_root.Q<ScrollView>("settings-scroll").scrollOffset = Vector2.zero;
+            m_root.Q<Label>("category-heading").text = m_root.Q<ToolkitButton>("tab-" + category).tooltip;
+            m_root.Q<Label>("settings-help").text = "选择项目进行调整。";
+        }
+
+        private void BindRowFeedback()
+        {
+            m_root.Query<VisualElement>(className: "settings-row").ForEach(row =>
+            {
+                row.RegisterCallback<FocusInEvent>(_ => SetRowFeedback(row));
+                row.RegisterCallback<FocusOutEvent>(_ => row.RemoveFromClassList("settings-row--focused"));
+                row.RegisterCallback<PointerEnterEvent>(_ => SetRowFeedback(row));
+                row.RegisterCallback<PointerLeaveEvent>(_ =>
+                {
+                    if (row.panel?.focusController.focusedElement is not VisualElement focused || !row.Contains(focused))
+                    {
+                        row.RemoveFromClassList("settings-row--focused");
+                    }
+                });
+            });
+        }
+
+        private void SetRowFeedback(VisualElement row)
+        {
+            row.AddToClassList("settings-row--focused");
+            m_root.Q<Label>("settings-help").text = row.Q<Label>(className: "menu-description").text;
+        }
+
+        private void Change(Action change)
+        {
+            m_pendingCommit?.Pause();
+            m_pendingCommit = null;
+            change();
+            RefreshValues();
+            m_root.Q<Label>("save-status").text = "设置已保存";
+        }
+
+        private void Preview(Action preview)
+        {
+            preview();
+            RefreshValues();
+            m_root.Q<Label>("save-status").text = "调整中…";
+            m_pendingCommit?.Pause();
+            m_pendingCommit = m_root.schedule.Execute(() =>
+            {
+                FlushPreferences();
+                m_root.Q<Label>("save-status").text = "设置已保存";
+            }).StartingIn(200);
+        }
+
+        private void FlushPreferences()
+        {
+            if (m_pendingCommit == null)
+            {
+                return;
+            }
+            m_pendingCommit.Pause();
+            m_pendingCommit = null;
+            GameSettings.CommitPreferences();
+        }
+
+        private void RefreshValues()
+        {
+            m_root.Q<Slider>("volume").SetValueWithoutNotify(GameSettings.Volume * 100f);
+            m_root.Q<Label>("volume-value").text = $"{Mathf.RoundToInt(GameSettings.Volume * 100f)}%";
+            m_root.Q<Slider>("look").SetValueWithoutNotify(GameSettings.LookSensitivity);
+            m_root.Q<Label>("look-value").text = $"{GameSettings.LookSensitivity:0.00}×";
+            RefreshToggle("invert", GameSettings.InvertLook);
+            DropdownField quality = m_root.Q<DropdownField>("quality");
+            quality.SetValueWithoutNotify(quality.choices[Mathf.Clamp(GameSettings.Quality, 0,
+                quality.choices.Count - 1)]);
+            DropdownField display = m_root.Q<DropdownField>("display");
+            display.SetValueWithoutNotify(display.choices[GameSettings.Fullscreen ? 1 : 0]);
+            DropdownField frameRate = m_root.Q<DropdownField>("frame-rate");
+            int frameIndex = Mathf.Max(0, Array.IndexOf(s_frameRates, GameSettings.FrameRate));
+            frameRate.SetValueWithoutNotify(frameRate.choices[frameIndex]);
+            m_root.Q<Slider>("shake").SetValueWithoutNotify(GameSettings.ShakeIntensity * 100f);
+            m_root.Q<Label>("shake-value").text = $"{Mathf.RoundToInt(GameSettings.ShakeIntensity * 100f)}%";
+            RefreshToggle("haptics", GameSettings.HapticsEnabled);
+            RefreshToggle("hit-stop", GameSettings.HitStopEnabled);
+        }
+
+        private void RefreshToggle(string name, bool value)
+        {
+            Toggle toggle = m_root.Q<Toggle>(name);
+            toggle.SetValueWithoutNotify(value);
+            toggle.text = value ? "开启" : "关闭";
+        }
+
     }
 }

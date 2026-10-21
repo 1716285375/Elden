@@ -6,7 +6,7 @@ namespace ZZ
     public class CharacterAnimatorManager : MonoBehaviour
     {
         private const float k_MovementParameterDampTime = 0.1f;
-        private const float k_ActionTransitionDuration = 0.2f;
+        private const float k_ActionTransitionDuration = 0.08f;
         private const float k_SprintVerticalValue = 2f;
         private const string k_ActionOverrideLayerName = "Action Override";
         private const string k_UpperBodyOverrideLayerName = "Upper Body Override";
@@ -168,6 +168,7 @@ namespace ZZ
             Animator.StringToHash("Action Override.Dual_BackStep_Attack");
 
         [SerializeField] private Animator m_animator;
+        private AnimationActionGate m_actionGate;
 
         [Header("Dodge Windows")]
         [Tooltip("Overrides the serialized windows below when assigned.")]
@@ -324,6 +325,44 @@ namespace ZZ
         {
             m_animator = characterAnimator;
             m_characterManager ??= GetComponentInParent<CharacterManager>();
+        }
+
+        private void LateUpdate()
+        {
+            if (m_actionGate.CanComplete || m_animator == null)
+            {
+                return;
+            }
+            int layer = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
+            if (layer >= 0)
+            {
+                m_actionGate.Observe(m_animator.GetCurrentAnimatorStateInfo(layer).fullPathHash,
+                    m_animator.IsInTransition(layer) ? m_animator.GetNextAnimatorStateInfo(layer).fullPathHash : 0);
+            }
+        }
+
+        /// <summary>Accepts neutral completion only after the requested action has reached the Animator.</summary>
+        public void CompleteActionFromAnimator()
+        {
+            if (m_actionGate.CanComplete)
+            {
+                m_characterManager?.ResetActionFlags();
+            }
+        }
+
+        public void CancelPendingAction() => m_actionGate.Cancel();
+
+        private void CrossFadeActionState(int stateHash, int layerIndex)
+        {
+            if (stateHash == s_emptyActionState)
+            {
+                m_actionGate.Cancel();
+            }
+            else
+            {
+                m_actionGate.Request(stateHash);
+            }
+            m_animator.CrossFadeInFixedTime(stateHash, k_ActionTransitionDuration, layerIndex);
         }
 
         /// <summary>Switches the Animator to the complete override set authored by a weapon.</summary>
@@ -545,10 +584,7 @@ namespace ZZ
 
             m_characterManager.SetActionState(true, false, false, false);
             int actionLayerIndex = m_animator.GetLayerIndex(k_ActionOverrideLayerName);
-            m_animator.CrossFade(
-                s_jumpStartState,
-                k_ActionTransitionDuration,
-                actionLayerIndex);
+            CrossFadeActionState(s_jumpStartState, actionLayerIndex);
         }
 
         internal bool CanPlayJumpStartAnimation()
@@ -605,10 +641,7 @@ namespace ZZ
                 m_animator.SetBool(s_isDeadParameter, true);
             }
 
-            m_animator.CrossFade(
-                actionStateHash,
-                k_ActionTransitionDuration,
-                actionLayerIndex);
+            CrossFadeActionState(actionStateHash, actionLayerIndex);
             if (targetAnimation == CharacterActionAnimation.BackStep)
             {
                 // Backstep clips lack the rolling clip's sound event; present this once on each peer.
@@ -650,6 +683,11 @@ namespace ZZ
         private int ResolveAttackStateHash(AttackType attackType, WeaponItem weapon)
         {
             AttackDefinition attack = weapon?.GetAttackDefinition(attackType);
+            if (attack == null && m_characterManager?.CharacterCombatManager is AICharacterCombatManager combat &&
+                combat.CurrentAttackAction?.AttackType == attackType)
+            {
+                attack = combat.CurrentAttackAction.AttackDefinition;
+            }
             return attack != null && !string.IsNullOrWhiteSpace(attack.AnimationState)
                 ? Animator.StringToHash(attack.AnimationState)
                 : GetAttackStateHash(attackType);
@@ -696,10 +734,7 @@ namespace ZZ
                 shouldApplyRootMotion,
                 canRotate,
                 k_CanMove);
-            m_animator.CrossFade(
-                attackStateHash,
-                k_ActionTransitionDuration,
-                actionLayerIndex);
+            CrossFadeActionState(attackStateHash, actionLayerIndex);
         }
 
         /// <summary>
@@ -826,10 +861,7 @@ namespace ZZ
             }
 
             m_characterManager.SetActionState(true, false, true, false);
-            m_animator.CrossFade(
-                chargingState,
-                k_ActionTransitionDuration,
-                actionLayerIndex);
+            CrossFadeActionState(chargingState, actionLayerIndex);
         }
 
         /// <summary>
@@ -852,10 +884,7 @@ namespace ZZ
             }
 
             m_animator.SetBool(s_isDeadParameter, false);
-            m_animator.CrossFade(
-                s_emptyActionState,
-                k_ActionTransitionDuration,
-                actionLayerIndex);
+            CrossFadeActionState(s_emptyActionState, actionLayerIndex);
         }
 
         /// <summary>
@@ -880,7 +909,7 @@ namespace ZZ
                 return;
             }
 
-            m_animator.CrossFade(stateHash, k_ActionTransitionDuration, layerIndex);
+            m_animator.CrossFadeInFixedTime(stateHash, k_ActionTransitionDuration, layerIndex);
         }
 
         /// <summary>
@@ -926,10 +955,7 @@ namespace ZZ
 
             m_lastDamageAnimationPlayed = damageAnimation;
             m_characterManager.SetActionState(true, false, false, false);
-            m_animator.CrossFade(
-                damageStateHash,
-                k_ActionTransitionDuration,
-                actionLayerIndex);
+            CrossFadeActionState(damageStateHash, actionLayerIndex);
             return damageAnimation;
         }
 
@@ -977,7 +1003,7 @@ namespace ZZ
             }
 
             m_lastPingDamageAnimationPlayed = pingAnimation;
-            m_animator.CrossFade(
+            m_animator.CrossFadeInFixedTime(
                 pingStateHash,
                 k_ActionTransitionDuration,
                 pingLayerIndex);
@@ -1045,7 +1071,7 @@ namespace ZZ
                 return;
             }
 
-            m_animator.CrossFade(stateHash, k_ActionTransitionDuration, layerIndex);
+            m_animator.CrossFadeInFixedTime(stateHash, k_ActionTransitionDuration, layerIndex);
         }
 
         private int GetAttackStateHash(AttackType attackType)

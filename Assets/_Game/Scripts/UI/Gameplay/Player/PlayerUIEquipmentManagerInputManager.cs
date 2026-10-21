@@ -53,12 +53,18 @@ namespace ZZ
             }
 
             m_hasUnequipItemInput = false;
-            m_equipmentManager?.UnequipSelectedItem();
+            if (m_equipmentManager?.IsEquipmentMenuOpen == true && !m_equipmentManager.IsEditingSearchText &&
+                !m_equipmentManager.IsEquipmentInventoryOpen)
+            {
+                m_equipmentManager.UnequipSelectedItem();
+            }
         }
 
         private void OnUnequipItemPerformed(InputAction.CallbackContext context)
         {
-            m_hasUnequipItemInput = true;
+            m_hasUnequipItemInput = m_equipmentManager?.IsEquipmentMenuOpen == true &&
+                !m_equipmentManager.IsEditingSearchText &&
+                !m_equipmentManager.IsEquipmentInventoryOpen;
         }
     }
 }

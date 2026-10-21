@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="LoadingScreen.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement name="loading-overlay" focusable="true" class="menu-overlay loading-screen">
+        <ui:VisualElement class="loading-screen__copy">
+            <ui:Label name="loading-tip-title" class="menu-section-title" />
+            <ui:Label name="loading-tip-description" class="menu-description loading-screen__hint" />
+        </ui:VisualElement>
+        <ui:VisualElement class="loading-screen__track"><ui:VisualElement name="loading-pulse" class="loading-screen__pulse" /></ui:VisualElement>
+        <ui:Button name="loading-next" text="下一条" class="menu-command loading-screen__next" />
+    </ui:VisualElement>
+</ui:UXML>

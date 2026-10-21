@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Large Smithing Stone
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.UpgradeMaterial
   m_itemName: Large Smithing Stone
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 673998045, guid: 40c1558a0eb73414385b04164007a6b8, type: 3}
   m_itemDescription: A rare stone used to strengthen armaments beyond +6.
   m_itemID: 18
   m_maxItemAmount: 99
   m_currentItemAmount: 1
+  m_itemValue: 0
+  m_isInfinite: 0
   m_upgradeStone: 2

@@ -281,6 +281,7 @@ namespace ZZ
         /// </summary>
         public void ResetActionFlags()
         {
+            m_characterAnimatorManager?.CancelPendingAction();
             m_characterEffectsManager?.DestroyAllCurrentActionEffects();
             if (m_hasFrozenStateSnapshot)
             {

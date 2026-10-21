@@ -1,0 +1,4 @@
+.grace-menu { background-color: rgb(16,15,12); align-items: flex-start; }
+.grace-menu__card { width: 540px; max-width: 100%; padding: 28px 32px; background-color: rgb(25,23,18); border-left-width: 3px; border-left-color: rgb(211,186,132); }
+.grace-menu__runes { color: rgb(218,199,162); font-size: 22px; margin: 16px 0 28px 0; }
+.grace-menu__hint { margin: 0 0 22px 0; }

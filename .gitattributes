@@ -169,3 +169,8 @@ Packages/packages-lock.json linguist-generated
 
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
+
+# Small current showcase files are served directly by GitHub, without LFS quotas.
+Showcase/**/*.mp4 -filter -diff -merge
+Showcase/**/*.jpg -filter -diff -merge
+Showcase/**/*.gif -filter -diff -merge

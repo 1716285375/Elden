@@ -16,11 +16,6 @@ namespace ZZ
         private CharacterNetworkManager m_boundNetworkManager;
         private Coroutine m_removeHealthBarCoroutine;
 
-        private void Awake()
-        {
-            gameObject.SetActive(false);
-        }
-
         /// <summary>Binds the shared HUD to the supplied network Boss.</summary>
         public void BindBoss(BossCharacterManager boss)
         {

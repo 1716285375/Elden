@@ -43,6 +43,8 @@ namespace ZZ
 
         private Sequence m_popupSequence;
 
+        private CombatHudView Toolkit => PlayerUIManager.Instance?.PlayerUIHUDManager?.Toolkit;
+
         public bool IsPopUpWindowOpen { get; private set; }
         public bool IsDialoguePopupOpen =>
             m_dialoguePopup?.activeSelf == true;
@@ -90,6 +92,13 @@ namespace ZZ
         /// <summary>Displays the current interaction prompt for the locally owned player.</summary>
         public void SendPlayerMessagePopup(string message)
         {
+            if (Toolkit != null)
+            {
+                Toolkit.SetPrompt(message);
+                m_playerMessagePopup?.SetActive(false);
+                RefreshPopupState();
+                return;
+            }
             if (m_playerMessagePopup == null || m_playerMessageText == null)
             {
                 Debug.LogWarning("The player message popup references are incomplete.", this);
@@ -153,6 +162,7 @@ namespace ZZ
         /// <summary>Closes only the proximity prompt without dismissing an item popup.</summary>
         public void ClosePlayerMessagePopup()
         {
+            Toolkit?.SetPrompt(null);
             m_playerMessagePopup?.SetActive(false);
             RefreshPopupState();
         }
@@ -160,6 +170,7 @@ namespace ZZ
         /// <summary>Closes transient interaction prompts without interrupting death presentation.</summary>
         public void CloseAllPopUpWindows()
         {
+            Toolkit?.SetPrompt(null);
             m_playerMessagePopup?.SetActive(false);
             m_itemPopup?.SetActive(false);
             RefreshPopupState();
@@ -168,6 +179,7 @@ namespace ZZ
         /// <summary>Opens the persistent bottom-center subtitle presentation.</summary>
         public void SendDialoguePopup(string subtitle)
         {
+            Toolkit?.SetPrompt(null);
             if (m_dialoguePopup == null || m_dialogueSubtitleText == null)
             {
                 Debug.LogWarning(
@@ -283,6 +295,7 @@ namespace ZZ
         private void RefreshPopupState()
         {
             IsPopUpWindowOpen = m_youDiedPopup?.activeSelf == true ||
+                Toolkit?.HasPrompt == true ||
                 m_playerMessagePopup?.activeSelf == true ||
                 m_itemPopup?.activeSelf == true ||
                 m_dialoguePopup?.activeSelf == true;

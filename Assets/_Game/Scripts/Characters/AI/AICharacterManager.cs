@@ -1300,6 +1300,31 @@ namespace ZZ
                 Mathf.Clamp(ratio, 0.1f, 1f);
         }
 
+        /// <summary>Resolves a replicated attack from this actor's authored sets, including all Boss phases.</summary>
+        internal AICharacterAttackAction FindAttackAction(uint attackId)
+        {
+            if (attackId == 0)
+            {
+                return null;
+            }
+            if (m_defaultAttackAction?.AttackDefinition?.AttackId == attackId)
+            {
+                return m_defaultAttackAction;
+            }
+            if (m_combatStanceAttacks == null)
+            {
+                return m_bossCharacter?.FindAttackAction(attackId);
+            }
+            foreach (AICharacterAttackAction action in m_combatStanceAttacks)
+            {
+                if (action?.AttackDefinition?.AttackId == attackId)
+                {
+                    return action;
+                }
+            }
+            return m_bossCharacter?.FindAttackAction(attackId);
+        }
+
         private AICharacterAttackAction SelectAttackAtDistance(float distance)
         {
             if (m_bossCharacter != null)

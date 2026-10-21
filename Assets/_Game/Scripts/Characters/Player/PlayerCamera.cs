@@ -521,7 +521,7 @@ namespace ZZ
                 transform.rotation = Quaternion.Slerp(
                     transform.rotation,
                     targetRotation,
-                    m_lockOnRotationSpeed * Time.deltaTime);
+                    1f - Mathf.Exp(-m_lockOnRotationSpeed * Time.deltaTime));
                 m_leftAndRightLookAngle = transform.eulerAngles.y;
             }
 
@@ -541,7 +541,7 @@ namespace ZZ
             m_upAndDownLookAngle = Mathf.LerpAngle(
                 m_upAndDownLookAngle,
                 targetPivotAngle,
-                m_lockOnRotationSpeed * Time.deltaTime);
+                1f - Mathf.Exp(-m_lockOnRotationSpeed * Time.deltaTime));
             m_cameraPivotTransform.localRotation = Quaternion.Euler(
                 m_upAndDownLookAngle,
                 0f,

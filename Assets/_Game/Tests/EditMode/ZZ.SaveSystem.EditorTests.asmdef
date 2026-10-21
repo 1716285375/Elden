@@ -6,6 +6,7 @@
         "ZZ.SaveSystem",
         "Unity.Netcode.Runtime",
         "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [

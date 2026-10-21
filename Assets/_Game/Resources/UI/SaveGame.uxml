@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="SaveGame.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay save-menu">
+        <ui:VisualElement class="save-menu__card">
+            <ui:Label text="旅途 · 记忆" class="menu-eyebrow" />
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--system" picking-mode="Ignore" />
+                <ui:Label text="保存进度" class="menu-title" />
+            </ui:VisualElement>
+            <ui:Label name="character-name" class="menu-section-title save-menu__name" />
+            <ui:Label name="save-details" class="menu-description" />
+            <ui:VisualElement class="save-menu__status">
+                <ui:Label name="save-status" text="手动保存" class="menu-eyebrow" />
+                <ui:Label name="save-feedback" class="menu-description" />
+            </ui:VisualElement>
+            <ui:Button name="save" text="保存当前进度" class="menu-command" />
+            <ui:Button name="back" text="返回角色菜单" class="menu-command" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

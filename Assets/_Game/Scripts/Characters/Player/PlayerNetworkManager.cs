@@ -96,26 +96,10 @@ namespace ZZ
                 true,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Owner);
-        private readonly NetworkVariable<int> m_hairstyleID =
-            new NetworkVariable<int>(
-                0,
-                NetworkVariableReadPermission.Everyone,
-                NetworkVariableWritePermission.Owner);
-        private readonly NetworkVariable<int> m_hairColorRed =
-            new NetworkVariable<int>(
-                79,
-                NetworkVariableReadPermission.Everyone,
-                NetworkVariableWritePermission.Owner);
-        private readonly NetworkVariable<int> m_hairColorGreen =
-            new NetworkVariable<int>(
-                53,
-                NetworkVariableReadPermission.Everyone,
-                NetworkVariableWritePermission.Owner);
-        private readonly NetworkVariable<int> m_hairColorBlue =
-            new NetworkVariable<int>(
-                35,
-                NetworkVariableReadPermission.Everyone,
-                NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<CharacterAppearanceState> m_appearance = new(
+            CharacterAppearanceState.FromData(new CharacterAppearanceData()),
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
         private readonly NetworkVariable<int> m_currentSpellID =
             new NetworkVariable<int>(
                 k_NoSpellID,
@@ -257,17 +241,8 @@ namespace ZZ
         /// <summary>Gets the owner-written body type replicated to every client.</summary>
         public NetworkVariable<bool> IsMale => m_isMale;
 
-        /// <summary>Gets the owner-selected hairstyle index.</summary>
-        public NetworkVariable<int> HairstyleID => m_hairstyleID;
-
-        /// <summary>Gets the owner-selected red hair channel in the 0–255 range.</summary>
-        public NetworkVariable<int> HairColorRed => m_hairColorRed;
-
-        /// <summary>Gets the owner-selected green hair channel in the 0–255 range.</summary>
-        public NetworkVariable<int> HairColorGreen => m_hairColorGreen;
-
-        /// <summary>Gets the owner-selected blue hair channel in the 0–255 range.</summary>
-        public NetworkVariable<int> HairColorBlue => m_hairColorBlue;
+        /// <summary>Gets the single owner-authored appearance snapshot.</summary>
+        public NetworkVariable<CharacterAppearanceState> Appearance => m_appearance;
 
         /// <summary>Gets the owner-selected spell occupying the single replicated slot.</summary>
         public NetworkVariable<int> CurrentSpellID => m_currentSpellID;
@@ -345,10 +320,7 @@ namespace ZZ
             m_currentHandEquipmentID.OnValueChanged += OnHandEquipmentIDChanged;
             m_currentLegEquipmentID.OnValueChanged += OnLegEquipmentIDChanged;
             m_isMale.OnValueChanged += OnBodyTypeChanged;
-            m_hairstyleID.OnValueChanged += OnHairstyleChanged;
-            m_hairColorRed.OnValueChanged += OnHairColorChanged;
-            m_hairColorGreen.OnValueChanged += OnHairColorChanged;
-            m_hairColorBlue.OnValueChanged += OnHairColorChanged;
+            m_appearance.OnValueChanged += OnAppearanceChanged;
             m_currentSpellID.OnValueChanged += OnCurrentSpellIDChanged;
             m_isChargingRightSpell.OnValueChanged += OnChargingSpellStateChanged;
             m_isChargingLeftSpell.OnValueChanged += OnChargingSpellStateChanged;
@@ -429,10 +401,7 @@ namespace ZZ
             m_currentHandEquipmentID.OnValueChanged -= OnHandEquipmentIDChanged;
             m_currentLegEquipmentID.OnValueChanged -= OnLegEquipmentIDChanged;
             m_isMale.OnValueChanged -= OnBodyTypeChanged;
-            m_hairstyleID.OnValueChanged -= OnHairstyleChanged;
-            m_hairColorRed.OnValueChanged -= OnHairColorChanged;
-            m_hairColorGreen.OnValueChanged -= OnHairColorChanged;
-            m_hairColorBlue.OnValueChanged -= OnHairColorChanged;
+            m_appearance.OnValueChanged -= OnAppearanceChanged;
             m_currentSpellID.OnValueChanged -= OnCurrentSpellIDChanged;
             m_isChargingRightSpell.OnValueChanged -= OnChargingSpellStateChanged;
             m_isChargingLeftSpell.OnValueChanged -= OnChargingSpellStateChanged;
@@ -1250,28 +1219,15 @@ namespace ZZ
             GetComponent<PlayerEquipmentManager>()?.RefreshArmorPresentation(currentIsMale);
         }
 
-        private void OnHairstyleChanged(int previousHairstyleID, int currentHairstyleID)
+        private void OnAppearanceChanged(CharacterAppearanceState previous, CharacterAppearanceState current)
         {
-            GetComponent<PlayerBodyManager>()?.SetHairstyle(currentHairstyleID);
-        }
-
-        private void OnHairColorChanged(int previousColorChannel, int currentColorChannel)
-        {
-            GetComponent<PlayerBodyManager>()?.SetHairColor(
-                m_hairColorRed.Value,
-                m_hairColorGreen.Value,
-                m_hairColorBlue.Value);
+            GetComponent<CharacterAppearancePresenter>()?.Apply(current.ToData());
         }
 
         private void ApplyAppearancePresentation()
         {
-            PlayerBodyManager bodyManager = GetComponent<PlayerBodyManager>();
-            bodyManager?.ToggleBodyType(m_isMale.Value);
-            bodyManager?.SetHairstyle(m_hairstyleID.Value);
-            bodyManager?.SetHairColor(
-                m_hairColorRed.Value,
-                m_hairColorGreen.Value,
-                m_hairColorBlue.Value);
+            GetComponent<PlayerBodyManager>()?.ToggleBodyType(m_isMale.Value);
+            GetComponent<CharacterAppearancePresenter>()?.Apply(m_appearance.Value.ToData());
         }
 
         private void OnCurrentWeaponIDBeingUsedChanged(

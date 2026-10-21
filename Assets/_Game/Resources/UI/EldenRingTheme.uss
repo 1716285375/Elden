@@ -1,0 +1,231 @@
+/* Original atlas art shared by every runtime Toolkit window. */
+.menu-overlay {
+    -unity-font: url("Fonts/OriginalChinese.ttf");
+    background-image: url("EldenRing/Elements/MENU_BaseMain_01.png");
+    background-color: rgba(14,13,10,0.94);
+    color: rgb(231,225,210);
+}
+.menu-overlay .menu-title { font-size: 36px; color: rgb(233,220,186); }
+.menu-overlay .menu-eyebrow { color: rgb(190,174,131); }
+.menu-overlay .menu-description { color: rgb(181,175,157); }
+.menu-overlay .menu-section-title { color: rgb(219,204,166); }
+.menu-overlay .menu-command,
+.menu-overlay .menu-tab {
+    background-image: url("EldenRing/Elements/MENU_FE_NameBase.png");
+    background-color: transparent;
+    border-radius: 0;
+    border-color: rgba(156,141,105,0.3);
+    color: rgb(229,221,199);
+}
+.menu-overlay .menu-command:hover,
+.menu-overlay .menu-command:focus,
+.menu-overlay .menu-command:active,
+.menu-overlay .menu-tab:hover,
+.menu-overlay .menu-tab:focus,
+.menu-overlay .menu-tab--selected {
+    background-image: url("EldenRing/Elements/MENU_FL_Cursor_Half.png");
+    background-color: rgba(90,76,42,0.2);
+    color: rgb(255,239,190);
+    border-color: rgb(194,171,115);
+}
+.menu-overlay .menu-command:disabled { color: rgb(116,111,99); opacity: 0.5; }
+.menu-overlay .menu-tabs,
+.menu-overlay .settings-panel__navigation {
+    background-image: url("EldenRing/Elements/MENU_FL_Tab_base2.png");
+    border-bottom-color: rgba(174,154,104,0.45);
+}
+.menu-overlay .unity-collection-view__item--selected,
+.menu-overlay .unity-collection-view__item--selected:hover {
+    background-image: url("EldenRing/Elements/MENU_FL_Cursor_Wide.png");
+    background-color: rgba(85,72,41,0.4);
+}
+.menu-overlay .unity-scroller .unity-base-slider__tracker {
+    background-image: url("EldenRing/Elements/MENU_Sc_Waku.png"); background-color: transparent;
+}
+.menu-overlay .unity-scroller .unity-base-slider__dragger {
+    background-image: url("EldenRing/Elements/MENU_Sc_Bar.png"); background-color: rgb(179,166,133); border-radius: 0;
+}
+.menu-overlay .menu-slider .unity-base-slider__tracker {
+    background-image: url("EldenRing/Elements/MENU_FL_HP_Base.png"); height: 8px;
+}
+.menu-overlay .menu-slider .unity-base-slider__dragger { border-radius: 0; background-color: rgb(196,178,128); }
+.menu-overlay .equipment-slot {
+    background-image: url("EldenRing/Elements/MENU_SlotBase.png"); background-color: transparent; border-width: 0;
+}
+.menu-overlay .equipment-slot:focus, .menu-overlay .equipment-slot--selected {
+    background-image: url("EldenRing/Elements/MENU_SL_Cursor.png"); background-color: transparent;
+}
+.menu-overlay .inventory-row__icon {
+    background-image: url("EldenRing/Elements/MENU_SlotBase.png");
+}
+.menu-overlay .equipment-menu__portrait,
+.menu-overlay .shop-menu__portrait,
+.menu-overlay .upgrade-menu__icon {
+    background-image: url("EldenRing/Elements/MENU_Item_waku.png");
+}
+.menu-heading { flex-direction: row; align-items: center; margin-bottom: 8px; }
+.menu-heading .menu-title { margin-bottom: 0; }
+.menu-section-icon { width: 44px; height: 44px; margin-right: 14px; -unity-background-scale-mode: scale-to-fit; }
+.menu-section-icon--equipment { background-image: url("EldenRing/Elements/MENU_FL_Equipment.png"); }
+.menu-section-icon--status { background-image: url("EldenRing/Elements/MENU_FL_Status.png"); }
+.menu-section-icon--grace { background-image: url("EldenRing/Elements/MENU_FL_BonFire.png"); }
+.menu-section-icon--storage { background-image: url("EldenRing/Elements/MENU_FL_Repository.png"); }
+.menu-section-icon--shop { background-image: url("EldenRing/Elements/MENU_FL_BuySell.png"); }
+.menu-section-icon--upgrade { background-image: url("EldenRing/Elements/MENU_FL_WeaponEnhance.png"); }
+.menu-section-icon--travel { background-image: url("EldenRing/Elements/MENU_FL_Map.png"); }
+.menu-section-icon--system { background-image: url("EldenRing/Elements/MENU_FL_Sysytem.png"); }
+.menu-overlay .character-menu__card,
+.menu-overlay .grace-menu__card,
+.menu-overlay .save-menu__card,
+.menu-overlay .shop-menu__context,
+.menu-overlay .settings-panel {
+    background-image: url("EldenRing/Elements/MENU_TopBase_00.png");
+    background-color: rgba(20,19,15,0.7); border-radius: 0;
+}
+.menu-overlay .character-menu__confirmation,
+.menu-overlay .level-menu__confirmation,
+.menu-overlay .travel-menu__confirmation {
+    background-image: url("EldenRing/Elements/MENU_BaseMain_03.png");
+    background-color: rgb(24,22,17); border-radius: 0;
+}
+.menu-overlay .loading-screen__track { background-image: url("EldenRing/Elements/MENU_FL_HP_Base.png"); }
+.menu-overlay .loading-screen__pulse { background-image: url("EldenRing/Elements/MENU_FL_Yellow.png"); background-color: transparent; }
+.menu-overlay .loading-screen__copy { background-image: url("EldenRing/Elements/MENU_BaseMain_02.png"); padding: 28px; }
+.combat-hud__resources { background-color: transparent; border-width: 0; border-radius: 0; padding: 0; width: 330px; }
+.combat-hud__heading { display: none; }
+.resource__track { background-image: url("EldenRing/Elements/MENU_FL_HP_Base.png"); border-radius: 0; height: 12px; }
+.resource--health .resource__track { height: 16px; }
+.resource__heading { color: rgb(203,194,169); }
+.resource__value { color: rgb(220,211,188); }
+.resource__trail { background-image: url("EldenRing/Elements/MENU_FL_Yellow.png"); background-color: transparent; }
+.resource--health .resource__fill { background-image: url("EldenRing/Elements/MENU_FL_Red.png"); background-color: transparent; }
+.resource--focus .resource__fill { background-image: url("EldenRing/Elements/MENU_FL_Blue.png"); background-color: transparent; }
+.resource--stamina .resource__fill { background-image: url("EldenRing/Elements/MENU_FL_Green.png"); background-color: transparent; }
+.resource--poisoned .resource__fill { -unity-background-image-tint-color: rgb(163,106,185); }
+.interaction { background-image: url("EldenRing/Elements/MENU_FE_Warning.png"); background-color: rgba(12,11,9,0.6); border-radius: 0; border-width: 0; }
+.interaction__key { border-radius: 0; }
+.combat-hud__currency { background-image: url("EldenRing/Elements/MENU_FL_MultiBase.png"); background-color: transparent; border-width: 0; border-radius: 0; padding-left: 45px; }
+.combat-hud__rune-icon { position: absolute; left: 6px; top: 24px; width: 28px; height: 28px; background-image: url("EldenRing/Elements/MENU_FL_Runes.png"); -unity-background-scale-mode: scale-to-fit; }
+.combat-hud__currency-value { font-size: 25px; color: rgb(226,214,178); }
+
+.menu-section-icon--weapons { background-image: url("EldenRing/Elements/MENU_FL_Attack.png"); }
+
+.menu-section-icon--armor { background-image: url("EldenRing/Elements/MENU_Tab_Armor.png"); }
+
+/* Reference menu scale uses the existing 1600x900 panel coordinates. */
+.menu-overlay .menu-title { font-size: 23px; margin-bottom: 4px; }
+.menu-overlay .menu-heading { min-height: 36px; }
+.menu-overlay .menu-section-title { font-size: 18px; margin-bottom: 12px; }
+.menu-overlay .menu-eyebrow { display: none; }
+.menu-overlay .menu-command { min-height: 34px; padding: 5px 12px; font-size: 17px; }
+.menu-overlay .menu-footer { min-height: 42px; flex-shrink: 0; align-items: center; }
+.menu-overlay .menu-footer .menu-command { background-image: none; background-color: transparent; border-width: 0; min-width: 0; min-height: 30px; padding: 3px 10px; margin: 0 5px 0 0; font-size: 16px; }
+.menu-overlay .menu-footer .menu-command:focus,
+.menu-overlay .menu-footer .menu-command:hover { background-image: url("EldenRing/Elements/MENU_FL_Cursor_Half.png"); }
+.menu-overlay .menu-key-icon { width: 24px; height: 24px; margin-right: 5px; flex-shrink: 0; }
+.menu-overlay .menu-footer .menu-command { flex-direction: row; align-items: center; }
+.menu-overlay .equipment-menu__search,
+.menu-overlay .equipment-menu__inventory .menu-dropdown { display: none; }
+.menu-overlay .equipment-menu__details .menu-section-title { min-height: 28px; padding-right: 115px; }
+.menu-overlay .equipment-menu__portrait { position: absolute; top: 28px; right: 0; width: 104px; height: 104px; }
+.menu-overlay .equipment-menu__details #detail-quantity { min-height: 102px; padding-top: 12px; }
+.menu-overlay .equipment-menu__details #detail-description { display: none; }
+.menu-overlay .equipment-menu__comparison-title { display: none; }
+.menu-overlay .equipment-stat { min-height: 25px; padding: 2px 0; border-bottom-width: 0; }
+.menu-overlay .equipment-stat__label,
+.menu-overlay .equipment-stat__value { font-size: 16px; }
+.equipment-stat-columns { flex-direction: row; }
+.equipment-stat-column { width: 50%; padding-right: 14px; }
+.equipment-stat-heading { font-size: 16px; color: rgb(190,180,145); margin: 12px 0 8px 0; }
+.menu-overlay .equipment-menu__details #detail-requirements { margin-top: 16px; }
+.menu-overlay.menu--description #comparison-stats,
+.menu-overlay.menu--description #detail-requirements { display: none; }
+.menu-overlay.menu--description #detail-description { display: flex; white-space: normal; font-size: 17px; }
+.menu-overlay.menu--simple .equipment-menu__status,
+.menu-overlay.menu--simple .inventory-menu__status { display: none; }
+.menu-overlay.menu--simple .equipment-menu__details,
+.menu-overlay.menu--simple .inventory-menu__details { width: 67%; }
+.menu-overlay .grace-menu__hint { display: none; }
+.menu-overlay .grace-menu__card { width: 360px; padding: 16px 24px; border-width: 0; background-color: transparent; }
+.menu-overlay .grace-menu__card .menu-command { background-image: none; border-width: 0; -unity-text-align: middle-left; min-height: 42px; }
+.menu-overlay .grace-menu__card .menu-command:hover,
+.menu-overlay .grace-menu__card .menu-command:focus { background-image: url("EldenRing/Elements/MENU_FL_Cursor_Half.png"); }
+.menu-overlay .level-menu__value { font-size: 19px; margin: 2px 0 16px 0; }
+.menu-overlay .level-attribute { min-height: 46px; padding: 4px 12px; margin-bottom: 2px; background-color: transparent; }
+.menu-overlay .level-attribute__heading { flex-grow: 1; align-items: center; }
+.menu-overlay .level-attribute__name,
+.menu-overlay .level-attribute__value { font-size: 17px; }
+.menu-overlay .level-attribute__step { min-height: 26px; width: 26px; }
+.menu-overlay .upgrade-menu__level,
+.menu-overlay .upgrade-menu__material,
+.menu-overlay .upgrade-menu__cost { font-size: 18px; margin: 8px 0; }
+.menu-overlay .upgrade-menu__portrait { align-self: flex-start; width: 112px; height: 112px; margin-bottom: 12px; }
+.menu-overlay .travel-menu__details .menu-section-title { font-size: 19px; }
+.menu-overlay .shop-menu__header { margin-bottom: 12px; }
+.menu-overlay .shop-menu__catalog { width: 33%; padding-right: 24px; }
+.menu-overlay .shop-menu__details { width: 40%; padding: 0 24px; }
+.menu-overlay .shop-menu__status { width: 27%; padding-left: 22px; border-left-width: 1px; border-left-color: rgba(164,149,112,0.3); }
+.menu-overlay .shop-menu__status .character-status__row { flex-direction: row; justify-content: space-between; min-height: 25px; font-size: 16px; }
+.menu-overlay .shop-menu__status .character-status__heading { color: rgb(190,180,145); margin: 14px 0 8px 0; font-size: 17px; }
+.menu-overlay .shop-menu__price { font-size: 18px; margin: 12px 0; }
+.menu-overlay .shop-menu__portrait { align-self: flex-end; width: 110px; height: 110px; margin: 0 0 12px 0; }
+.menu-overlay .shop-menu__categories { width: 33%; }
+.menu-overlay .shop-menu__categories .menu-tab { min-width: 0; flex-grow: 1; min-height: 34px; padding: 4px; font-size: 16px; }
+.menu-overlay .shop-menu__veil { position: absolute; left: 0; right: 0; top: 0; bottom: 0; justify-content: center; align-items: center; background-color: rgba(8,7,5,0.65); }
+.menu-overlay .shop-menu__confirmation { width: 540px; max-width: 85%; padding: 28px 40px; background-image: url("EldenRing/Elements/MENU_BaseMain_01.png"); background-color: rgb(28,26,20); border-top-width: 1px; border-bottom-width: 1px; border-top-color: rgb(139,124,91); border-bottom-color: rgb(139,124,91); }
+.shop-menu__confirmation-actions { flex-direction: row; justify-content: center; margin-top: 24px; }
+
+.menu-overlay.inventory-menu.menu--description #detail-quantity { display: none; }
+.menu-overlay.inventory-menu.menu--description .inventory-menu__portrait { position: relative; top: auto; right: auto; align-self: center; width: 180px; height: 180px; margin: 18px 0; }
+.menu-overlay.inventory-menu.menu--description #detail-description { margin-top: 16px; }
+.combat-hud .resource__heading,
+.combat-hud .combat-hud__currency .combat-hud__subtitle { display: none; }
+.combat-hud .resource { margin-bottom: 5px; }
+
+.menu-overlay.memory-menu { padding: 3% 4%; }
+.memory-menu .menu-heading { width: 100%; margin-bottom: 20px; }
+.memory-menu__body { flex-direction: row; width: 100%; flex-grow: 1; min-height: 0; }
+.memory-menu__catalog { width: 33%; padding-right: 24px; }
+.memory-menu__list { flex-grow: 1; min-height: 0; }
+.memory-menu__details { width: 40%; padding: 0 24px; border-left-width: 1px; border-left-color: rgba(164,149,112,0.3); }
+.memory-menu__status { width: 27%; padding-left: 22px; border-left-width: 1px; border-left-color: rgba(164,149,112,0.3); }
+.memory-menu__portrait { align-self: flex-end; width: 112px; height: 112px; margin-bottom: 24px; }
+.memory-menu__slot { flex-direction: row; align-items: center; min-height: 82px; margin-bottom: 28px; }
+.memory-menu__slot-icon { width: 64px; height: 64px; margin-right: 12px; }
+.memory-menu__footer { flex-direction: row; width: 100%; margin-top: 16px; }
+.memory-menu__footer .menu-description { flex-grow: 1; }
+.memory-menu #memory-cost { margin-bottom: 24px; }
+.memory-menu__status .character-status__row { flex-direction: row; justify-content: space-between; min-height: 25px; font-size: 16px; }
+.memory-menu__status .character-status__heading { color: rgb(190,180,145); margin: 14px 0 8px 0; font-size: 17px; }
+
+.memory-menu .memory-menu__catalog { width: 60%; }
+.memory-menu .memory-menu__details { width: 40%; }
+.memory-menu__top { flex-direction: row; justify-content: space-between; min-height: 165px; padding-right: 24px; }
+.memory-menu .memory-menu__slot { width: 92px; height: 92px; padding: 4px; margin: 0; background-image: url("EldenRing/Elements/MENU_SlotBase.png"); }
+.memory-menu .memory-menu__slot-icon { width: 80px; height: 80px; margin: 0; }
+.memory-menu #memory-slot-name { display: none; }
+.memory-menu #memory-summary { min-width: 145px; margin-top: 16px; }
+
+.menu-overlay.loading-screen { padding: 0; background-color: rgb(0,0,0); -unity-background-scale-mode: scale-and-crop; }
+.menu-overlay.loading-screen .loading-screen__copy { position: absolute; left: 6.25%; top: 64%; width: 47%; max-width: 70%; margin: 0; padding: 0; background-image: none; }
+.menu-overlay.loading-screen .loading-screen__copy .menu-section-title { font-size: 19px; margin-bottom: 12px; color: rgb(225,220,205); }
+.menu-overlay.loading-screen .loading-screen__hint { font-size: 16px; color: rgb(215,212,199); }
+.menu-overlay.loading-screen .loading-screen__track { position: absolute; right: 6.25%; bottom: 4%; width: 20%; height: 3px; margin: 0; }
+.menu-overlay.loading-screen .loading-screen__next { position: absolute; left: 6.25%; bottom: 3.5%; background-image: none; border-width: 0; font-size: 16px; }
+
+.menu-overlay.equipment-menu,
+.menu-overlay.inventory-menu,
+.menu-overlay.shop-menu,
+.menu-overlay.level-menu,
+.menu-overlay.storage-menu,
+.menu-overlay.upgrade-menu,
+.menu-overlay.travel-menu,
+.menu-overlay.memory-menu { padding-left: 6.25%; padding-right: 6.25%; }
+
+.menu-overlay .menu-footer .menu-command { flex-shrink: 0; }
+.menu-overlay .menu-footer .menu-description { min-width: 0; flex-shrink: 1; }
+.menu-overlay .menu-key-label { flex-shrink: 0; font-size: 16px; }
+.menu-overlay .equipment-menu__list .unity-collection-view__item,
+.menu-overlay .inventory-menu__list .unity-collection-view__item,
+.menu-overlay .shop-menu__list .unity-collection-view__item,
+.menu-overlay .memory-menu__list .unity-collection-view__item { background-image: none; background-color: transparent; border-width: 0; }

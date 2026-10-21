@@ -64,6 +64,7 @@ namespace ZZ
         private PointerEventData m_pointerEventData;
         private EventSystem m_pointerEventSystem;
         private readonly List<RaycastResult> m_uiRaycastResults = new();
+        private PlayerUIInventoryManager m_playerUIInventoryManager;
 
         public static PlayerUIManager Instance => s_instance;
         public PlayerUIHUDManager PlayerUIHUDManager => m_playerUIHUDManager;
@@ -91,6 +92,8 @@ namespace ZZ
         /// <summary>Gets the local Equipment Menu controller.</summary>
         public PlayerUIEquipmentManager PlayerUIEquipmentManager =>
             m_playerUIEquipmentManager;
+
+        public PlayerUIInventoryManager PlayerUIInventoryManager => m_playerUIInventoryManager;
 
         /// <summary>Gets the local Site of Grace rest-menu controller.</summary>
         public PlayerUISiteOfGraceManager PlayerUISiteOfGraceManager =>
@@ -139,7 +142,8 @@ namespace ZZ
 
         /// <summary>Gets whether the active Scene and player state allow menus.</summary>
         public bool CanOpenMenuWindows =>
-            !m_isMenuInputBlocked && SceneManager.GetActiveScene().buildIndex > 0;
+            !m_isMenuInputBlocked && m_playerUILoadingScreenManager?.IsLoadingScreenActive != true &&
+            SceneManager.GetActiveScene().buildIndex > 0;
 
         private void Awake()
         {
@@ -157,6 +161,8 @@ namespace ZZ
                     GetComponentInChildren<PlayerUICharacterMenuManager>(true);
                 m_playerUIEquipmentManager ??=
                     GetComponentInChildren<PlayerUIEquipmentManager>(true);
+                m_playerUIInventoryManager = GetComponentInChildren<PlayerUIInventoryManager>(true);
+                m_playerUIInventoryManager ??= gameObject.AddComponent<PlayerUIInventoryManager>();
                 m_playerUISiteOfGraceManager ??=
                     GetComponentInChildren<PlayerUISiteOfGraceManager>(true);
                 m_playerUITeleportLocationManager ??=
@@ -318,23 +324,11 @@ namespace ZZ
 
         private void TryPlayHoverSound()
         {
-            if (Time.unscaledTime - m_lastHoverSoundTime < 0.05f)
-            {
-                return;
-            }
-
-            m_lastHoverSoundTime = Time.unscaledTime;
             PlayMenuHoverSound();
         }
 
         private void TryPlayConfirmSound()
         {
-            if (Time.unscaledTime - m_lastConfirmSoundTime < 0.05f)
-            {
-                return;
-            }
-
-            m_lastConfirmSoundTime = Time.unscaledTime;
             PlayMenuConfirmSound();
         }
 
@@ -380,6 +374,7 @@ namespace ZZ
         {
             m_playerUICharacterMenuManager?.CloseMenu();
             m_playerUIEquipmentManager?.CloseMenu();
+            m_playerUIInventoryManager?.CloseMenu();
             m_playerUISaveGameManager?.CloseSaveGameMenu();
             m_playerUISiteOfGraceManager?.CloseSiteOfGraceMenu();
             m_playerUITeleportLocationManager?.CloseTeleportLocationMenu();
@@ -387,7 +382,7 @@ namespace ZZ
             m_playerUIWeaponUpgradeManager?.CloseMenu();
             m_playerUIShopManager?.CloseMenu();
             m_playerUIStorageManager?.CloseMenu();
-            ReleaseMenuInput();
+            RefreshMenuWindowState();
         }
 
         /// <summary>Blocks menus for death or another higher-priority local state.</summary>
@@ -438,6 +433,7 @@ namespace ZZ
             bool hasOpenMenu =
                 m_playerUICharacterMenuManager?.IsMenuOpen == true ||
                 m_playerUIEquipmentManager?.IsMenuOpen == true ||
+                m_playerUIInventoryManager?.IsMenuOpen == true ||
                 m_playerUISaveGameManager?.IsSaveGameMenuOpen == true ||
                 m_playerUISiteOfGraceManager?.IsSiteOfGraceMenuOpen == true ||
                 m_playerUITeleportLocationManager
@@ -447,6 +443,7 @@ namespace ZZ
                 m_playerUIWeaponUpgradeManager?.IsMenuOpen == true;
             hasOpenMenu |= m_playerUIShopManager?.IsMenuOpen == true;
             hasOpenMenu |= m_playerUIStorageManager?.IsMenuOpen == true;
+            hasOpenMenu |= m_playerUILoadingScreenManager?.IsLoadingScreenActive == true;
             if (hasOpenMenu)
             {
                 NotifyMenuWindowOpened();
@@ -459,12 +456,16 @@ namespace ZZ
         /// <summary>Plays the shared non-spatial navigation sound.</summary>
         public void PlayMenuHoverSound()
         {
+            if (Time.unscaledTime - m_lastHoverSoundTime < 0.05f) { return; }
+            m_lastHoverSoundTime = Time.unscaledTime;
             PlayUISound(m_menuHoverSound);
         }
 
         /// <summary>Plays the shared non-spatial confirmation sound.</summary>
         public void PlayMenuConfirmSound()
         {
+            if (Time.unscaledTime - m_lastConfirmSoundTime < 0.05f) { return; }
+            m_lastConfirmSoundTime = Time.unscaledTime;
             PlayUISound(m_menuConfirmSound);
         }
 
@@ -568,6 +569,14 @@ namespace ZZ
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)
         {
             UpdateCursorVisibility();
+            if (activeScene.name == k_TitleSceneName || m_isMenuWindowOpen)
+            {
+                m_playerUIHUDManager?.HideHUD();
+            }
+            else
+            {
+                m_playerUIHUDManager?.ShowHUD();
+            }
         }
 
         private void PlayUISound(AudioClip audioClip)

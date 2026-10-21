@@ -28,10 +28,11 @@ namespace ZZ
         [Header("Evasion")]
         [SerializeField, Min(0f)] private float m_maximumEvasionDistance = 5f;
 
-        private readonly HashSet<CharacterManager> m_charactersDamaged = new();
+        private readonly HitRegistry m_charactersDamaged = new();
         private readonly List<PlayerManager> m_playersWithinActivationRange = new();
 
         private AICharacterManager m_aiCharacter;
+        private OriginalCreatureCombat m_originalCombat;
         private AICharacterAttackAction m_currentAttackAction;
         private bool m_canPerformCombo;
         private bool m_hasHitTargetDuringCombo;
@@ -95,6 +96,7 @@ namespace ZZ
         protected override void Awake()
         {
             base.Awake();
+            m_originalCombat = GetComponentInChildren<OriginalCreatureCombat>(true);
             m_aiCharacter = GetComponent<AICharacterManager>();
             m_currentStance = Mathf.Max(1, m_maximumStance);
             ConfigureDamageColliders();
@@ -213,7 +215,8 @@ namespace ZZ
             {
                 ReplicateAttack(attackType);
                 m_aiCharacter.CharacterNetworkManager
-                    ?.NotifyServerOfAttackActionServerRpc(attackType);
+                    ?.NotifyServerOfAttackActionServerRpc(attackType,
+                        m_originalCombat != null ? attackAction?.AttackDefinition?.AttackId ?? 0u : 0u);
             }
 
             return m_aiCharacter.IsPerformingAction;
@@ -238,7 +241,8 @@ namespace ZZ
                 comboAction.IsParryable);
             ReplicateAttack(comboAction.AttackType);
             m_aiCharacter.CharacterNetworkManager
-                ?.NotifyServerOfAttackActionServerRpc(comboAction.AttackType);
+                ?.NotifyServerOfAttackActionServerRpc(comboAction.AttackType,
+                    m_originalCombat != null ? comboAction.AttackDefinition?.AttackId ?? 0u : 0u);
             return m_aiCharacter.IsPerformingAction;
         }
 
@@ -434,14 +438,27 @@ namespace ZZ
             return defeatedGroup != playerGroup;
         }
 
-        internal bool TryRegisterDamageTarget(CharacterManager target)
+        /// <summary>Installs only an action registered on this actor before replicated animation begins.</summary>
+        internal bool TrySelectReplicatedAttack(uint attackId, AttackType attackType)
+        {
+            AICharacterAttackAction action = m_aiCharacter?.FindAttackAction(attackId);
+            if (action == null || action.AttackType != attackType)
+            {
+                return false;
+            }
+            m_currentAttackAction = action;
+            PrepareAttackDamage();
+            return true;
+        }
+
+        internal bool TryRegisterDamageTarget(CharacterManager target, int hitGroup = 0)
         {
             return m_aiCharacter != null &&
                 m_aiCharacter.IsServer &&
                 target != null &&
                 target != m_aiCharacter &&
                 !target.IsDead &&
-                m_charactersDamaged.Add(target);
+                m_charactersDamaged.TryRegister(target, hitGroup, out _);
         }
 
         internal void RecordSuccessfulHit(CharacterManager target)

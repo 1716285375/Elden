@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="TravelMenu.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay travel-menu">
+        <ui:VisualElement name="travel-content" class="travel-menu__content">
+            <ui:Label text="赐福 · 旅途" class="menu-eyebrow" />
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--travel" picking-mode="Ignore" />
+                <ui:Label text="快速旅行" class="menu-title" />
+            </ui:VisualElement>
+            <ui:VisualElement class="travel-menu__body">
+                <ui:VisualElement class="travel-menu__catalog">
+                    <ui:Label name="destination-count" class="menu-description" />
+                    <ui:Label name="empty-destinations" text="尚未发现可传送的赐福。探索世界并激活赐福后，它们会出现在这里。" class="menu-description travel-menu__empty" />
+                    <ui:ListView name="destinations" class="travel-menu__list" />
+                </ui:VisualElement>
+                <ui:VisualElement class="travel-menu__details">
+                    <ui:Label text="目的地" class="menu-eyebrow" />
+                    <ui:Label name="destination-name" class="menu-section-title" />
+                    <ui:Label text="传送前请确认目的地。仅显示当前已加载区域中解锁的赐福。" class="menu-description" />
+                    <ui:Button name="travel" text="前往此处" class="menu-command travel-menu__action" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label name="travel-feedback" class="menu-description travel-menu__feedback" />
+            <ui:VisualElement class="travel-menu__footer menu-footer">
+                <ui:Button name="refresh" text="刷新目的地" class="menu-command" />
+                <ui:Button name="back" text="返回赐福" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="travel-confirmation" class="travel-menu__veil">
+            <ui:VisualElement class="travel-menu__confirmation">
+                <ui:Label text="确认传送" class="menu-section-title" />
+                <ui:Label name="confirmation-description" class="menu-description" />
+                <ui:Button name="confirm" text="确认前往" class="menu-command" />
+                <ui:Button name="cancel" text="取消" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

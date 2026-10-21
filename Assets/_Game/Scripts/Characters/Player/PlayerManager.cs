@@ -17,10 +17,11 @@ namespace ZZ
     public class PlayerManager : CharacterManager
     {
         private const string k_StartingGameplaySceneName =
-            WorldScenePathLayout.MasterSceneName;
+            WorldScenePathLayout.GameplaySceneName;
         private const string k_SpawnPointName = "Player Spawn Point";
         private const float k_UninitializedPositionSqrMagnitude = 0.0001f;
         private const float k_BelowTerrainTolerance = 0.5f;
+        private int m_originId;
 
         [SerializeField] private PlayerAnimatorManager m_playerAnimatorManager;
         [SerializeField] private WorldLocationSceneSet m_areaCurrentlyIn;
@@ -165,7 +166,9 @@ namespace ZZ
 
             BindLocalPlayerSystems();
             TryBeginSpawnCameraPresentation();
-            PlayerCamera.Instance?.HandleAllCameraActions();
+            PlayerCamera camera = PlayerCamera.Instance;
+            camera?.HandleAllCameraActions();
+            LockOnManager?.PresentTarget(camera?.CameraObject);
         }
 
         /// <inheritdoc />
@@ -293,6 +296,10 @@ namespace ZZ
             CharacterNetworkManager.Dexterity.Value = characterClass.Dexterity;
             CharacterNetworkManager.Intelligence.Value = characterClass.Intelligence;
             CharacterNetworkManager.Faith.Value = characterClass.Faith;
+            CharacterNetworkManager.Arcane.Value = characterClass.Arcane;
+            m_originId = characterClass.OriginId;
+            PlayerNetworkManager.CurrentSpellID.Value = -1;
+            InventoryManager.InitializeCurrentSpellFromID(-1);
             PlayerStatsManager.SetNewMaxHealthValue();
             PlayerStatsManager.SetNewMaxStaminaValue();
             PlayerStatsManager.SetNewMaxFocusPointsValue();
@@ -316,6 +323,8 @@ namespace ZZ
             currentData.Dexterity = CharacterNetworkManager.Dexterity.Value;
             currentData.Intelligence = CharacterNetworkManager.Intelligence.Value;
             currentData.Faith = CharacterNetworkManager.Faith.Value;
+            currentData.Arcane = CharacterNetworkManager.Arcane.Value;
+            currentData.OriginId = m_originId;
             currentData.Runes = PlayerStatsManager.Runes;
             currentData.CurrentHealth = CharacterNetworkManager.CurrentHealth.Value;
             currentData.CurrentStamina = CharacterNetworkManager.CurrentStamina.Value;
@@ -374,10 +383,11 @@ namespace ZZ
             SaveInventoryData(currentData);
             SaveStorageData(currentData);
             currentData.IsMale = PlayerNetworkManager.IsMale.Value;
-            currentData.HairstyleID = PlayerNetworkManager.HairstyleID.Value;
-            currentData.HairColorRed = PlayerNetworkManager.HairColorRed.Value;
-            currentData.HairColorGreen = PlayerNetworkManager.HairColorGreen.Value;
-            currentData.HairColorBlue = PlayerNetworkManager.HairColorBlue.Value;
+            currentData.Appearance = PlayerNetworkManager.Appearance.Value.ToData();
+            currentData.HairstyleID = currentData.Appearance.Hairstyle;
+            currentData.HairColorRed = currentData.Appearance.HairColor.r;
+            currentData.HairColorGreen = currentData.Appearance.HairColor.g;
+            currentData.HairColorBlue = currentData.Appearance.HairColor.b;
         }
 
         /// <summary>
@@ -399,6 +409,8 @@ namespace ZZ
             CharacterNetworkManager.Dexterity.Value = currentData.Dexterity;
             CharacterNetworkManager.Intelligence.Value = currentData.Intelligence;
             CharacterNetworkManager.Faith.Value = currentData.Faith;
+            CharacterNetworkManager.Arcane.Value = currentData.Arcane;
+            m_originId = currentData.OriginId;
             PlayerStatsManager.SetRunes(currentData.Runes);
             PlayerStatsManager.SetNewMaxHealthValue();
             PlayerStatsManager.SetNewMaxStaminaValue();
@@ -418,10 +430,7 @@ namespace ZZ
             PlayerNetworkManager.CharacterName.Value =
                 new FixedString64Bytes(currentData.CharacterName);
             PlayerNetworkManager.IsMale.Value = currentData.IsMale;
-            PlayerNetworkManager.HairstyleID.Value = currentData.HairstyleID;
-            PlayerNetworkManager.HairColorRed.Value = currentData.HairColorRed;
-            PlayerNetworkManager.HairColorGreen.Value = currentData.HairColorGreen;
-            PlayerNetworkManager.HairColorBlue.Value = currentData.HairColorBlue;
+            PlayerNetworkManager.Appearance.Value = CharacterAppearanceState.FromData(currentData.Appearance);
             InventoryManager.RestoreInventory(currentData);
             InventoryManager.RestoreStorage(currentData);
             PlayerNetworkManager.ConfigureFlaskCapacity(
@@ -746,7 +755,7 @@ namespace ZZ
         {
             if (IsFinite(savedPosition) &&
                 savedPosition.sqrMagnitude > k_UninitializedPositionSqrMagnitude &&
-                IsSupportedByLandTerrain(savedPosition))
+                IsSupportedByGround(savedPosition))
             {
                 return savedPosition;
             }
@@ -757,35 +766,22 @@ namespace ZZ
                 ? spawnPoint.position
                 : transform.position;
             Debug.LogWarning(
-                $"Saved player position {savedPosition} is outside the playable nature terrain. " +
+                $"Saved player position {savedPosition} has no nearby ground. " +
                 $"Using spawn point {fallbackPosition} instead.");
             return fallbackPosition;
         }
 
-        private static bool IsSupportedByLandTerrain(Vector3 position)
+        private static bool IsSupportedByGround(Vector3 position)
         {
-            foreach (Terrain terrain in Terrain.activeTerrains)
+            RaycastHit[] hits = Physics.RaycastAll(position + Vector3.up * k_BelowTerrainTolerance,
+                Vector3.down, 3f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            foreach (RaycastHit hit in hits)
             {
-                if (terrain == null || terrain.name != "LandTerrain" ||
-                    terrain.terrainData == null)
+                if (hit.collider.gameObject.scene.name == k_StartingGameplaySceneName && hit.normal.y > 0.5f &&
+                    hit.collider.GetComponentInParent<CharacterManager>() == null)
                 {
-                    continue;
+                    return true;
                 }
-
-                Vector3 terrainPosition = terrain.transform.position;
-                Vector3 terrainSize = terrain.terrainData.size;
-                bool insideHorizontalBounds =
-                    position.x >= terrainPosition.x &&
-                    position.x <= terrainPosition.x + terrainSize.x &&
-                    position.z >= terrainPosition.z &&
-                    position.z <= terrainPosition.z + terrainSize.z;
-                if (!insideHorizontalBounds)
-                {
-                    continue;
-                }
-
-                float groundY = terrain.SampleHeight(position) + terrainPosition.y;
-                return position.y >= groundY - k_BelowTerrainTolerance;
             }
 
             return false;

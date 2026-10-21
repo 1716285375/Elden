@@ -58,6 +58,11 @@ namespace ZZ
         protected override void Awake()
         {
             base.Awake();
+            // Combat events and weapon tracks must advance even outside the camera frustum.
+            if (CharacterAnimator != null)
+            {
+                CharacterAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            }
             m_player = GetComponentInParent<PlayerManager>();
             m_characterController = GetComponentInParent<CharacterController>();
         }

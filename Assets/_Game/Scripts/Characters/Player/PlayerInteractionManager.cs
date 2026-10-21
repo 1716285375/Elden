@@ -99,7 +99,8 @@ namespace ZZ
                 return;
             }
 
-            if (PlayerInputManager.Instance?.IsMovementInputEnabled != true)
+            if (PlayerInputManager.Instance?.IsMovementInputEnabled != true || m_player.IsDead ||
+                m_player.IsPerformingAction || m_player.PlayerCombatManager?.IsUsingItem == true)
             {
                 ClearActiveInteraction();
                 return;

@@ -30,7 +30,10 @@ namespace ZZ
         private const int k_DoorStateDataVersion = 14;
         private const int k_ShopInventoryDataVersion = 15;
         private const int k_StorageDataVersion = 16;
-        private const int k_CurrentDataVersion = 16;
+        private const int k_VillageDataVersion = 17;
+        private const int k_AppearanceDataVersion = 18;
+        private const int k_OriginDataVersion = 19;
+        private const int k_CurrentDataVersion = k_OriginDataVersion;
 
         [SerializeField, Min(0)] private int m_dataVersion = k_CurrentDataVersion;
         [SerializeField] private string m_characterName = string.Empty;
@@ -46,6 +49,8 @@ namespace ZZ
         [SerializeField, Min(0)] private int m_dexterity = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_intelligence = k_DefaultAttributeLevel;
         [SerializeField, Min(0)] private int m_faith = k_DefaultAttributeLevel;
+        [SerializeField, Min(0)] private int m_arcane = k_DefaultAttributeLevel;
+        [SerializeField] private int m_originId;
         [SerializeField, Min(0)] private int m_runes;
         [SerializeField] private bool m_hasDeadSpot;
         [SerializeField] private float m_deadSpotPositionX;
@@ -128,6 +133,7 @@ namespace ZZ
         [SerializeField, Range(0, 255)] private int m_hairColorRed = 79;
         [SerializeField, Range(0, 255)] private int m_hairColorGreen = 53;
         [SerializeField, Range(0, 255)] private int m_hairColorBlue = 35;
+        [SerializeField] private CharacterAppearanceData m_appearance = new();
         [SerializeField] private List<BossSaveData> m_bosses = new();
         [SerializeField] private List<SiteOfGraceSaveData> m_sitesOfGrace = new();
         [SerializeField] private WorldItemLootDictionary m_worldItemsLooted = new();
@@ -135,6 +141,12 @@ namespace ZZ
         [SerializeField] private List<SerializableShopInventory>
             m_shopInventories = new();
         [SerializeField] private List<int> m_shopsGenerated = new();
+
+        public CharacterAppearanceData Appearance
+        {
+            get => m_appearance ??= new CharacterAppearanceData();
+            set => m_appearance = value?.Clone() ?? new CharacterAppearanceData();
+        }
 
         public string CharacterName
         {
@@ -217,6 +229,9 @@ namespace ZZ
             get => m_faith;
             set => m_faith = Mathf.Max(0, value);
         }
+
+        public int Arcane { get => m_arcane; set => m_arcane = Mathf.Max(0, value); }
+        public int OriginId { get => m_originId; set => m_originId = value; }
 
         /// <summary>Gets or sets the saved private Rune balance.</summary>
         public int Runes
@@ -766,6 +781,16 @@ namespace ZZ
                     "Boss identifiers must be greater than zero.");
             }
 
+            if (m_dataVersion < k_AppearanceDataVersion)
+            {
+                m_appearance = new CharacterAppearanceData
+                {
+                    Hairstyle = m_hairstyleID,
+                    HairColor = new Color32((byte)Mathf.Clamp(m_hairColorRed, 0, 255),
+                        (byte)Mathf.Clamp(m_hairColorGreen, 0, 255), (byte)Mathf.Clamp(m_hairColorBlue, 0, 255), 255)
+                };
+            }
+
             m_bosses ??= new List<BossSaveData>();
             BossSaveData bossData = FindBossData(bossID);
             if (bossData != null)
@@ -949,6 +974,32 @@ namespace ZZ
                 m_storageInventory = new SerializableInventoryData();
             }
 
+            if (m_dataVersion < k_VillageDataVersion)
+            {
+                // The retired monastery coordinates cannot identify a safe Village destination.
+                m_sceneIndex = 1;
+                m_xPosition = 0f;
+                m_yPosition = 0f;
+                m_zPosition = 0f;
+                m_lastSiteOfGraceRestedAt = 0;
+                if (m_hasDeadSpot)
+                {
+                    m_runes = (int)Math.Min(int.MaxValue, (long)Math.Max(0, m_runes) + Math.Max(0, m_deadSpotRuneCount));
+                }
+                m_hasDeadSpot = false;
+                m_deadSpotRuneCount = 0;
+            }
+
+            if (m_dataVersion < k_AppearanceDataVersion)
+            {
+                m_appearance = new CharacterAppearanceData
+                {
+                    Hairstyle = m_hairstyleID,
+                    HairColor = new Color32((byte)Mathf.Clamp(m_hairColorRed, 0, 255),
+                        (byte)Mathf.Clamp(m_hairColorGreen, 0, 255), (byte)Mathf.Clamp(m_hairColorBlue, 0, 255), 255)
+                };
+            }
+
             m_bosses ??= new List<BossSaveData>();
             m_sitesOfGrace ??= new List<SiteOfGraceSaveData>();
             m_rightHandWeaponSlot01 ??= CreateLegacyWeapon(1);
@@ -996,6 +1047,11 @@ namespace ZZ
 
             m_shopsGenerated.RemoveAll(shopID => shopID <= 0);
             m_shopsGenerated = m_shopsGenerated.Distinct().ToList();
+            if (m_dataVersion < k_OriginDataVersion)
+            {
+                m_arcane = k_DefaultAttributeLevel;
+                m_originId = 0;
+            }
             m_dataVersion = k_CurrentDataVersion;
         }
 

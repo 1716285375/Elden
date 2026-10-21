@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Old Dungeon Key
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.KeyItem
   m_itemName: Old Dungeon Key
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 1561912916, guid: d6d9754315ab7b341ac6d33d8ec47cda, type: 3}
   m_itemDescription: A timeworn key for an old dungeon door.
   m_itemID: 19
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 0
+  m_isInfinite: 0

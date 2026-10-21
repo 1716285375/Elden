@@ -27,16 +27,40 @@ namespace ZZ
         [SerializeField] private UIEquipmentInventorySlot m_inventorySlotPrefab;
 
         private EquipmentSlotType m_currentSelectedEquipmentSlot;
+        private EquipmentMenuView m_view;
+        private EquipmentMenuView m_weaponView;
+        private EquipmentMenuView m_armorView;
+        private InventoryCategory m_category = InventoryCategory.Armor;
+        private EquipmentSlotType m_lastWeaponSlot = EquipmentSlotType.RightWeapon01;
+        private EquipmentSlotType m_lastArmorSlot = EquipmentSlotType.Head;
 
         public bool IsEquipmentMenuOpen => IsMenuOpen;
         public bool IsEquipmentInventoryOpen =>
-            m_equipmentInventoryWindow?.activeSelf == true;
+            m_view != null ? m_view.IsBrowsingItems : m_equipmentInventoryWindow?.activeSelf == true;
+        public bool IsEditingSearchText => m_view != null && m_view.IsEditingText;
         public EquipmentSlotType CurrentSelectedEquipmentSlot =>
             m_currentSelectedEquipmentSlot;
+        public InventoryCategory Category => m_category;
 
         /// <summary>Opens the Equipment Menu at its equipped-slot overview.</summary>
         public void OpenEquipmentManagerMenu()
         {
+            OpenCategory(InventoryCategory.Armor);
+        }
+
+        public void OpenWeaponMenu()
+        {
+            OpenCategory(InventoryCategory.Weapons);
+        }
+
+        private void OpenCategory(InventoryCategory category)
+        {
+            RememberSelectedSlot();
+            m_weaponView?.gameObject.SetActive(false);
+            m_armorView?.gameObject.SetActive(false);
+            m_view = null;
+            m_category = category;
+            m_currentSelectedEquipmentSlot = category == InventoryCategory.Weapons ? m_lastWeaponSlot : m_lastArmorSlot;
             OpenMenu();
             if (!IsMenuOpen)
             {
@@ -44,6 +68,11 @@ namespace ZZ
             }
 
             m_equipmentInventoryWindow?.SetActive(false);
+            if (Application.isPlaying)
+            {
+                EnsureToolkitMenu();
+                m_view.ShowOverview();
+            }
             RefreshMenu();
             SelectLastSelectedEquipmentSlot();
         }
@@ -57,6 +86,7 @@ namespace ZZ
         /// <inheritdoc />
         public override void CloseMenu()
         {
+            RememberSelectedSlot();
             CloseEquipmentInventoryWindow(false);
             base.CloseMenu();
         }
@@ -85,6 +115,11 @@ namespace ZZ
         /// <summary>Refreshes all weapon, armor, and ammunition slot icons.</summary>
         public void RefreshEquipmentSlotIcons()
         {
+            if (m_view != null)
+            {
+                m_view.Refresh();
+                return;
+            }
             PlayerInventoryManager inventory = ResolveLocalInventory();
             PlayerManager player = inventory?.GetComponent<PlayerManager>();
             for (int slotIndex = 0; slotIndex < k_EquipmentSlotCount; slotIndex++)
@@ -156,6 +191,11 @@ namespace ZZ
         public void LoadEquipmentInventory()
         {
             ClearEquipmentInventory();
+            if (m_view != null)
+            {
+                m_view.ShowCandidates();
+                return;
+            }
             PlayerInventoryManager inventory = ResolveLocalInventory();
             if (inventory == null ||
                 m_equipmentInventoryContent == null ||
@@ -198,6 +238,11 @@ namespace ZZ
         /// <summary>Destroys every dynamically generated equipment candidate.</summary>
         public void ClearEquipmentInventory()
         {
+            if (m_view != null)
+            {
+                m_view.ClearCandidates();
+                return;
+            }
             if (m_equipmentInventoryContent == null)
             {
                 return;
@@ -215,6 +260,11 @@ namespace ZZ
         public void EquipItem(Item item)
         {
             PlayerInventoryManager inventory = ResolveLocalInventory();
+            if (item != null && inventory?.GetEquipmentSlotItem(m_currentSelectedEquipmentSlot) == item)
+            {
+                CloseEquipmentInventoryWindow();
+                return;
+            }
             if (inventory == null ||
                 !IsItemCompatibleWithSlot(item, m_currentSelectedEquipmentSlot) ||
                 !inventory.EquipItemInSlot(m_currentSelectedEquipmentSlot, item))
@@ -249,6 +299,11 @@ namespace ZZ
         /// <summary>Restores selection to the equipment slot that opened the candidate list.</summary>
         public void SelectLastSelectedEquipmentSlot()
         {
+            if (m_view != null)
+            {
+                m_view.FocusCurrentSlot();
+                return;
+            }
             int slotIndex = (int)m_currentSelectedEquipmentSlot;
             Button button = GetArrayValue(m_equipmentSlotButtons, slotIndex);
             if (button == null || !button.IsInteractable())
@@ -289,9 +344,19 @@ namespace ZZ
             };
         }
 
+        /// <summary>Tracks native focus without opening candidates or changing equipment.</summary>
+        public void HighlightEquipmentSlot(int equipmentSlot)
+        {
+            if (equipmentSlot >= 0 && equipmentSlot < k_EquipmentSlotCount)
+            {
+                m_currentSelectedEquipmentSlot = (EquipmentSlotType)equipmentSlot;
+            }
+        }
+
         private void CloseEquipmentInventoryWindow(bool restoreSelection)
         {
             ClearEquipmentInventory();
+            m_view?.ShowOverview();
             m_equipmentInventoryWindow?.SetActive(false);
             if (restoreSelection && IsEquipmentMenuOpen)
             {
@@ -302,6 +367,41 @@ namespace ZZ
         private static PlayerInventoryManager ResolveLocalInventory()
         {
             return PlayerUIManager.Instance?.LocalPlayer?.InventoryManager;
+        }
+
+        private void EnsureToolkitMenu()
+        {
+            CanvasGroup legacy = MenuWindow.GetComponent<CanvasGroup>();
+            if (legacy == null)
+            {
+                legacy = MenuWindow.AddComponent<CanvasGroup>();
+            }
+            legacy.alpha = 0f;
+            legacy.interactable = false;
+            legacy.blocksRaycasts = false;
+            if (m_category == InventoryCategory.Weapons)
+            {
+                m_weaponView ??= EquipmentMenuView.Create(MenuWindow.transform, this, m_category);
+                m_view = m_weaponView;
+            }
+            else
+            {
+                m_armorView ??= EquipmentMenuView.Create(MenuWindow.transform, this, m_category);
+                m_view = m_armorView;
+            }
+            m_view.gameObject.SetActive(true);
+        }
+
+        private void RememberSelectedSlot()
+        {
+            if ((int)m_currentSelectedEquipmentSlot < 6)
+            {
+                m_lastWeaponSlot = m_currentSelectedEquipmentSlot;
+            }
+            else if ((int)m_currentSelectedEquipmentSlot < 10)
+            {
+                m_lastArmorSlot = m_currentSelectedEquipmentSlot;
+            }
         }
 
         private static bool TryGetEquipmentQuantity(

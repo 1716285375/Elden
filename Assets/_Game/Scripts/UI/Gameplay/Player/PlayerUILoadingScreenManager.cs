@@ -16,6 +16,7 @@ namespace ZZ
         [SerializeField, Min(0f)] private float m_fadeDuration = 1f;
 
         private Coroutine m_fadeLoadingScreenCoroutine;
+        private LoadingScreenView m_view;
 
         /// <summary>Gets whether the persistent loading overlay is visible.</summary>
         public bool IsLoadingScreenActive => m_loadingScreen?.activeSelf == true;
@@ -33,6 +34,8 @@ namespace ZZ
         {
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             CancelFadeLoadingScreen();
+            m_loadingScreen?.SetActive(false);
+            PlayerUIManager.Instance?.RefreshMenuWindowState();
         }
 
         /// <summary>Shows a fully opaque loading overlay without a fade-in.</summary>
@@ -44,12 +47,16 @@ namespace ZZ
             }
 
             CancelFadeLoadingScreen();
-            if (m_loadingScreenCanvasGroup != null)
+            m_loadingScreen?.SetActive(true);
+            EnsureToolkitOverlay();
+            if (m_loadingScreenCanvasGroup != null && m_view == null)
             {
                 m_loadingScreenCanvasGroup.alpha = 1f;
             }
 
-            m_loadingScreen?.SetActive(true);
+            m_view?.SetOpacity(1f);
+            PlayerUIManager.Instance?.RefreshMenuWindowState();
+            m_view?.Focus();
         }
 
         /// <summary>Fades the overlay using its authored delay and duration.</summary>
@@ -83,7 +90,8 @@ namespace ZZ
         private IEnumerator FadeLoadingScreen(float delay, float duration)
         {
             yield return null;
-            while (WorldAIManager.Instance?.IsPerformingLoadingOperation == true)
+            while (WorldAIManager.Instance?.IsPerformingLoadingOperation == true ||
+                WorldSaveGameManager.Instance?.IsSceneLoadInProgress == true || VillageSceneWarmup.IsLoading)
             {
                 yield return null;
             }
@@ -99,7 +107,9 @@ namespace ZZ
             while (fadeElapsed < duration)
             {
                 fadeElapsed += Time.unscaledDeltaTime;
-                if (m_loadingScreenCanvasGroup != null)
+                float opacity = 1f - Mathf.Clamp01(fadeElapsed / duration);
+                m_view?.SetOpacity(opacity);
+                if (m_loadingScreenCanvasGroup != null && m_view == null)
                 {
                     m_loadingScreenCanvasGroup.alpha = Mathf.Lerp(
                         1f,
@@ -117,6 +127,26 @@ namespace ZZ
 
             m_loadingScreen?.SetActive(false);
             m_fadeLoadingScreenCoroutine = null;
+            PlayerUIManager.Instance?.RefreshMenuWindowState();
+        }
+
+        private void EnsureToolkitOverlay()
+        {
+            if (m_view != null || m_loadingScreen == null || !Application.isPlaying)
+            {
+                return;
+            }
+            if (m_loadingScreenCanvasGroup != null)
+            {
+                m_loadingScreenCanvasGroup.alpha = 0f;
+                m_loadingScreenCanvasGroup.interactable = false;
+                m_loadingScreenCanvasGroup.blocksRaycasts = false;
+            }
+            foreach (FadeLoadingScreenIcon icon in m_loadingScreen.GetComponentsInChildren<FadeLoadingScreenIcon>(true))
+            {
+                icon.enabled = false;
+            }
+            m_view = LoadingScreenView.Create(m_loadingScreen.transform);
         }
 
         private void OnActiveSceneChanged(Scene previousScene, Scene activeScene)

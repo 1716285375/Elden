@@ -49,17 +49,28 @@ namespace ZZ
         /// <summary>Updates and saves the master volume immediately.</summary>
         public static void SetVolume(float value)
         {
+            PreviewVolume(value);
+            Save();
+        }
+
+        /// <summary>Applies a slider preview; its owning panel must commit before closing.</summary>
+        internal static void PreviewVolume(float value)
+        {
             Volume = ClampFinite(value, 0f, 1f);
             AudioListener.volume = Volume;
-            Save();
         }
 
         /// <summary>Updates and saves camera controls without changing the authored base speeds.</summary>
         public static void SetLook(float sensitivity, bool invert)
         {
+            PreviewLook(sensitivity, invert);
+            Save();
+        }
+
+        internal static void PreviewLook(float sensitivity, bool invert)
+        {
             LookSensitivity = ClampFinite(sensitivity, 0.25f, 3f);
             InvertLook = invert;
-            Save();
         }
 
         /// <summary>Applies and saves display options using supported quality and frame limits.</summary>
@@ -90,11 +101,19 @@ namespace ZZ
         /// <summary>Persists impact accessibility without changing damage or stamina rules.</summary>
         public static void SetImpact(float shakeIntensity, bool hapticsEnabled, bool hitStopEnabled)
         {
+            PreviewImpact(shakeIntensity, hapticsEnabled, hitStopEnabled);
+            Save();
+        }
+
+        internal static void PreviewImpact(float shakeIntensity, bool hapticsEnabled, bool hitStopEnabled)
+        {
             ShakeIntensity = ClampFinite(shakeIntensity, 0f, 1f);
             HapticsEnabled = hapticsEnabled;
             HitStopEnabled = hitStopEnabled;
-            Save();
         }
+
+        /// <summary>Persists the current preview after interaction settles or its panel closes.</summary>
+        internal static void CommitPreferences() => Save();
 
         private static float ClampFinite(float value, float minimum, float maximum)
         {

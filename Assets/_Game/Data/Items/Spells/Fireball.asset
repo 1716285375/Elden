@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: Fireball
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.FireballSpell
   m_itemName: Fireball
-  m_itemIcon: {fileID: 21300000, guid: a1c1983ae4a92234a8c5883090f249d1, type: 3}
+  m_itemIcon: {fileID: 1915367087, guid: 8b86e5646ba729d4597f6a5000c42535, type: 3}
   m_itemDescription: Conjures a homing ball of flame. Hold the catalyst input for
     full charge.
   m_itemID: 10
   m_maxItemAmount: 1
   m_currentItemAmount: 1
+  m_itemValue: 0
+  m_isInfinite: 0
   m_spellClass: 0
   m_spellSlotsUsed: 1
   m_fullChargeModifier: 1.4

@@ -14,6 +14,11 @@ namespace ZZ
             System.Array.Empty<int>();
         [SerializeField] private Button m_returnButton;
 
+        private TravelMenuView m_view;
+        private int m_pendingDestination = -1;
+
+        public bool IsConfirmationOpen => m_pendingDestination >= 0;
+
         /// <summary>Gets whether the unlocked-location menu currently owns input.</summary>
         public bool IsTeleportLocationMenuOpen =>
             IsMenuOpen;
@@ -35,6 +40,7 @@ namespace ZZ
                 return;
             }
 
+            EnsureToolkitMenu();
             RefreshUnlockedLocations();
         }
 
@@ -47,10 +53,14 @@ namespace ZZ
         /// <summary>Teleports the local player to one unlocked, registered location.</summary>
         public void TeleportToSiteOfGrace(int siteOfGraceID)
         {
-            if (!CanFastTravel)
+            if (!IsMenuOpen || !CanFastTravel || PlayerUIManager.Instance?.LocalPlayer == null ||
+                PlayerUIManager.Instance.LocalPlayer.IsDead)
             {
+                CancelTravel();
+                m_view?.SetFeedback("当前无法传送，请检查角色状态与会话人数。");
                 return;
             }
+            CancelTravel();
 
             PlayerUILoadingScreenManager loadingScreenManager =
                 PlayerUIManager.Instance?.PlayerUILoadingScreenManager;
@@ -62,6 +72,8 @@ namespace ZZ
                 !siteOfGrace.TeleportLocalPlayer())
             {
                 loadingScreenManager?.DeactivateLoadingScreen(0f);
+                RefreshUnlockedLocations();
+                m_view?.SetFeedback("目的地已不可用，请重新选择赐福。");
                 return;
             }
 
@@ -72,6 +84,11 @@ namespace ZZ
         /// <summary>Shows unlocked destinations and selects the first valid button.</summary>
         public void RefreshUnlockedLocations()
         {
+            if (m_view != null)
+            {
+                m_view.RefreshLocations();
+                return;
+            }
             int buttonCount = Mathf.Min(
                 m_teleportLocationButtons?.Length ?? 0,
                 m_siteOfGraceIDs?.Length ?? 0);
@@ -100,6 +117,68 @@ namespace ZZ
             Button initialButton = firstUnlockedButton ?? m_returnButton;
             initialButton?.Select();
             initialButton?.OnSelect(null);
+        }
+
+        /// <summary>Reviews an unlocked destination without moving the player.</summary>
+        public void RequestTravel(int siteOfGraceID)
+        {
+            SiteOfGraceInteractable destination = WorldObjectManager.Instance?.GetSiteOfGraceByID(siteOfGraceID);
+            if (!IsMenuOpen || IsConfirmationOpen || !CanFastTravel || !IsLocationUnlocked(destination) ||
+                destination.TeleportTransform == null)
+            {
+                m_view?.SetFeedback("该目的地暂时无法传送。");
+                return;
+            }
+            m_pendingDestination = siteOfGraceID;
+            m_view?.ShowConfirmation(destination.DisplayName);
+        }
+
+        /// <summary>Revalidates and performs the reviewed destination exactly once.</summary>
+        public void ConfirmTravel()
+        {
+            if (!IsConfirmationOpen)
+            {
+                return;
+            }
+            TeleportToSiteOfGrace(m_pendingDestination);
+        }
+
+        /// <summary>Cancels confirmation without changing position or closing the destination list.</summary>
+        public void CancelTravel()
+        {
+            m_pendingDestination = -1;
+            m_view?.HideConfirmation();
+        }
+
+        /// <summary>Returns to the grace commands without travelling.</summary>
+        public void ReturnToSiteOfGrace()
+        {
+            CloseMenu();
+            PlayerUIManager.Instance?.PlayerUISiteOfGraceManager?.OpenSiteOfGraceMenu();
+        }
+
+        /// <inheritdoc />
+        public override void CloseMenu()
+        {
+            CancelTravel();
+            base.CloseMenu();
+        }
+
+        private void EnsureToolkitMenu()
+        {
+            if (m_view != null || MenuWindow == null || !Application.isPlaying)
+            {
+                return;
+            }
+            CanvasGroup legacy = MenuWindow.GetComponent<CanvasGroup>();
+            if (legacy == null)
+            {
+                legacy = MenuWindow.AddComponent<CanvasGroup>();
+            }
+            legacy.alpha = 0f;
+            legacy.interactable = false;
+            legacy.blocksRaycasts = false;
+            m_view = TravelMenuView.Create(MenuWindow.transform, this);
         }
 
         /// <summary>Returns whether one registered destination is unlocked.</summary>

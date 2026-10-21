@@ -58,14 +58,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.82, g: 0.62, b: 0.24, a: 0.28}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 1fc0af56c41a8644e850d22fad1e2310, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -134,14 +134,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.72, g: 0.025, b: 0.07, a: 0.96}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: a4c5e33fe1a6e7641bb4e6fbea02965c, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -614,15 +614,16 @@ MonoBehaviour:
   m_selectionBackground: {fileID: 8091794442638724914}
   m_selectionMarker: {fileID: 0}
   m_label: {fileID: 2930760699851975006}
-  m_normalBackgroundColor: {r: 1, g: 0.78, b: 0.02, a: 1}
-  m_idleBackgroundColor: {r: 0.72, g: 0.025, b: 0.07, a: 0.96}
+  m_secondaryLabels: []
+  m_normalBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_idleBackgroundColor: {r: 1, g: 1, b: 1, a: 0.08}
   m_disabledBackgroundColor: {r: 0.11, g: 0.11, b: 0.11, a: 0.8}
-  m_normalTextColor: {r: 1, g: 0.98, b: 0.94, a: 1}
-  m_selectedTextColor: {r: 0.025, g: 0.025, b: 0.025, a: 1}
+  m_normalTextColor: {r: 0.9, g: 0.86, b: 0.76, a: 1}
+  m_selectedTextColor: {r: 1, g: 0.93, b: 0.72, a: 1}
   m_disabledTextColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_idleBackgroundSprite: {fileID: 0}
-  m_selectedBackgroundSprite: {fileID: 0}
-  m_labelShiftX: 0
+  m_idleBackgroundSprite: {fileID: 21300000, guid: a7e962cec295a214880cb9767d1779bd, type: 3}
+  m_selectedBackgroundSprite: {fileID: 21300000, guid: a4c5e33fe1a6e7641bb4e6fbea02965c, type: 3}
+  m_labelShiftX: 4
   m_transitionDuration: 0.1
   m_transitionEase: 7
   m_disableButtonTransition: 1

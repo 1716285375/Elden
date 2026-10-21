@@ -1,0 +1,48 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="EquipmentMenu.uss" />
+    <Style src="InventoryItemGrid.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay equipment-menu">
+        <ui:VisualElement class="equipment-menu__header">
+            <ui:VisualElement>
+                <ui:Label text="为下一场交锋做好准备" class="menu-eyebrow" />
+                <ui:VisualElement class="menu-heading">
+                    <ui:VisualElement class="menu-section-icon menu-section-icon--weapons" picking-mode="Ignore" />
+                    <ui:Label name="menu-heading" text="武器" class="menu-title" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="equipment-menu__body">
+            <ui:ScrollView name="equipment-scroll" class="equipment-menu__slots" horizontal-scroller-visibility="Hidden">
+                <ui:Label text="手持武器" class="menu-section-title" />
+                <ui:VisualElement name="equipment-slots" class="equipment-menu__grid" />
+            </ui:ScrollView>
+            <ui:VisualElement class="equipment-menu__inventory">
+                <ui:Label name="inventory-heading" text="选择装备栏" class="menu-section-title" />
+                <ui:TextField name="item-search" label="搜索" class="equipment-menu__search" />
+                <ui:DropdownField name="item-sort" label="排序" class="menu-dropdown" />
+                <ui:ListView name="inventory-list" fixed-item-height="76" selection-type="Single" class="equipment-menu__list" />
+                <ui:Label name="inventory-empty" text="选择左侧装备栏，查看可装备的物品。" class="menu-description" />
+            </ui:VisualElement>
+            <ui:ScrollView name="item-details" class="equipment-menu__details" horizontal-scroller-visibility="Hidden">
+                <ui:Label name="detail-name" text="尚未选择物品" class="menu-section-title" />
+                <ui:Image name="detail-icon" class="equipment-menu__portrait" />
+                <ui:Label name="detail-quantity" class="menu-description" />
+                <ui:Label name="detail-description" class="menu-description" />
+                <ui:Label name="comparison-heading" text="与当前装备比较" class="equipment-menu__comparison-title" />
+                <ui:VisualElement name="comparison-stats" />
+                <ui:Label name="detail-requirements" class="menu-description" />
+            </ui:ScrollView>
+            <ui:ScrollView name="equipment-character-stats" class="equipment-menu__status" horizontal-scroller-visibility="Hidden" />
+        </ui:VisualElement>
+        <ui:VisualElement class="equipment-menu__footer menu-footer">
+            <ui:Label name="equipment-feedback" text="选择装备栏，查看适用物品。" class="menu-description" />
+            <ui:Button name="unequip" text="卸下" class="menu-command" />
+            <ui:Button name="equip" text="装备" class="menu-command" />
+            <ui:Button name="switch-display" text="切换显示（中）" class="menu-command" />
+            <ui:Button name="switch-view" text="切换显示（右）" class="menu-command" />
+            <ui:Button name="back" text="返回" class="menu-command" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

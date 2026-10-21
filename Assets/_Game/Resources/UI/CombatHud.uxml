@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="CombatHud.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement name="combat-hud" class="combat-hud" picking-mode="Ignore">
+        <ui:VisualElement name="lock-on-reticle" class="combat-hud__lock-on" picking-mode="Ignore" />
+        <ui:VisualElement class="combat-hud__resources">
+            <ui:VisualElement class="combat-hud__heading">
+                <ui:Label text="疾风回响" class="combat-hud__title" />
+                <ui:Label text="旅者" class="combat-hud__subtitle" />
+            </ui:VisualElement>
+            <ui:VisualElement name="health" class="resource resource--health">
+                <ui:VisualElement class="resource__heading"><ui:Label text="生命" /><ui:Label name="health-value" class="resource__value" /></ui:VisualElement>
+                <ui:VisualElement class="resource__track"><ui:VisualElement name="health-trail" class="resource__trail" /><ui:VisualElement name="health-fill" class="resource__fill" /></ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="focus" class="resource resource--focus">
+                <ui:VisualElement class="resource__heading"><ui:Label text="专注" /><ui:Label name="focus-value" class="resource__value" /></ui:VisualElement>
+                <ui:VisualElement class="resource__track"><ui:VisualElement name="focus-trail" class="resource__trail" /><ui:VisualElement name="focus-fill" class="resource__fill" /></ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="stamina" class="resource resource--stamina">
+                <ui:VisualElement class="resource__heading"><ui:Label text="精力" /><ui:Label name="stamina-value" class="resource__value" /></ui:VisualElement>
+                <ui:VisualElement class="resource__track"><ui:VisualElement name="stamina-trail" class="resource__trail" /><ui:VisualElement name="stamina-fill" class="resource__fill" /></ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label name="resource-warning" class="combat-hud__warning" />
+        </ui:VisualElement>
+        <ui:VisualElement name="interaction" class="interaction interaction--hidden">
+            <ui:Label name="interaction-key" class="interaction__key" />
+            <ui:Label name="interaction-text" class="interaction__text" />
+        </ui:VisualElement>
+        <ui:VisualElement class="combat-hud__currency">
+            <ui:VisualElement class="combat-hud__rune-icon" picking-mode="Ignore" />
+            <ui:Label text="卢恩" class="combat-hud__subtitle" />
+            <ui:Label name="currency-value" class="combat-hud__currency-value" text="0" />
+            <ui:Label name="currency-change" class="combat-hud__currency-change" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

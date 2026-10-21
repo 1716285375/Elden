@@ -38,7 +38,7 @@ namespace ZZ
             }
 
             AICharacterManager aiCharacter =
-                other.GetComponentInParent<AICharacterManager>();
+                other.GetComponent<AICharacterManager>();
             aiCharacter?.ActivateCharacter(m_player);
         }
 
@@ -50,7 +50,7 @@ namespace ZZ
             }
 
             AICharacterManager aiCharacter =
-                other.GetComponentInParent<AICharacterManager>();
+                other.GetComponent<AICharacterManager>();
             aiCharacter?.DeactivateCharacter(m_player);
         }
 

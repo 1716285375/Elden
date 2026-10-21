@@ -26,6 +26,7 @@ namespace ZZ
         private LegEquipmentItem m_loadedLegEquipment;
         private bool m_areWeaponsHidden;
         private bool m_isHeadEquipmentPresentationHidden;
+        private PlayerSkinnedEquipment m_skinnedEquipment;
 
         /// <summary>Gets the weapon manager of the currently loaded right-hand weapon model.</summary>
         public WeaponManager CurrentRightHandWeaponManager { get; private set; }
@@ -48,6 +49,7 @@ namespace ZZ
             m_characterSoundFXManager =
                 GetComponentInChildren<CharacterSoundFXManager>(true);
             m_playerBodyManager = GetComponent<PlayerBodyManager>();
+            m_skinnedEquipment = GetComponent<PlayerSkinnedEquipment>();
             m_playerBodyManager?.InitializeBodyModels();
             DiscoverWeaponSlots();
             InitializeArmorModels();
@@ -114,6 +116,7 @@ namespace ZZ
             }
 
             RecalculateArmorValues();
+            RefreshSkinnedEquipment();
         }
 
         /// <summary>Loads a body item after removing its prior modular models.</summary>
@@ -123,6 +126,7 @@ namespace ZZ
             m_loadedBodyEquipment = equipment;
             LoadArmorItem(equipment);
             RecalculateArmorValues();
+            RefreshSkinnedEquipment();
         }
 
         /// <summary>Loads a hand item after removing its prior modular models.</summary>
@@ -132,6 +136,7 @@ namespace ZZ
             m_loadedHandEquipment = equipment;
             LoadArmorItem(equipment);
             RecalculateArmorValues();
+            RefreshSkinnedEquipment();
         }
 
         /// <summary>Loads a leg item after removing its prior modular models.</summary>
@@ -141,6 +146,7 @@ namespace ZZ
             m_loadedLegEquipment = equipment;
             LoadArmorItem(equipment);
             RecalculateArmorValues();
+            RefreshSkinnedEquipment();
         }
 
         /// <summary>Writes a head item ID into owner-authoritative replicated equipment state.</summary>
@@ -208,6 +214,7 @@ namespace ZZ
             {
                 ApplyHeadEquipmentPresentationHidden();
             }
+            RefreshSkinnedEquipment();
         }
 
         /// <summary>
@@ -221,6 +228,7 @@ namespace ZZ
             }
 
             m_isHeadEquipmentPresentationHidden = isHidden;
+            RefreshSkinnedEquipment();
             if (isHidden)
             {
                 ApplyHeadEquipmentPresentationHidden();
@@ -712,6 +720,24 @@ namespace ZZ
                 m_player.IsSpawned &&
                 m_player.IsOwner &&
                 m_player.PlayerNetworkManager != null;
+        }
+
+        private void RefreshSkinnedEquipment()
+        {
+            m_skinnedEquipment ??= GetComponent<PlayerSkinnedEquipment>();
+            m_skinnedEquipment?.Refresh(
+                m_playerBodyManager?.IsMale != false,
+                m_isHeadEquipmentPresentationHidden ? -1 : m_loadedHeadEquipment?.ItemID ?? -1,
+                m_loadedBodyEquipment?.ItemID ?? -1,
+                m_loadedHandEquipment?.ItemID ?? -1,
+                m_loadedLegEquipment?.ItemID ?? -1);
+            GetComponent<CharacterAppearancePresenter>()?.SetHeadEquipmentVisible(
+                !m_isHeadEquipmentPresentationHidden && m_loadedHeadEquipment != null &&
+                (m_loadedHeadEquipment.HeadEquipmentType == HeadEquipmentType.FullHelmet ||
+                    m_loadedHeadEquipment.HeadEquipmentType == HeadEquipmentType.Hood));
+            GetComponent<CharacterAppearancePresenter>()?.SetFaceEquipmentVisible(
+                !m_isHeadEquipmentPresentationHidden && m_loadedHeadEquipment != null &&
+                m_loadedHeadEquipment.HeadEquipmentType == HeadEquipmentType.FullHelmet);
         }
 
         private static bool TryGetEquipmentModelType(

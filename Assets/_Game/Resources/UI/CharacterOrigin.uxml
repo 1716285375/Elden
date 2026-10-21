@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <Style src="CharacterOrigin.uss" />
+    <ui:VisualElement class="menu-overlay origin-screen">
+        <ui:Label name="origin-heading" text="选择角色出身" class="menu-title" />
+        <ui:VisualElement name="origin-cards" class="origin-cards" />
+        <ui:Label name="origin-values" class="origin-values" />
+        <ui:VisualElement class="origin-footer">
+            <ui:Label name="origin-help" text="选择创建角色时的出身。" />
+            <ui:VisualElement class="origin-commands">
+                <ui:Label text="确定　　← →　切换出身" />
+                <ui:Button name="origin-back" text="返回" />
+                <ui:Button name="origin-stats" text="显示能力值" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

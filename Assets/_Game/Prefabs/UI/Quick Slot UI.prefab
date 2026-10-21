@@ -59,17 +59,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.035, g: 0.035, b: 0.035, a: 0.88}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: e4823629bef2a464b9e7d2f0ca6524ef, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d660db691dc14e14aba3842492b47b00, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZZ.UIQuickSlot
   m_iconImage: {fileID: 2526068737588102083}
   m_quantityDisplay: {fileID: 9000000000000000001}
@@ -149,17 +149,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.72, g: 0.56, b: 0.22, a: 0.9}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 1fc0af56c41a8644e850d22fad1e2310, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -214,6 +214,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6292062869352784121}
   m_CullTransparentMesh: 1
+--- !u!114 &9000000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6292062869352784121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e7d41310f492b145944e82322ce0076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZZ.HUDNumberDisplay
+  m_digitSprites:
+  - {fileID: 21300000, guid: 487d963c0c66c2042b0a5b2e568c3067, type: 3}
+  - {fileID: 21300000, guid: 034edb633f879c94493944397422d528, type: 3}
+  - {fileID: 21300000, guid: 5a396161a15e5d047a95e5eef613c7ee, type: 3}
+  - {fileID: 21300000, guid: 5cb07b55328cf0d4db69708f2538465e, type: 3}
+  - {fileID: 21300000, guid: ccc2801d103d2ca469c341871922937c, type: 3}
+  - {fileID: 21300000, guid: 3730bf2cbaae4cd48a99d9fef9a2807d, type: 3}
+  - {fileID: 21300000, guid: 06603b19aaf10c245a8993d1bdc8218e, type: 3}
+  - {fileID: 21300000, guid: f0bcaf6d6cfd7fc4493333b19b88f52d, type: 3}
+  - {fileID: 21300000, guid: d0eae64d8688dfe4e804d452c583cf39, type: 3}
+  - {fileID: 21300000, guid: 65fda04a8f70e1c4da9d2d7680bb5fea, type: 3}
+  m_digitHeight: 20
+  m_letterSpacing: 0
+  m_rightAligned: 1
 --- !u!1 &6744547695484200958
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,7 +295,7 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -289,29 +315,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &9000000000000000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6292062869352784121}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e7d41310f492b145944e82322ce0076, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ZZ.HUDNumberDisplay
-  m_digitSprites:
-  - {fileID: 21300000, guid: 487d963c0c66c2042b0a5b2e568c3067, type: 3}
-  - {fileID: 21300000, guid: 034edb633f879c94493944397422d528, type: 3}
-  - {fileID: 21300000, guid: 5a396161a15e5d047a95e5eef613c7ee, type: 3}
-  - {fileID: 21300000, guid: 5cb07b55328cf0d4db69708f2538465e, type: 3}
-  - {fileID: 21300000, guid: ccc2801d103d2ca469c341871922937c, type: 3}
-  - {fileID: 21300000, guid: 3730bf2cbaae4cd48a99d9fef9a2807d, type: 3}
-  - {fileID: 21300000, guid: 06603b19aaf10c245a8993d1bdc8218e, type: 3}
-  - {fileID: 21300000, guid: f0bcaf6d6cfd7fc4493333b19b88f52d, type: 3}
-  - {fileID: 21300000, guid: d0eae64d8688dfe4e804d452c583cf39, type: 3}
-  - {fileID: 21300000, guid: 65fda04a8f70e1c4da9d2d7680bb5fea, type: 3}
-  m_digitHeight: 20
-  m_letterSpacing: 0
-  m_rightAligned: 1

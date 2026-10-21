@@ -1,0 +1,79 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="SettingsPanel.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement name="settings-overlay" class="menu-overlay">
+        <ui:VisualElement class="settings-panel">
+            <ui:VisualElement class="settings-panel__header">
+                <ui:Label text="系统" class="menu-eyebrow" />
+                <ui:VisualElement class="menu-heading">
+                    <ui:VisualElement class="menu-section-icon menu-section-icon--system" picking-mode="Ignore" />
+                    <ui:Label text="系统" class="menu-title" />
+                </ui:VisualElement>
+                <ui:Label name="category-heading" text="声音" class="menu-description" />
+            </ui:VisualElement>
+            <ui:VisualElement class="settings-panel__body">
+                <ui:VisualElement class="settings-panel__navigation">
+                    <ui:Button name="tab-audio" tooltip="声音与显示" class="menu-tab settings-panel__tab settings-panel__tab--audio" />
+                    <ui:Button name="tab-controls" tooltip="镜头操作" class="menu-tab settings-panel__tab settings-panel__tab--controls" />
+                    <ui:Button name="tab-display" tooltip="画面配置" class="menu-tab settings-panel__tab settings-panel__tab--display" />
+                    <ui:Button name="tab-impact" tooltip="游戏选项" class="menu-tab settings-panel__tab settings-panel__tab--impact" />
+                    <ui:Label text="偏好设置随设备保存，不影响角色进度。" class="settings-panel__note" />
+                </ui:VisualElement>
+                <ui:ScrollView name="settings-scroll" class="settings-panel__content" horizontal-scroller-visibility="Hidden">
+                    <ui:VisualElement name="page-audio" class="settings-page">
+                        <ui:Label text="声音" class="menu-section-title" />
+                        <ui:VisualElement class="settings-row">
+                            <ui:Label text="主音量" class="settings-row__title" />
+                            <ui:Label text="调整游戏整体音量。" class="menu-description" />
+                            <ui:VisualElement class="settings-row__control">
+                                <ui:Slider name="volume" low-value="0" high-value="100" class="menu-slider" />
+                                <ui:Label name="volume-value" class="settings-row__value" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="page-controls" class="settings-page">
+                        <ui:Label text="操作" class="menu-section-title" />
+                        <ui:VisualElement class="settings-row">
+                            <ui:Label text="镜头灵敏度" class="settings-row__title" />
+                            <ui:Label text="同时影响鼠标与手柄的镜头移动。" class="menu-description" />
+                            <ui:VisualElement class="settings-row__control">
+                                <ui:Slider name="look" low-value="0.25" high-value="3" class="menu-slider" />
+                                <ui:Label name="look-value" class="settings-row__value" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Toggle name="invert" label="反转镜头纵轴" class="menu-toggle" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="page-display" class="settings-page">
+                        <ui:Label text="画面" class="menu-section-title" />
+                        <ui:DropdownField name="quality" label="画质预设" class="menu-dropdown" />
+                        <ui:DropdownField name="display" label="显示模式" class="menu-dropdown" />
+                        <ui:DropdownField name="frame-rate" label="帧率上限" class="menu-dropdown" />
+                        <ui:Label text="画面调整即时生效。降低画质或限制帧率可减少设备负载。" class="settings-panel__note" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="page-impact" class="settings-page">
+                        <ui:Label text="战斗反馈" class="menu-section-title" />
+                        <ui:VisualElement class="settings-row">
+                            <ui:Label text="镜头震动" class="settings-row__title" />
+                            <ui:Label text="设为 0% 可关闭受击与攻击产生的镜头震动。" class="menu-description" />
+                            <ui:VisualElement class="settings-row__control">
+                                <ui:Slider name="shake" low-value="0" high-value="100" class="menu-slider" />
+                                <ui:Label name="shake-value" class="settings-row__value" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Toggle name="haptics" label="手柄震动" class="menu-toggle" />
+                        <ui:Toggle name="hit-stop" label="命中停顿" class="menu-toggle" />
+                        <ui:Label text="仅调整表现反馈，不改变伤害、精力或战斗判定。" class="settings-panel__note" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:VisualElement class="settings-panel__footer menu-footer">
+                <ui:VisualElement class="settings-panel__footer-copy">
+                    <ui:Label name="settings-help" text="调整游戏整体音量。" class="menu-description" />
+                    <ui:Label name="save-status" text="修改后自动保存" class="settings-panel__save-status" />
+                </ui:VisualElement>
+                <ui:Button name="back" text="Esc：返回" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

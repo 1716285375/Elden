@@ -35,7 +35,8 @@ namespace ZZ
         ISelectHandler,
         IDeselectHandler,
         IPointerEnterHandler,
-        IPointerExitHandler
+          IPointerExitHandler,
+          ISubmitHandler
     {
         [Header("References")]
         [SerializeField] private Selectable m_selectable;
@@ -70,10 +71,12 @@ namespace ZZ
         private bool m_isSelected;
         private bool m_wasInteractable;
         private Sequence m_transitionSequence;
+        private TitleMenuCarousel m_titleCarousel;
 
         private void Awake()
         {
             m_selectable ??= GetComponent<Selectable>();
+            m_titleCarousel = GetComponentInParent<TitleMenuCarousel>();
             ResolveReferences();
             CaptureNormalLabelPosition();
 
@@ -146,6 +149,11 @@ namespace ZZ
         /// <summary>Routes pointer hover into the shared EventSystem selection.</summary>
         public void OnPointerEnter(PointerEventData eventData)
         {
+            // Moving a carousel row under the pointer must not trigger another selection.
+            if (m_titleCarousel != null)
+            {
+                return;
+            }
             if (m_selectable != null &&
                 m_selectable.interactable &&
                 EventSystem.current != null)
@@ -164,6 +172,18 @@ namespace ZZ
         public void OnSelect(BaseEventData eventData)
         {
             SetSelected(true);
+            if (m_selectable is Button button)
+            {
+                m_titleCarousel?.Select(button);
+            }
+        }
+
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (IsInteractable())
+            {
+                PlayerUIManager.Instance?.PlayMenuConfirmSound();
+            }
         }
 
         public void OnDeselect(BaseEventData eventData)

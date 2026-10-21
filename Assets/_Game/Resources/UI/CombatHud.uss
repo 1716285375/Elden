@@ -1,0 +1,47 @@
+.combat-hud {
+    --hud-ink: rgb(236,233,218);
+    --hud-gold: rgb(206,181,125);
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    color: var(--hud-ink);
+    -unity-font: url("Fonts/OriginalChinese.ttf");
+    font-size: 15px;
+}
+.combat-hud__resources {
+    position: absolute; left: 3%; top: 4%; width: 310px;
+    padding: 16px 20px 12px 20px;
+    background-color: rgba(16,25,32,0.88);
+    border-left-width: 2px; border-left-color: var(--hud-gold);
+    border-top-right-radius: 14px; border-bottom-right-radius: 14px;
+}
+.combat-hud__heading { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.combat-hud__title { font-size: 21px; letter-spacing: 3px; color: var(--hud-gold); }
+.combat-hud__subtitle { font-size: 12px; color: rgb(168,179,183); letter-spacing: 2px; }
+.resource { margin-bottom: 8px; }
+.resource__heading { flex-direction: row; justify-content: space-between; margin-bottom: 3px; font-size: 12px; }
+.resource__value { color: rgb(193,204,204); }
+.resource__track { height: 5px; background-color: rgba(255,255,255,0.12); overflow: hidden; border-radius: 3px; }
+.resource--health .resource__track { height: 9px; }
+.resource__fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; }
+.resource__trail { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background-color: rgb(232,213,168); transition-property: width; transition-duration: 0.45s; transition-timing-function: ease-out; }
+.resource--health .resource__fill { background-color: rgb(219,107,103); }
+.resource--stamina .resource__fill { background-color: rgb(132,202,161); }
+.resource--focus .resource__fill { background-color: rgb(114,177,222); }
+.resource--poisoned .resource__fill { background-color: rgb(177,130,208); }
+.resource--low .resource__value { color: rgb(255,191,137); }
+.combat-hud__warning { font-size: 12px; color: rgb(255,191,137); min-height: 18px; }
+.interaction { position: absolute; bottom: 19%; align-self: center; flex-direction: row; align-items: center; max-width: 65%; padding: 12px 24px; background-color: rgba(16,25,32,0.94); border-bottom-width: 1px; border-bottom-color: var(--hud-gold); border-radius: 0; opacity: 1; transition-property: opacity; transition-duration: 0.15s; }
+.interaction--hidden { opacity: 0; }
+.interaction__key { min-width: 34px; min-height: 30px; padding: 3px 8px; margin-right: 16px; -unity-text-align: middle-center; border-width: 1px; border-color: var(--hud-gold); border-radius: 4px; color: var(--hud-gold); }
+.interaction__text { white-space: normal; flex-shrink: 1; font-size: 17px; }
+.combat-hud__currency { position: absolute; bottom: 5%; right: 3%; min-width: 160px; align-items: flex-end; padding: 10px 20px; border-right-width: 2px; border-right-color: var(--hud-gold); background-color: rgba(16,25,32,0.88); border-top-left-radius: 10px; }
+.combat-hud__currency-value { font-size: 29px; color: var(--hud-gold); }
+.combat-hud__currency-change { min-height: 20px; color: rgb(132,202,161); font-size: 14px; }
+.combat-hud__lock-on {
+    position: absolute;
+    display: none;
+    width: 24px;
+    height: 24px;
+    border-width: 0;
+    background-image: url("EldenRing/Elements/MENU_Lockon_01.png");
+    -unity-background-scale-mode: scale-to-fit;
+}

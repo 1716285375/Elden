@@ -134,7 +134,7 @@ namespace ZZ
         /// <summary>Performs the current hand's light or heavy weapon action.</summary>
         public void PerformMainHandAction(bool isHeavyAttack)
         {
-            WeaponItem weapon = CurrentWeaponBeingUsed;
+            WeaponItem weapon = ResolveMainHandWeapon();
             if (weapon == null)
             {
                 return;
@@ -694,7 +694,7 @@ namespace ZZ
                 return false;
             }
 
-            WeaponItem weapon = ResolveCurrentWeapon();
+            WeaponItem weapon = ResolveMainHandWeapon();
             AttackDefinition guardCounter = weapon?.Moveset?.GuardCounter;
             bool started = guardCounter != null
                 ? m_attackController.TryStart(guardCounter.AttackType, weapon, true)
@@ -721,7 +721,7 @@ namespace ZZ
                 return;
             }
 
-            WeaponItem weapon = ResolveCurrentWeapon();
+            WeaponItem weapon = ResolveMainHandWeapon();
             WeaponItemBasedAction heavyAction =
                 m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
                     ? weapon?.TwoHandRightHeavyAction
@@ -742,7 +742,8 @@ namespace ZZ
             SetBlocking(false);
             m_chargingWeapon = weapon;
             m_chargeStartTime = Time.time;
-            SetCurrentWeaponActionHand();
+            m_player.PlayerNetworkManager?.SetCharacterActionHand(
+                !m_player.PlayerNetworkManager.IsTwoHandingLeftWeapon.Value);
             m_player.CharacterNetworkManager?.SetChargingAttackState(true);
         }
 
@@ -879,7 +880,7 @@ namespace ZZ
             }
 
             m_player.LocomotionManager.StopSprinting();
-            return PerformMovingAttack(AttackType.RunningAttack01);
+            return TryStartAttack(AttackType.RunningAttack01, weapon);
         }
 
         /// <summary>Consumes the active roll or backstep recovery window as a moving attack.</summary>
@@ -898,7 +899,7 @@ namespace ZZ
             }
 
             AttackType attackType = m_committedAttackType;
-            return PerformMovingAttack(attackType);
+            return TryStartAttack(attackType, weapon);
         }
 
         /// <summary>Opens the authored roll-attack recovery window on the local owner.</summary>
@@ -984,6 +985,13 @@ namespace ZZ
         /// </summary>
         public void DrainStaminaBasedOnAttack()
         {
+        }
+
+        private WeaponItem ResolveMainHandWeapon()
+        {
+            return m_player?.PlayerNetworkManager?.IsTwoHandingWeapon.Value == true
+                ? m_player.InventoryManager?.CurrentTwoHandWeapon
+                : m_player?.InventoryManager?.CurrentRightHandWeapon;
         }
 
         private WeaponItem ResolveCurrentWeapon()
@@ -1229,25 +1237,11 @@ namespace ZZ
             m_canPerformCommittedAttack = true;
         }
 
-        private bool PerformMovingAttack(AttackType attackType)
-        {
-            return TryStartAttack(attackType, CurrentWeaponBeingUsed);
-        }
-
         private static bool ShouldUseChargedAttack(
             float chargeDuration,
             float fullyChargedDuration)
         {
             return chargeDuration >= Mathf.Max(0f, fullyChargedDuration);
-        }
-
-        private void SetCurrentWeaponActionHand()
-        {
-            bool isRightHandAction =
-                m_player?.PlayerNetworkManager?.IsTwoHandingLeftWeapon.Value != true &&
-                (m_player.PlayerNetworkManager.IsTwoHandingWeapon.Value ||
-                    CurrentWeaponBeingUsed != m_player.InventoryManager.CurrentLeftHandWeapon);
-            m_player?.PlayerNetworkManager?.SetCharacterActionHand(isRightHandAction);
         }
 
         private bool HasNextMainHandComboAttack(AttackType currentAttack)

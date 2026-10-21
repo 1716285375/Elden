@@ -1,0 +1,41 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="MenuTheme.uss" />
+    <Style src="LevelUp.uss" />
+    <Style src="EldenRingTheme.uss" />
+    <ui:VisualElement class="menu-overlay level-menu">
+        <ui:VisualElement name="level-content" class="level-menu__content">
+            <ui:Label text="赐福 · 成长" class="menu-eyebrow" />
+            <ui:VisualElement class="menu-heading">
+                <ui:VisualElement class="menu-section-icon menu-section-icon--status" picking-mode="Ignore" />
+                <ui:Label text="提升等级" class="menu-title" />
+            </ui:VisualElement>
+            <ui:VisualElement class="level-menu__body">
+                <ui:ScrollView name="attributes" class="level-menu__attributes" />
+                <ui:ScrollView class="level-menu__summary">
+                    <ui:Label text="角色等级 · 当前 → 预览" class="menu-description" />
+                    <ui:Label name="level-preview" class="level-menu__value" />
+                    <ui:Label text="持有卢恩" class="menu-description" />
+                    <ui:Label name="runes-held" class="level-menu__value" />
+                    <ui:Label text="本次所需卢恩" class="menu-description" />
+                    <ui:Label name="runes-cost" class="level-menu__value" />
+                    <ui:Label text="升级后剩余卢恩" class="menu-description" />
+                    <ui:Label name="runes-remaining" class="level-menu__value" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:Label name="level-feedback" class="menu-description level-menu__feedback" />
+            <ui:VisualElement class="level-menu__footer menu-footer">
+                <ui:Button name="reset" text="重置方案" class="menu-command" />
+                <ui:Button name="review" text="确认加点方案" class="menu-command" />
+                <ui:Button name="back" text="返回赐福" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="level-confirmation" class="level-menu__veil">
+            <ui:VisualElement class="level-menu__confirmation">
+                <ui:Label text="确认升级" class="menu-section-title" />
+                <ui:Label name="confirmation-description" class="menu-description" />
+                <ui:Button name="confirm" text="消耗卢恩并升级" class="menu-command" />
+                <ui:Button name="cancel" text="取消" class="menu-command" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

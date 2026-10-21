@@ -7,7 +7,7 @@ namespace ZZ
     /// <summary>Owns the Site of Grace Level Up preview, validation, and commit flow.</summary>
     public class PlayerUILevelUpManager : PlayerUIMenu
     {
-        private const int k_AttributeCount = 7;
+        private const int k_AttributeCount = 8;
         private const int k_MinimumCharacterLevel = 1;
         private const int k_MaximumAttributeValue = 99;
 
@@ -42,11 +42,15 @@ namespace ZZ
             new Color(1f, 0.28f, 0.24f, 1f);
 
         private readonly int[] m_currentAttributes = new int[k_AttributeCount];
+        private readonly int[] m_projectedAttributes = new int[k_AttributeCount];
+        private LevelUpView m_view;
+        private bool m_isConfirmationPending;
         private bool m_isInitializing;
         private int m_totalLevelUpCost;
 
         /// <summary>Gets the currently calculated cost for the full preview.</summary>
         public int TotalLevelUpCost => m_totalLevelUpCost;
+        public bool IsConfirmationOpen => m_isConfirmationPending;
 
         private void Awake()
         {
@@ -64,6 +68,7 @@ namespace ZZ
             base.OpenMenu();
             if (IsMenuOpen)
             {
+                EnsureToolkitMenu();
                 InitializeLevelUpMenu();
             }
         }
@@ -79,6 +84,7 @@ namespace ZZ
                 return;
             }
 
+            CancelConfirmation();
             m_isInitializing = true;
             for (int index = 0; index < k_AttributeCount; index++)
             {
@@ -88,9 +94,11 @@ namespace ZZ
                     player.PlayerNetworkManager,
                     characterAttribute);
                 m_currentAttributes[index] = currentValue;
-                m_attributeSliders[index]?.SetRangeAndValue(
-                    currentValue,
-                    k_MaximumAttributeValue);
+                m_projectedAttributes[index] = currentValue;
+                if (index < m_attributeSliders.Length)
+                {
+                    m_attributeSliders[index]?.SetRangeAndValue(currentValue, k_MaximumAttributeValue);
+                }
                 SetText(m_currentAttributeTexts, index, currentValue);
                 SetText(m_projectedAttributeTexts, index, currentValue);
             }
@@ -105,7 +113,14 @@ namespace ZZ
             m_totalLevelUpCost = 0;
             m_isInitializing = false;
             RefreshProjection();
-            m_attributeSliders[0]?.Select();
+            if (m_view != null)
+            {
+                m_view.FocusFirstAttribute();
+            }
+            else
+            {
+                m_attributeSliders[0]?.Select();
+            }
         }
 
         /// <summary>Updates one Projected attribute and recalculates the full plan.</summary>
@@ -113,7 +128,7 @@ namespace ZZ
             CharacterAttribute characterAttribute,
             int projectedValue)
         {
-            if (m_isInitializing)
+            if (m_isInitializing || m_isConfirmationPending)
             {
                 return;
             }
@@ -124,10 +139,9 @@ namespace ZZ
                 return;
             }
 
-            SetText(
-                m_projectedAttributeTexts,
-                index,
-                Mathf.Max(m_currentAttributes[index], projectedValue));
+            m_projectedAttributes[index] = Mathf.Clamp(projectedValue,
+                m_currentAttributes[index], Mathf.Max(m_currentAttributes[index], k_MaximumAttributeValue));
+            SetText(m_projectedAttributeTexts, index, m_projectedAttributes[index]);
             RefreshProjection();
         }
 
@@ -135,7 +149,8 @@ namespace ZZ
         public void ConfirmLevels()
         {
             PlayerManager player = PlayerUIManager.Instance?.LocalPlayer;
-            if (player == null ||
+            if (!IsMenuOpen || player == null || player.IsDead ||
+                m_view != null && !m_isConfirmationPending ||
                 !player.IsOwner ||
                 player.PlayerNetworkManager == null ||
                 player.PlayerStatsManager == null)
@@ -143,27 +158,30 @@ namespace ZZ
                 return;
             }
 
+            for (int index = 0; index < k_AttributeCount; index++)
+            {
+                if (GetAttributeValue(player.PlayerNetworkManager, (CharacterAttribute)index) != m_currentAttributes[index])
+                {
+                    InitializeLevelUpMenu();
+                    m_view?.SetFeedback("属性已发生变化，请重新分配本次加点。");
+                    return;
+                }
+            }
             RefreshProjection();
-            if (m_totalLevelUpCost == int.MaxValue ||
+            if (CalculateCharacterLevelBasedOnAttributes(true) <= CalculateCharacterLevelBasedOnAttributes(false) ||
+                m_totalLevelUpCost == int.MaxValue ||
                 m_totalLevelUpCost > player.PlayerStatsManager.Runes ||
                 !player.PlayerStatsManager.TrySpendRunes(m_totalLevelUpCost))
             {
+                CancelConfirmation();
+                m_view?.SetFeedback("升级未完成：请检查当前卢恩与等级限制。");
                 return;
             }
 
             for (int index = 0; index < k_AttributeCount; index++)
             {
-                UICharacterAttributeSlider attributeSlider =
-                    m_attributeSliders[index];
-                if (attributeSlider == null)
-                {
-                    continue;
-                }
-
-                SetAttributeValue(
-                    player.PlayerNetworkManager,
-                    (CharacterAttribute)index,
-                    Mathf.RoundToInt(attributeSlider.ProjectedValue));
+                SetAttributeValue(player.PlayerNetworkManager,
+                    (CharacterAttribute)index, m_projectedAttributes[index]);
             }
 
             WorldSaveGameManager saveGameManager =
@@ -174,9 +192,47 @@ namespace ZZ
             }
 
             InitializeLevelUpMenu();
+            m_view?.SetFeedback("升级完成，属性已生效。");
         }
 
-        /// <summary>Calculates Actual or Projected Level from the seven attributes.</summary>
+        /// <summary>Opens confirmation only for a changed, affordable plan.</summary>
+        public void RequestConfirmation()
+        {
+            RefreshProjection();
+            int runes = PlayerUIManager.Instance?.LocalPlayer?.PlayerStatsManager?.Runes ?? 0;
+            if (!IsMenuOpen || m_isConfirmationPending || m_totalLevelUpCost == int.MaxValue ||
+                m_totalLevelUpCost > runes ||
+                CalculateCharacterLevelBasedOnAttributes(true) <= CalculateCharacterLevelBasedOnAttributes(false))
+            {
+                return;
+            }
+            m_isConfirmationPending = true;
+            m_view?.ShowConfirmation(m_totalLevelUpCost, CalculateCharacterLevelBasedOnAttributes(true));
+        }
+
+        /// <summary>Cancels the pending commit without altering the preview or player state.</summary>
+        public void CancelConfirmation()
+        {
+            m_isConfirmationPending = false;
+            m_view?.HideConfirmation();
+        }
+
+        /// <summary>Discards the preview and returns to the grace menu.</summary>
+        public void ReturnToSiteOfGrace()
+        {
+            CloseMenu();
+            PlayerUIManager.Instance?.PlayerUISiteOfGraceManager?.OpenSiteOfGraceMenu();
+        }
+
+        /// <inheritdoc />
+        public override void CloseMenu()
+        {
+            CancelConfirmation();
+            m_totalLevelUpCost = 0;
+            base.CloseMenu();
+        }
+
+        /// <summary>Calculates Actual or Projected Level from the eight attributes.</summary>
         public int CalculateCharacterLevelBasedOnAttributes(bool isProjected)
         {
             int[] attributes = isProjected
@@ -189,10 +245,11 @@ namespace ZZ
                 attributes[3],
                 attributes[4],
                 attributes[5],
-                attributes[6]);
+                attributes[6],
+                attributes[7]);
         }
 
-        /// <summary>Returns Level 1 at seven base attributes of ten.</summary>
+        /// <summary>Returns Level 1 at eight base attributes of ten.</summary>
         public static int CalculateCharacterLevel(
             int vigor,
             int mind,
@@ -200,7 +257,8 @@ namespace ZZ
             int strength,
             int dexterity,
             int intelligence,
-            int faith)
+            int faith,
+            int arcane = 10)
         {
             long totalAttributes = (long)Mathf.Max(0, vigor) +
                 Mathf.Max(0, mind) +
@@ -208,10 +266,10 @@ namespace ZZ
                 Mathf.Max(0, strength) +
                 Mathf.Max(0, dexterity) +
                 Mathf.Max(0, intelligence) +
-                Mathf.Max(0, faith);
+                Mathf.Max(0, faith) + Mathf.Max(0, arcane);
             long characterLevel = System.Math.Max(
                 k_MinimumCharacterLevel,
-                totalAttributes - 69L);
+                totalAttributes - 79L);
             return characterLevel >= int.MaxValue
                 ? int.MaxValue
                 : (int)characterLevel;
@@ -319,6 +377,13 @@ namespace ZZ
                 ? long.MinValue
                 : (long)currentRunes - m_totalLevelUpCost;
 
+            if (m_view != null)
+            {
+                m_view.Refresh(m_currentAttributes, m_projectedAttributes, currentLevel, projectedLevel,
+                    currentRunes, m_totalLevelUpCost, canAfford);
+                return;
+            }
+
             SetText(m_projectedCharacterLevelText, projectedLevel);
             m_projectedRunesHeldText.text = projectedRunes == long.MinValue
                 ? "LEVEL CAP"
@@ -332,7 +397,7 @@ namespace ZZ
             }
 
             int[] projectedAttributes = GetProjectedAttributes();
-            for (int index = 0; index < k_AttributeCount; index++)
+            for (int index = 0; index < Mathf.Min(k_AttributeCount, m_projectedAttributeTexts.Length); index++)
             {
                 ChangeTextFieldColorBasedOnStat(
                     m_projectedAttributeTexts[index],
@@ -359,17 +424,24 @@ namespace ZZ
 
         private int[] GetProjectedAttributes()
         {
-            int[] projectedAttributes = new int[k_AttributeCount];
-            for (int index = 0; index < k_AttributeCount; index++)
-            {
-                projectedAttributes[index] = m_attributeSliders[index] != null
-                    ? Mathf.Max(
-                        m_currentAttributes[index],
-                        m_attributeSliders[index].ProjectedValue)
-                    : m_currentAttributes[index];
-            }
+            return m_projectedAttributes;
+        }
 
-            return projectedAttributes;
+        private void EnsureToolkitMenu()
+        {
+            if (m_view != null || MenuWindow == null || !Application.isPlaying)
+            {
+                return;
+            }
+            CanvasGroup legacy = MenuWindow.GetComponent<CanvasGroup>();
+            if (legacy == null)
+            {
+                legacy = MenuWindow.AddComponent<CanvasGroup>();
+            }
+            legacy.alpha = 0f;
+            legacy.interactable = false;
+            legacy.blocksRaycasts = false;
+            m_view = LevelUpView.Create(MenuWindow.transform, this);
         }
 
         private static int GetAttributeValue(
@@ -386,6 +458,7 @@ namespace ZZ
                 CharacterAttribute.Intelligence =>
                     networkManager.Intelligence.Value,
                 CharacterAttribute.Faith => networkManager.Faith.Value,
+                CharacterAttribute.Arcane => networkManager.Arcane.Value,
                 _ => 0
             };
         }
@@ -418,6 +491,11 @@ namespace ZZ
                     break;
                 case CharacterAttribute.Faith:
                     networkManager.Faith.Value = resolvedValue;
+                    break;
+                case CharacterAttribute.Arcane:
+                    networkManager.Arcane.Value = resolvedValue;
+                    break;
+                default:
                     break;
             }
         }

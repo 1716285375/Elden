@@ -13,6 +13,14 @@ namespace ZZ
         /// <inheritdoc />
         public override void AttemptToPerformAction(PlayerManager player, WeaponItem weapon)
         {
+            // Root motion can briefly lose ground contact during a committed swing.
+            // Its authored combo remains authoritative until that action ends.
+            if (player?.CharacterNetworkManager?.IsAttacking.Value == true)
+            {
+                player.PlayerCombatManager?.TryPerformMainHandCombo(m_attackType);
+                return;
+            }
+
             JumpAttackContext jumpContext = ResolveJumpAttackContext(
                 player?.IsGrounded == true,
                 player?.IsJumping == true);

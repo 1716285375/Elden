@@ -1,0 +1,5 @@
+.loading-screen { background-color: rgb(16,15,12); align-items: flex-start; justify-content: flex-end; }
+.loading-screen__copy { width: 720px; max-width: 95%; margin-bottom: 7%; }
+.loading-screen__track { height: 3px; margin: 32px 0 20px 0; background-color: rgb(37,52,63); overflow: hidden; }
+.loading-screen__pulse { width: 26%; height: 3px; background-color: rgb(220,191,131); }
+.loading-screen__hint { font-size: 16px; }

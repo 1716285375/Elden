@@ -55,6 +55,7 @@ namespace ZZ
             modelTransform.localPosition = localPosition;
             modelTransform.localRotation = Quaternion.Euler(localEulerRotation);
             modelTransform.localScale = localScale;
+            m_currentWeaponModel.GetComponent<OriginalWeaponAttachment>()?.Apply(this, weaponOwner);
 
             WeaponManager weaponManager =
                 m_currentWeaponModel.GetComponentInChildren<WeaponManager>(true);

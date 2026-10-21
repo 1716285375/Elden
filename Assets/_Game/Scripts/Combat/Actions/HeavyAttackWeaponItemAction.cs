@@ -13,6 +13,12 @@ namespace ZZ
         /// <inheritdoc />
         public override void AttemptToPerformAction(PlayerManager player, WeaponItem weapon)
         {
+            if (player?.CharacterNetworkManager?.IsAttacking.Value == true)
+            {
+                player.PlayerCombatManager?.TryPerformMainHandCombo(m_attackType);
+                return;
+            }
+
             JumpAttackContext jumpContext = ResolveJumpAttackContext(
                 player?.IsGrounded == true,
                 player?.IsJumping == true);

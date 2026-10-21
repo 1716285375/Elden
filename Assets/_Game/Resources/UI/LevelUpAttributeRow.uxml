@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="level-attribute">
+        <ui:VisualElement class="level-attribute__heading">
+            <ui:Label name="attribute-name" class="level-attribute__name" />
+            <ui:Label name="attribute-value" class="level-attribute__value" />
+        </ui:VisualElement>
+        <ui:VisualElement class="level-attribute__controls">
+            <ui:Button name="decrease" text="−" tooltip="减少一点" class="menu-command level-attribute__step" />
+            <ui:SliderInt name="attribute-slider" class="menu-slider" low-value="0" high-value="99" />
+            <ui:Button name="increase" text="+" tooltip="增加一点" class="menu-command level-attribute__step" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

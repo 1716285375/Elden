@@ -96,8 +96,8 @@ namespace ZZ
             }
             path ??= token switch
             {
-                "Submit" => isGamepad ? "<Gamepad>/buttonSouth" : "<Keyboard>/enter",
-                "Cancel" => isGamepad ? "<Gamepad>/buttonEast" : "<Keyboard>/escape",
+                "Submit" => isGamepad ? "<Gamepad>/buttonSouth" : "<Keyboard>/e",
+                "Cancel" => isGamepad ? "<Gamepad>/buttonEast" : "<Keyboard>/q",
                 "Any" => isGamepad ? "<Gamepad>/buttonSouth" : "<Keyboard>/any",
                 _ => null
             };

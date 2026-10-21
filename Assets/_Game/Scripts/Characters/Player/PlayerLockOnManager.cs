@@ -5,13 +5,13 @@ namespace ZZ
 {
     public class PlayerLockOnManager : MonoBehaviour
     {
-        private const int k_MaximumDetectedColliders = 32;
+        private const int k_MaximumDetectedColliders = 128;
         private const float k_SwitchInputThreshold = 0.75f;
         private const float k_SwitchInputResetThreshold = 0.35f;
 
         [Header("Target Detection")]
         [SerializeField, Min(0f)] private float m_lockOnRadius = 20f;
-        [SerializeField] private LayerMask m_characterLayers = 1 << 8;
+        [SerializeField] private LayerMask m_characterLayers = (1 << 8) | (1 << 10);
         [SerializeField] private LayerMask m_obstructionLayers = 1;
         [SerializeField, Min(0f)] private float m_targetHeightOffset = 1.5f;
         [SerializeField, Min(0f)] private float m_occlusionGracePeriod = 0.5f;
@@ -33,7 +33,7 @@ namespace ZZ
 
         /// <summary>Gets the world-space point that cameras should frame.</summary>
         public Vector3 TargetAimPoint => m_currentTarget != null
-            ? m_currentTarget.transform.position + Vector3.up * m_targetHeightOffset
+            ? GetAimPoint(m_currentTarget)
             : transform.position;
 
         private void Awake()
@@ -78,8 +78,19 @@ namespace ZZ
             ClearLockOn();
         }
 
+        /// <summary>Projects the marker after the owning player's camera has completed its frame.</summary>
+        public void PresentTarget(Camera camera)
+        {
+            if (m_player == null || !m_player.IsOwner)
+            {
+                return;
+            }
+            PlayerUIManager.Instance?.PlayerUIHUDManager?.Toolkit?.SetLockOnTarget(
+                camera, IsLockedOn ? TargetAimPoint : (Vector3?)null);
+        }
+
         /// <summary>
-        /// Locks the nearest visible character, or clears the current lock when already locked.
+        /// Locks the visible hostile closest to the view direction, or clears the current lock.
         /// </summary>
         public void HandleLockOn()
         {
@@ -95,9 +106,11 @@ namespace ZZ
             }
 
             FindPossibleTargets();
+            Transform view = GetViewReference();
             SetTarget(PlayerLockOnTargetSelector.SelectClosestTarget(
                 m_possibleTargets,
-                transform.position));
+                view.position,
+                view));
         }
 
         /// <summary>
@@ -121,15 +134,13 @@ namespace ZZ
 
             m_isSwitchInputReady = false;
             FindPossibleTargets();
-            Transform directionReference = PlayerCamera.Instance != null
-                ? PlayerCamera.Instance.transform
-                : transform;
+            Transform directionReference = GetViewReference();
             CharacterManager nextTarget =
                 PlayerLockOnTargetSelector.SelectDirectionalTarget(
                     m_possibleTargets,
                     m_currentTarget,
                     directionReference,
-                    transform.position,
+                    directionReference.position,
                     Mathf.Sign(horizontalInput));
             if (nextTarget != null)
             {
@@ -142,6 +153,10 @@ namespace ZZ
         {
             m_currentTarget = null;
             m_occludedDuration = 0f;
+            if (m_player != null && m_player.IsOwner)
+            {
+                PlayerUIManager.Instance?.PlayerUIHUDManager?.Toolkit?.SetLockOnTarget(null, null);
+            }
         }
 
         private void FindPossibleTargets()
@@ -151,7 +166,8 @@ namespace ZZ
                 transform.position,
                 m_lockOnRadius,
                 m_detectedColliders,
-                m_characterLayers,
+                // Imported enemies and their hurtboxes use DamageableCharacter, including older prefab overrides.
+                m_characterLayers | (1 << 10),
                 QueryTriggerInteraction.Collide);
             for (int colliderIndex = 0;
                 colliderIndex < colliderCount;
@@ -163,6 +179,7 @@ namespace ZZ
                     : null;
                 if (!IsValidTarget(candidate) ||
                     m_possibleTargets.Contains(candidate) ||
+                    !IsInView(candidate) ||
                     !HasLineOfSight(candidate))
                 {
                     continue;
@@ -178,7 +195,30 @@ namespace ZZ
                 candidate != m_player &&
                 candidate.NetworkObject != null &&
                 candidate.IsSpawned &&
-                !candidate.IsDead;
+                WorldUtilityManager.CanDamageCharacter(m_player, candidate);
+        }
+
+        private Transform GetViewReference()
+        {
+            Camera camera = PlayerCamera.Instance != null ? PlayerCamera.Instance.CameraObject : null;
+            return camera != null ? camera.transform : transform;
+        }
+
+        private Vector3 GetAimPoint(CharacterManager target)
+        {
+            return target.LockOnTransform != target.transform ? target.LockOnTransform.position :
+                target.transform.position + Vector3.up * m_targetHeightOffset;
+        }
+
+        private bool IsInView(CharacterManager target)
+        {
+            Camera camera = PlayerCamera.Instance != null ? PlayerCamera.Instance.CameraObject : null;
+            if (camera == null)
+            {
+                return Vector3.Dot(transform.forward, target.transform.position - transform.position) > 0f;
+            }
+            Vector3 point = camera.WorldToViewportPoint(GetAimPoint(target));
+            return point.z > 0f && point.x >= 0f && point.x <= 1f && point.y >= 0f && point.y <= 1f;
         }
 
         private bool IsTargetWithinRange(CharacterManager target)
@@ -193,8 +233,7 @@ namespace ZZ
             Vector3 rayOrigin = playerCamera != null && playerCamera.CameraObject != null
                 ? playerCamera.CameraObject.transform.position
                 : transform.position + Vector3.up * m_targetHeightOffset;
-            Vector3 targetPoint = target.transform.position +
-                Vector3.up * m_targetHeightOffset;
+            Vector3 targetPoint = GetAimPoint(target);
             Vector3 targetDirection = targetPoint - rayOrigin;
             float targetDistance = targetDirection.magnitude;
             return targetDistance <= Mathf.Epsilon ||

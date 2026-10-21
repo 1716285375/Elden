@@ -5,10 +5,11 @@ namespace ZZ
 {
     public static class PlayerLockOnTargetSelector
     {
-        /// <summary>Returns the target with the smallest squared distance to the origin.</summary>
+        /// <summary>Prefers view alignment when supplied; otherwise selects the nearest target.</summary>
         public static CharacterManager SelectClosestTarget(
             IReadOnlyList<CharacterManager> possibleTargets,
-            Vector3 origin)
+            Vector3 origin,
+            Transform directionReference = null)
         {
             CharacterManager closestTarget = null;
             float closestDistance = float.PositiveInfinity;
@@ -29,6 +30,16 @@ namespace ZZ
 
                 float candidateDistance =
                     (candidate.transform.position - origin).sqrMagnitude;
+                if (directionReference != null)
+                {
+                    Vector3 direction = (candidate.transform.position - origin).normalized;
+                    float alignment = Vector3.Dot(directionReference.forward, direction);
+                    if (alignment <= 0f)
+                    {
+                        continue;
+                    }
+                    candidateDistance = 1f - alignment + Mathf.Sqrt(candidateDistance) * 0.005f;
+                }
                 if (candidateDistance < closestDistance)
                 {
                     closestDistance = candidateDistance;
@@ -40,7 +51,7 @@ namespace ZZ
         }
 
         /// <summary>
-        /// Returns the nearest target lying left or right of the current target in reference space.
+        /// Returns the adjacent target by horizontal view angle on the requested side.
         /// </summary>
         public static CharacterManager SelectDirectionalTarget(
             IReadOnlyList<CharacterManager> possibleTargets,
@@ -59,8 +70,8 @@ namespace ZZ
 
             Vector3 currentDirection =
                 (currentTarget.transform.position - origin).normalized;
-            float currentHorizontalPosition = directionReference
-                .InverseTransformDirection(currentDirection).x;
+            Vector3 localCurrent = directionReference.InverseTransformDirection(currentDirection);
+            float currentHorizontalPosition = Mathf.Atan2(localCurrent.x, localCurrent.z);
             float directionSign = Mathf.Sign(switchDirection);
             CharacterManager closestDirectionalTarget = null;
             float closestDistance = float.PositiveInfinity;
@@ -77,8 +88,12 @@ namespace ZZ
 
                 Vector3 candidateDirection =
                     (candidate.transform.position - origin).normalized;
-                float candidateHorizontalPosition = directionReference
-                    .InverseTransformDirection(candidateDirection).x;
+                Vector3 localCandidate = directionReference.InverseTransformDirection(candidateDirection);
+                if (localCandidate.z <= 0f)
+                {
+                    continue;
+                }
+                float candidateHorizontalPosition = Mathf.Atan2(localCandidate.x, localCandidate.z);
                 float horizontalOffset =
                     candidateHorizontalPosition - currentHorizontalPosition;
                 if (horizontalOffset * directionSign <= 0f)
@@ -86,8 +101,7 @@ namespace ZZ
                     continue;
                 }
 
-                float candidateDistance =
-                    (candidate.transform.position - origin).sqrMagnitude;
+                float candidateDistance = Mathf.Abs(horizontalOffset);
                 if (candidateDistance < closestDistance)
                 {
                     closestDistance = candidateDistance;
