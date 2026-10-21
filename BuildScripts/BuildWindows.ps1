@@ -45,7 +45,7 @@ if (!(Test-Path -LiteralPath $executable)) { throw 'The player executable is mis
 $buildDirectory = Split-Path $executable
 if (!(Test-Path (Join-Path $buildDirectory 'Elden_Data/globalgamemanagers'))) { throw 'The player data is missing.' }
 $startupLog = Join-Path $OutputDirectory 'player-startup.log'
-$playerArguments = '-screen-width 960 -screen-height 540 -screen-fullscreen 0 -force-d3d11 -logFile "{0}"' -f $startupLog
+$playerArguments = '-screen-width 960 -screen-height 540 -screen-fullscreen 0 -logFile "{0}"' -f $startupLog
 $player = Start-Process -FilePath $executable -ArgumentList $playerArguments -WindowStyle Hidden -PassThru
 try {
     Start-Sleep -Seconds 15

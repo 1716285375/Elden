@@ -71,6 +71,15 @@ namespace ZZ.Editor
             {
                 roots.Add(path);
             }
+            foreach (UnityEngine.Object pipeline in new UnityEngine.Object[]
+            {
+                UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline,
+                UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline,
+                QualitySettings.renderPipeline
+            })
+            {
+                if (pipeline != null) { roots.Add(AssetDatabase.GetAssetPath(pipeline)); }
+            }
             foreach (UnityEngine.Object asset in PlayerSettings.GetPreloadedAssets())
             {
                 if (asset != null) { roots.Add(AssetDatabase.GetAssetPath(asset)); }
@@ -78,7 +87,13 @@ namespace ZZ.Editor
             string[] used = AssetDatabase.GetDependencies(roots.ToArray(), true).Where(path => path.StartsWith("Assets/"))
                 .Distinct().OrderBy(path => path, StringComparer.Ordinal).ToArray();
             var usedSet = new HashSet<string>(used);
-            string[] retired = all.Where(path => path.StartsWith("Assets/_Game/Art/", StringComparison.Ordinal) &&
+            var sourceExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ".shader", ".hlsl", ".cginc", ".compute", ".shadergraph", ".shadersubgraph"
+            };
+            // Unity does not report every text include or license as an asset dependency.
+            string[] retired = all.Where(path => !sourceExtensions.Contains(Path.GetExtension(path)) &&
+                !Regex.IsMatch(Path.GetFileName(path), "license|copyright|notice", RegexOptions.IgnoreCase) && path.StartsWith("Assets/_Game/Art/", StringComparison.Ordinal) &&
                 !path.Contains("/EldenRing/") && !usedSet.Contains(path)).ToArray();
             File.WriteAllLines(k_Output + "/roots.txt", roots.OrderBy(path => path));
             File.WriteAllLines(k_Output + "/used-assets.txt", used);
