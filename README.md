@@ -2,12 +2,6 @@
 
 使用 Unity 6 开发的第三人称动作 RPG，以《艾尔登法环》的战斗和界面为参考。目前可以创建角色，进入近林洞窟探索，与狼群和兽人 Boss 战斗。
 
-## 游戏展示
-
-[观看实机视频](Showcase/2026-10-21/showcase.mp4) · [更多截图](Showcase/2026-10-21/overview.jpg)
-
-![标题与角色创建](Showcase/2026-10-21/preview.gif)
-
 ## 游戏内容
 
 | 内容 | 功能 |
@@ -55,5 +49,4 @@ Assets/_Game/
   Scenes/      标题与地图场景
   Editor/      资源导入、场景配置、录制与检查工具
   Tests/       EditMode / PlayMode 测试
-Showcase/      实机视频与截图
 ```

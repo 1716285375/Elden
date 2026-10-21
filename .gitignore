@@ -189,3 +189,10 @@ __pycache__/
 !/Assets/_Game/Scenes/Maps/m31/SCN_m31_03_00_00.unity.meta
 !/Assets/_Game/Scenes/Maps/m31/Groveside Navigation.asset
 !/Assets/_Game/Scenes/Maps/m31/Groveside Navigation.asset.meta
+
+# Personal development records and local authoring outputs
+/Showcase/
+/SourceArt/
+/Tools/Showcase/
+/Assets/_Dev/**/Docs/
+/Assets/_Dev/**/Docs.meta
