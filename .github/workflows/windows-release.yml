@@ -1,0 +1,33 @@
+name: Windows Release
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: windows-release
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, Windows, X64, elden-unity]
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          lfs: false
+          persist-credentials: false
+      - name: Build Windows player with local art
+        id: player
+        shell: pwsh
+        run: ./BuildScripts/BuildWindows.ps1
+      - name: Publish Windows download
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_ZIP: ${{ steps.player.outputs.zip }}
+          BUILD_CHECKSUM: ${{ steps.player.outputs.checksum }}
+        run: |
+          $tag = 'windows-${{ github.run_number }}'
+          gh release create $tag $env:BUILD_ZIP $env:BUILD_CHECKSUM --target '${{ github.sha }}' --title "Windows build ${{ github.run_number }}" --notes 'Download Elden-Windows.zip, extract the whole folder and run Elden.exe.'
+          if ($LASTEXITCODE -ne 0) { throw 'Release upload failed.' }

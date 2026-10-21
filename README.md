@@ -2,6 +2,12 @@
 
 使用 Unity 6 开发的第三人称动作 RPG，以《艾尔登法环》的战斗和界面为参考。目前可以创建角色，进入近林洞窟探索，与狼群和兽人 Boss 战斗。
 
+[下载 Windows 版本](https://github.com/1716285375/Elden/releases/latest) · [构建工作流](https://github.com/1716285375/Elden/actions/workflows/windows-release.yml)
+
+![角色创建](Media/character-creation.gif)
+
+[查看游戏画面](Media/gameplay.jpg)
+
 ## 游戏内容
 
 | 内容 | 功能 |
@@ -14,15 +20,17 @@
 
 项目仍在开发。地图缺面和角色穿落、部分动画与材质、赐福交互及加载卡顿仍需修复，界面也在继续调整。
 
-## 运行项目
+## 开始游戏
 
-需要 **Unity 6000.3.11f1**。项目使用 URP、Input System、Netcode for GameObjects 和 AI Navigation。
+1. 从 Releases 下载 `Elden-Windows.zip`。
+2. 解压整个压缩包。
+3. 运行 `Elden.exe`，保留同目录的 `Elden_Data` 等文件。
 
-1. 使用 Unity Hub 打开项目，等待依赖导入。
-2. 补齐本地美术与音频资源。
-3. 打开 `Assets/_Game/Scenes/Frontend/SCN_MainMenu.unity`，进入 Play Mode。
+## 开发
 
-解包模型、贴图、原始字体和音频未随仓库提供。缺少这些资源时，场景和角色无法完整显示。资源导入工具位于 `Assets/_Game/Editor/Setup`。
+项目使用 Unity 6000.3.11f1、URP、Input System、Netcode for GameObjects 和 AI Navigation。
+
+美术资源只保留在本地。Windows Release 工作流由能访问完整工程的本地 runner 构建，发布可运行压缩包，不上传素材工程或开发记录。克隆源码后，需要自行补齐资源才能在编辑器中运行。
 
 ## 操作
 

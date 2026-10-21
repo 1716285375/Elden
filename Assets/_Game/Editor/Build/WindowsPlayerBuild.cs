@@ -36,11 +36,12 @@ namespace ZZ.Editor
                     throw new InvalidOperationException("Enabled build scenes are missing.");
                 }
                 AssetDatabase.SaveAssets();
-                Directory.CreateDirectory("Releases/Elden-Windows");
+                string output = Path.Combine("Releases", "Windows", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
+                Directory.CreateDirectory(output);
                 BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
                     scenes = scenes,
-                    locationPathName = "Releases/Elden-Windows/Elden.exe",
+                    locationPathName = Path.Combine(output, "Elden.exe"),
                     target = BuildTarget.StandaloneWindows64,
                     options = BuildOptions.None
                 });
